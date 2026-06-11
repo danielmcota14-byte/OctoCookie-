@@ -1,0 +1,40 @@
+[build]
+  publish = "public"
+  functions = "netlify/functions"
+
+[functions]
+  node_bundler = "esbuild"
+
+# Rotas da API do Trader Bot + MoonPay → função unificada
+[[redirects]]
+  from   = "/api/*"
+  to     = "/.netlify/functions/api/api/:splat"
+  status = 200
+  force  = true
+
+# Rota de health legada (server.js usava /health sem prefixo /api)
+[[redirects]]
+  from   = "/health"
+  to     = "/.netlify/functions/api/health"
+  status = 200
+  force  = true
+
+# Webhooks MoonPay
+[[redirects]]
+  from   = "/api/moonpay-webhook"
+  to     = "/.netlify/functions/api/api/moonpay-webhook"
+  status = 200
+  force  = true
+
+# SPA fallback — tudo que não for arquivo ou /api cai no octocookie.html
+[[redirects]]
+  from   = "/*"
+  to     = "/octocookie.html"
+  status = 200
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Access-Control-Allow-Origin  = "*"
+    Access-Control-Allow-Methods = "GET, POST, OPTIONS"
+    Access-Control-Allow-Headers = "Content-Type, X-Requested-With, moonpay-signature"

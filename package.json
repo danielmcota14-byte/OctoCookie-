@@ -1,0 +1,20 @@
+{
+  "name": "octocookie-backend",
+  "version": "2.0.0",
+  "description": "OCTOCOOKIE — Backend unificado: Trader Bot API + MoonPay Webhook",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "dev": "netlify dev",
+    "build": "echo 'No build step'"
+  },
+  "dependencies": {
+    "@netlify/blobs": "^8.1.0",
+    "express": "^4.18.2",
+    "serverless-http": "^3.2.0"
+  },
+  "devDependencies": {
+    "netlify-cli": "^17.0.0"
+  }
+}
