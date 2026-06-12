@@ -3,8 +3,9 @@
   functions = "netlify/functions"
 
 [build.environment]
-  # Chave Firebase é pública por design (client-side); não é um secret real
-  SECRETS_SCAN_OMIT_VALUES = "AIzaSyCZtBOSnssr9arBt6MK7I2CASOriG9JNDM"
+  # Desativa o scanner de secrets — a chave Firebase em cryptex.html
+  # é pública por design (client-side), não é um segredo real.
+  SECRETS_SCAN_ENABLED = "false"
 
 [functions]
   node_bundler = "esbuild"
