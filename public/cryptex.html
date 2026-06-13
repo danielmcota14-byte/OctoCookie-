@@ -1253,26 +1253,36 @@
       const input = document.getElementById('post-input');
       const text = input?.value.trim();
       const user = getAppUser();
+      console.log('[submitPost] chamado. text=', text, 'user=', user?.uid, 'db=', !!db);
       if (!text) return showToast("Escreva algo primeiro", "error");
       if (!user) return showToast("Faça login para publicar", "error");
+
+      const btn = document.querySelector('.post-btn-pub');
+      if (btn) { btn.disabled = true; btn.textContent = 'Publicando...'; }
+
       try {
         const postsRef = ref(db, 'posts');
-        await push(postsRef, {
+        const result = await push(postsRef, {
           uid: user.uid,
           username: user.displayName || "Anônimo",
           text,
           likes: 0,
           timestamp: Date.now()
         });
+        console.log('[submitPost] sucesso, key=', result.key);
         if (input) input.value = '';
-        showToast("Post publicado! ", "success");
+        updateCharCount && updateCharCount(input);
+        showToast("Post publicado!", "success");
         if (window.loadSocialFeed) window.loadSocialFeed();
       } catch (e) {
-        console.error('Erro ao publicar post:', e);
-        showToast(`Erro ao publicar: ${e.message || e}`, 'error');
+        console.error('[submitPost] ERRO:', e);
+        showToast(`Erro ao publicar: ${e.code || e.message || e}`, 'error');
+      } finally {
+        if (btn) { btn.disabled = false; btn.textContent = 'PUBLICAR'; }
       }
+
       if (notificationPermission) {
-        new Notification("Novo post seu!", { body: "Seu post foi publicado com sucesso." });
+        try { new Notification("Novo post seu!", { body: "Seu post foi publicado com sucesso." }); } catch (_) {}
       }
     }
 
