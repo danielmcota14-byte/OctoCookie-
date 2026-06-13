@@ -12,7 +12,7 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import { getDatabase, ref, set, get, push, onValue, query, orderByChild, limitToLast } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+    import { getDatabase, ref, set, get, push, onValue, off, query, orderByChild, limitToLast } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
     import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 
     const APP_NAME = "OCTOCOOKIE"; //  MUDE AQUI O NOME DO APP
@@ -260,8 +260,13 @@
     }
 
     async function loadWalletFromFirebase(uid) {
-      const snap = await get(ref(db, `users/${uid}/wallet`));
-      return snap.exists() ? snap.val() : null;
+      try {
+        const snap = await get(ref(db, `users/${uid}/wallet`));
+        return snap.exists() ? snap.val() : null;
+      } catch (e) {
+        console.warn('loadWalletFromFirebase failed:', e.message);
+        return null;
+      }
     }
 
     async function restoreWallet() {
@@ -422,19 +427,24 @@
       if (user) {
         currentUser = user;
         $('login-btn') && ($('login-btn').disabled = false, $('login-btn').textContent = "ENTRAR");
-        const walletData = await loadWalletFromFirebase(user.uid);
-        if (walletData) {
-          walletAddress = walletData.address;
-          currentNetwork = walletData.network || "ethereum";
+        try {
+          const walletData = await loadWalletFromFirebase(user.uid);
+          if (walletData) {
+            walletAddress = walletData.address;
+            currentNetwork = walletData.network || "ethereum";
+          }
+          // Restaura carteira encriptada estritamente do IndexedDB local do usuário
+          await restoreWallet().catch(() => { });
+          await initApp();
+          await loadDemoPortfolio();
+          requestNotificationPermission();
+          // use global loader to ensure inline handlers and UI bindings match
+          try { window.loadSocialFeed && window.loadSocialFeed(); } catch (e) { console.warn('loadSocialFeed failed', e); }
+          setInterval(() => { getGasPrice(); checkPriceAlerts(); }, 30000);
+        } catch (e) {
+          console.error('Erro ao carregar dados do usuário:', e);
+          showToast('Erro ao carregar dados — verifique sua conexão', 'error');
         }
-        // Restaura carteira encriptada estritamente do IndexedDB local do usuário
-        await restoreWallet().catch(() => { });
-        await initApp();
-        await loadDemoPortfolio();
-        requestNotificationPermission();
-        // use global loader to ensure inline handlers and UI bindings match
-        try { window.loadSocialFeed && window.loadSocialFeed(); } catch (e) { console.warn('loadSocialFeed failed', e); }
-        setInterval(() => { getGasPrice(); checkPriceAlerts(); }, 30000);
         showPage('dashboard');
       } else {
         currentUser = null;
@@ -1267,11 +1277,22 @@
     }
 
     // Substitua o loadSocialFeed para incluir botões de comentário e compartilhar
+    let _socialFeedRef = null;
+    let _socialFeedListener = null;
     function loadSocialFeed() {
       const list = document.getElementById('social-feed');
       if (list) list.innerHTML = '<p class="loading-msg">Carregando feed...</p>';
+
+      // Remove listener anterior para evitar acúmulo/duplicação
+      if (_socialFeedRef && _socialFeedListener) {
+        off(_socialFeedRef, 'value', _socialFeedListener);
+        _socialFeedRef = null;
+        _socialFeedListener = null;
+      }
+
       const postsRef = query(ref(db, 'posts'), orderByChild('timestamp'), limitToLast(30));
-      onValue(postsRef, (snap) => {
+      _socialFeedRef = postsRef;
+      _socialFeedListener = (snap) => {
         const list2 = document.getElementById('social-feed');
         if (!list2) return;
         const posts = [];
@@ -1298,12 +1319,14 @@
         </div>`;
         }).join('');
         posts.forEach(p => loadComments(p.id));
-      }, (error) => {
+      };
+      const _errorHandler = (error) => {
         console.error('Erro ao carregar social feed:', error);
         const list2 = document.getElementById('social-feed');
         if (list2) list2.innerHTML = `<p class="empty-msg">Erro ao carregar feed: ${error.message}</p>`;
         showToast('Erro ao carregar feed: verifique regras e conexão', 'error');
-      });
+      };
+      onValue(postsRef, _socialFeedListener, _errorHandler);
       get(ref(db, 'posts')).then(snap => {
         const list2 = document.getElementById('social-feed');
         if (!list2) return;
