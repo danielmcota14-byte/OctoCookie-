@@ -13,23 +13,25 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
     import { getDatabase, ref, set, get, push, onValue, query, orderByChild, limitToLast } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+    import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 
     const APP_NAME = "OCTOCOOKIE"; //  MUDE AQUI O NOME DO APP
 
     const firebaseConfig = {
-      apiKey: "AIzaSyCZtBOSnssr9arBt6MK7I2CASOriG9JNDM",
-      authDomain: "a123-2222f.firebaseapp.com",
-      databaseURL: "https://a123-2222f-default-rtdb.firebaseio.com",
-      projectId: "a123-2222f",
-      storageBucket: "a123-2222f.firebasestorage.app",
-      messagingSenderId: "895806767001",
-      appId: "1:895806767001:web:9db84187e01ae868739d08",
-      measurementId: "G-C0B80WXGNB"
+      apiKey: "AIzaSyCjjp2yJIoTwxcHF1hmmnVZzgGIPwu4am0",
+      authDomain: "musicore-aba66.firebaseapp.com",
+      databaseURL: "https://musicore-aba66-default-rtdb.firebaseio.com",
+      projectId: "musicore-aba66",
+      storageBucket: "musicore-aba66.firebasestorage.app",
+      messagingSenderId: "669425212141",
+      appId: "1:669425212141:web:e52065ace884c323e0cae4",
+      measurementId: "G-C8JY1DHNRF"
     };
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getDatabase(app);
+    const storage = getStorage(app);
     window.auth = auth;
     window.db = db;
 
