@@ -339,24 +339,7 @@
 
     async function getCryptoNews() {
       try {
-        // Tenta NewsAPI para notícias de criptomoedas
-        const res = await fetch(`https://newsapi.org/v2/everything?q=cryptocurrency&sortBy=publishedAt&language=pt&pageSize=15&apiKey=demo`);
-        const data = await safeJson(res);
-        if (data && data.articles && Array.isArray(data.articles)) {
-          return data.articles.map(article => ({
-            title: article.title,
-            source: { title: article.source.name },
-            url: article.url,
-            published_at: article.publishedAt,
-            currencies: []
-          }));
-        }
-      } catch (e) {
-        console.log('NewsAPI falhou:', e.message);
-      }
-
-      try {
-        // Fallback: CoinGecko trending
+        // CoinGecko trending (NewsAPI demo key não é válida, usamos direto o fallback)
         const res = await fetch(`https://api.coingecko.com/api/v3/search/trending?x_cg_demo_api_key=${COINGECKO_KEY}`);
         const data = await res.json();
         return data.coins ? data.coins.slice(0, 10).map(c => ({
@@ -1218,9 +1201,12 @@
       loadComments(postId);
     }
 
+    const _commentListeners = {};
     async function loadComments(postId) {
       const commentsRef = query(ref(db, `comments/${postId}`), orderByChild('timestamp'), limitToLast(20));
-      onValue(commentsRef, (snap) => {
+      const prev = _commentListeners[postId];
+      if (prev) { off(prev.ref, 'value', prev.cb); }
+      const cb = (snap) => {
         const container = document.getElementById(`comments-${postId}`);
         if (!container) return;
         const comments = [];
@@ -1235,7 +1221,9 @@
         <p style="margin-top:4px">${escapeHtml(c.text)}</p>
       </div>
     `).join('');
-      });
+      };
+      _commentListeners[postId] = { ref: commentsRef, cb };
+      onValue(commentsRef, cb);
     }
 
     async function sharePost(postId, postText) {
@@ -1251,38 +1239,55 @@
     // Substitua sua função submitPost existente por esta:
     async function submitPost() {
       const input = document.getElementById('post-input');
-      const text = input?.value.trim();
+      const text = input ? input.value.trim() : '';
       const user = getAppUser();
-      console.log('[submitPost] chamado. text=', text, 'user=', user?.uid, 'db=', !!db);
-      if (!text) return showToast("Escreva algo primeiro", "error");
-      if (!user) return showToast("Faça login para publicar", "error");
+      console.log('[submitPost] chamado. text=', text, 'user=', user && user.uid, 'db=', !!db);
+
+      if (!text) { showToast("Escreva algo primeiro", "error"); return; }
+      if (!user) { showToast("Faça login para publicar", "error"); return; }
 
       const btn = document.querySelector('.post-btn-pub');
       if (btn) { btn.disabled = true; btn.textContent = 'Publicando...'; }
 
+      // Gera uma key única localmente (não depende de push() retornar)
+      const postKey = 'p' + Date.now() + '_' + Math.random().toString(36).slice(2, 9);
+
+      // Timeout de segurança: se em 8s nada responder, libera o botão de qualquer forma
+      const safetyTimer = setTimeout(() => {
+        if (btn) { btn.disabled = false; btn.textContent = 'PUBLICAR'; }
+      }, 8000);
+
       try {
-        const postsRef = ref(db, 'posts');
-        const result = await push(postsRef, {
+        const postRef = ref(db, 'posts/' + postKey);
+        await set(postRef, {
           uid: user.uid,
           username: user.displayName || "Anônimo",
-          text,
+          text: text,
           likes: 0,
           timestamp: Date.now()
         });
-        console.log('[submitPost] sucesso, key=', result.key);
+
+        console.log('[submitPost] sucesso, key=', postKey);
+
         if (input) input.value = '';
-        updateCharCount && updateCharCount(input);
+        try {
+          const cc = document.getElementById('char-count');
+          if (cc) cc.textContent = '0/500';
+        } catch (_) {}
+
         showToast("Post publicado!", "success");
-        if (window.loadSocialFeed) window.loadSocialFeed();
+
+        try {
+          if (typeof loadSocialFeed === 'function') loadSocialFeed();
+        } catch (_) {}
+
       } catch (e) {
         console.error('[submitPost] ERRO:', e);
-        showToast(`Erro ao publicar: ${e.code || e.message || e}`, 'error');
+        const msg = (e && (e.code || e.message)) ? (e.code || e.message) : String(e);
+        showToast("Erro ao publicar: " + msg, 'error');
       } finally {
+        clearTimeout(safetyTimer);
         if (btn) { btn.disabled = false; btn.textContent = 'PUBLICAR'; }
-      }
-
-      if (notificationPermission) {
-        try { new Notification("Novo post seu!", { body: "Seu post foi publicado com sucesso." }); } catch (_) {}
       }
     }
 
@@ -1328,7 +1333,6 @@
           <div id="comments-${p.id}" class="comments-section" style="display:none; margin-top:12px; padding-top:8px; border-top:1px solid var(--border);"></div>
         </div>`;
         }).join('');
-        posts.forEach(p => loadComments(p.id));
       };
       const _errorHandler = (error) => {
         console.error('Erro ao carregar social feed:', error);
@@ -1337,18 +1341,6 @@
         showToast('Erro ao carregar feed: verifique regras e conexão', 'error');
       };
       onValue(postsRef, _socialFeedListener, _errorHandler);
-      get(ref(db, 'posts')).then(snap => {
-        const list2 = document.getElementById('social-feed');
-        if (!list2) return;
-        if (!snap.exists() && (!list2.innerHTML || list2.innerHTML.trim() === '')) {
-          list2.innerHTML = '<p class="empty-msg">Nenhuma mensagem encontrada</p>';
-        }
-      }).catch(err => {
-        console.error('Erro ao buscar posts:', err);
-        const list2 = document.getElementById('social-feed');
-        if (list2) list2.innerHTML = `<p class="empty-msg">Erro ao carregar feed: ${err.message}</p>`;
-        showToast('Erro ao carregar feed: verifique regras/permissões', 'error');
-      });
     };
 
     function toggleComments(postId) {
@@ -1356,6 +1348,7 @@
       if (div) {
         if (div.style.display === 'none') {
           div.style.display = 'block';
+          loadComments(postId);
           // Adicionar campo de comentário rápido
           if (!div.querySelector('.comment-input-wrapper')) {
             const wrapper = document.createElement('div');
