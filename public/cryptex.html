@@ -1292,28 +1292,19 @@
     }
 
     // Substitua o loadSocialFeed para incluir botões de comentário e compartilhar
-    let _socialFeedRef = null;
-    let _socialFeedListener = null;
-    function loadSocialFeed() {
+    let _socialFeedRefBase = null;
+    let _socialFeedListenerBase = null;
+    async function loadSocialFeed() {
       const list = document.getElementById('social-feed');
       if (list) list.innerHTML = '<p class="loading-msg">Carregando feed...</p>';
 
-      // Remove listener anterior para evitar acúmulo/duplicação
-      if (_socialFeedRef && _socialFeedListener) {
-        off(_socialFeedRef, 'value', _socialFeedListener);
-        _socialFeedRef = null;
-        _socialFeedListener = null;
-      }
-
-      const postsRef = query(ref(db, 'posts'), orderByChild('timestamp'), limitToLast(30));
-      _socialFeedRef = postsRef;
-      _socialFeedListener = (snap) => {
+      function renderPosts(snap) {
         const list2 = document.getElementById('social-feed');
         if (!list2) return;
         const posts = [];
         snap.forEach(child => posts.unshift({ id: child.key, ...child.val() }));
         if (!posts.length) {
-          list2.innerHTML = '<p class="empty-msg">Seja o primeiro a postar! </p>';
+          list2.innerHTML = '<p class="empty-msg">Seja o primeiro a postar! 🚀</p>';
           return;
         }
         list2.innerHTML = posts.map(p => {
@@ -1333,14 +1324,29 @@
           <div id="comments-${p.id}" class="comments-section" style="display:none; margin-top:12px; padding-top:8px; border-top:1px solid var(--border);"></div>
         </div>`;
         }).join('');
-      };
-      const _errorHandler = (error) => {
+      }
+
+      try {
+        // Leitura imediata (uma vez) — garante que o feed apareça logo
+        const postsQuery = query(ref(db, 'posts'), orderByChild('timestamp'), limitToLast(30));
+        const snap = await get(postsQuery);
+        renderPosts(snap);
+      } catch (error) {
         console.error('Erro ao carregar social feed:', error);
         const list2 = document.getElementById('social-feed');
         if (list2) list2.innerHTML = `<p class="empty-msg">Erro ao carregar feed: ${error.message}</p>`;
         showToast('Erro ao carregar feed: verifique regras e conexão', 'error');
-      };
-      onValue(postsRef, _socialFeedListener, _errorHandler);
+        return;
+      }
+
+      // Listener em tempo real (apenas um, atualiza automaticamente)
+      if (_socialFeedRefBase && _socialFeedListenerBase) {
+        try { off(_socialFeedRefBase, 'value', _socialFeedListenerBase); } catch (_) {}
+      }
+      const liveRef = query(ref(db, 'posts'), orderByChild('timestamp'), limitToLast(30));
+      _socialFeedRefBase = liveRef;
+      _socialFeedListenerBase = (snap) => renderPosts(snap);
+      onValue(liveRef, _socialFeedListenerBase);
     };
 
     function toggleComments(postId) {
