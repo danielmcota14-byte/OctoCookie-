@@ -434,37 +434,29 @@ tr:hover td{background:var(--bg3)}
 <div class="popup-overlay" id="cloudPopup">
   <div class="popup-container">
     <div class="popup-header">
-      <h2><i class="fas fa-robot"></i> Bot Automático (Octocookie API)</h2>
+      <h2><i class="fas fa-robot"></i> Bot Automático</h2>
       <button class="close-btn" onclick="closeCloudPopup()">&times;</button>
     </div>
     <div class="popup-content">
-      <h3>Como funciona:</h3>
-      <ul style="padding-left:20px;margin-bottom:12px">
-        <li>O <strong>backend.js</strong> (Octocookie API Server) será iniciado localmente na porta <strong>5050</strong></li>
-        <li>O bot ficará escutando sinais de análise e enviando ordens CALL/PUT automaticamente</li>
-        <li>O dashboard abaixo mostra em tempo real os dados e comandos da API</li>
-        <li>Você pode parar o bot a qualquer momento clicando novamente no botão</li>
-      </ul>
-      <h3>Configurações que serão enviadas:</h3>
+      <h3>Status do Bot</h3>
+      <div id="autoBotStatusBox" style="margin-top:8px;margin-bottom:14px;padding:12px 16px;border-radius:10px;font-size:12px;background:rgba(255,255,255,0.05);border:1px solid var(--border);display:flex;align-items:center;gap:10px">
+        <span id="autoBotDot" class="api-dot api-offline"></span>
+        <span id="autoBotStatusText">Bot parado.</span>
+      </div>
+      <h3>Configurações ativas:</h3>
       <div style="background:var(--bg3);padding:12px;border-radius:10px;font-size:12px;margin-bottom:12px">
         <p><strong>Stake:</strong> <span id="cloudStake">1.00</span> USD</p>
         <p><strong>Take Profit:</strong> +<span id="cloudTakeProfit">0.00</span> USD</p>
         <p><strong>Stop Loss:</strong> <span id="cloudStopLoss">-1.00</span> USD</p>
-        <p><strong>Máx. Trades/dia:</strong> <span id="cloudMaxTrades">100</span></p>
+        <p><strong>Trades/dia:</strong> <span id="cloudMaxTrades">5</span></p>
         <p><strong>Segurança:</strong> <span id="cloudSecurityLevel">70</span>%</p>
       </div>
       <div style="background:rgba(255,80,80,0.08);border:1px solid rgba(255,80,80,0.2);border-radius:10px;padding:12px;font-size:12px;color:#ff9090">
-        <strong>⚠️ Aviso:</strong> Este bot opera automaticamente. Monitore seus trades. Trading é arriscado — nunca invista mais do que pode perder.
+        <strong>⚠️ Aviso:</strong> O bot opera automaticamente usando RSI, MACD, Bollinger Bands e SMA. Monitore seus trades. Trading é arriscado.
       </div>
-      <!-- Status do bot automático -->
-      <div id="autoBotStatusBox" style="margin-top:14px;padding:12px 16px;border-radius:10px;font-size:12px;background:rgba(255,255,255,0.05);border:1px solid var(--border);display:flex;align-items:center;gap:10px">
-        <span id="autoBotDot" class="api-dot api-offline"></span>
-        <span id="autoBotStatusText">Bot automático <strong>parado</strong> — clique em "Ativar Bot Automático" para iniciar.</span>
-      </div>
-      <iframe src="/dashboard_analisador.html" frameborder="0" scrolling="yes" style="width:100%;height:400px;border-radius:12px;margin-top:14px;border:1px solid var(--border)"></iframe>
     </div>
     <div class="popup-footer">
-      <button onclick="closeCloudPopup()">Cancelar</button>
+      <button onclick="closeCloudPopup()">Fechar</button>
       <button class="info" id="toggleAutoBotBtn" onclick="toggleCloudBot()"><i class="fas fa-robot"></i> Ativar Bot Automático</button>
     </div>
   </div>
@@ -828,28 +820,23 @@ function cycleNextAsset(){
 }
 
 // =============================================
-//  CLOUD / BOT AUTOMÁTICO
+//  BOT AUTOMÁTICO (sem dependência de servidor local)
 // =============================================
-let _autoBotRunning = false;
 
-async function _refreshAutoBotStatus(){
-    try {
-        const r = await fetch('/bot/status', { cache:'no-store' });
-        const d = await r.json();
-        _autoBotRunning = d.running;
-    } catch(e){ _autoBotRunning = false; }
+function _updateAutoBotUI(){
+    const running = state.botRunning;
     const dot  = document.getElementById('autoBotDot');
     const text = document.getElementById('autoBotStatusText');
     const btn  = document.getElementById('toggleAutoBotBtn');
-    if(dot)  dot.className = 'api-dot ' + (_autoBotRunning ? 'api-online' : 'api-offline');
-    if(text) text.innerHTML = _autoBotRunning
-        ? 'Bot automático <strong style="color:#7fff7f">RODANDO</strong> na porta 5050 — recebendo sinais CALL/PUT.'
-        : 'Bot automático <strong>parado</strong> — clique em "Ativar Bot Automático" para iniciar.';
+    if(dot)  dot.className = 'api-dot ' + (running ? 'api-online' : 'api-offline');
+    if(text) text.innerHTML = running
+        ? `Bot automático <strong style="color:#7fff7f">✅ RODANDO</strong> — ${state.tradesToday}/${CONFIG.maxTrades} trades hoje | Lucro: ${state.dailyProfit.toFixed(2)} USD`
+        : 'Bot automático <strong style="color:#ff9090">parado</strong> — clique em "Ativar" para iniciar.';
     if(btn){
-        btn.innerHTML = _autoBotRunning
-            ? '<i class="fas fa-stop-circle"></i> Parar Bot Automático'
+        btn.innerHTML = running
+            ? '<i class="fas fa-stop-circle"></i> Parar Bot'
             : '<i class="fas fa-robot"></i> Ativar Bot Automático';
-        btn.className = _autoBotRunning ? 'danger' : 'info';
+        btn.className = running ? 'danger' : 'info';
     }
 }
 
@@ -861,58 +848,21 @@ function openCloudPopup(){
     document.getElementById('cloudStopLoss').textContent = CONFIG.stopLoss.toFixed(2);
     document.getElementById('cloudMaxTrades').textContent = CONFIG.maxTrades;
     document.getElementById('cloudSecurityLevel').textContent = CONFIG.securityLevel;
-    // Verifica status em background sem bloquear abertura do popup
-    setTimeout(_refreshAutoBotStatus, 100);
+    _updateAutoBotUI();
 }
 
 function closeCloudPopup(){ document.getElementById('cloudPopup').style.display='none'; document.body.style.overflow='auto'; }
 
-async function toggleCloudBot(){
-    const btn = document.getElementById('toggleAutoBotBtn');
-    const text = document.getElementById('autoBotStatusText');
-    const dot  = document.getElementById('autoBotDot');
-
-    // Feedback imediato
-    if(btn){ btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Aguarde...'; }
-
-    // Verifica status atual
-    let running = false;
-    try {
-        const sr = await fetch('/bot/status', { cache:'no-store' });
-        const sd = await sr.json();
-        running = !!sd.running;
-    } catch(e){
-        // server.js inacessível
-        if(btn){ btn.disabled = false; btn.innerHTML = '<i class="fas fa-robot"></i> Ativar Bot Automático'; btn.className = 'info'; }
-        if(text) text.innerHTML = '<strong style="color:#ff9090">❌ Erro: server.js não está acessível em localhost. Rode <code>npm start</code> primeiro.</strong>';
-        if(dot) dot.className = 'api-dot api-offline';
-        addLog('❌ server.js inacessível. Rode "npm start" no terminal.', 'error');
-        return;
+function toggleCloudBot(){
+    if(!state.botRunning){
+        if(!CONFIG.derivToken){ addLog('❌ Configure e salve o token Deriv antes de ativar o bot.', 'error'); return; }
+        startBot();
+        addLog('🤖 Bot automático ativado via popup.', 'success');
+    } else {
+        stopBot();
+        addLog('⏹ Bot automático parado via popup.', 'warn');
     }
-
-    // Executa ação contrária ao estado atual
-    const endpoint = running ? '/bot/stop' : '/bot/start';
-    try {
-        const r = await fetch(endpoint, { method:'POST', cache:'no-store' });
-        const d = await r.json();
-        _autoBotRunning = !running;
-        const msg = d.message || (_autoBotRunning ? 'backend.js iniciado na porta 5050.' : 'backend.js parado.');
-        addLog((_autoBotRunning ? '🤖 ' : '⏹ ') + msg, d.ok ? 'success' : 'warn');
-    } catch(e){
-        addLog('Erro ao executar comando: ' + e.message, 'error');
-        _autoBotRunning = running; // reverte
-    }
-
-    // Atualiza UI
-    if(btn){
-        btn.disabled = false;
-        btn.innerHTML = _autoBotRunning ? '<i class="fas fa-stop-circle"></i> Parar Bot Automático' : '<i class="fas fa-robot"></i> Ativar Bot Automático';
-        btn.className = _autoBotRunning ? 'danger' : 'info';
-    }
-    if(dot)  dot.className  = 'api-dot ' + (_autoBotRunning ? 'api-online' : 'api-offline');
-    if(text) text.innerHTML = _autoBotRunning
-        ? 'Bot automático <strong style="color:#7fff7f">✅ RODANDO</strong> na porta 5050 — recebendo sinais CALL/PUT.'
-        : 'Bot automático <strong>parado</strong> — clique em "Ativar Bot Automático" para iniciar.';
+    _updateAutoBotUI();
 }
 
 // =============================================
