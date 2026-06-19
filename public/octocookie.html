@@ -728,13 +728,30 @@ function startBot(){
 }
 
 function pauseBot(){
-    // Pausar desativado — o bot só para pelo botão INICIAR/reconexão
-    addLog('Pausa automática desativada. Bot continua rodando.', 'info');
+    if(!state.botRunning){ addLog('Bot já está parado.', 'warn'); return; }
+    state.botRunning = false;
+    state.strategyActive = false;
+    updateStatus('paused');
+    updateConnectionBar('connecting', 'Bot pausado pelo usuário.');
+    addLog('⏸ Bot pausado. Clique em INICIAR para retomar.', 'warn');
 }
 
 function stopBot(){
-    // Parar automático desativado — o bot só para se o usuário clicar em INICIAR para reconectar
-    addLog('Parada automática desativada. Bot continua rodando.', 'info');
+    state.botRunning = false;
+    state.strategyActive = false;
+    if(state.openContract && state.openContract.id){
+        const tradeType = document.getElementById('tradeType')?.value;
+        if(tradeType === 'binary'){
+            if(state.ws && state.ws.readyState===1) state.ws.send(JSON.stringify({ forget_all:'proposal_open_contract' }));
+        } else {
+            sellMultiplierContract(state.openContract.id);
+        }
+    }
+    if(state.ws){ state.ws.close(); state.ws = null; }
+    updateStatus('offline');
+    updateConnectionBar('disconnected', 'Bot parado pelo usuário.');
+    addLog('⏹ Bot parado e desconectado.', 'error');
+    updateUI();
 }
 
 function resetDaily(){
@@ -770,11 +787,33 @@ function manualTrade(direction){
 }
 
 function cancelOrCloseOrder(){
+    const tradeType = document.getElementById('tradeType')?.value;
     if(state.openContract && state.openContract.id){
-        sellMultiplierContract(state.openContract.id);
+        if(tradeType === 'binary'){
+            // Binary: esquece o contrato aberto (não tem sell manual)
+            if(state.ws && state.ws.readyState===1){
+                state.ws.send(JSON.stringify({ forget_all:'proposal_open_contract' }));
+                state.ws.send(JSON.stringify({ forget_all:'proposal' }));
+            }
+            state.openContract = null;
+            state.closingContract = false;
+            const btn = document.getElementById('floatingSellBtn');
+            if(btn) btn.classList.remove('show');
+            addLog('🚫 Subscrição do contrato binário cancelada.', 'warn');
+            updateUI();
+        } else {
+            // Multiplier: vende/fecha a posição
+            sellMultiplierContract(state.openContract.id);
+        }
     } else if(state.ws && state.ws.readyState===1){
         state.ws.send(JSON.stringify({ forget_all:'proposal' }));
-        addLog('Propostas pendentes canceladas.', 'warn');
+        state.ws.send(JSON.stringify({ forget_all:'proposal_open_contract' }));
+        state.openContract = null;
+        state.closingContract = false;
+        addLog('🚫 Todas as propostas e subscrições canceladas.', 'warn');
+        updateUI();
+    } else {
+        addLog('Nenhuma ordem ativa para cancelar.', 'info');
     }
 }
 
@@ -1401,6 +1440,8 @@ function startTradingStrategy(){
     document.getElementById('aiDecision').textContent = '— Analisando —';
     document.getElementById('aiReason').textContent = `RSI: ${rsi.toFixed(1)} | SMA: ${sma20?sma20.toFixed(5):'—'} | Vol: ${(vol*10000).toFixed(3)}%`;
     if(state.tradesToday>=CONFIG.maxTrades){ checkDailyLimits(); return; }
+    if(state.dailyProfit<=CONFIG.stopLoss){ checkDailyLimits(); return; }
+    if(state.dailyProfit>=CONFIG.takeProfit){ checkDailyLimits(); return; }
     if(state.consecutiveLosses>=5){ addLog('5 perdas consecutivas detectadas — continuando mesmo assim.', 'warn'); }
     if(vol>=0.001){ state.strategyActive=false; setTimeout(startTradingStrategy,1000); return; }
     if(!bb||state.currentPrice<=bb.lower||state.currentPrice>=bb.upper){ state.strategyActive=false; setTimeout(startTradingStrategy,1000); return; }
@@ -1421,16 +1462,25 @@ function startTradingStrategy(){
 // =============================================
 function checkDailyLimits(){
     if(state.dailyProfit <= CONFIG.stopLoss){
-        addLog(`🛑 Stop Loss diário atingido (${CONFIG.stopLoss.toFixed(2)} USD). Continuando trades...`, 'warn');
-        return false;
+        addLog(`🛑 Stop Loss atingido (${state.dailyProfit.toFixed(2)} / ${CONFIG.stopLoss.toFixed(2)} USD). Bot encerrado.`, 'error');
+        state.botRunning = false;
+        state.strategyActive = false;
+        updateStatus('offline');
+        updateConnectionBar('disconnected', `Stop Loss atingido: ${state.dailyProfit.toFixed(2)} USD`);
+        return true;
     }
     if(state.dailyProfit >= CONFIG.takeProfit){
-        addLog(`🏁 Meta diária atingida (+${CONFIG.takeProfit.toFixed(2)} USD). Continuando trades...`, 'success');
-        return false;
+        addLog(`🏁 Meta diária atingida (+${state.dailyProfit.toFixed(2)} USD). Bot encerrado.`, 'success');
+        state.botRunning = false;
+        state.strategyActive = false;
+        updateStatus('offline');
+        updateConnectionBar('disconnected', `Meta atingida: +${state.dailyProfit.toFixed(2)} USD 🎉`);
+        return true;
     }
     if(state.tradesToday >= CONFIG.maxTrades){
         addLog(`🔒 ${CONFIG.maxTrades} trades realizados hoje. Bot encerrado.`, 'warn');
         state.botRunning = false;
+        state.strategyActive = false;
         updateStatus('offline');
         updateConnectionBar('disconnected', `${CONFIG.maxTrades} trades do dia concluídos.`);
         return true;
