@@ -434,29 +434,36 @@ tr:hover td{background:var(--bg3)}
 <div class="popup-overlay" id="cloudPopup">
   <div class="popup-container">
     <div class="popup-header">
-      <h2><i class="fas fa-robot"></i> Bot Automático</h2>
+      <h2><i class="fas fa-robot"></i> Bot Automático (Octocookie API)</h2>
       <button class="close-btn" onclick="closeCloudPopup()">&times;</button>
     </div>
     <div class="popup-content">
-      <h3>Status do Bot</h3>
-      <div id="autoBotStatusBox" style="margin-top:8px;margin-bottom:14px;padding:12px 16px;border-radius:10px;font-size:12px;background:rgba(255,255,255,0.05);border:1px solid var(--border);display:flex;align-items:center;gap:10px">
-        <span id="autoBotDot" class="api-dot api-offline"></span>
-        <span id="autoBotStatusText">Bot parado.</span>
-      </div>
+      <h3>Como funciona:</h3>
+      <ul style="padding-left:20px;margin-bottom:12px">
+        <li>O bot fica escutando sinais de análise e enviando ordens CALL/PUT automaticamente</li>
+        <li>O dashboard abaixo mostra em tempo real os dados e comandos da API</li>
+        <li>Você pode parar o bot a qualquer momento clicando novamente no botão</li>
+      </ul>
       <h3>Configurações ativas:</h3>
       <div style="background:var(--bg3);padding:12px;border-radius:10px;font-size:12px;margin-bottom:12px">
         <p><strong>Stake:</strong> <span id="cloudStake">1.00</span> USD</p>
         <p><strong>Take Profit:</strong> +<span id="cloudTakeProfit">0.00</span> USD</p>
         <p><strong>Stop Loss:</strong> <span id="cloudStopLoss">-1.00</span> USD</p>
-        <p><strong>Trades/dia:</strong> <span id="cloudMaxTrades">5</span></p>
+        <p><strong>Máx. Trades/dia:</strong> <span id="cloudMaxTrades">5</span></p>
         <p><strong>Segurança:</strong> <span id="cloudSecurityLevel">70</span>%</p>
       </div>
       <div style="background:rgba(255,80,80,0.08);border:1px solid rgba(255,80,80,0.2);border-radius:10px;padding:12px;font-size:12px;color:#ff9090">
-        <strong>⚠️ Aviso:</strong> O bot opera automaticamente usando RSI, MACD, Bollinger Bands e SMA. Monitore seus trades. Trading é arriscado.
+        <strong>⚠️ Aviso:</strong> Este bot opera automaticamente. Monitore seus trades. Trading é arriscado — nunca invista mais do que pode perder.
       </div>
+      <!-- Status do bot automático -->
+      <div id="autoBotStatusBox" style="margin-top:14px;padding:12px 16px;border-radius:10px;font-size:12px;background:rgba(255,255,255,0.05);border:1px solid var(--border);display:flex;align-items:center;gap:10px">
+        <span id="autoBotDot" class="api-dot api-offline"></span>
+        <span id="autoBotStatusText">Bot automático <strong>parado</strong> — clique em "Ativar Bot Automático" para iniciar.</span>
+      </div>
+      <iframe src="/dashboard.html" frameborder="0" scrolling="yes" style="width:100%;height:400px;border-radius:12px;margin-top:14px;border:1px solid var(--border)"></iframe>
     </div>
     <div class="popup-footer">
-      <button onclick="closeCloudPopup()">Fechar</button>
+      <button onclick="closeCloudPopup()">Cancelar</button>
       <button class="info" id="toggleAutoBotBtn" onclick="toggleCloudBot()"><i class="fas fa-robot"></i> Ativar Bot Automático</button>
     </div>
   </div>
@@ -820,23 +827,29 @@ function cycleNextAsset(){
 }
 
 // =============================================
-//  BOT AUTOMÁTICO (sem dependência de servidor local)
+//  CLOUD / BOT AUTOMÁTICO
 // =============================================
+const API_BASE = '/api'; // Netlify Functions
+let _autoBotRunning = false;
 
-function _updateAutoBotUI(){
-    const running = state.botRunning;
+async function _refreshAutoBotStatus(){
+    try {
+        const r = await fetch(API_BASE + '/health', { cache:'no-store' });
+        const d = await r.json();
+        _autoBotRunning = d.status === 'online';
+    } catch(e){ _autoBotRunning = false; }
     const dot  = document.getElementById('autoBotDot');
     const text = document.getElementById('autoBotStatusText');
     const btn  = document.getElementById('toggleAutoBotBtn');
-    if(dot)  dot.className = 'api-dot ' + (running ? 'api-online' : 'api-offline');
-    if(text) text.innerHTML = running
-        ? `Bot automático <strong style="color:#7fff7f">✅ RODANDO</strong> — ${state.tradesToday}/${CONFIG.maxTrades} trades hoje | Lucro: ${state.dailyProfit.toFixed(2)} USD`
-        : 'Bot automático <strong style="color:#ff9090">parado</strong> — clique em "Ativar" para iniciar.';
+    if(dot)  dot.className = 'api-dot ' + (_autoBotRunning ? 'api-online' : 'api-offline');
+    if(text) text.innerHTML = _autoBotRunning
+        ? 'Bot automático <strong style="color:#7fff7f">RODANDO</strong> — API online, recebendo sinais CALL/PUT.'
+        : 'Bot automático <strong>parado</strong> — clique em "Ativar Bot Automático" para iniciar.';
     if(btn){
-        btn.innerHTML = running
-            ? '<i class="fas fa-stop-circle"></i> Parar Bot'
+        btn.innerHTML = _autoBotRunning
+            ? '<i class="fas fa-stop-circle"></i> Parar Bot Automático'
             : '<i class="fas fa-robot"></i> Ativar Bot Automático';
-        btn.className = running ? 'danger' : 'info';
+        btn.className = _autoBotRunning ? 'danger' : 'info';
     }
 }
 
@@ -848,21 +861,46 @@ function openCloudPopup(){
     document.getElementById('cloudStopLoss').textContent = CONFIG.stopLoss.toFixed(2);
     document.getElementById('cloudMaxTrades').textContent = CONFIG.maxTrades;
     document.getElementById('cloudSecurityLevel').textContent = CONFIG.securityLevel;
-    _updateAutoBotUI();
+    setTimeout(_refreshAutoBotStatus, 100);
 }
 
 function closeCloudPopup(){ document.getElementById('cloudPopup').style.display='none'; document.body.style.overflow='auto'; }
 
-function toggleCloudBot(){
-    if(!state.botRunning){
-        if(!CONFIG.derivToken){ addLog('❌ Configure e salve o token Deriv antes de ativar o bot.', 'error'); return; }
+async function toggleCloudBot(){
+    const btn  = document.getElementById('toggleAutoBotBtn');
+    const text = document.getElementById('autoBotStatusText');
+    const dot  = document.getElementById('autoBotDot');
+    if(btn){ btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Aguarde...'; }
+
+    if(!_autoBotRunning){
+        // Ativar: inicia o bot local e notifica a API
+        if(!CONFIG.derivToken){ addLog('❌ Configure e salve o token Deriv antes de ativar o bot.', 'error'); if(btn){btn.disabled=false;} return; }
         startBot();
-        addLog('🤖 Bot automático ativado via popup.', 'success');
+        // Envia config atual para a API
+        try {
+            await fetch(API_BASE + '/data', {
+                method:'POST', headers:{'Content-Type':'application/json'},
+                body: JSON.stringify({ action:'START', stake:CONFIG.stake, stopLoss:CONFIG.stopLoss, takeProfit:CONFIG.takeProfit, maxTrades:CONFIG.maxTrades, securityLevel:CONFIG.securityLevel })
+            });
+        } catch(e){}
+        _autoBotRunning = true;
+        addLog('🤖 Bot automático ativado.', 'success');
     } else {
+        // Parar
         stopBot();
-        addLog('⏹ Bot automático parado via popup.', 'warn');
+        _autoBotRunning = false;
+        addLog('⏹ Bot automático parado.', 'warn');
     }
-    _updateAutoBotUI();
+
+    if(btn){
+        btn.disabled = false;
+        btn.innerHTML = _autoBotRunning ? '<i class="fas fa-stop-circle"></i> Parar Bot Automático' : '<i class="fas fa-robot"></i> Ativar Bot Automático';
+        btn.className = _autoBotRunning ? 'danger' : 'info';
+    }
+    if(dot)  dot.className  = 'api-dot ' + (_autoBotRunning ? 'api-online' : 'api-offline');
+    if(text) text.innerHTML = _autoBotRunning
+        ? 'Bot automático <strong style="color:#7fff7f">✅ RODANDO</strong> — API online, recebendo sinais CALL/PUT.'
+        : 'Bot automático <strong>parado</strong> — clique em "Ativar Bot Automático" para iniciar.';
 }
 
 // =============================================
@@ -1100,7 +1138,7 @@ function updatePrice(price){
     // Envia dados ao analize.py via octo_cookie_api.py
     const wins = state.wins||0, losses = state.losses||0;
     const total = wins+losses||1;
-    fetch('http://localhost:5050/api/data', {
+    fetch('/api/data', {
         method:'POST',
         headers:{'Content-Type':'application/json'},
         body: JSON.stringify({
@@ -1675,7 +1713,7 @@ function updateTime(){ document.getElementById('currentTime').textContent=new Da
 
     async function pollCommand(){
         try {
-            const res = await fetch('http://localhost:5050/api/command', { cache:'no-store' });
+            const res = await fetch('/api/command', { cache:'no-store' });
             if(!res.ok) return;
             const data = await res.json();
             const cmd = data.command;
@@ -1703,7 +1741,7 @@ function updateTime(){ document.getElementById('currentTime').textContent=new Da
 
     // Inicia o poll imediatamente e a cada POLL_MS
     setInterval(pollCommand, POLL_MS);
-    console.log('[OCTOCOOKIE] Command poll iniciado em http://localhost:5050/api/command');
+    console.log('[OCTOCOOKIE] Command poll iniciado em /api/command');
 })();
 </script>
 </body>
