@@ -242,7 +242,7 @@ tr:hover td{background:var(--bg3)}
       </div>
       <div class="dash-card">
         <div class="dash-card-title">Trades Hoje</div>
-        <div id="tradesCount" class="dash-card-value">0/100</div>
+        <div id="tradesCount" class="dash-card-value">0/5</div>
         <div style="font-size:11px;color:var(--text2);margin-top:4px">Último: <span id="lastTrade">--:--</span></div>
       </div>
       <div class="dash-card">
@@ -284,10 +284,24 @@ tr:hover td{background:var(--bg3)}
             <div style="font-size:10px;color:var(--text3)">Alterna a cada 60 ticks sem sinal.</div>
           </div>
           <label>Tipo de Contrato</label>
-          <select id="tradeType">
-            <option value="multiplier">Multiplicador (x400 — SL/TP)</option>
-            <option value="binary">Binário (5 ticks)</option>
-          </select>
+          <div style="display:flex;gap:6px;align-items:flex-end;margin-bottom:8px">
+            <div style="flex:2">
+              <select id="tradeType">
+                <option value="multiplier">Multiplicador (SL/TP)</option>
+                <option value="binary">Binário (5 ticks)</option>
+              </select>
+            </div>
+            <div style="flex:1">
+              <label>Multiplicador</label>
+              <select id="multiplierSelect">
+                <option value="160" selected>x160</option>
+                <option value="400">x400</option>
+                <option value="800">x800</option>
+                <option value="1200">x1200</option>
+                <option value="1600">x1600</option>
+              </select>
+            </div>
+          </div>
         </div>
         <div>
           <label>Gerenciamento — % do Saldo</label>
@@ -309,8 +323,26 @@ tr:hover td{background:var(--bg3)}
             </div>
             <div style="flex:1">
               <label>Trades/dia</label>
-              <input type="number" id="maxTradesInput" value="1" min="1" step="1">
+              <input type="number" id="maxTradesInput" value="5" min="1" step="1">
               <div style="font-size:10px;color:var(--text3);margin-top:3px">&nbsp;</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:6px;margin-bottom:8px">
+            <div style="flex:1">
+              <label>Início (hora)</label>
+              <input type="number" id="tradeStartHour" value="9" min="0" max="23" step="1">
+              <div style="font-size:10px;color:var(--text3);margin-top:3px">ex: 9 = 9h00</div>
+            </div>
+            <div style="flex:1">
+              <label>Fim (hora)</label>
+              <input type="number" id="tradeEndHour" value="18" min="1" max="24" step="1">
+              <div style="font-size:10px;color:var(--text3);margin-top:3px">ex: 18 = 18h00</div>
+            </div>
+            <div style="flex:2;display:flex;align-items:center;padding-top:18px">
+              <div style="background:var(--bg3);border-radius:8px;padding:6px 10px;font-size:11px;width:100%;text-align:center">
+                🕐 Horário atual: <strong id="currentHourDisplay">--:--</strong>
+                <span id="tradingHourStatus" style="margin-left:6px"></span>
+              </div>
             </div>
           </div>
           <div class="flex-between" style="margin-top:12px;background:var(--bg3);padding:10px;border-radius:10px;font-size:11px">
@@ -408,16 +440,16 @@ tr:hover td{background:var(--bg3)}
     <div class="popup-content">
       <h3>Como funciona:</h3>
       <ul style="padding-left:20px;margin-bottom:12px">
-        <li>O <strong>backend.js</strong> (Octocookie API Server) será iniciado localmente na API Netlify Functions</li>
+        <li>O <strong>backend.js</strong> (Octocookie API Server) será iniciado localmente na porta <strong>5050</strong></li>
         <li>O bot ficará escutando sinais de análise e enviando ordens CALL/PUT automaticamente</li>
         <li>O dashboard abaixo mostra em tempo real os dados e comandos da API</li>
         <li>Você pode parar o bot a qualquer momento clicando novamente no botão</li>
       </ul>
       <h3>Configurações que serão enviadas:</h3>
       <div style="background:var(--bg3);padding:12px;border-radius:10px;font-size:12px;margin-bottom:12px">
-        <p><strong>Stake:</strong> <span id="cloudStake">0.35</span> USD</p>
+        <p><strong>Stake:</strong> <span id="cloudStake">1.00</span> USD</p>
         <p><strong>Take Profit:</strong> +<span id="cloudTakeProfit">0.00</span> USD</p>
-        <p><strong>Stop Loss:</strong> <span id="cloudStopLoss">-0.35</span> USD</p>
+        <p><strong>Stop Loss:</strong> <span id="cloudStopLoss">-1.00</span> USD</p>
         <p><strong>Máx. Trades/dia:</strong> <span id="cloudMaxTrades">100</span></p>
         <p><strong>Segurança:</strong> <span id="cloudSecurityLevel">70</span>%</p>
       </div>
@@ -490,11 +522,11 @@ const CONFIG = {
     cgApiKey:'CG-xHTaEMtFCvYd9q2sfeurjDwC',
     brapiKey:'jANVFGBdizAfgwGyJBENwb',
     symbol:'R_25',
-    multiplier:400,
-    stake:0.35,
-    stopLoss:-0.35,
+    multiplier:160,
+    stake:1.00,
+    stopLoss:-1.00,
     takeProfit:0,
-    maxTrades:Infinity,
+    maxTrades:5,
     rsiLow:30,
     rsiHigh:70,
     securityLevel:70,
@@ -536,7 +568,8 @@ let state = {
     isCycling:false,
     currentAssetIndex:0,
     ticksSinceCycle:0,
-    openContract:null
+    openContract:null,
+    closingContract:false
 };
 
 let simulation = {
@@ -595,9 +628,8 @@ function updateSecurity(){
     const factor = (level - 10) / 90;
     CONFIG.rsiLow = 40 - (20 * factor);
     CONFIG.rsiHigh = 60 + (20 * factor);
-    CONFIG.maxTrades = Infinity;
     document.getElementById('rsiRange').textContent = `${Math.floor(CONFIG.rsiLow)}/${Math.floor(CONFIG.rsiHigh)}`;
-    addLog(`Segurança: ${level}% | RSI: ${CONFIG.rsiLow.toFixed(1)}/${CONFIG.rsiHigh.toFixed(1)} | Trades: Sem limite`, 'info');
+    addLog(`Segurança: ${level}% | RSI: ${CONFIG.rsiLow.toFixed(1)}/${CONFIG.rsiHigh.toFixed(1)} | Trades/dia: ${CONFIG.maxTrades}`, 'info');
     checkRiskAlert();
 }
 
@@ -605,11 +637,10 @@ function updateRisk(){
     const risk = parseInt(document.getElementById('riskLevel').value);
     CONFIG.riskLevel = risk;
     document.getElementById('riskValue').textContent = risk + '%';
-    CONFIG.maxTrades = Infinity;
     CONFIG.minScore = Math.max(10, 40 - (risk - 10) * 0.3);
     CONFIG.maxVolatility = 0.001 + (risk - 10) * 0.00001;
-    document.getElementById('maxTradesDisplay').textContent = '∞';
-    addLog(`Agressividade: ${risk}% | Trades: Sem limite | Min Score: ${CONFIG.minScore.toFixed(0)}%`, 'warn');
+    document.getElementById('maxTradesDisplay').textContent = CONFIG.maxTrades;
+    addLog(`Agressividade: ${risk}% | Trades/dia: ${CONFIG.maxTrades} | Min Score: ${CONFIG.minScore.toFixed(0)}%`, 'warn');
     checkRiskAlert();
 }
 
@@ -635,7 +666,7 @@ function updateBalance(){
     const tpPct = Math.max(0.1, parseFloat(document.getElementById('tpPct').value)     || 10);
     const maxT  = Math.max(1,   parseInt(document.getElementById('maxTradesInput').value) || 1);
 
-    CONFIG.stake      = Math.max(1.00, parseFloat(((CONFIG.balance * sPct)  / 100).toFixed(2)));
+    CONFIG.stake      = parseFloat(((CONFIG.balance * sPct)  / 100).toFixed(2));
     CONFIG.stopLoss   = -Math.abs(parseFloat(((CONFIG.balance * slPct) / 100).toFixed(2)));
     CONFIG.takeProfit = parseFloat(((CONFIG.balance * tpPct) / 100).toFixed(2));
     CONFIG.maxTrades  = maxT;
@@ -709,8 +740,27 @@ function stopBot(){
 function resetDaily(){
     state.dailyProfit=0; state.tradesToday=0; state.wins=0; state.losses=0;
     state.trades=[]; state.consecutiveLosses=0; state.isWaitingForRecovery=false; state.isViable=false;
+    state.botRunning=false; // para o bot
     updateUI(); updateTradesTable();
-    addLog('Estatísticas diárias resetadas.', 'info');
+    addLog('🔄 Novo dia — estatísticas resetadas. Bot parado, aguardando horário de operação...', 'info');
+    // Reinicia o bot automaticamente
+    setTimeout(()=>{
+        if(CONFIG.derivToken){
+            startBot();
+            addLog('🚀 Bot reiniciado automaticamente para o novo dia.', 'success');
+        }
+    }, 3000);
+}
+
+function scheduleMidnightReset(){
+    const now = new Date();
+    const nextMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate()+1, 0, 0, 5); // 00:00:05 do próximo dia
+    const msUntilMidnight = nextMidnight - now;
+    addLog(`⏰ Reset automático agendado para meia-noite (em ${Math.round(msUntilMidnight/3600000)}h${Math.round((msUntilMidnight%3600000)/60000)}min).`, 'info');
+    setTimeout(()=>{
+        resetDaily();
+        scheduleMidnightReset(); // agenda o próximo
+    }, msUntilMidnight);
 }
 
 function manualTrade(direction){
@@ -745,16 +795,16 @@ let _autoBotRunning = false;
 
 async function _refreshAutoBotStatus(){
     try {
-        const r = await fetch('/api/health', { cache:'no-store' });
+        const r = await fetch('/bot/status', { cache:'no-store' });
         const d = await r.json();
-        _autoBotRunning = d.status === 'online';
+        _autoBotRunning = d.running;
     } catch(e){ _autoBotRunning = false; }
     const dot  = document.getElementById('autoBotDot');
     const text = document.getElementById('autoBotStatusText');
     const btn  = document.getElementById('toggleAutoBotBtn');
     if(dot)  dot.className = 'api-dot ' + (_autoBotRunning ? 'api-online' : 'api-offline');
     if(text) text.innerHTML = _autoBotRunning
-        ? 'Bot automático <strong style="color:#7fff7f">RODANDO</strong> na API Netlify — recebendo sinais CALL/PUT.'
+        ? 'Bot automático <strong style="color:#7fff7f">RODANDO</strong> na porta 5050 — recebendo sinais CALL/PUT.'
         : 'Bot automático <strong>parado</strong> — clique em "Ativar Bot Automático" para iniciar.';
     if(btn){
         btn.innerHTML = _autoBotRunning
@@ -770,7 +820,7 @@ function openCloudPopup(){
     document.getElementById('cloudStake').textContent = CONFIG.stake.toFixed(2);
     document.getElementById('cloudTakeProfit').textContent = CONFIG.takeProfit.toFixed(2);
     document.getElementById('cloudStopLoss').textContent = CONFIG.stopLoss.toFixed(2);
-    document.getElementById('cloudMaxTrades').textContent = '∞';
+    document.getElementById('cloudMaxTrades').textContent = CONFIG.maxTrades;
     document.getElementById('cloudSecurityLevel').textContent = CONFIG.securityLevel;
     // Verifica status em background sem bloquear abertura do popup
     setTimeout(_refreshAutoBotStatus, 100);
@@ -786,22 +836,33 @@ async function toggleCloudBot(){
     // Feedback imediato
     if(btn){ btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Aguarde...'; }
 
-    // No Netlify serverless o bot roda localmente — aqui apenas verifica se a API está online
+    // Verifica status atual
+    let running = false;
     try {
-        const sr = await fetch('/api/health', { cache:'no-store' });
+        const sr = await fetch('/bot/status', { cache:'no-store' });
         const sd = await sr.json();
-        if(sd.status !== 'online') throw new Error('API offline');
+        running = !!sd.running;
     } catch(e){
+        // server.js inacessível
         if(btn){ btn.disabled = false; btn.innerHTML = '<i class="fas fa-robot"></i> Ativar Bot Automático'; btn.className = 'info'; }
-        if(text) text.innerHTML = '<strong style="color:#ff9090">❌ Erro: API Netlify inacessível. Verifique se o deploy foi concluído.</strong>';
+        if(text) text.innerHTML = '<strong style="color:#ff9090">❌ Erro: server.js não está acessível em localhost. Rode <code>npm start</code> primeiro.</strong>';
         if(dot) dot.className = 'api-dot api-offline';
-        addLog('❌ API Netlify inacessível. Verifique o deploy.', 'error');
+        addLog('❌ server.js inacessível. Rode "npm start" no terminal.', 'error');
         return;
     }
 
-    // Alterna estado local do bot (o bot real roda no seu PC e envia dados via API)
-    _autoBotRunning = !_autoBotRunning;
-    addLog((_autoBotRunning ? '🤖 Bot ativado' : '⏹ Bot desativado') + ' — API Netlify online.', 'success');
+    // Executa ação contrária ao estado atual
+    const endpoint = running ? '/bot/stop' : '/bot/start';
+    try {
+        const r = await fetch(endpoint, { method:'POST', cache:'no-store' });
+        const d = await r.json();
+        _autoBotRunning = !running;
+        const msg = d.message || (_autoBotRunning ? 'backend.js iniciado na porta 5050.' : 'backend.js parado.');
+        addLog((_autoBotRunning ? '🤖 ' : '⏹ ') + msg, d.ok ? 'success' : 'warn');
+    } catch(e){
+        addLog('Erro ao executar comando: ' + e.message, 'error');
+        _autoBotRunning = running; // reverte
+    }
 
     // Atualiza UI
     if(btn){
@@ -811,7 +872,7 @@ async function toggleCloudBot(){
     }
     if(dot)  dot.className  = 'api-dot ' + (_autoBotRunning ? 'api-online' : 'api-offline');
     if(text) text.innerHTML = _autoBotRunning
-        ? 'Bot automático <strong style="color:#7fff7f">✅ RODANDO</strong> na API Netlify — recebendo sinais CALL/PUT.'
+        ? 'Bot automático <strong style="color:#7fff7f">✅ RODANDO</strong> na porta 5050 — recebendo sinais CALL/PUT.'
         : 'Bot automático <strong>parado</strong> — clique em "Ativar Bot Automático" para iniciar.';
 }
 
@@ -866,18 +927,11 @@ function subscribeTicks(){ state.ws.send(JSON.stringify({ ticks:CONFIG.symbol, s
 function handleMessage(data){
     if(data.error){
         const errMsg = data.error.message || '';
-        // Detecta erro de stake mínimo e retenta com o valor correto
-        const minMatch = errMsg.match(/equal to or higher than ([\d.]+)/i);
-        if(minMatch && data.echo_req && data.echo_req.proposal){
-            const minStake = parseFloat(minMatch[1]);
-            addLog(`Stake mínimo ajustado para ${minStake.toFixed(2)} USD — retentando...`, 'warn');
-            const retryReq = { ...data.echo_req, amount: minStake };
-            state.ws.send(JSON.stringify(retryReq));
-            return;
-        }
-        addLog('Erro API: '+errMsg, 'error');
-        if(data.echo_req && (data.echo_req.buy||data.echo_req.proposal)){
-            state.openContract = null; updateUI();
+        addLog(`Erro API: ${errMsg}`, 'error');
+        if(data.echo_req && (data.echo_req.buy || data.echo_req.proposal)){
+            state.openContract = null;
+            state.closingContract = false;
+            updateUI();
         }
         return;
     }
@@ -938,6 +992,9 @@ function handleMessage(data){
 
     if(data.msg_type==='sell'){
         addLog(`Ordem fechada: ${data.sell?data.sell.sold_for+' USD':'ok'}`, 'info');
+        state.closingContract = false; // confirmação recebida — libera novos trades
+        state.openContract = null;
+        updateUI();
     }
 }
 
@@ -947,27 +1004,44 @@ function handleMessage(data){
 function requestTrade(direction){
     if(!state.apiStatus.deriv){ addLog('API Deriv não conectada.', 'error'); return; }
     if(state.openContract){ addLog('Já existe operação em andamento.', 'warn'); return; }
+    if(state.closingContract){ addLog('Aguardando confirmação de fechamento...', 'warn'); return; }
     if(typeof CONFIG.balance!=='number'||CONFIG.balance<=0){ addLog('Balance inválido. Aguardando API...', 'error'); return; }
     if(typeof CONFIG.tradePercent!=='number'||CONFIG.tradePercent<=0){ CONFIG.tradePercent=0.10; }
 
     state.balanceBeforeTrade = CONFIG.balance;
+
+    // Usa CONFIG.stake que já foi calculado pelo updateBalance() com % do saldo
     let stake = CONFIG.stake;
-    stake = Math.max(0.35, stake);
-    stake = Math.min(stake, CONFIG.balance*0.95);
-    if(state.consecutiveLosses>=3){ stake=Math.max(0.35,stake*0.5); addLog(`Stake reduzido (${state.consecutiveLosses} perdas): ${stake.toFixed(2)} USD`, 'warn'); }
-    stake = parseFloat((Math.round(stake*100)/100).toFixed(2));
-    if(isNaN(stake)||stake<0.35||stake>CONFIG.balance){ addLog(`Stake inválido: ${stake}. Trade cancelado.`, 'error'); return; }
+
+    if(isNaN(stake) || stake <= 0){
+        addLog(`Stake inválido (${stake}). Configure o % de stake e aguarde o saldo carregar.`, 'error');
+        return;
+    }
+    if(stake < 1.00){
+        addLog(`Stake ${stake.toFixed(2)} USD abaixo do mínimo da API (1.00 USD). Aumente o % de stake ou o saldo.`, 'error');
+        return;
+    }
+    stake = Math.min(stake, CONFIG.balance * 0.95);
+    if(state.consecutiveLosses >= 3){
+        const reduced = parseFloat((stake * 0.5).toFixed(2));
+        stake = reduced < 1.00 ? 1.00 : reduced;
+        addLog(`Stake ajustado por ${state.consecutiveLosses} perdas consecutivas: ${stake.toFixed(2)} USD`, 'warn');
+    }
+    stake = parseFloat((Math.round(stake * 100) / 100).toFixed(2));
+    if(isNaN(stake) || stake < 1.00 || stake > CONFIG.balance){ addLog(`Stake inválido: ${stake}. Trade cancelado.`, 'error'); return; }
 
     const tradeType = document.getElementById('tradeType')?document.getElementById('tradeType').value:'multiplier';
 
     if(tradeType==='multiplier'){
         const stopLossAmount = Math.abs(CONFIG.stopLoss);
         const takeProfitAmount = CONFIG.takeProfit;
-        addLog(`Proposta MULTIPLIER ${direction} | Stake: ${stake.toFixed(2)} USD | SL: -${stopLossAmount.toFixed(2)} | TP: +${takeProfitAmount.toFixed(2)}`, 'info');
+        const mult = parseInt(document.getElementById('multiplierSelect')?.value) || 100;
+        CONFIG.multiplier = mult;
+        addLog(`Proposta MULTIPLIER ${direction} | Stake: ${stake.toFixed(2)} USD | x${mult} | SL: -${stopLossAmount.toFixed(2)} | TP: +${takeProfitAmount.toFixed(2)}`, 'info');
         state.ws.send(JSON.stringify({
             proposal:1, amount:stake, basis:'stake',
             contract_type:direction==='CALL'?'MULTUP':'MULTDOWN',
-            currency:'USD', symbol:CONFIG.symbol, multiplier:CONFIG.multiplier,
+            currency:'USD', symbol:CONFIG.symbol, multiplier:mult,
             limit_order:{ stop_loss:Number(stopLossAmount.toFixed(2)), take_profit:Number(takeProfitAmount.toFixed(2)) }
         }));
     } else {
@@ -993,6 +1067,8 @@ function sellMultiplierContract(id){
     if(state.ws && state.ws.readyState===1){
         state.ws.send(JSON.stringify({ sell:id, price:0 }));
         addLog(`Encerrando posição #${id}...`, 'warn');
+        state.openContract = null;   // limpa imediatamente — não espera o callback
+        state.closingContract = true; // flag: aguardando confirmação da API
         const btn = document.getElementById('floatingSellBtn');
         if(btn) btn.classList.remove('show');
     }
@@ -1035,7 +1111,7 @@ function updatePrice(price){
     // Envia dados ao analize.py via octo_cookie_api.py
     const wins = state.wins||0, losses = state.losses||0;
     const total = wins+losses||1;
-    fetch('/api/data', {
+    fetch('http://localhost:5050/api/data', {
         method:'POST',
         headers:{'Content-Type':'application/json'},
         body: JSON.stringify({
@@ -1284,10 +1360,29 @@ function displaySecurityResults(analyses, direction, resultEl){
 // =============================================
 //  ESTRATÉGIA DE TRADING
 // =============================================
+function isWithinTradingHours(){
+    const startH = parseInt(document.getElementById('tradeStartHour')?.value ?? 9);
+    const endH   = parseInt(document.getElementById('tradeEndHour')?.value   ?? 18);
+    const now    = new Date();
+    const h      = now.getHours() + now.getMinutes()/60;
+    return h >= startH && h < endH;
+}
+
 function startTradingStrategy(){
     if(!state.botRunning||state.strategyActive) return;
     state.strategyActive=true;
-    if(state.openContract){ setTimeout(startTradingStrategy, 1000); return; }
+    if(state.openContract||state.closingContract){ setTimeout(startTradingStrategy, 1000); return; }
+
+    // Checagem de horário de trading
+    if(!isWithinTradingHours()){
+        const startH = document.getElementById('tradeStartHour')?.value ?? '09';
+        const endH   = document.getElementById('tradeEndHour')?.value   ?? '18';
+        document.getElementById('aiDecision').textContent = '⏸ Fora do horário';
+        document.getElementById('aiReason').textContent   = `Trades permitidos das ${startH}h às ${endH}h`;
+        state.strategyActive=false;
+        setTimeout(startTradingStrategy, 30000); // verifica a cada 30s
+        return;
+    }
     // Mercado sempre considerado viável — sem pausa automática
     const totalTrades=state.wins+state.losses;
     if(totalTrades>=10){
@@ -1306,8 +1401,6 @@ function startTradingStrategy(){
     document.getElementById('aiDecision').textContent = '— Analisando —';
     document.getElementById('aiReason').textContent = `RSI: ${rsi.toFixed(1)} | SMA: ${sma20?sma20.toFixed(5):'—'} | Vol: ${(vol*10000).toFixed(3)}%`;
     if(state.tradesToday>=CONFIG.maxTrades){ checkDailyLimits(); return; }
-    if(state.dailyProfit<=CONFIG.stopLoss){ checkDailyLimits(); return; }
-    if(state.dailyProfit>=CONFIG.takeProfit){ checkDailyLimits(); return; }
     if(state.consecutiveLosses>=5){ addLog('5 perdas consecutivas detectadas — continuando mesmo assim.', 'warn'); }
     if(vol>=0.001){ state.strategyActive=false; setTimeout(startTradingStrategy,1000); return; }
     if(!bb||state.currentPrice<=bb.lower||state.currentPrice>=bb.upper){ state.strategyActive=false; setTimeout(startTradingStrategy,1000); return; }
@@ -1328,24 +1421,18 @@ function startTradingStrategy(){
 // =============================================
 function checkDailyLimits(){
     if(state.dailyProfit <= CONFIG.stopLoss){
-        addLog(`🛑 Stop Loss diário atingido (${CONFIG.stopLoss.toFixed(2)} USD). Bot pausado.`, 'error');
-        state.botRunning = false;
-        updateStatus('offline');
-        updateConnectionBar('disconnected', 'Stop Loss diário atingido — reinicie amanhã.');
-        return true;
+        addLog(`🛑 Stop Loss diário atingido (${CONFIG.stopLoss.toFixed(2)} USD). Continuando trades...`, 'warn');
+        return false;
     }
     if(state.dailyProfit >= CONFIG.takeProfit){
-        addLog(`🏁 Meta diária atingida (+${CONFIG.takeProfit.toFixed(2)} USD). Bot pausado.`, 'success');
-        state.botRunning = false;
-        updateStatus('offline');
-        updateConnectionBar('disconnected', 'Meta diária atingida — ótimo trabalho!');
-        return true;
+        addLog(`🏁 Meta diária atingida (+${CONFIG.takeProfit.toFixed(2)} USD). Continuando trades...`, 'success');
+        return false;
     }
     if(state.tradesToday >= CONFIG.maxTrades){
-        addLog(`🔒 Limite de ${CONFIG.maxTrades} trade(s)/dia atingido. Bot pausado.`, 'warn');
+        addLog(`🔒 ${CONFIG.maxTrades} trades realizados hoje. Bot encerrado.`, 'warn');
         state.botRunning = false;
         updateStatus('offline');
-        updateConnectionBar('disconnected', `Limite de ${CONFIG.maxTrades} trade(s) por dia atingido.`);
+        updateConnectionBar('disconnected', `${CONFIG.maxTrades} trades do dia concluídos.`);
         return true;
     }
     return false;
@@ -1441,7 +1528,10 @@ function updateCharts(){
 function saveToStorage(){
     try {
         const data={ dailyProfit:state.dailyProfit, tradesToday:state.tradesToday, wins:state.wins, losses:state.losses, trades:state.trades.slice(0,50), consecutiveLosses:state.consecutiveLosses, isWaitingForRecovery:state.isWaitingForRecovery, isViable:state.isViable, lastUpdate:new Date().toISOString(),
-            cfg_stake: CONFIG.stake, cfg_stopLoss: CONFIG.stopLoss, cfg_takeProfit: CONFIG.takeProfit, cfg_maxTrades: CONFIG.maxTrades
+            cfg_stakePct:   parseFloat(document.getElementById('stakePct')?.value)   || 1,
+            cfg_slPct:      parseFloat(document.getElementById('slPct')?.value)       || 5,
+            cfg_tpPct:      parseFloat(document.getElementById('tpPct')?.value)       || 10,
+            cfg_maxTrades:  parseInt(document.getElementById('maxTradesInput')?.value) || 5
         };
         localStorage.setItem('derivBotData', JSON.stringify(data));
         if(typeof db!=='undefined'){
@@ -1461,11 +1551,11 @@ function loadFromStorage(){
         state.consecutiveLosses=data.consecutiveLosses||0;
         state.isWaitingForRecovery=data.isWaitingForRecovery||false;
         state.isViable=data.isViable||false;
-        // Restaurar config salva
-        if(data.cfg_stake)     { CONFIG.stake      = data.cfg_stake;     const el=document.getElementById('stakeFixed');      if(el) el.value=data.cfg_stake.toFixed(2); }
-        if(data.cfg_stopLoss)  { CONFIG.stopLoss   = data.cfg_stopLoss;  const el=document.getElementById('slFixed');         if(el) el.value=Math.abs(data.cfg_stopLoss).toFixed(2); }
-        if(data.cfg_takeProfit){ CONFIG.takeProfit  = data.cfg_takeProfit;const el=document.getElementById('tpFixed');         if(el) el.value=data.cfg_takeProfit.toFixed(2); }
-        if(data.cfg_maxTrades) { CONFIG.maxTrades   = data.cfg_maxTrades; const el=document.getElementById('maxTradesInput'); if(el) el.value=data.cfg_maxTrades; }
+        // Restaurar % nos inputs — updateBalance() vai calcular os USD corretos após o saldo chegar
+        if(data.cfg_stakePct)  { const el=document.getElementById('stakePct');      if(el) el.value=data.cfg_stakePct; }
+        if(data.cfg_slPct)     { const el=document.getElementById('slPct');         if(el) el.value=data.cfg_slPct; }
+        if(data.cfg_tpPct)     { const el=document.getElementById('tpPct');         if(el) el.value=data.cfg_tpPct; }
+        if(data.cfg_maxTrades) { const el=document.getElementById('maxTradesInput');if(el) el.value=data.cfg_maxTrades; }
         const lastDate=new Date(data.lastUpdate), today=new Date();
         if(lastDate.getDate()!==today.getDate()||lastDate.getMonth()!==today.getMonth()||lastDate.getFullYear()!==today.getFullYear()){
             state.dailyProfit=0; state.tradesToday=0; state.wins=0; state.losses=0;
@@ -1509,6 +1599,7 @@ document.addEventListener('DOMContentLoaded', function(){
     updateSecurity();
     updateRisk();
     checkRiskAlert();
+    scheduleMidnightReset();
 
     const savedToken=localStorage.getItem('userDerivToken');
     if(savedToken){ CONFIG.derivToken=savedToken; document.getElementById('derivTokenInput').value=savedToken; }
@@ -1517,15 +1608,27 @@ document.addEventListener('DOMContentLoaded', function(){
 
     document.getElementById('securityLevel').addEventListener('input', updateSecurity);
     document.getElementById('riskLevel').addEventListener('input', updateRisk);
-    document.getElementById('autoAdjust').addEventListener('change', updateBalance);
-    ['stakePct','slPct','tpPct'].forEach(id=>{
-        document.getElementById(id).addEventListener('input',()=>{ document.getElementById('autoAdjust').checked=false; updateBalance(); });
-    });
-    // Novos inputs de valor fixo e trades/dia
-    ['stakeFixed','slFixed','tpFixed','maxTradesInput'].forEach(id=>{
+    ['stakePct','slPct','tpPct','maxTradesInput'].forEach(id=>{
         const el = document.getElementById(id);
-        if(el) el.addEventListener('input',()=>{ document.getElementById('autoAdjust').checked=false; updateBalance(); });
+        if(el) el.addEventListener('input', updateBalance);
     });
+    ['tradeStartHour','tradeEndHour'].forEach(id=>{
+        const el = document.getElementById(id);
+        if(el) el.addEventListener('input', updateTradingHourDisplay);
+    });
+    // Atualiza relógio e status de horário a cada 10s
+    function updateTradingHourDisplay(){
+        const now = new Date();
+        const hStr = now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0');
+        const el = document.getElementById('currentHourDisplay');
+        const st = document.getElementById('tradingHourStatus');
+        if(el) el.textContent = hStr;
+        if(st) st.innerHTML = isWithinTradingHours()
+            ? '<span style="color:#34d399">● Ativo</span>'
+            : '<span style="color:#f87171">● Fora do horário</span>';
+    }
+    updateTradingHourDisplay();
+    setInterval(updateTradingHourDisplay, 10000);
     document.getElementById('assetSelector').addEventListener('change',function(){
         const val=this.value;
         if(val==='MULTI_CRYPTO'){
@@ -1572,7 +1675,7 @@ function updateTime(){ document.getElementById('currentTime').textContent=new Da
 
     async function pollCommand(){
         try {
-            const res = await fetch('/api/command', { cache:'no-store' });
+            const res = await fetch('http://localhost:5050/api/command', { cache:'no-store' });
             if(!res.ok) return;
             const data = await res.json();
             const cmd = data.command;
@@ -1600,7 +1703,7 @@ function updateTime(){ document.getElementById('currentTime').textContent=new Da
 
     // Inicia o poll imediatamente e a cada POLL_MS
     setInterval(pollCommand, POLL_MS);
-    console.log('[OCTOCOOKIE] Command poll iniciado em /api/command');
+    console.log('[OCTOCOOKIE] Command poll iniciado em http://localhost:5050/api/command');
 })();
 </script>
 </body>
