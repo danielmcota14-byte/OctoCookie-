@@ -921,6 +921,7 @@ async function toggleCloudBot(){
 // =============================================
 function connectDerivWebSocket(){
     if(state.ws && state.ws.readyState===1) return;
+    if(!CONFIG.appId || !/^\d+$/.test(CONFIG.appId)) CONFIG.appId = _APP_IDS[_appIdIdx];
     const appId = (CONFIG.appId && /^\d+$/.test(CONFIG.appId)) ? CONFIG.appId : '16929';
     const wsUrl = 'wss://ws.derivws.com/websockets/v3?app_id=' + appId;
     state.ws = new WebSocket(wsUrl);
@@ -966,7 +967,23 @@ function saveAppId(){
     addLog(`App ID salvo: ${id}`, 'success');
 }
 
-function authorize(){ state.ws.send(JSON.stringify({ authorize:CONFIG.derivToken })); }
+const _APP_IDS = ['1089','16929','35049','11780'];
+let _appIdIdx = 0;
+
+function authorize(){
+    if(!CONFIG.derivToken){ addLog('❌ Nenhum token configurado. Salve seu token primeiro.', 'error'); return; }
+    state.ws.send(JSON.stringify({ authorize: CONFIG.derivToken }));
+}
+
+function retryWithNextAppId(){
+    _appIdIdx++;
+    if(_appIdIdx >= _APP_IDS.length){ addLog('❌ Token inválido em todos os App IDs. Verifique se o token foi copiado completo.', 'error'); return; }
+    const nextId = _APP_IDS[_appIdIdx];
+    addLog(`🔄 Tentando App ID ${nextId}...`, 'warn');
+    CONFIG.appId = nextId;
+    if(state.ws){ try{ state.ws.close(); }catch(e){} state.ws = null; }
+    setTimeout(connectDerivWebSocket, 1000);
+}
 function subscribeBalance(){ state.ws.send(JSON.stringify({ balance:1, subscribe:1 })); }
 function subscribeTicks(){ state.ws.send(JSON.stringify({ ticks:CONFIG.symbol, subscribe:1 })); }
 
@@ -976,6 +993,12 @@ function subscribeTicks(){ state.ws.send(JSON.stringify({ ticks:CONFIG.symbol, s
 function handleMessage(data){
     if(data.error){
         const errMsg = data.error.message || '';
+        const errCode = data.error.code || '';
+        if(errCode === 'InvalidToken' || errMsg.toLowerCase().includes('token')){
+            addLog(`🔄 App ID ${CONFIG.appId} rejeitou o token. Tentando próximo...`, 'warn');
+            retryWithNextAppId();
+            return;
+        }
         addLog(`Erro API: ${errMsg}`, 'error');
         if(data.echo_req && (data.echo_req.buy || data.echo_req.proposal)){
             state.openContract = null;
