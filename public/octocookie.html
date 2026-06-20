@@ -218,32 +218,6 @@ tr:hover td{background:var(--bg3)}
       <div style="font-size:11px;color:var(--text3);padding:8px;background:var(--bg3);border-radius:8px;margin-top:8px">
         <i class="fas fa-info-circle"></i> Token em <strong>app.deriv.com/account/api-token</strong> com permissão <em>Read + Trade</em>. App ID em <strong>api.deriv.com/api-explorer</strong> — crie o seu gratuitamente.
       </div>
-      <div style="margin-top:10px;padding:10px;background:var(--bg3);border-radius:8px;border:1px solid var(--border)">
-        <label style="font-size:12px;display:flex;align-items:center;gap:6px;cursor:pointer">
-          <input type="checkbox" id="useOptionsApiToggle" onchange="toggleOptionsApiMode()" style="width:auto">
-          Usar a nova <strong>Options API</strong> da Deriv (OTP via REST — plataforma <code>developers.deriv.com</code>)
-        </label>
-        <div id="optionsApiFieldsBox" style="display:none;margin-top:8px">
-          <div class="grid-2col">
-            <div>
-              <label style="font-size:11px">App ID da Options API (NÃO é o de cima)</label>
-              <input type="text" id="optionsApiAppIdInput" placeholder="Ex: 99999" style="font-size:12px" onchange="CONFIG.optionsApiAppId=this.value.trim(); localStorage.setItem('cfg_optionsApiAppId', this.value.trim())">
-            </div>
-            <div>
-              <label style="font-size:11px">PAT da Options API (NÃO é o token de cima)</label>
-              <input type="password" id="optionsApiPatInput" placeholder="Cole o PAT aqui" style="font-size:12px" onchange="CONFIG.optionsApiPat=this.value.trim(); localStorage.setItem('cfg_optionsApiPat', this.value.trim())">
-            </div>
-          </div>
-          <div style="margin-top:8px">
-            <label style="font-size:11px">Tipo de conta a usar</label>
-            <select id="optionsApiAccountType" style="font-size:12px" onchange="CONFIG.optionsAccountType=this.value; localStorage.setItem('cfg_optionsAccountType', this.value)">
-              <option value="demo">Demo</option>
-              <option value="real">Real</option>
-            </select>
-          </div>
-        </div>
-        <div style="font-size:10px;color:var(--text3);margin-top:6px">⚠️ A nova Options API roda numa plataforma separada. <strong>App ID e token clássicos (app.deriv.com / api.deriv.com) NÃO funcionam nela.</strong> É preciso: 1) criar login em <strong>developers.deriv.com</strong>, 2) registrar um app tipo <strong>PAT</strong> no Dashboard (gera um App ID novo), 3) na seção "API tokens" desse app, gerar um <strong>PAT</strong> com escopo <code>trade</code> (e <code>account_manage</code> se quiser criar contas). Cole o App ID e o PAT novos nos campos acima.</div>
-      </div>
     </div>
 
     <!-- CONTROLE DO BOT -->
@@ -554,10 +528,6 @@ try {
 const CONFIG = {
     derivToken:'',
     appId:'16929',
-    useOptionsApi:false,
-    optionsApiAppId:'',
-    optionsApiPat:'',
-    optionsAccountType:'demo',
     openaiKey:'',
     cgApiKey:'CG-xHTaEMtFCvYd9q2sfeurjDwC',
     brapiKey:'jANVFGBdizAfgwGyJBENwb',
@@ -951,124 +921,8 @@ async function toggleCloudBot(){
 // =============================================
 //  WEBSOCKET
 // =============================================
-function toggleOptionsApiMode(){
-    CONFIG.useOptionsApi = document.getElementById('useOptionsApiToggle').checked;
-    document.getElementById('optionsApiFieldsBox').style.display = CONFIG.useOptionsApi ? 'block' : 'none';
-    localStorage.setItem('cfg_useOptionsApi', CONFIG.useOptionsApi ? '1' : '0');
-    addLog(CONFIG.useOptionsApi ? 'Modo: nova Options API (OTP) ativado.' : 'Modo: API clássica (websockets/v3) ativado.', 'info');
-}
-
-// Busca a URL de WebSocket autenticada via OTP (nova Options API da Deriv).
-// Faz: GET /trading/v1/options/accounts -> escolhe a conta demo/real -> POST .../otp -> retorna a URL com OTP.
-async function getOptionsApiWsUrl(){
-    // Lê direto dos campos na hora de conectar (não depende do evento onchange já ter disparado).
-    const liveAppId = (document.getElementById('optionsApiAppIdInput').value || '').trim();
-    const livePat = (document.getElementById('optionsApiPatInput').value || '').trim();
-    if(liveAppId) { CONFIG.optionsApiAppId = liveAppId; localStorage.setItem('cfg_optionsApiAppId', liveAppId); }
-    if(livePat) { CONFIG.optionsApiPat = livePat; localStorage.setItem('cfg_optionsApiPat', livePat); }
-    if(!CONFIG.optionsApiAppId) throw new Error('Preencha o "App ID da Options API" (gerado em developers.deriv.com — não é o App ID clássico).');
-    if(!CONFIG.optionsApiPat) throw new Error('Preencha o "PAT da Options API" (gerado em developers.deriv.com — não é o token clássico).');
-    addLog(`Usando App ID=${CONFIG.optionsApiAppId} | PAT terminando em ...${CONFIG.optionsApiPat.slice(-6)}`, 'info');
-    const headers = { 'Deriv-App-ID': CONFIG.optionsApiAppId, 'Authorization': 'Bearer ' + CONFIG.optionsApiPat };
-    let accountsRes;
-    try{
-        accountsRes = await fetch('https://api.derivws.com/trading/v1/options/accounts', { headers });
-    }catch(netErr){
-        throw new Error('Falha de rede/CORS ao chamar a Options API. Se você abriu o arquivo direto (file://) ou de um domínio não autorizado pela Deriv, a chamada REST pode ser bloqueada pelo navegador. Detalhe: ' + netErr.message);
-    }
-    const rawText = await accountsRes.text();
-    let body = {}; try{ body = JSON.parse(rawText); }catch(e){}
-    if(!accountsRes.ok){
-        const errObj = body?.errors?.[0];
-        const msg = (errObj ? `[${errObj.code}] ${errObj.message}` : null) || rawText || accountsRes.statusText || '(sem corpo na resposta)';
-        if(accountsRes.status===401) throw new Error(`GET /accounts → 401: ${msg}. Causas comuns: App ID clássico usado aqui (precisa ser um App ID NOVO criado em developers.deriv.com), PAT errado/expirado, ou tipo de app (PAT vs OAuth) não confere.`);
-        throw new Error(`GET /accounts falhou (HTTP ${accountsRes.status}): ${msg}`);
-    }
-    const accounts = body.data || [];
-    if(!accounts.length) throw new Error('Nenhuma conta Options encontrada para este PAT — verifique se ele tem o escopo "trade".');
-    const account = accounts.find(a => a.account_type === CONFIG.optionsAccountType) || accounts[0];
-    const accountId = account.account_id;
-    if(!accountId) throw new Error('Não foi possível identificar o account_id retornado pela Deriv.');
-
-    let otpRes;
-    try{
-        otpRes = await fetch(`https://api.derivws.com/trading/v1/options/accounts/${accountId}/otp`, { method:'POST', headers });
-    }catch(netErr){
-        throw new Error('Falha de rede/CORS ao gerar o OTP. Detalhe: ' + netErr.message);
-    }
-    if(!otpRes.ok){
-        const otpRawText = await otpRes.text();
-        let otpBodyErr = {}; try{ otpBodyErr = JSON.parse(otpRawText); }catch(e){}
-        const errObj = otpBodyErr?.errors?.[0];
-        const msg = (errObj ? `[${errObj.code}] ${errObj.message}` : null) || otpRawText || otpRes.statusText || '(sem corpo na resposta)';
-        throw new Error(`POST /otp falhou (HTTP ${otpRes.status}): ${msg}`);
-    }
-    const otpBody = await otpRes.json();
-    const wsUrl = otpBody?.data?.url;
-    if(!wsUrl) throw new Error('Resposta de OTP sem campo data.url.');
-    addLog(`Conta selecionada: ${accountId} (${account.account_type.toUpperCase()}) — OTP obtido.`, 'success');
-    return wsUrl;
-}
-
 function connectDerivWebSocket(){
     if(state.ws && state.ws.readyState===1) return;
-
-    if(CONFIG.useOptionsApi){
-        addLog('Solicitando OTP da nova Options API...', 'info');
-        getOptionsApiWsUrl().then(wsUrl => {
-            openOptionsApiSocket(wsUrl);
-        }).catch(err => {
-            addLog(`❌ Erro na nova Options API: ${err.message}`, 'error');
-            updateConnectionBar('error', 'Falha na nova Options API — veja o log');
-            setTimeout(() => { if(state.botRunning) connectDerivWebSocket(); }, 5000);
-        });
-        return;
-    }
-
-    connectLegacyWebSocket();
-}
-
-// Conexão pela nova Options API: a URL já vem autenticada com OTP, não há mensagem authorize separada.
-function openOptionsApiSocket(wsUrl){
-    state.ws = new WebSocket(wsUrl);
-    state.ws.onopen = function(){
-        addLog('Conectado ao servidor Deriv (Options API)!', 'success');
-        state.apiStatus.deriv = true;
-        updateAPIStatus();
-        updateConnectionBar('connected', `Conectado (Options API) — ${CONFIG.optionsAccountType==='demo'?'DEMO':'REAL'}`);
-        updateStatus('online');
-        state.pingInterval = setInterval(() => {
-            if(state.ws && state.ws.readyState===1) state.ws.send(JSON.stringify({ ping:1 }));
-        }, 30000);
-        // A URL já autentica via OTP — não enviamos {authorize: token}, partimos direto para balance/ticks.
-        subscribeBalance();
-        subscribeTicks();
-        state.strategyActive = false;
-        startTradingStrategy();
-    };
-    state.ws.onmessage = function(msg){
-        try { handleMessage(JSON.parse(msg.data)); } catch(e){}
-    };
-    state.ws.onclose = function(event){
-        const reasons = {1000:'Fechamento normal',1001:'Servidor desligando',1002:'Erro de protocolo',1006:'Fechamento abrupto — verifique sua conexão',1008:'Violação de política — verifique o token'};
-        const reason = reasons[event.code] || 'Causa desconhecida';
-        addLog(`Desconectado: ${reason} (Code: ${event.code}). Reconectando em 5s...`, 'warn');
-        state.apiStatus.deriv = false;
-        state.strategyActive = false;
-        if(state.pingInterval) clearInterval(state.pingInterval);
-        updateAPIStatus();
-        updateConnectionBar('error', `Desconectado (${event.code}) — ${reason}`);
-        updateStatus('offline');
-        if(simulation.active) stopSimulation();
-        setTimeout(() => { if(state.botRunning) connectDerivWebSocket(); }, 5000);
-    };
-    state.ws.onerror = function(err){
-        addLog('Erro WebSocket (Options API). Verifique o console (F12).', 'error');
-        console.error('[OCTOCOOKIE WS ERROR]', err);
-    };
-}
-
-function connectLegacyWebSocket(){
     if(!CONFIG.appId || !/^\d+$/.test(CONFIG.appId)) CONFIG.appId = _APP_IDS[_appIdIdx];
     const appId = (CONFIG.appId && /^\d+$/.test(CONFIG.appId)) ? CONFIG.appId : '16929';
     const wsUrl = 'wss://ws.derivws.com/websockets/v3?app_id=' + appId;
@@ -1143,7 +997,7 @@ function handleMessage(data){
         const errMsg = data.error.message || '';
         const errCode = data.error.code || '';
         console.error('[OCTOCOOKIE DERIV ERROR]', data.error);
-        if(!CONFIG.useOptionsApi && (errCode === 'InvalidToken' || errMsg.toLowerCase().includes('token'))){
+        if(errCode === 'InvalidToken' || errMsg.toLowerCase().includes('token')){
             addLog(`🔄 App ID ${CONFIG.appId} rejeitou — Deriv respondeu: [${errCode}] ${errMsg}`, 'warn');
             retryWithNextAppId();
             return;
@@ -1839,18 +1693,6 @@ document.addEventListener('DOMContentLoaded', function(){
     if(savedToken){ CONFIG.derivToken=savedToken; document.getElementById('derivTokenInput').value=savedToken; addLog('🔑 Token carregado automaticamente.','success'); }
     const savedAppId = localStorage.getItem('cfg_appId');
     if(savedAppId){ CONFIG.appId=savedAppId; document.getElementById('appIdInput').value=savedAppId; }
-    const savedUseOptionsApi = localStorage.getItem('cfg_useOptionsApi');
-    if(savedUseOptionsApi === '1'){
-        CONFIG.useOptionsApi = true;
-        document.getElementById('useOptionsApiToggle').checked = true;
-        document.getElementById('optionsApiFieldsBox').style.display = 'block';
-    }
-    const savedOptionsApiAppId = localStorage.getItem('cfg_optionsApiAppId');
-    if(savedOptionsApiAppId){ CONFIG.optionsApiAppId=savedOptionsApiAppId; document.getElementById('optionsApiAppIdInput').value=savedOptionsApiAppId; }
-    const savedOptionsApiPat = localStorage.getItem('cfg_optionsApiPat');
-    if(savedOptionsApiPat){ CONFIG.optionsApiPat=savedOptionsApiPat; document.getElementById('optionsApiPatInput').value=savedOptionsApiPat; }
-    const savedAccountType = localStorage.getItem('cfg_optionsAccountType');
-    if(savedAccountType){ CONFIG.optionsAccountType = savedAccountType; document.getElementById('optionsApiAccountType').value = savedAccountType; }
     const savedAI=localStorage.getItem('userOpenAIKey');
     if(savedAI){ CONFIG.openaiKey=savedAI; document.getElementById('openaiTokenInput').value=savedAI; }
 
