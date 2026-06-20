@@ -961,17 +961,20 @@ function toggleOptionsApiMode(){
 // Busca a URL de WebSocket autenticada via OTP (nova Options API da Deriv).
 // Faz: GET /trading/v1/options/accounts -> escolhe a conta demo/real -> POST .../otp -> retorna a URL com OTP.
 async function getOptionsApiWsUrl(){
-     // Lê direto dos campos na hora de conectar (não depende do evento onchange já ter disparado).
-     // Limpa caracteres inválidos para HTTP headers (só mantém ASCII 32-126 visíveis)
      function sanitizeHeader(v){ return (v||'').replace(/[^\x20-\x7E]/g,'').trim(); }
+     // Lê dos campos de input — tem prioridade sobre localStorage
      const liveAppId = sanitizeHeader(document.getElementById('optionsApiAppIdInput').value);
      const livePat   = sanitizeHeader(document.getElementById('optionsApiPatInput').value);
-     if(liveAppId) { CONFIG.optionsApiAppId = liveAppId; localStorage.setItem('cfg_optionsApiAppId', liveAppId); }
-     if(livePat)   { CONFIG.optionsApiPat   = livePat;   localStorage.setItem('cfg_optionsApiPat',   livePat);   }
+     // Só salva se não for o placeholder padrão
+     const PLACEHOLDER_PAT = 'Cole o PAT aqui';
+     const PLACEHOLDER_APP = 'Ex: 99999';
+     if(liveAppId && liveAppId !== PLACEHOLDER_APP) { CONFIG.optionsApiAppId = liveAppId; localStorage.setItem('cfg_optionsApiAppId', liveAppId); }
+     if(livePat   && livePat   !== PLACEHOLDER_PAT) { CONFIG.optionsApiPat   = livePat;   localStorage.setItem('cfg_optionsApiPat',   livePat);   }
      const cleanAppId = sanitizeHeader(CONFIG.optionsApiAppId);
      const cleanPat   = sanitizeHeader(CONFIG.optionsApiPat);
-     if(!cleanAppId) throw new Error('Preencha o "App ID da Options API" (gerado em developers.deriv.com — não é o App ID clássico).');
-     if(!cleanPat)   throw new Error('Preencha o "PAT da Options API" (gerado em developers.deriv.com — não é o token clássico).');
+     // Valida formato mínimo: AppId deve ser numérico ou alfanumérico, PAT deve ter pelo menos 10 chars sem espaços
+     if(!cleanAppId || cleanAppId === PLACEHOLDER_APP) throw new Error('Preencha o "App ID da Options API" corretamente (gerado em developers.deriv.com).');
+     if(!cleanPat || cleanPat === PLACEHOLDER_PAT || cleanPat.includes(' ') || cleanPat.length < 10) throw new Error('PAT inválido ou não preenchido. Cole o token gerado em developers.deriv.com (sem espaços).');
      addLog(`Usando App ID=${cleanAppId} | PAT terminando em ...${cleanPat.slice(-6)}`, 'info');
      const headers = { 'Deriv-App-ID': cleanAppId, 'Authorization': 'Bearer ' + cleanPat };
     // Detecta se está rodando no Netlify (hospedado) ou localmente (file://)
