@@ -921,7 +921,8 @@ async function toggleCloudBot(){
 // =============================================
 function connectDerivWebSocket(){
     if(state.ws && state.ws.readyState===1) return;
-    const wsUrl = 'wss://ws.derivws.com/websockets/v3?app_id=' + (CONFIG.appId || '36544');
+    const appId = (CONFIG.appId && /^\d+$/.test(CONFIG.appId)) ? CONFIG.appId : '36544';
+    const wsUrl = 'wss://ws.derivws.com/websockets/v3?app_id=' + appId;
     state.ws = new WebSocket(wsUrl);
 
     state.ws.onopen = function(){
