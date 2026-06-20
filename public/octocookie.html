@@ -547,7 +547,7 @@ const CONFIG = {
     balance:100,
     tradePercent:0.10,
     apiEndpoints:{
-        deriv:'wss://ws.derivws.com/websockets/v3?app_id='+CONFIG.appId,
+        deriv:'wss://ws.derivws.com/websockets/v3?app_id=36544',
         coingecko:'https://api.coingecko.com/api/v3',
         brapi:'https://brapi.dev/api'
     }
@@ -1651,14 +1651,14 @@ async function consultAI(direction, prices){
 //  INIT
 // =============================================
 document.addEventListener('DOMContentLoaded', function(){
-    initCharts();
-    updateTime();
-    loadFromStorage();
-    updateBalance();
-    updateSecurity();
-    updateRisk();
-    checkRiskAlert();
-    scheduleMidnightReset();
+    try{ initCharts(); }catch(e){ console.warn('initCharts error:',e); }
+    try{ updateTime(); }catch(e){}
+    try{ loadFromStorage(); }catch(e){ console.warn('loadFromStorage error:',e); }
+    try{ updateBalance(); }catch(e){}
+    try{ updateSecurity(); }catch(e){}
+    try{ updateRisk(); }catch(e){}
+    try{ checkRiskAlert(); }catch(e){}
+    try{ scheduleMidnightReset(); }catch(e){}
 
     let savedToken=null;
     try{ savedToken=localStorage.getItem('userDerivToken'); }catch(e){}
