@@ -961,19 +961,19 @@ function toggleOptionsApiMode(){
 // Busca a URL de WebSocket autenticada via OTP (nova Options API da Deriv).
 // Faz: GET /trading/v1/options/accounts -> escolhe a conta demo/real -> POST .../otp -> retorna a URL com OTP.
 async function getOptionsApiWsUrl(){
-    // Lê direto dos campos na hora de conectar (não depende do evento onchange já ter disparado).
-    const liveAppId = (document.getElementById('optionsApiAppIdInput').value || '').trim();
-    const livePat = (document.getElementById('optionsApiPatInput').value || '').trim();
-    if(liveAppId) { CONFIG.optionsApiAppId = liveAppId; localStorage.setItem('cfg_optionsApiAppId', liveAppId); }
-    if(livePat) { CONFIG.optionsApiPat = livePat; localStorage.setItem('cfg_optionsApiPat', livePat); }
-    if(!CONFIG.optionsApiAppId) throw new Error('Preencha o "App ID da Options API" (gerado em developers.deriv.com — não é o App ID clássico).');
-    if(!CONFIG.optionsApiPat) throw new Error('Preencha o "PAT da Options API" (gerado em developers.deriv.com — não é o token clássico).');
-    // Remove caracteres fora do range ISO-8859-1 que causam erro no fetch headers
-    const cleanPat = CONFIG.optionsApiPat.replace(/[^\x00-\xFF]/g, '').trim();
-    const cleanAppId = CONFIG.optionsApiAppId.replace(/[^\x00-\xFF]/g, '').trim();
-    if(!cleanPat) throw new Error('O PAT contém caracteres inválidos. Copie-o novamente do portal developers.deriv.com.');
-    addLog(`Usando App ID=${cleanAppId} | PAT terminando em ...${cleanPat.slice(-6)}`, 'info');
-    const headers = { 'Deriv-App-ID': cleanAppId, 'Authorization': 'Bearer ' + cleanPat };
+     // Lê direto dos campos na hora de conectar (não depende do evento onchange já ter disparado).
+     // Limpa caracteres inválidos para HTTP headers (só mantém ASCII 32-126 visíveis)
+     function sanitizeHeader(v){ return (v||'').replace(/[^\x20-\x7E]/g,'').trim(); }
+     const liveAppId = sanitizeHeader(document.getElementById('optionsApiAppIdInput').value);
+     const livePat   = sanitizeHeader(document.getElementById('optionsApiPatInput').value);
+     if(liveAppId) { CONFIG.optionsApiAppId = liveAppId; localStorage.setItem('cfg_optionsApiAppId', liveAppId); }
+     if(livePat)   { CONFIG.optionsApiPat   = livePat;   localStorage.setItem('cfg_optionsApiPat',   livePat);   }
+     const cleanAppId = sanitizeHeader(CONFIG.optionsApiAppId);
+     const cleanPat   = sanitizeHeader(CONFIG.optionsApiPat);
+     if(!cleanAppId) throw new Error('Preencha o "App ID da Options API" (gerado em developers.deriv.com — não é o App ID clássico).');
+     if(!cleanPat)   throw new Error('Preencha o "PAT da Options API" (gerado em developers.deriv.com — não é o token clássico).');
+     addLog(`Usando App ID=${cleanAppId} | PAT terminando em ...${cleanPat.slice(-6)}`, 'info');
+     const headers = { 'Deriv-App-ID': cleanAppId, 'Authorization': 'Bearer ' + cleanPat };
     // Detecta se está rodando no Netlify (hospedado) ou localmente (file://)
     const isHosted = location.protocol !== 'file:';
     const PROXY = isHosted ? '/deriv-proxy?path=' : 'https://api.derivws.com';
