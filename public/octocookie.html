@@ -208,8 +208,8 @@ tr:hover td{background:var(--bg3)}
       </div>
       <div style="margin-top:8px;display:flex;gap:8px;align-items:center">
         <div style="flex:1">
-          <label style="font-size:11px">App ID Deriv (padrão: 36544)</label>
-          <input type="text" id="appIdInput" placeholder="36544" value="36544" style="font-size:12px">
+          <label style="font-size:11px">App ID Deriv (padrão: 16929)</label>
+          <input type="text" id="appIdInput" placeholder="16929" value="16929" style="font-size:12px">
         </div>
         <div style="padding-top:18px">
           <button onclick="saveAppId()" style="width:100%;font-size:12px">Salvar App ID</button>
@@ -526,7 +526,7 @@ try {
 // --- CONFIG ---
 const CONFIG = {
     derivToken:'',
-    appId:'36544',
+    appId:'16929',
     openaiKey:'',
     cgApiKey:'CG-xHTaEMtFCvYd9q2sfeurjDwC',
     brapiKey:'jANVFGBdizAfgwGyJBENwb',
@@ -921,7 +921,7 @@ async function toggleCloudBot(){
 // =============================================
 function connectDerivWebSocket(){
     if(state.ws && state.ws.readyState===1) return;
-    const appId = (CONFIG.appId && /^\d+$/.test(CONFIG.appId)) ? CONFIG.appId : '36544';
+    const appId = (CONFIG.appId && /^\d+$/.test(CONFIG.appId)) ? CONFIG.appId : '16929';
     const wsUrl = 'wss://ws.derivws.com/websockets/v3?app_id=' + appId;
     state.ws = new WebSocket(wsUrl);
 
