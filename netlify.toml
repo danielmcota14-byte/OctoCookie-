@@ -1,14 +1,17 @@
 [build]
   publish = "public"
   functions = "netlify/functions"
-
 [build.environment]
-  # Desativa o scanner de secrets — a chave Firebase em cryptex.html
-  # é pública por design (client-side), não é um segredo real.
   SECRETS_SCAN_ENABLED = "false"
-
 [functions]
   node_bundler = "esbuild"
+
+# Proxy para Options API da Deriv (evita CORS)
+[[redirects]]
+  from   = "/deriv-proxy"
+  to     = "/.netlify/functions/deriv-proxy"
+  status = 200
+  force  = true
 
 # Rotas da API do Trader Bot + MoonPay → função unificada
 [[redirects]]
@@ -17,7 +20,7 @@
   status = 200
   force  = true
 
-# Rota de health legada (server.js usava /health sem prefixo /api)
+# Rota de health legada
 [[redirects]]
   from   = "/health"
   to     = "/.netlify/functions/api/health"
