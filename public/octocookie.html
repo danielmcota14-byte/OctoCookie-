@@ -206,8 +206,17 @@ tr:hover td{background:var(--bg3)}
           <button onclick="saveOpenAIKey()" class="info" style="width:100%">Salvar OpenAI Key</button>
         </div>
       </div>
-      <div style="font-size:11px;color:var(--text3);padding:8px;background:var(--bg3);border-radius:8px;margin-top:4px">
-        <i class="fas fa-info-circle"></i> Obtenha seu token em <strong>app.deriv.com → Conta → Tokens API</strong> com permissão <em>Read + Trade</em>. Use conta Demo para testes.
+      <div style="margin-top:8px;display:flex;gap:8px;align-items:center">
+        <div style="flex:1">
+          <label style="font-size:11px">App ID Deriv (padrão: 36544)</label>
+          <input type="text" id="appIdInput" placeholder="36544" value="36544" style="font-size:12px">
+        </div>
+        <div style="padding-top:18px">
+          <button onclick="saveAppId()" style="width:100%;font-size:12px">Salvar App ID</button>
+        </div>
+      </div>
+      <div style="font-size:11px;color:var(--text3);padding:8px;background:var(--bg3);border-radius:8px;margin-top:8px">
+        <i class="fas fa-info-circle"></i> Token em <strong>app.deriv.com/account/api-token</strong> com permissão <em>Read + Trade</em>. App ID em <strong>api.deriv.com/api-explorer</strong> — crie o seu gratuitamente.
       </div>
     </div>
 
@@ -517,6 +526,7 @@ try {
 // --- CONFIG ---
 const CONFIG = {
     derivToken:'',
+    appId:'36544',
     openaiKey:'',
     cgApiKey:'CG-xHTaEMtFCvYd9q2sfeurjDwC',
     brapiKey:'jANVFGBdizAfgwGyJBENwb',
@@ -537,7 +547,7 @@ const CONFIG = {
     balance:100,
     tradePercent:0.10,
     apiEndpoints:{
-        deriv:'wss://ws.derivws.com/websockets/v3?app_id=1089',
+        deriv:'wss://ws.derivws.com/websockets/v3?app_id='+CONFIG.appId,
         coingecko:'https://api.coingecko.com/api/v3',
         brapi:'https://brapi.dev/api'
     }
@@ -908,7 +918,8 @@ async function toggleCloudBot(){
 // =============================================
 function connectDerivWebSocket(){
     if(state.ws && state.ws.readyState===1) return;
-    state.ws = new WebSocket(CONFIG.apiEndpoints.deriv);
+    const wsUrl = 'wss://ws.derivws.com/websockets/v3?app_id=' + (CONFIG.appId || '36544');
+    state.ws = new WebSocket(wsUrl);
 
     state.ws.onopen = function(){
         addLog('Conectado ao servidor Deriv!', 'success');
@@ -942,6 +953,13 @@ function connectDerivWebSocket(){
         addLog('Erro WebSocket. Verifique o console (F12).', 'error');
         console.error('[OCTOCOOKIE WS ERROR]', err);
     };
+}
+
+function saveAppId(){
+    const id = document.getElementById('appIdInput').value.trim() || '36544';
+    CONFIG.appId = id;
+    localStorage.setItem('cfg_appId', id);
+    addLog(`App ID salvo: ${id}`, 'success');
 }
 
 function authorize(){ state.ws.send(JSON.stringify({ authorize:CONFIG.derivToken })); }
@@ -1641,6 +1659,8 @@ document.addEventListener('DOMContentLoaded', function(){
 
     const savedToken=localStorage.getItem('userDerivToken');
     if(savedToken){ CONFIG.derivToken=savedToken; document.getElementById('derivTokenInput').value=savedToken; }
+    const savedAppId = localStorage.getItem('cfg_appId');
+    if(savedAppId){ CONFIG.appId=savedAppId; document.getElementById('appIdInput').value=savedAppId; }
     const savedAI=localStorage.getItem('userOpenAIKey');
     if(savedAI){ CONFIG.openaiKey=savedAI; document.getElementById('openaiTokenInput').value=savedAI; }
 
