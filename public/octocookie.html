@@ -961,8 +961,14 @@ function toggleOptionsApiMode(){
 // Busca a URL de WebSocket autenticada via OTP (nova Options API da Deriv).
 // Faz: GET /trading/v1/options/accounts -> escolhe a conta demo/real -> POST .../otp -> retorna a URL com OTP.
 async function getOptionsApiWsUrl(){
+    // Lê direto dos campos na hora de conectar (não depende do evento onchange já ter disparado).
+    const liveAppId = (document.getElementById('optionsApiAppIdInput').value || '').trim();
+    const livePat = (document.getElementById('optionsApiPatInput').value || '').trim();
+    if(liveAppId) { CONFIG.optionsApiAppId = liveAppId; localStorage.setItem('cfg_optionsApiAppId', liveAppId); }
+    if(livePat) { CONFIG.optionsApiPat = livePat; localStorage.setItem('cfg_optionsApiPat', livePat); }
     if(!CONFIG.optionsApiAppId) throw new Error('Preencha o "App ID da Options API" (gerado em developers.deriv.com — não é o App ID clássico).');
     if(!CONFIG.optionsApiPat) throw new Error('Preencha o "PAT da Options API" (gerado em developers.deriv.com — não é o token clássico).');
+    addLog(`Usando App ID=${CONFIG.optionsApiAppId} | PAT terminando em ...${CONFIG.optionsApiPat.slice(-6)}`, 'info');
     const headers = { 'Deriv-App-ID': CONFIG.optionsApiAppId, 'Authorization': 'Bearer ' + CONFIG.optionsApiPat };
     let accountsRes;
     try{
