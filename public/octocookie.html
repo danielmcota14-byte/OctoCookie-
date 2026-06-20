@@ -709,12 +709,15 @@ function updateBalance(){
 // =============================================
 function saveDerivToken(){
     const token = document.getElementById('derivTokenInput').value.trim();
-    if(token){
-        CONFIG.derivToken = token;
+    if(!token){ addLog('Token vazio — não salvo.', 'warn'); return; }
+    CONFIG.derivToken = token;
+    try {
         localStorage.setItem('userDerivToken', token);
-        addLog('Token Deriv salvo.', 'success');
-    } else {
-        addLog('Token vazio — não salvo.', 'warn');
+        sessionStorage.setItem('userDerivToken', token);
+        addLog('🔑 Token salvo com sucesso!', 'success');
+    } catch(e){
+        sessionStorage.setItem('userDerivToken', token);
+        addLog('🔑 Token salvo na sessão (localStorage bloqueado).', 'warn');
     }
 }
 
@@ -1657,8 +1660,10 @@ document.addEventListener('DOMContentLoaded', function(){
     checkRiskAlert();
     scheduleMidnightReset();
 
-    const savedToken=localStorage.getItem('userDerivToken');
-    if(savedToken){ CONFIG.derivToken=savedToken; document.getElementById('derivTokenInput').value=savedToken; }
+    let savedToken=null;
+    try{ savedToken=localStorage.getItem('userDerivToken'); }catch(e){}
+    if(!savedToken){ try{ savedToken=sessionStorage.getItem('userDerivToken'); }catch(e){} }
+    if(savedToken){ CONFIG.derivToken=savedToken; document.getElementById('derivTokenInput').value=savedToken; addLog('🔑 Token carregado automaticamente.','success'); }
     const savedAppId = localStorage.getItem('cfg_appId');
     if(savedAppId){ CONFIG.appId=savedAppId; document.getElementById('appIdInput').value=savedAppId; }
     const savedAI=localStorage.getItem('userOpenAIKey');
