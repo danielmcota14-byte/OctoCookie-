@@ -731,6 +731,7 @@ function saveOpenAIKey(){
 // =============================================
 function startBot(){
     if(state.botRunning){ addLog('Bot já está rodando.', 'warn'); return; }
+    _appIdIdx = 0; CONFIG.appId = _APP_IDS[0];
     if(!CONFIG.derivToken){ addLog('Configure o token primeiro!', 'error'); return; }
     addLog('Iniciando bot de trading...', 'info');
     state.botRunning = true;
@@ -967,7 +968,7 @@ function saveAppId(){
     addLog(`App ID salvo: ${id}`, 'success');
 }
 
-const _APP_IDS = ['1089','16929','35049','11780'];
+const _APP_IDS = ['1089','36544','16303'];
 let _appIdIdx = 0;
 
 function authorize(){
@@ -1789,8 +1790,8 @@ function updateTime(){ document.getElementById('currentTime').textContent=new Da
     }
 
     // Inicia o poll imediatamente e a cada POLL_MS
-    setInterval(pollCommand, POLL_MS);
-    console.log('[OCTOCOOKIE] Command poll iniciado em /api/command');
+    // setInterval(pollCommand, POLL_MS); // desativado - rota nao existe
+    console.log('[OCTOCOOKIE] Command poll desativado.');
 })();
 </script>
 </body>
