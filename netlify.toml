@@ -6,13 +6,6 @@
 [functions]
   node_bundler = "esbuild"
 
-# Proxy para Options API da Deriv (evita CORS)
-[[redirects]]
-  from   = "/deriv-proxy"
-  to     = "/.netlify/functions/deriv-proxy"
-  status = 200
-  force  = true
-
 # Rotas da API do Trader Bot + MoonPay → função unificada
 [[redirects]]
   from   = "/api/*"
@@ -34,7 +27,14 @@
   status = 200
   force  = true
 
-# SPA fallback — tudo que não for arquivo ou /api cai no octocookie.html
+# Callback OAuth da Deriv
+[[redirects]]
+  from   = "/callback"
+  to     = "/callback.html"
+  status = 200
+  force  = true
+
+# SPA fallback
 [[redirects]]
   from   = "/*"
   to     = "/octocookie.html"

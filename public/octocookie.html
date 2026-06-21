@@ -960,35 +960,92 @@ function toggleOptionsApiMode(){
 
 // Busca a URL de WebSocket autenticada via OTP (nova Options API da Deriv).
 // Faz: GET /trading/v1/options/accounts -> escolhe a conta demo/real -> POST .../otp -> retorna a URL com OTP.
+// OAuth 2.0 PKCE
+const OAUTH_CLIENT_ID = '33BXUw2cIijdWgHQCSo3P';
+const OAUTH_REDIRECT  = 'https://nibinbot55.live/callback';
+
+function generateCodeVerifier(){
+    const arr = new Uint8Array(32);
+    crypto.getRandomValues(arr);
+    return btoa(String.fromCharCode(...arr)).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+}
+async function generateCodeChallenge(v){
+    const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(v));
+    return btoa(String.fromCharCode(...new Uint8Array(digest))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+}
+function startOAuthFlow(){
+    const verifier = generateCodeVerifier();
+    const st = crypto.randomUUID();
+    sessionStorage.setItem('oauth_verifier', verifier);
+    sessionStorage.setItem('oauth_state', st);
+    generateCodeChallenge(verifier).then(ch => {
+        const u = new URL('https://auth.deriv.com/oauth2/auth');
+        u.searchParams.set('response_type','code');
+        u.searchParams.set('client_id', OAUTH_CLIENT_ID);
+        u.searchParams.set('redirect_uri', OAUTH_REDIRECT);
+        u.searchParams.set('scope','trade account_manage');
+        u.searchParams.set('state', st);
+        u.searchParams.set('code_challenge', ch);
+        u.searchParams.set('code_challenge_method','S256');
+        window.location.href = u.toString();
+    });
+}
+async function exchangeOAuthCode(code, verifier){
+    const res = await fetch('https://auth.deriv.com/oauth2/token', {
+        method:'POST',
+        headers:{'Content-Type':'application/x-www-form-urlencoded'},
+        body: new URLSearchParams({
+            grant_type:'authorization_code',
+            client_id: OAUTH_CLIENT_ID,
+            code,
+            redirect_uri: OAUTH_REDIRECT,
+            code_verifier: verifier
+        })
+    });
+    if(!res.ok) throw new Error('Falha OAuth: ' + res.status);
+    const d = await res.json();
+    return d.access_token;
+}
+(async function handleOAuthCallback(){
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get('code');
+    const st   = params.get('state');
+    if(!code) return;
+    const savedState   = sessionStorage.getItem('oauth_state');
+    const savedVerifier = sessionStorage.getItem('oauth_verifier');
+    if(st !== savedState){ console.error('OAuth state mismatch'); return; }
+    try {
+        const accessToken = await exchangeOAuthCode(code, savedVerifier);
+        localStorage.setItem('cfg_optionsApiPat', accessToken);
+        CONFIG.optionsApiPat = accessToken;
+        CONFIG.useOptionsApi = true;
+        localStorage.setItem('cfg_useOptionsApi','1');
+        addLog('Login Deriv (OAuth) realizado! Iniciando bot...', 'success');
+        window.history.replaceState({}, '', window.location.pathname);
+        setTimeout(() => startBot(), 500);
+    } catch(e) {
+        addLog('Erro OAuth: ' + e.message, 'error');
+    }
+})();
+
 async function getOptionsApiWsUrl(){
-     function sanitizeHeader(v){ return (v||'').replace(/[^\x20-\x7E]/g,'').trim(); }
-     // Lê dos campos de input — tem prioridade sobre localStorage
-     const liveAppId = sanitizeHeader(document.getElementById('optionsApiAppIdInput').value);
-     const livePat   = sanitizeHeader(document.getElementById('optionsApiPatInput').value);
-     // Só salva se não for o placeholder padrão
-     const PLACEHOLDER_PAT = 'Cole o PAT aqui';
-     const PLACEHOLDER_APP = 'Ex: 99999';
-     if(liveAppId && liveAppId !== PLACEHOLDER_APP) { CONFIG.optionsApiAppId = liveAppId; localStorage.setItem('cfg_optionsApiAppId', liveAppId); }
-     if(livePat   && livePat   !== PLACEHOLDER_PAT) { CONFIG.optionsApiPat   = livePat;   localStorage.setItem('cfg_optionsApiPat',   livePat);   }
-     const cleanAppId = sanitizeHeader(CONFIG.optionsApiAppId);
-     const cleanPat   = sanitizeHeader(CONFIG.optionsApiPat);
-     // Valida formato mínimo: AppId deve ser numérico ou alfanumérico, PAT deve ter pelo menos 10 chars sem espaços
-     if(!cleanAppId || cleanAppId === PLACEHOLDER_APP) throw new Error('Preencha o "App ID da Options API" corretamente (gerado em developers.deriv.com).');
-     if(!cleanPat || cleanPat === PLACEHOLDER_PAT || cleanPat.includes(' ') || cleanPat.length < 10) throw new Error('PAT inválido ou não preenchido. Cole o token gerado em developers.deriv.com (sem espaços).');
-     addLog(`Usando App ID=${cleanAppId} | PAT terminando em ...${cleanPat.slice(-6)}`, 'info');
-     // Usa headers customizados para evitar que o Netlify stripe o Authorization
-     const headers = { 'X-Deriv-App-ID': cleanAppId, 'X-Deriv-Auth': 'Bearer ' + cleanPat };
-    // Detecta se está rodando no Netlify (hospedado) ou localmente (file://)
-    const isHosted = location.protocol !== 'file:';
-    const PROXY = isHosted ? '/deriv-proxy?path=' : 'https://api.derivws.com';
-    const accountsUrl = isHosted
-        ? PROXY + encodeURIComponent('/trading/v1/options/accounts')
-        : 'https://api.derivws.com/trading/v1/options/accounts';
+    const oauthToken = CONFIG.optionsApiPat || localStorage.getItem('cfg_optionsApiPat') || '';
+    if(!oauthToken || oauthToken.length < 10){
+        addLog('Redirecionando para login Deriv (OAuth)...', 'info');
+        startOAuthFlow();
+        throw new Error('Redirecionando para autenticacao OAuth...');
+    }
+    CONFIG.optionsApiPat = oauthToken;
+    addLog('OAuth token ativo, terminando em ...' + oauthToken.slice(-6), 'info');
+    const headers = { 'Authorization': 'Bearer ' + oauthToken, 'Deriv-App-ID': OAUTH_CLIENT_ID };
+    // OAuth token — chamada direta sem proxy (CORS resolvido pelo OAuth)
+    const DERIV_API = 'https://api.derivws.com';
+    const accountsUrl = DERIV_API + '/trading/v1/options/accounts';
     let accountsRes;
     try{
         accountsRes = await fetch(accountsUrl, { headers });
     }catch(netErr){
-        throw new Error('Falha de rede/CORS ao chamar a Options API. Detalhe: ' + netErr.message);
+        throw new Error('Falha de rede ao chamar a Options API. Detalhe: ' + netErr.message);
     }
     const rawText = await accountsRes.text();
     let body = {}; try{ body = JSON.parse(rawText); }catch(e){}
@@ -1004,15 +1061,12 @@ async function getOptionsApiWsUrl(){
     const accountId = account.account_id;
     if(!accountId) throw new Error('Não foi possível identificar o account_id retornado pela Deriv.');
 
-    const otpPath = `/trading/v1/options/accounts/${accountId}/otp`;
-    const otpUrl = isHosted
-        ? '/deriv-proxy?path=' + encodeURIComponent(otpPath)
-        : 'https://api.derivws.com' + otpPath;
+    const otpUrl = DERIV_API + `/trading/v1/options/accounts/${accountId}/otp`;
     let otpRes;
     try{
         otpRes = await fetch(otpUrl, { method:'POST', headers });
     }catch(netErr){
-        throw new Error('Falha de rede/CORS ao gerar o OTP. Detalhe: ' + netErr.message);
+        throw new Error('Falha de rede ao gerar o OTP. Detalhe: ' + netErr.message);
     }
     if(!otpRes.ok){
         const otpRawText = await otpRes.text();
