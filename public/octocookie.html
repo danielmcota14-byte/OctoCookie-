@@ -531,6 +531,7 @@ function hidePendingSwap() {
 // =============================================
 //  WALLET CONNECTION
 // =============================================
+
 async function connectWallet() {
   const raw = document.getElementById('walletKeyInput').value.trim();
   if(!raw) { addLog('Cole sua chave privada ou seed phrase.', 'error'); return; }
@@ -538,10 +539,15 @@ async function connectWallet() {
     const net = NETWORKS[CONFIG.network];
     if(state.provider) { try { state.provider.destroy(); } catch(_){} }
     state.provider = new ethers.JsonRpcProvider(net.rpc);
+    let w;
     if(raw.startsWith('0x') && raw.length === 66) {
       w = new ethers.Wallet(raw, state.provider);
     } else {
-      const words = raw.split(/\s+/).filter(Boolean);
+      const words = raw
+        .split(/\s+/)
+        .map(t => t.replace(/^\(?\d{1,2}[).:\-]\s*/, ''))
+        .map(t => t.trim())
+        .filter(Boolean);
       const validLengths = [12, 15, 18, 21, 24];
       if(!validLengths.includes(words.length)) throw new Error(`Seed phrase deve ter 12, 15, 18, 21 ou 24 palavras (recebido: ${words.length})`);
       w = ethers.Wallet.fromPhrase(words.join(' '), state.provider);
