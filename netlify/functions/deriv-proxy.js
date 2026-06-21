@@ -1,8 +1,5 @@
 // netlify/functions/deriv-proxy.js
 // Proxy para a Options API da Deriv — evita bloqueio de CORS no navegador.
-// O navegador chama /.netlify/functions/deriv-proxy e esta função repassa para api.derivws.com
-
-const https = require('https');
 
 exports.handler = async function(event) {
   const CORS_HEADERS = {
@@ -11,12 +8,10 @@ exports.handler = async function(event) {
     'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
   };
 
-  // Preflight CORS
   if (event.httpMethod === 'OPTIONS') {
     return { statusCode: 204, headers: CORS_HEADERS, body: '' };
   }
 
-  // Lê o path que veio após /deriv-proxy, ex: /trading/v1/options/accounts
   const derivPath = event.queryStringParameters?.path;
   if (!derivPath) {
     return {
@@ -28,35 +23,53 @@ exports.handler = async function(event) {
 
   const derivUrl = 'https://api.derivws.com' + derivPath;
 
-  // Repassa os headers de autenticação
+  // Netlify converte todos os headers para lowercase — buscar sempre em lowercase
+  const h = event.headers;
+  const authorization = h['authorization'] || '';
+  const appId         = h['deriv-app-id'] || '';
+
+  console.log('[deriv-proxy] path:', derivPath);
+  console.log('[deriv-proxy] authorization presente:', !!authorization);
+  console.log('[deriv-proxy] deriv-app-id:', appId);
+
+  if (!authorization) {
+    return {
+      statusCode: 401,
+      headers: CORS_HEADERS,
+      body: JSON.stringify({ error: 'Header Authorization ausente no proxy.' }),
+    };
+  }
+  if (!appId) {
+    return {
+      statusCode: 400,
+      headers: CORS_HEADERS,
+      body: JSON.stringify({ error: 'Header Deriv-App-ID ausente no proxy.' }),
+    };
+  }
+
   const forwardHeaders = {
-    'Content-Type': 'application/json',
+    'Content-Type':  'application/json',
+    'Authorization': authorization,
+    'Deriv-App-ID':  appId,
   };
-  if (event.headers['authorization'] || event.headers['Authorization']) {
-    forwardHeaders['Authorization'] = event.headers['authorization'] || event.headers['Authorization'];
-  }
-  if (event.headers['deriv-app-id'] || event.headers['Deriv-App-ID']) {
-    forwardHeaders['Deriv-App-ID'] = event.headers['deriv-app-id'] || event.headers['Deriv-App-ID'];
-  }
 
   try {
     const response = await fetch(derivUrl, {
-      method: event.httpMethod,
+      method:  event.httpMethod,
       headers: forwardHeaders,
-      body: event.body || undefined,
+      body:    event.body || undefined,
     });
 
     const responseText = await response.text();
+    console.log('[deriv-proxy] status Deriv:', response.status);
 
     return {
       statusCode: response.status,
-      headers: {
-        ...CORS_HEADERS,
-        'Content-Type': 'application/json',
-      },
+      headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
       body: responseText,
     };
   } catch (err) {
+    console.error('[deriv-proxy] erro fetch:', err.message);
     return {
       statusCode: 502,
       headers: CORS_HEADERS,
