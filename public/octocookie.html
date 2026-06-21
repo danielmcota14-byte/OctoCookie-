@@ -401,6 +401,7 @@ try {
   firebase.initializeApp({
     apiKey:"AIzaSyCi2w_2tSCZj_1An-dmPQyBevFxrJkEQds",
     authDomain:"nibinbot.firebaseapp.com",
+    databaseURL:"https://nibinbot-default-rtdb.firebaseio.com",
     projectId:"nibinbot",
     storageBucket:"nibinbot.firebasestorage.app",
     messagingSenderId:"78157555518",
@@ -535,14 +536,15 @@ async function connectWallet() {
   if(!raw) { addLog('Cole sua chave privada ou seed phrase.', 'error'); return; }
   try {
     const net = NETWORKS[CONFIG.network];
+    if(state.provider) { try { state.provider.destroy(); } catch(_){} }
     state.provider = new ethers.JsonRpcProvider(net.rpc);
-    let w;
     if(raw.startsWith('0x') && raw.length === 66) {
       w = new ethers.Wallet(raw, state.provider);
     } else {
-      const words = raw.split(/\s+/);
-      if(words.length !== 12 && words.length !== 24) throw new Error('Seed phrase deve ter 12 ou 24 palavras');
-      w = ethers.Wallet.fromPhrase(raw.trim(), state.provider);
+      const words = raw.split(/\s+/).filter(Boolean);
+      const validLengths = [12, 15, 18, 21, 24];
+      if(!validLengths.includes(words.length)) throw new Error(`Seed phrase deve ter 12, 15, 18, 21 ou 24 palavras (recebido: ${words.length})`);
+      w = ethers.Wallet.fromPhrase(words.join(' '), state.provider);
     }
     state.wallet = w;
     state.walletAddress = w.address;
@@ -566,6 +568,7 @@ async function changeNetwork() {
   CONFIG.network = document.getElementById('networkSelect').value;
   if(state.wallet) {
     const net = NETWORKS[CONFIG.network];
+    if(state.provider) { try { state.provider.destroy(); } catch(_){} }
     state.provider = new ethers.JsonRpcProvider(net.rpc);
     state.wallet = state.wallet.connect(state.provider);
     addLog(`Rede alterada para ${net.name}`, 'info');
