@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>OCTOCOOKIE · Dashboard Swap Analisador AUTO-HEALING</title>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@700;800&display=swap');
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -340,11 +342,33 @@ body{display:flex;flex-direction:column;min-height:100vh}
 //  Daily limits, Trading hours, Wallet connection, Open swap, etc.
 // ═══════════════════════════════════════════════════════════════════════
 
-const API = '';
 const INTERVAL_MS  = 1500;
 const COOLDOWN_SEC = 15; // Swaps precisam de cooldown maior que trades binários
 const MIN_SCORE    = 40;
 const REQ_TIMEOUT  = 5000;
+
+// ── Firebase (mesmo projeto usado pelo octocookie.html) ────────────────
+let db;
+try {
+  firebase.initializeApp({
+    apiKey:"AIzaSyCi2w_2tSCZj_1An-dmPQyBevFxrJkEQds",
+    authDomain:"nibinbot.firebaseapp.com",
+    databaseURL:"https://nibinbot-default-rtdb.firebaseio.com",
+    projectId:"nibinbot",
+    storageBucket:"nibinbot.firebasestorage.app",
+    messagingSenderId:"78157555518",
+    appId:"1:78157555518:web:3cc525509ad1fa59756e6f"
+  });
+  db = firebase.database();
+} catch(e) { console.warn("Firebase não inicializado:", e); }
+
+async function fetchLiveState() {
+  if(!db) throw new Error('Firebase não inicializado');
+  const snap = await db.ref('live_state').once('value');
+  const data = snap.val();
+  if(!data) throw new Error('Nenhum dado publicado ainda pelo octocookie.html');
+  return data;
+}
 
 let isOnline        = false;
 let reconnects      = 0;
@@ -407,13 +431,10 @@ const Reconnector = {
   async tryConnect() {
     if(!this.active) return;
     try {
-      const r = await fetchWithTimeout(`${API}/api/health`,{},3000);
-      if(r.ok) {
-        const data = await r.json();
-        if(data.status==='online') {
-          addLog(`✅ API reconectada após ${this.attempt} tentativa(s)`, 'log-repair');
-          this.stop(); setOnline(true); CB.record(true); drainRetryQueue(); tick(); return;
-        }
+      const data = await fetchLiveState();
+      if(data) {
+        addLog(`✅ Firebase reconectado após ${this.attempt} tentativa(s)`, 'log-repair');
+        this.stop(); setOnline(true); CB.record(true); drainRetryQueue(); tick(); return;
       }
     } catch(e) {}
     this.schedule();
@@ -447,13 +468,11 @@ function scheduleRepair() {
 }
 async function triggerRepair() {
   try {
-    addLog('♻️ Solicitando auto-reparo ao backend...', 'log-repair');
-    const r = await fetchWithTimeout(`${API}/api/repair`,{method:'POST',headers:{'Content-Type':'application/json'},body:'{}'},4000);
-    if(r.ok) {
-      autoRepairs++; el('statusRepairs').textContent=autoRepairs;
-      addLog('✅ Auto-reparo executado', 'log-repair');
-      CB.failures=0; CB.state='CLOSED'; updateCbBadge('CLOSED');
-    }
+    addLog('♻️ Reiniciando verificação de conexão com o Firebase...', 'log-repair');
+    await fetchLiveState();
+    autoRepairs++; el('statusRepairs').textContent=autoRepairs;
+    addLog('✅ Auto-reparo executado', 'log-repair');
+    CB.failures=0; CB.state='CLOSED'; updateCbBadge('CLOSED');
   } catch(e) { addLog(`❌ Reparo falhou: ${e.message}`, 'log-warn'); }
 }
 async function manualRepair() { await triggerRepair(); Reconnector.stop(); setTimeout(()=>Reconnector.start('reparo manual'),1000); }
@@ -471,8 +490,7 @@ let heartbeatFails = 0;
 async function heartbeat() {
   if(!isOnline) return;
   try {
-    const r = await fetchWithTimeout(`${API}/api/health`,{},3000);
-    if(!r.ok) throw new Error(`HTTP ${r.status}`);
+    await fetchLiveState();
     heartbeatFails = 0;
   } catch(e) {
     heartbeatFails++;
@@ -734,24 +752,17 @@ function startCountdownBar(totalMs) {
 }
 
 // ── Envio de comando swap (BUY/SELL) ─────────────────────────────────
+// OBS: este analisador não executa swap diretamente. Ele apenas avisa
+// o octocookie.html (via postMessage) para clicar no botão BUY/SELL
+// MANUAL — assim o swap passa pela mesma análise de segurança de um
+// clique manual, e não existe execução paralela/duplicada.
 async function sendCommand(action, score, reason, queIfFail=true) {
-  try {
-    if(!CB.canRequest()) { if(queIfFail) enqueueRetry(action,score,reason); return; }
-    const r = await fetchWithTimeout(`${API}/api/command`,{
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({action,score,reason,ts:new Date().toISOString()})
-    }, REQ_TIMEOUT);
-    if(!r.ok) throw new Error(`HTTP ${r.status}`);
-    CB.record(true);
-    cmdCount[action]++;
-    el('cntBuy').textContent  = cmdCount.BUY;
-    el('cntSell').textContent = cmdCount.SELL;
-    el('cntTotal').textContent= cmdCount.BUY+cmdCount.SELL;
-    addLog(`✅ ${action} enviado | score ${score.toFixed(1)}%`, action==='BUY'?'log-call':'log-put');
-  } catch(e) {
-    CB.record(false);
-    if(queIfFail) { enqueueRetry(action,score,reason); addLog(`⚠️ ${action} falhou → fila retry (${retryQueue.length})`, 'log-warn'); }
-    else { addLog(`❌ Retry falhou para ${action}: ${e.message}`, 'log-warn'); }
+  const insideIframe = window.parent && window.parent !== window;
+  if(insideIframe) {
+    window.parent.postMessage({ type:'octocookie-signal', action, score, reason }, '*');
+    addLog(`🖱️ Sinal ${action} enviado — clicando em ${action} MANUAL no octocookie`, 'log-info');
+  } else {
+    addLog(`ℹ️ Sinal ${action} detectado (score ${score.toFixed(1)}%) — abra este painel pela aba "Dashboard" dentro do octocookie.html para ele clicar automaticamente nos botões`, 'log-info');
   }
 }
 
@@ -761,23 +772,24 @@ async function tick() {
   if(!CB.canRequest()) { addLog('⚡ Circuit Breaker ABERTO — tick bloqueado', 'log-warn'); return; }
 
   try {
-    const [dashR, latestR] = await Promise.all([
-      fetchWithTimeout(`${API}/api/dashboard`,{},REQ_TIMEOUT),
-      fetchWithTimeout(`${API}/api/latest`,   {},REQ_TIMEOUT)
-    ]);
-    if(!dashR.ok||!latestR.ok) throw new Error(`HTTP ${dashR.status}/${latestR.status}`);
-    const dash   = await dashR.json();
-    const latest = await latestR.json();
+    const data = await fetchLiveState();
+    const isFresh = data.updatedAt ? (Date.now() - data.updatedAt) < 30000 : false;
+    const dash = {
+      snapshots: data.snapshots, uptime_since: data.uptime_since,
+      circuit_breaker: data.circuit_breaker, data_fresh: isFresh,
+      latency: data.latency
+    };
+    const latest = data;
 
     CB.record(true); heartbeatFails=0;
-    if(!isOnline) { reconnects++; addLog(`✅ API reconectada (#${reconnects})`, 'log-repair'); el('statusReconn').textContent=reconnects; drainRetryQueue(); }
+    if(!isOnline) { reconnects++; addLog(`✅ Firebase reconectado (#${reconnects})`, 'log-repair'); el('statusReconn').textContent=reconnects; drainRetryQueue(); }
     setOnline(true); Reconnector.stop();
 
     el('statusSnaps').textContent  = dash.snapshots||0;
     el('statusUptime').textContent = (dash.uptime_since||'').substring(11,19)||'—';
 
     if(dash.circuit_breaker&&dash.circuit_breaker!=='CLOSED') { addLog(`⚠️ Backend CB: ${dash.circuit_breaker}`, 'log-warn'); scheduleRepair(); }
-    if(dash.data_fresh===false) addLog('⚠️ Dados do bot estão desatualizados', 'log-warn');
+    if(dash.data_fresh===false) addLog('⚠️ Dados do bot estão desatualizados — abra o octocookie.html e conecte a carteira', 'log-warn');
 
     const lat=dash.latency||{};
     el('latCur').textContent=lat.last_ms!=null?`${lat.last_ms.toFixed(1)} ms`:'—';
@@ -876,8 +888,8 @@ async function tick() {
     CB.record(false);
     if(isOnline||!Reconnector.active) {
       setOnline(false);
-      addLog(`❌ API desconectada: ${e.message}`, 'log-warn');
-      el('statusMsg').textContent='⚠️ API offline — reconexão automática ativa';
+      addLog(`❌ Firebase desconectado: ${e.message}`, 'log-warn');
+      el('statusMsg').textContent='⚠️ Firebase offline — reconexão automática ativa';
       el('statusMsg').style.color='var(--red)';
     }
     if(!Reconnector.active) Reconnector.start(e.message);
@@ -886,7 +898,7 @@ async function tick() {
 
 // ── Detectores de rede ────────────────────────────────────────────────
 window.addEventListener('offline',()=>{ addLog('🌐 Rede perdida','log-warn'); setOnline(false); if(!Reconnector.active) Reconnector.start('rede desconectada'); });
-window.addEventListener('online',()=>{ addLog('🌐 Rede recuperada — testando API...','log-repair'); if(Reconnector.active){clearTimeout(Reconnector.timer);Reconnector.tryConnect();}else tick(); });
+window.addEventListener('online',()=>{ addLog('🌐 Rede recuperada — testando Firebase...','log-repair'); if(Reconnector.active){clearTimeout(Reconnector.timer);Reconnector.tryConnect();}else tick(); });
 document.addEventListener('visibilitychange',()=>{ if(!document.hidden){addLog('👁️ Aba ativa — verificando conexão','log-info');if(Reconnector.active){clearTimeout(Reconnector.timer);Reconnector.tryConnect();}else tick();} });
 
 // ── Loops ─────────────────────────────────────────────────────────────

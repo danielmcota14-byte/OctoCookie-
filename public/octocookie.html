@@ -147,12 +147,16 @@ tr:hover td{background:var(--bg3)}
       <span class="logo-name">OCTOCOOKIE</span>
     </div>
     <div class="flex-between" style="gap:12px">
+      <div class="flex-between" style="gap:6px;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:10px;padding:3px">
+        <button id="tabBotBtn" onclick="switchView('bot')" style="padding:6px 14px;font-size:11px" class="primary">Bot</button>
+        <button id="tabDashBtn" onclick="switchView('dashboard')" style="padding:6px 14px;font-size:11px;background:transparent;border-color:transparent">Dashboard</button>
+      </div>
       <div id="currentTime" style="font-size:11px;color:var(--text3);font-family:var(--font-mono)">--:--:--</div>
       <div id="botStatus" class="status offline"><span class="api-dot offline" id="botStatusDot"></span> OFFLINE</div>
     </div>
   </div>
 
-  <div class="oc-content">
+  <div class="oc-content" id="botView">
     <div class="flex-between" style="margin-bottom:20px">
       <div>
         <div class="app-title"><i class="fas fa-bolt"></i> SWAP TRADER BOT</div>
@@ -217,8 +221,8 @@ tr:hover td{background:var(--bg3)}
         <button class="danger" onclick="stopBot()"><i class="fas fa-stop"></i> PARAR</button>
       </div>
       <div class="grid-2col">
-        <button class="success" onclick="manualSwap('BUY')"><i class="fas fa-arrow-up"></i> BUY MANUAL</button>
-        <button class="danger" onclick="manualSwap('SELL')"><i class="fas fa-arrow-down"></i> SELL MANUAL</button>
+        <button id="buyManualBtn" class="success" onclick="manualSwap('BUY')"><i class="fas fa-arrow-up"></i> BUY MANUAL</button>
+        <button id="sellManualBtn" class="danger" onclick="manualSwap('SELL')"><i class="fas fa-arrow-down"></i> SELL MANUAL</button>
       </div>
       <div class="flex-between" style="margin-top:10px">
         <button onclick="resetDaily()" style="width:100%"><i class="fas fa-redo"></i> RESET DIÁRIO</button>
@@ -362,6 +366,13 @@ tr:hover td{background:var(--bg3)}
       </div>
     </div>
   </div>
+
+  <!-- DASHBOARD VIEW (embutido via iframe) -->
+  <div class="oc-content" id="dashboardView" style="display:none">
+    <div class="card" style="padding:0;overflow:hidden">
+      <iframe id="dashFrame" style="width:100%;height:85vh;border:none;display:block;background:#060606"></iframe>
+    </div>
+  </div>
 </div>
 
 <!-- TERMS POPUP -->
@@ -478,7 +489,11 @@ let state = {
   isWaitingForRecovery: false,
   openSwap: false,
   priceInterval: null,
-  strategyInterval: null
+  strategyInterval: null,
+  startedAt: new Date().toISOString(),
+  snapshotCount: 0,
+  lastLatencyMs: 0,
+  latencyHistory: []
 };
 
 // =============================================
@@ -610,6 +625,7 @@ async function refreshBalance() {
 async function fetchPrice() {
   const pair = TOKEN_PAIRS[CONFIG.pair];
   const cgId = pair.cgIn;
+  const t0 = performance.now();
   try {
     const res = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${cgId}&vs_currencies=usd&x_cg_demo_api_key=${COINGECKO_KEY}`, { cache:'no-store' });
     if(!res.ok) throw new Error('CoinGecko HTTP ' + res.status);
@@ -618,6 +634,9 @@ async function fetchPrice() {
     if(!price) throw new Error('Preço não retornado');
     state.apiStatus.coingecko = true;
     updateAPIStatus();
+    state.lastLatencyMs = performance.now() - t0;
+    state.latencyHistory.push(state.lastLatencyMs);
+    if(state.latencyHistory.length > 30) state.latencyHistory.shift();
     return parseFloat(price);
   } catch(e) {
     state.apiStatus.coingecko = false;
@@ -1054,20 +1073,28 @@ function updatePrice(price) {
     el.style.color = chg >= 0 ? 'var(--green)' : 'var(--red)';
   }
   updateCharts();
-  // Empurra para API backend se disponível
-  fetch('/api/data', {
-    method:'POST', headers:{'Content-Type':'application/json'},
-    body: JSON.stringify({
+  // Publica o estado ao vivo no Firebase para o Dashboard Analisador ler
+  state.snapshotCount++;
+  if(db) {
+    const avg = state.latencyHistory.length ? state.latencyHistory.reduce((a,b)=>a+b,0)/state.latencyHistory.length : 0;
+    const max = state.latencyHistory.length ? Math.max(...state.latencyHistory) : 0;
+    db.ref('live_state').set({
+      // campos equivalentes a /api/latest
       currentPrice: state.currentPrice, priceHistory: state.priceHistory.slice(-100),
       dailyProfit: state.dailyProfitPct, wins: state.wins, losses: state.losses,
-      tradesToday: state.tradesToday, balance: state.balance,
+      tradesToday: state.tradesToday, maxTrades: CONFIG.maxTrades, balance: state.balance,
       securityLevel: CONFIG.securityLevel, riskLevel: CONFIG.riskLevel,
-      rsiLow: CONFIG.rsiLow, rsiHigh: CONFIG.rsiHigh, maxTrades: CONFIG.maxTrades,
-      minScore: CONFIG.minScore, stopLoss: CONFIG.stopLoss, takeProfit: CONFIG.takeProfit,
+      stopLoss: CONFIG.stopLoss, takeProfit: CONFIG.takeProfit, maxVolatility: CONFIG.maxVolatility,
       botRunning: state.botRunning, openContract: state.openSwap,
-      consecutiveLosses: state.consecutiveLosses, symbol: CONFIG.pair
-    })
-  }).catch(()=>{});
+      consecutiveLosses: state.consecutiveLosses, symbol: CONFIG.pair,
+      walletAddress: state.walletAddress,
+      // campos equivalentes a /api/dashboard
+      snapshots: state.snapshotCount, uptime_since: state.startedAt,
+      circuit_breaker: 'CLOSED', data_fresh: true,
+      latency: { last_ms: state.lastLatencyMs, avg_ms: avg, max_ms: max, history: state.latencyHistory },
+      updatedAt: Date.now()
+    }).catch(e => console.warn('Falha ao publicar live_state:', e.message));
+  }
 }
 
 // =============================================
@@ -1445,6 +1472,52 @@ function loadFromStorage() {
 // =============================================
 //  INIT
 // =============================================
+// =============================================
+//  RECEBE SINAL DO DASHBOARD (clica no botão MANUAL)
+// =============================================
+let lastDashClickTs = 0;
+const DASH_CLICK_COOLDOWN_MS = 15000; // evita clique repetido em sequência
+window.addEventListener('message', (ev) => {
+  const msg = ev.data;
+  if(!msg || msg.type !== 'octocookie-signal') return;
+  const now = Date.now();
+  if(now - lastDashClickTs < DASH_CLICK_COOLDOWN_MS) return;
+  lastDashClickTs = now;
+  const btnId = msg.action === 'BUY' ? 'buyManualBtn' : msg.action === 'SELL' ? 'sellManualBtn' : null;
+  if(!btnId) return;
+  const btn = document.getElementById(btnId);
+  if(!btn) return;
+  addLog(`🖱️ Dashboard sinalizou ${msg.action} (score ${Number(msg.score||0).toFixed(1)}%) — clicando em ${msg.action} MANUAL`, 'info');
+  btn.click(); // passa pela mesma análise de segurança de um clique manual
+});
+
+// =============================================
+//  TROCA DE ABA: BOT / DASHBOARD
+// =============================================
+let dashFrameLoaded = false;
+function switchView(view) {
+  const botBtn = document.getElementById('tabBotBtn');
+  const dashBtn = document.getElementById('tabDashBtn');
+  const botView = document.getElementById('botView');
+  const dashView = document.getElementById('dashboardView');
+
+  if(view === 'dashboard') {
+    botView.style.display = 'none';
+    dashView.style.display = '';
+    botBtn.className = ''; botBtn.style.background = 'transparent'; botBtn.style.borderColor = 'transparent';
+    dashBtn.className = 'primary'; dashBtn.style.background = ''; dashBtn.style.borderColor = '';
+    if(!dashFrameLoaded) {
+      document.getElementById('dashFrame').src = 'dashboard_analisador.html';
+      dashFrameLoaded = true;
+    }
+  } else {
+    dashView.style.display = 'none';
+    botView.style.display = '';
+    dashBtn.className = ''; dashBtn.style.background = 'transparent'; dashBtn.style.borderColor = 'transparent';
+    botBtn.className = 'primary'; botBtn.style.background = ''; botBtn.style.borderColor = '';
+  }
+}
+
 document.addEventListener('DOMContentLoaded', function() {
   try { initCharts(); } catch(e) { console.warn('initCharts:', e); }
   try { loadFromStorage(); } catch(e) {}
