@@ -1,7 +1,7 @@
 exports.handler = async function(event) {
   const CORS_HEADERS = {
     'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers': 'Content-Type, Authorization, Deriv-App-ID',
+    'Access-Control-Allow-Headers': 'Content-Type, X-Deriv-Auth, X-Deriv-App-ID',
     'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
   };
 
@@ -9,87 +9,82 @@ exports.handler = async function(event) {
     return { statusCode: 204, headers: CORS_HEADERS, body: '' };
   }
 
-  // Debug: loga tudo que chegou
-  console.log('[deriv-proxy] event.path:', event.path);
-  console.log('[deriv-proxy] event.rawUrl:', event.rawUrl);
-  console.log('[deriv-proxy] event.queryStringParameters:', JSON.stringify(event.queryStringParameters));
-  console.log('[deriv-proxy] event.rawQuery:', event.rawQuery);
-  console.log('[deriv-proxy] headers:', JSON.stringify(event.headers));
-
-  // Tenta pegar o path de todas as formas possíveis
-  let derivPath =
-    (event.queryStringParameters && event.queryStringParameters.path) ||
-    (event.multiValueQueryStringParameters && event.multiValueQueryStringParameters.path && event.multiValueQueryStringParameters.path[0]) ||
-    null;
-
-  // Fallback: tenta parsear a rawQuery manualmente
-  if (!derivPath && event.rawQuery) {
+  // Pega o path do destino
+  let derivPath = null;
+  if (event.queryStringParameters && event.queryStringParameters.path) {
+    derivPath = event.queryStringParameters.path;
+  } else if (event.rawQuery) {
     const match = event.rawQuery.match(/(?:^|&)path=([^&]*)/);
     if (match) derivPath = decodeURIComponent(match[1]);
   }
-
-  // Fallback: tenta pegar da rawUrl
-  if (!derivPath && event.rawUrl) {
-    try {
-      const url = new URL(event.rawUrl);
-      derivPath = url.searchParams.get('path');
-    } catch(e) {}
-  }
-
-  console.log('[deriv-proxy] derivPath resolvido:', derivPath);
 
   if (!derivPath) {
     return {
       statusCode: 400,
       headers: CORS_HEADERS,
-      body: JSON.stringify({
-        error: 'Parâmetro "path" não encontrado.',
-        debug: {
-          queryStringParameters: event.queryStringParameters,
-          rawQuery: event.rawQuery,
-          rawUrl: event.rawUrl,
-        }
-      }),
+      body: JSON.stringify({ error: 'Parâmetro path ausente.' }),
+    };
+  }
+
+  const h = event.headers;
+
+  // Estratégia 1: headers customizados (não são stripados pelo Netlify)
+  let authorization = h['x-deriv-auth'] || '';
+  let appId = h['x-deriv-app-id'] || '';
+
+  // Estratégia 2: fallback para Authorization padrão
+  if (!authorization) authorization = h['authorization'] || '';
+  if (!appId) appId = h['deriv-app-id'] || '';
+
+  // Estratégia 3: fallback para body JSON
+  if (!authorization && event.body) {
+    try {
+      const bodyData = JSON.parse(event.body);
+      if (bodyData._auth) authorization = bodyData._auth;
+      if (bodyData._appId) appId = bodyData._appId;
+    } catch(e) {}
+  }
+
+  console.log('[deriv-proxy] path:', derivPath);
+  console.log('[deriv-proxy] auth presente:', !!authorization, '| appId:', appId);
+
+  if (!authorization || !appId) {
+    return {
+      statusCode: 400,
+      headers: CORS_HEADERS,
+      body: JSON.stringify({ error: 'Credenciais ausentes.', auth: !!authorization, appId: !!appId }),
     };
   }
 
   const derivUrl = 'https://api.derivws.com' + derivPath;
-  const h = event.headers;
-  const authorization = h['authorization'] || '';
-  const appId = h['deriv-app-id'] || '';
+  const method = event.httpMethod === 'OPTIONS' ? 'GET' : event.httpMethod;
 
-  console.log('[deriv-proxy] url destino:', derivUrl);
-  console.log('[deriv-proxy] authorization presente:', !!authorization);
-  console.log('[deriv-proxy] appId:', appId);
-
-  if (!authorization) {
-    return {
-      statusCode: 401,
-      headers: CORS_HEADERS,
-      body: JSON.stringify({ error: 'Header Authorization ausente.' }),
-    };
-  }
-  if (!appId) {
-    return {
-      statusCode: 400,
-      headers: CORS_HEADERS,
-      body: JSON.stringify({ error: 'Header Deriv-App-ID ausente.' }),
-    };
+  // Remove campos internos do body antes de repassar
+  let forwardBody = undefined;
+  if (event.body && method !== 'GET') {
+    try {
+      const parsed = JSON.parse(event.body);
+      delete parsed._auth;
+      delete parsed._appId;
+      forwardBody = JSON.stringify(parsed);
+    } catch(e) {
+      forwardBody = event.body;
+    }
   }
 
   try {
     const response = await fetch(derivUrl, {
-      method: event.httpMethod === 'OPTIONS' ? 'GET' : event.httpMethod,
+      method,
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': authorization,
+        'Authorization': authorization.startsWith('Bearer ') ? authorization : 'Bearer ' + authorization,
         'Deriv-App-ID': appId,
       },
-      body: event.body && event.httpMethod !== 'GET' ? event.body : undefined,
+      body: forwardBody,
     });
 
     const responseText = await response.text();
-    console.log('[deriv-proxy] resposta Deriv status:', response.status);
+    console.log('[deriv-proxy] Deriv status:', response.status);
 
     return {
       statusCode: response.status,
@@ -97,11 +92,10 @@ exports.handler = async function(event) {
       body: responseText,
     };
   } catch (err) {
-    console.error('[deriv-proxy] erro fetch:', err.message);
     return {
       statusCode: 502,
       headers: CORS_HEADERS,
-      body: JSON.stringify({ error: 'Erro ao conectar com a Deriv: ' + err.message }),
+      body: JSON.stringify({ error: 'Erro fetch: ' + err.message }),
     };
   }
 };

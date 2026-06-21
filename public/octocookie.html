@@ -976,7 +976,8 @@ async function getOptionsApiWsUrl(){
      if(!cleanAppId || cleanAppId === PLACEHOLDER_APP) throw new Error('Preencha o "App ID da Options API" corretamente (gerado em developers.deriv.com).');
      if(!cleanPat || cleanPat === PLACEHOLDER_PAT || cleanPat.includes(' ') || cleanPat.length < 10) throw new Error('PAT inválido ou não preenchido. Cole o token gerado em developers.deriv.com (sem espaços).');
      addLog(`Usando App ID=${cleanAppId} | PAT terminando em ...${cleanPat.slice(-6)}`, 'info');
-     const headers = { 'Deriv-App-ID': cleanAppId, 'Authorization': 'Bearer ' + cleanPat };
+     // Usa headers customizados para evitar que o Netlify stripe o Authorization
+     const headers = { 'X-Deriv-App-ID': cleanAppId, 'X-Deriv-Auth': 'Bearer ' + cleanPat };
     // Detecta se está rodando no Netlify (hospedado) ou localmente (file://)
     const isHosted = location.protocol !== 'file:';
     const PROXY = isHosted ? '/deriv-proxy?path=' : 'https://api.derivws.com';
