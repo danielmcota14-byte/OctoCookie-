@@ -752,6 +752,38 @@
       window.open(`https://buy.moonpay.com?${fallbackParams.toString()}`, '_blank');
     }
 
+    async function sellViaMoonPay() {
+      const amount = parseFloat($('pix-sell-amount')?.value || '0');
+      if (!amount || amount <= 0) return showToast('Informe um valor válido para vender', 'error');
+
+      const network = NETWORKS[currentNetwork];
+      const baseCurrencyCode = network.symbol.toLowerCase();
+      const amountStr = amount < 1 ? amount.toFixed(6) : amount.toFixed(2);
+
+      try {
+        // Busca a URL de venda já montada pelo backend (usa a MOONPAY_PUBLIC_KEY do servidor)
+        const params = new URLSearchParams({
+          amount: amountStr,
+          baseCurrencyCode,
+          quoteCurrencyCode: 'brl',
+        });
+        const res = await fetch(`/api/moonpay/sell-url?${params.toString()}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data.url) { window.open(data.url, '_blank'); return; }
+        }
+      } catch (_) {}
+
+      // Fallback: abre diretamente se backend não responder (pede a chave dentro do próprio MoonPay)
+      showToast('Backend offline — abrindo MoonPay sem chave configurada', 'warn');
+      const fallbackParams = new URLSearchParams({
+        baseCurrencyCode,
+        quoteCurrencyCode: 'brl',
+        baseCurrencyAmount: amountStr,
+      });
+      window.open(`https://sell.moonpay.com?${fallbackParams.toString()}`, '_blank');
+    }
+
     function updateReceiveQr() {
       const qrBox = $('qr-box');
       if (!qrBox || !walletAddress) return;
@@ -951,6 +983,7 @@
     window.copyPixCode = copyPixCode;
     window.generatePixCode = generatePixCode;
     window.openMoonPay = openMoonPay;
+    window.sellViaMoonPay = sellViaMoonPay;
     window.switchNetwork = switchNetwork;
     window.sendTransaction = sendTransaction;
     window.confirmSend = confirmSend;
@@ -3710,6 +3743,11 @@ html, body { overflow-x: hidden; max-width: 100vw; width: 100%; }
               <button onclick="switchInnerPage('wallet')" style="color:var(--text3);font-size:22px;padding:4px;background:none;border:none;cursor:pointer">←</button>
               <h2 class="page-inner-header" style="padding:0">Enviar</h2>
             </div>
+            <div class="tab-row" style="margin:10px 16px">
+              <button class="tab-btn active" onclick="switchTab(this,'send-crypto')">Cripto</button>
+              <button class="tab-btn" onclick="switchTab(this,'send-pix')">PIX</button>
+            </div>
+            <div class="tab-content active" id="send-crypto">
             <div class="send-box">
               <div class="field-group">
                 <label class="field-label">Endereço destinatário</label>
@@ -3746,6 +3784,26 @@ html, body { overflow-x: hidden; max-width: 100vw; width: 100%; }
                 <div class="gas-bar" id="gas-display-send" style="display:inline-block">Carregando...</div>
               </div>
               <button class="btn-primary" onclick="sendTransaction()">REVISAR TRANSAÇÃO</button>
+            </div>
+            </div>
+            <div class="tab-content" id="send-pix">
+              <div class="send-box">
+                <p style="font-size:12px;color:var(--text2);line-height:1.6;margin-bottom:4px">
+                  Venda sua cripto e receba em reais via <strong>PIX</strong>, direto na sua conta — processado pelo MoonPay.
+                  Você vai passar pela verificação de identidade (KYC) deles na próxima tela; isso é exigência do MoonPay, não nossa.
+                </p>
+                <div class="field-group">
+                  <label class="field-label">Valor a vender</label>
+                  <div style="display:flex;gap:8px">
+                    <input class="field-input" id="pix-sell-amount" type="number" placeholder="0.00" step="0.0001" style="flex:1">
+                    <select class="field-input" style="width:90px" id="pix-sell-token">
+                      <option>ETH</option><option>BNB</option><option>MATIC</option>
+                    </select>
+                  </div>
+                </div>
+                <button class="btn-primary" onclick="sellViaMoonPay()">VENDER E RECEBER NO PIX</button>
+                <p style="font-size:11px;color:var(--text3);margin-top:10px;line-height:1.5">Requer backend configurado com MOONPAY_PUBLIC_KEY</p>
+              </div>
             </div>
           </div>
 

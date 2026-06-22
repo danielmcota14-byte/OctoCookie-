@@ -17,6 +17,8 @@ const app = express();
 // ─── Variáveis de ambiente ────────────────────────────────────────────────────
 const MOONPAY_PUBLIC_KEY      = process.env.MOONPAY_PUBLIC_KEY      || '';
 const MOONPAY_WIDGET_URL      = process.env.MOONPAY_WIDGET_URL      || 'https://buy-sandbox.moonpay.com';
+const MOONPAY_SELL_WIDGET_URL = process.env.MOONPAY_SELL_WIDGET_URL ||
+  (MOONPAY_WIDGET_URL.includes('sandbox') ? 'https://sell-sandbox.moonpay.com' : 'https://sell.moonpay.com');
 const MOONPAY_WEBHOOK_SECRET  = process.env.MOONPAY_WEBHOOK_KEY     || process.env.MOONPAY_WEBHOOK_SECRET || '';
 
 if (!MOONPAY_PUBLIC_KEY) console.warn('[OCTOCOOKIE] ⚠️  MOONPAY_PUBLIC_KEY não definida.');
@@ -203,8 +205,27 @@ app.get('/api/moonpay/config', (req, res) => {
   res.json({
     publicKey:  MOONPAY_PUBLIC_KEY,
     widgetUrl:  MOONPAY_WIDGET_URL,
+    sellWidgetUrl: MOONPAY_SELL_WIDGET_URL,
     configured: !!MOONPAY_PUBLIC_KEY,
   });
+});
+
+// MoonPay — gerar URL de VENDA (off-ramp). O payout em PIX é escolhido
+// pelo próprio usuário dentro do widget do MoonPay quando quoteCurrencyCode=brl
+// (PIX é o método de recebimento padrão do MoonPay para reais no Brasil).
+app.get('/api/moonpay/sell-url', (req, res) => {
+  const { amount = '', baseCurrencyCode = 'eth', quoteCurrencyCode = 'brl' } = req.query;
+  if (!MOONPAY_PUBLIC_KEY) return res.status(500).json({ error: 'MOONPAY_PUBLIC_KEY não configurada' });
+
+  const params = new URLSearchParams({
+    apiKey: MOONPAY_PUBLIC_KEY,
+    baseCurrencyCode,
+    quoteCurrencyCode,
+  });
+  if (amount) params.set('baseCurrencyAmount', amount);
+
+  const url = `${MOONPAY_SELL_WIDGET_URL}?${params.toString()}`;
+  res.json({ url });
 });
 
 // MoonPay — webhook
@@ -453,4 +474,3 @@ async function _logLatency(t0) {
 
 // ─── Export para Netlify Function ─────────────────────────────────────────────
 exports.handler = serverless(app);
-
