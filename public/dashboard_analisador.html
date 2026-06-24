@@ -17,6 +17,24 @@
   --blue:#60a5fa;--purple:#c084fc;--orange:#fb923c;
   --mono:'Space Mono',monospace;--head:'Syne',sans-serif;
 }
+:root.light{
+  --bg:#f8f8f6;--bg2:#ffffff;--bg3:#f0f0ee;--bg4:#e8e8e5;
+  --border:rgba(0,0,0,0.09);--border2:rgba(0,0,0,0.18);
+  --text:#111111;--text2:#555;--text3:#999;
+  --green:#1a8c1a;--red:#c0392b;--yellow:#b8860b;
+  --blue:#1d6fa4;--purple:#7c3aed;--orange:#d97706;
+}
+:root.light html,
+:root.light body{background:var(--bg);color:var(--text)}
+:root.light .topnav{background:var(--bg2)}
+:root.light .card{background:var(--bg2);box-shadow:0 2px 12px rgba(0,0,0,0.07)}
+:root.light .reasons-box{background:rgba(0,0,0,0.04)}
+:root.light .cmd-log{background:rgba(0,0,0,0.04)}
+:root.light .counter-box{background:var(--bg3)}
+:root.light .progress-wrap{background:var(--bg4)}
+:root.light #cooldownBar{background:var(--bg4)}
+:root.light .reconn-box{background:var(--bg2)}
+:root.light .reconn-bar{background:var(--bg4)}
 html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--mono);font-size:13px}
 body{display:flex;flex-direction:column;min-height:100vh}
 
@@ -168,6 +186,7 @@ body{display:flex;flex-direction:column;min-height:100vh}
   <div class="nav-right">
     <span id="apiPill" class="pill offline"><span class="dot red"></span> API OFFLINE</span>
     <span id="clockEl">--:--:--</span>
+    <button onclick="toggleThemeDash()" id="themeToggleDash" style="padding:5px 12px;font-size:10px;font-weight:700;letter-spacing:.08em;font-family:'Space Mono',monospace;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.15);border-radius:20px;color:#888;cursor:pointer;text-transform:uppercase;transition:all .2s;white-space:nowrap">☀️ Claro</button>
   </div>
 </nav>
 
@@ -909,5 +928,9 @@ setInterval(heartbeat, 5000);
 addLog('🚀 Swap Analisador v4.0 iniciado. Protocolos: CB + Retry Queue + Reconnector + Heartbeat', 'log-repair');
 tick();
 </script>
+  <script>
+    (function(){var s=localStorage.getItem('octo-theme');if(s==='light'){document.documentElement.classList.add('light');var b=document.getElementById('themeToggleDash');if(b){b.textContent='🌙 Escuro';b.style.background='rgba(0,0,0,0.06)';b.style.borderColor='rgba(0,0,0,0.18)';b.style.color='#555';}}})();
+    function toggleThemeDash(){var l=document.documentElement.classList.toggle('light');var b=document.getElementById('themeToggleDash');if(b){b.textContent=l?'🌙 Escuro':'☀️ Claro';b.style.background=l?'rgba(0,0,0,0.06)':'rgba(255,255,255,0.06)';b.style.borderColor=l?'rgba(0,0,0,0.18)':'rgba(255,255,255,0.15)';b.style.color=l?'#555':'#888';}localStorage.setItem('octo-theme',l?'light':'dark');}
+  </script>
 </body>
 </html>
