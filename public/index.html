@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -2425,8 +2426,8 @@
     }
 
     function closePwaPopup() {
-      document.getElementById('pwa-popup').classList.remove('active');
-      document.body.style.overflow = '';
+      var popup = document.getElementById('pwa-popup');
+      if (popup) popup.style.display = 'none';
       sessionStorage.setItem('pwa-popup-shown', '1');
     }
 
@@ -2435,14 +2436,15 @@
     var isInStandalone = window.navigator.standalone === true;
 
     window.addEventListener('load', function() {
-      if (isInStandalone) return; // já é PWA, não mostra popup
+      if (isInStandalone) return;
       if (sessionStorage.getItem('pwa-popup-shown')) return;
       setTimeout(function() {
         var popup = document.getElementById('pwa-popup');
-        popup.classList.add('active');
-        document.body.style.overflow = 'hidden';
+        if (!popup) return;
+        popup.style.display = 'flex';
         if (isIos) {
-          document.getElementById('pwa-ios-hint').style.display = 'block';
+          var hint = document.getElementById('pwa-ios-hint');
+          if (hint) hint.style.display = 'block';
         }
       }, 2000);
     });
