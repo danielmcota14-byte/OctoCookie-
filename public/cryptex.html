@@ -1827,6 +1827,36 @@
   --top-h: 52px;
 }
 
+:root.light {
+  --bg: #f8f8f6;
+  --bg2: rgba(0,0,0,0.03);
+  --bg3: rgba(0,0,0,0.06);
+  --bg4: rgba(0,0,0,0.11);
+  --border: rgba(0,0,0,0.09);
+  --border2: rgba(0,0,0,0.18);
+  --glass: rgba(255,255,255,0.8);
+  --text: #111111;
+  --text2: rgba(17,17,17,0.6);
+  --text3: rgba(17,17,17,0.35);
+  --green: #16a34a;
+  --red: #dc2626;
+  --yellow: #b45309;
+}
+:root.light body { background: var(--bg); color: var(--text); }
+:root.light .top-bar { background: rgba(248,248,246,0.92); border-bottom-color: var(--border); }
+:root.light .app-shell { background: var(--bg); }
+:root.light .wallet-card { background: rgba(255,255,255,0.9); box-shadow: 0 8px 32px rgba(0,0,0,0.1); }
+:root.light .card { background: rgba(255,255,255,0.85); box-shadow: 0 2px 12px rgba(0,0,0,0.07); }
+:root.light .bottom-nav { background: rgba(248,248,246,0.95); border-top-color: var(--border); }
+:root.light .notif-btn { background: var(--bg3); border-color: var(--border); }
+:root.light .gas-bar { background: var(--bg3); border-color: var(--border); }
+:root.light .net-option { background: var(--bg3); border-color: var(--border); }
+:root.light .seed-word { background: var(--bg3); border-color: var(--border); }
+:root.light .auth-tab.active { background: rgba(124,111,255,0.15); }
+:root.light .field-input { background: rgba(0,0,0,0.04); border-color: var(--border); color: var(--text); }
+:root.light .btn-primary { background: linear-gradient(135deg, var(--accent), var(--accent2)); }
+:root.light .main-content::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); }
+
 html { scroll-behavior: smooth; }
 
 body {
@@ -3644,6 +3674,7 @@ html, body { overflow-x: hidden; max-width: 100vw; width: 100%; }
           </div>
           <div class="top-bar-right">
             <div class="gas-bar" id="gas-display" title="Gas prices (Gwei)">GAS —</div>
+            <button onclick="toggleThemeCrx()" id="themeToggleCrx" title="Alternar tema" style="width:30px;height:30px;background:var(--bg3);border:1px solid var(--border);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;cursor:pointer;transition:background .2s;padding:0;flex-shrink:0">☀️</button>
             <div class="notif-btn" title="Notificações" onclick="toggleNotifications()"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" width="18" height="18"><path d="M10 2a6 6 0 0 1 6 6v3l1.5 2.5H2.5L4 11V8a6 6 0 0 1 6-6z"/><path d="M8 16a2 2 0 0 0 4 0"/></svg><span class="notif-dot"></span></div>
             <div class="avatar-btn user-avatar-letter" onclick="switchInnerPage('settings')">U</div>
           </div>
@@ -4445,5 +4476,9 @@ html, body { overflow-x: hidden; max-width: 100vw; width: 100%; }
   };
   </script>
 
+  <script>
+    (function(){var s=localStorage.getItem('octo-theme');if(s==='light'){document.documentElement.classList.add('light');var b=document.getElementById('themeToggleCrx');if(b)b.textContent='🌙';}})();
+    function toggleThemeCrx(){var l=document.documentElement.classList.toggle('light');var b=document.getElementById('themeToggleCrx');if(b)b.textContent=l?'🌙':'☀️';localStorage.setItem('octo-theme',l?'light':'dark');}
+  </script>
 </body>
 </html>
