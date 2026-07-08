@@ -390,6 +390,7 @@ async function fetchLiveState() {
 }
 
 let isOnline        = false;
+let wasDataFresh     = true;
 let reconnects      = 0;
 let autoRepairs     = 0;
 let lastSignal      = '';
@@ -583,6 +584,26 @@ function analyze(data) {
              indicators:{}, action:'WAIT' };
   }
 
+  // Já existe posição aberta no octocookie.html: não faz sentido sugerir
+  // nova compra, e a venda NUNCA deve ser decidida por indicador aqui —
+  // ela é decidida pelo lucro/prejuízo REAL da posição (checkPositionTargets
+  // dentro do próprio octocookie.html), evitando comprar/vender sem critério.
+  if(data.openPosition) {
+    const entry = data.entryPrice;
+    const unreal = data.unrealizedPnlPct;
+    const unrealTxt = unreal!=null ? `${unreal>=0?'+':''}${unreal.toFixed(2)}%` : '—';
+    return {
+      signal: 'POSIÇÃO ABERTA', score: 0, color:'var(--blue)', action:'WAIT',
+      indicators:{},
+      reasons: [
+        {text:`💼 Posição aberta em $${entry!=null?entry.toFixed(2):'—'}`, cls:'r-neutral'},
+        {text:`P&L não realizado: ${unrealTxt}`, cls:(unreal||0)>=0?'r-good':'r-warn'},
+        {text:`Meta +${(data.takeProfit||0)}% · Stop ${data.stopLoss||0}%`, cls:'r-neutral'},
+        {text:'A venda é automática ao bater a meta ou o stop — nenhuma ação necessária aqui.', cls:'r-neutral'}
+      ]
+    };
+  }
+
   const current = data.currentPrice || prices[prices.length-1];
   const rsi     = calcRSI(prices);
   const sma20   = calcSMA(prices,20);
@@ -604,7 +625,7 @@ function analyze(data) {
     reasons.push({text:`✅ RSI ${rsi.toFixed(1)} < ${rsiLow} → sobrevenda (BUY)`, cls:'r-good'});
   } else if(rsi > rsiHigh) {
     sellScore += 2;
-    reasons.push({text:`✅ RSI ${rsi.toFixed(1)} > ${rsiHigh} → sobrecompra (SELL)`, cls:'r-good'});
+    reasons.push({text:`⚪ RSI ${rsi.toFixed(1)} > ${rsiHigh} → sobrecompra (sem posição para vender)`, cls:'r-neutral'});
   } else {
     reasons.push({text:`⚪ RSI ${rsi.toFixed(1)} neutro (${rsiLow}–${rsiHigh})`, cls:'r-neutral'});
   }
@@ -616,7 +637,7 @@ function analyze(data) {
       reasons.push({text:'✅ Preço > SMA20 e SMA9 > SMA20 (tendência alta)', cls:'r-good'});
     } else if(current < sma20 && sma9 < sma20) {
       sellScore += 1;
-      reasons.push({text:'✅ Preço < SMA20 e SMA9 < SMA20 (tendência baixa)', cls:'r-good'});
+      reasons.push({text:'⚪ Preço < SMA20 e SMA9 < SMA20 (tendência baixa)', cls:'r-neutral'});
     } else {
       reasons.push({text:'⚪ SMA sem tendência clara', cls:'r-neutral'});
     }
@@ -629,7 +650,7 @@ function analyze(data) {
     reasons.push({text:`✅ MACD hist positivo (${hist.toFixed(6)}) → momentum alta`, cls:'r-good'});
   } else if(hist < 0 && macd.macd < macd.signal) {
     sellScore += 2;
-    reasons.push({text:`✅ MACD hist negativo (${hist.toFixed(6)}) → momentum baixa`, cls:'r-good'});
+    reasons.push({text:`⚪ MACD hist negativo (${hist.toFixed(6)}) → momentum baixa`, cls:'r-neutral'});
   } else {
     reasons.push({text:'⚪ MACD sem momentum claro', cls:'r-neutral'});
   }
@@ -641,7 +662,7 @@ function analyze(data) {
       reasons.push({text:`✅ Preço abaixo da banda inferior → reversão alta`, cls:'r-good'});
     } else if(current > bb.upper) {
       sellScore += 2;
-      reasons.push({text:`✅ Preço acima da banda superior → reversão baixa`, cls:'r-good'});
+      reasons.push({text:`⚪ Preço acima da banda superior → reversão baixa`, cls:'r-neutral'});
     } else {
       reasons.push({text:'⚪ Preço dentro das Bandas de Bollinger', cls:'r-neutral'});
     }
@@ -675,26 +696,29 @@ function analyze(data) {
     }
   }
 
-  // 20. Swap em aberto
+  // 20. Swap em aberto (transação em voo — distinto de posição aberta)
   if(data.openContract) {
-    reasons.push({text:'⚠️ Swap em andamento — aguardando fechar', cls:'r-warn'});
+    reasons.push({text:'⚠️ Transação em andamento — aguardando confirmar', cls:'r-warn'});
     return { signal:'AGUARDAR', score:0, color:'var(--yellow)', reasons, indicators:ind, action:'WAIT' };
   }
 
   // 18. Histórico suficiente
   reasons.push({text:`✅ ${prices.length} candles carregados (≥25)`, cls:'r-good'});
 
+  // Sem posição aberta: só existe sinal de ENTRADA (BUY). Sinais de queda
+  // não geram ação — não há nada pra vender ainda.
   const maxScore = 7;
   let signal, action, color;
-  if(buyScore > sellScore && buyScore >= 3) {
+  if(buyScore >= 3 && buyScore > sellScore) {
     signal='COMPRAR (BUY)'; action='BUY'; color='var(--green)';
-  } else if(sellScore > buyScore && sellScore >= 3) {
-    signal='VENDER (SELL)'; action='SELL'; color='var(--red)';
   } else {
     signal='AGUARDAR'; action='WAIT'; color='var(--yellow)';
+    if(sellScore >= 3 && sellScore > buyScore) {
+      reasons.push({text:'ℹ️ Indicadores de queda, mas sem posição aberta não há o que vender.', cls:'r-neutral'});
+    }
   }
 
-  const rawScore = Math.max(buyScore, sellScore);
+  const rawScore = action==='BUY' ? buyScore : 0;
   const score = Math.min(100, (rawScore/maxScore)*100);
   return {signal, action, score, color, reasons, indicators:ind};
 }
@@ -808,7 +832,9 @@ async function tick() {
     el('statusUptime').textContent = (dash.uptime_since||'').substring(11,19)||'—';
 
     if(dash.circuit_breaker&&dash.circuit_breaker!=='CLOSED') { addLog(`⚠️ Backend CB: ${dash.circuit_breaker}`, 'log-warn'); scheduleRepair(); }
-    if(dash.data_fresh===false) addLog('⚠️ Dados do bot estão desatualizados — abra o octocookie.html e conecte a carteira', 'log-warn');
+    if(dash.data_fresh===false && wasDataFresh!==false) addLog('⚠️ Dados do bot estão desatualizados — verifique se o octocookie.html está aberto', 'log-warn');
+    if(dash.data_fresh===true && wasDataFresh===false) addLog('✅ Dados do bot voltaram a atualizar normalmente', 'log-repair');
+    wasDataFresh = dash.data_fresh;
 
     const lat=dash.latency||{};
     el('latCur').textContent=lat.last_ms!=null?`${lat.last_ms.toFixed(1)} ms`:'—';
@@ -831,6 +857,7 @@ async function tick() {
       const bal     = latest.balance||0;
       const bot     = latest.botRunning;
       const oc      = latest.openContract;
+      const openPos = latest.openPosition;
       const consec  = latest.consecutiveLosses||0;
       const pair    = latest.symbol||'—';
       const sl      = latest.stopLoss||0;
@@ -854,18 +881,24 @@ async function tick() {
       // Status bar
       const cooldownRem=Math.max(0,COOLDOWN_SEC-(Date.now()/1000-lastCmdTime));
       let statusMsg;
-      if(result.action==='WAIT') statusMsg=`▶ ${result.signal} | score ${result.score.toFixed(1)}%`;
-      else if(!bot) statusMsg='⚠️ Bot não está rodando';
-      else if(oc) statusMsg='⏳ Swap em andamento — aguardando fechar';
+      if(!bot) statusMsg='⚠️ Bot não está rodando';
+      else if(oc) statusMsg='⏳ Transação em andamento — aguardando confirmar';
+      else if(openPos) {
+        const u = latest.unrealizedPnlPct;
+        statusMsg = `💼 Posição aberta | P&L: ${u!=null?(u>=0?'+':'')+u.toFixed(2)+'%':'—'} | venda automática ao bater meta/stop`;
+      }
+      else if(result.action==='WAIT') statusMsg=`▶ ${result.signal} | score ${result.score.toFixed(1)}%`;
       else if(cooldownRem>0) statusMsg=`⏳ Cooldown DEX: ${cooldownRem.toFixed(0)}s`;
       else if(!CB.canRequest()) statusMsg='⚡ Circuit Breaker aberto — aguardando reparo';
       else statusMsg=`✅ ${result.signal} | score ${result.score.toFixed(1)}% | pronto`;
-      el('statusMsg').textContent=statusMsg; el('statusMsg').style.color=result.color;
+      el('statusMsg').textContent=statusMsg; el('statusMsg').style.color=openPos?'var(--blue)':result.color;
 
-      // Auto-envio BUY/SELL
+      // Auto-envio BUY — só entra se estiver flat (sem posição aberta).
+      // A venda nunca é enviada por aqui: é decidida pelo lucro real da
+      // posição dentro do próprio octocookie.html.
       const nowSec=Date.now()/1000;
       const cdOk=(nowSec-lastCmdTime)>=COOLDOWN_SEC;
-      if(result.action!=='WAIT'&&result.score>=MIN_SCORE&&cdOk&&bot&&!oc&&consec<3) {
+      if(result.action==='BUY'&&!openPos&&result.score>=MIN_SCORE&&cdOk&&bot&&!oc&&consec<3) {
         lastCmdTime=nowSec;
         sendCommand(result.action, result.score, result.signal);
       }

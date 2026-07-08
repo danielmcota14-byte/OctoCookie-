@@ -506,7 +506,9 @@ let state = {
   startedAt: new Date().toISOString(),
   snapshotCount: 0,
   lastLatencyMs: 0,
-  latencyHistory: []
+  latencyHistory: [],
+  stoppedByDailyLimit: false,
+  position: null // { entryPrice, entryTime, txHash } — null = flat (sem posição aberta)
 };
 
 // =============================================
@@ -750,19 +752,9 @@ async function executeSwap(direction) {
 
 // Versão SIMULADA do swap (sem carteira ou modo demo)
 async function simulateSwap(direction, priceAtExec) {
-  const pair = TOKEN_PAIRS[CONFIG.pair];
-  const stakeAmount = state.balance > 0 ? state.balance * (CONFIG.stakePct/100) : 1.0;
   await new Promise(r => setTimeout(r, 800 + Math.random()*400));
-  // Simula resultado com base na variação de preço após o sinal
-  const priceAfter = state.currentPrice;
-  let pnlPct;
-  if(direction === 'BUY') {
-    pnlPct = ((priceAfter - priceAtExec) / priceAtExec) * 100;
-  } else {
-    pnlPct = ((priceAtExec - priceAfter) / priceAtExec) * 100;
-  }
   const fakeHash = '0xSIM' + Math.random().toString(16).slice(2,12);
-  return { hash: fakeHash, gasUsed: '120000', priceAtExec, pnlPct, simulated: true };
+  return { hash: fakeHash, gasUsed: '120000', priceAtExec, simulated: true };
 }
 
 // =============================================
@@ -1041,13 +1033,24 @@ function pauseBot() {
   addLog('⏸ Bot pausado.', 'warn');
 }
 
-function stopBot() {
+function stopBot(reason) {
   state.botRunning = false;
   state.strategyActive = false;
   if(state.priceInterval) { clearInterval(state.priceInterval); state.priceInterval = null; }
   if(state.strategyInterval) { clearTimeout(state.strategyInterval); state.strategyInterval = null; }
+  state.stoppedByDailyLimit = (reason === 'daily-limit');
   updateStatus('offline');
-  updateConnectionBar('', 'Bot parado pelo usuário.');
+  // A carteira NUNCA é desconectada aqui — state.wallet/state.provider continuam
+  // vivos em memória. Só deixamos isso claro na barra de status para não parecer
+  // que é preciso reconectar a carteira.
+  if(state.wallet) {
+    const trunc = state.walletAddress.slice(0,6)+'...'+state.walletAddress.slice(-4);
+    updateConnectionBar('', reason === 'daily-limit'
+      ? `Bot parado (limite diário atingido) — carteira ${trunc} continua conectada.`
+      : `Bot parado pelo usuário — carteira ${trunc} continua conectada.`);
+  } else {
+    updateConnectionBar('', 'Bot parado pelo usuário.');
+  }
   addLog('⏹ Bot parado.', 'error');
   updateUI();
 }
@@ -1057,6 +1060,15 @@ function resetDaily() {
   state.trades = []; state.consecutiveLosses = 0; state.isWaitingForRecovery = false;
   updateUI(); updateTradesTable();
   addLog('🔄 Estatísticas diárias resetadas.', 'info');
+
+  // Se o bot foi parado por ter batido meta/stop/limite de trades do dia ANTERIOR,
+  // e a carteira ainda está conectada em memória, religa o bot automaticamente
+  // para o novo dia — sem precisar recarregar a página nem reconectar a carteira.
+  if(state.stoppedByDailyLimit && state.wallet) {
+    state.stoppedByDailyLimit = false;
+    addLog('🔁 Limite diário anterior zerado — retomando o bot automaticamente para o novo dia.', 'success');
+    startBot();
+  }
 }
 
 // =============================================
@@ -1071,6 +1083,31 @@ function startPriceFeed() {
   };
   tick();
   state.priceInterval = setInterval(tick, 8000); // CoinGecko rate limit friendly
+}
+
+function publishLiveState() {
+  if(!db) return;
+  const avg = state.latencyHistory.length ? state.latencyHistory.reduce((a,b)=>a+b,0)/state.latencyHistory.length : 0;
+  const max = state.latencyHistory.length ? Math.max(...state.latencyHistory) : 0;
+  db.ref('live_state').set({
+    // campos equivalentes a /api/latest
+    currentPrice: state.currentPrice, priceHistory: state.priceHistory.slice(-100),
+    dailyProfit: state.dailyProfitPct, wins: state.wins, losses: state.losses,
+    tradesToday: state.tradesToday, maxTrades: CONFIG.maxTrades, balance: state.balance,
+    securityLevel: CONFIG.securityLevel, riskLevel: CONFIG.riskLevel,
+    stopLoss: CONFIG.stopLoss, takeProfit: CONFIG.takeProfit, maxVolatility: CONFIG.maxVolatility,
+    botRunning: state.botRunning, openContract: state.openSwap,
+    consecutiveLosses: state.consecutiveLosses, symbol: CONFIG.pair,
+    walletAddress: state.walletAddress,
+    openPosition: !!state.position,
+    entryPrice: state.position ? state.position.entryPrice : null,
+    unrealizedPnlPct: state.position ? (((state.currentPrice - state.position.entryPrice) / state.position.entryPrice) * 100) : null,
+    // campos equivalentes a /api/dashboard
+    snapshots: state.snapshotCount, uptime_since: state.startedAt,
+    circuit_breaker: 'CLOSED', data_fresh: true,
+    latency: { last_ms: state.lastLatencyMs, avg_ms: avg, max_ms: max, history: state.latencyHistory },
+    updatedAt: Date.now()
+  }).catch(e => console.warn('Falha ao publicar live_state:', e.message));
 }
 
 function updatePrice(price) {
@@ -1088,25 +1125,32 @@ function updatePrice(price) {
   updateCharts();
   // Publica o estado ao vivo no Firebase para o Dashboard Analisador ler
   state.snapshotCount++;
-  if(db) {
-    const avg = state.latencyHistory.length ? state.latencyHistory.reduce((a,b)=>a+b,0)/state.latencyHistory.length : 0;
-    const max = state.latencyHistory.length ? Math.max(...state.latencyHistory) : 0;
-    db.ref('live_state').set({
-      // campos equivalentes a /api/latest
-      currentPrice: state.currentPrice, priceHistory: state.priceHistory.slice(-100),
-      dailyProfit: state.dailyProfitPct, wins: state.wins, losses: state.losses,
-      tradesToday: state.tradesToday, maxTrades: CONFIG.maxTrades, balance: state.balance,
-      securityLevel: CONFIG.securityLevel, riskLevel: CONFIG.riskLevel,
-      stopLoss: CONFIG.stopLoss, takeProfit: CONFIG.takeProfit, maxVolatility: CONFIG.maxVolatility,
-      botRunning: state.botRunning, openContract: state.openSwap,
-      consecutiveLosses: state.consecutiveLosses, symbol: CONFIG.pair,
-      walletAddress: state.walletAddress,
-      // campos equivalentes a /api/dashboard
-      snapshots: state.snapshotCount, uptime_since: state.startedAt,
-      circuit_breaker: 'CLOSED', data_fresh: true,
-      latency: { last_ms: state.lastLatencyMs, avg_ms: avg, max_ms: max, history: state.latencyHistory },
-      updatedAt: Date.now()
-    }).catch(e => console.warn('Falha ao publicar live_state:', e.message));
+  publishLiveState();
+  checkPositionTargets();
+}
+
+// =============================================
+//  MONITOR DE POSIÇÃO ABERTA (Take Profit / Stop Loss real)
+// =============================================
+// Roda a cada atualização de preço. Se houver posição aberta, calcula o
+// lucro/prejuízo NÃO REALIZADO (preço atual vs preço de entrada real) e
+// fecha a posição automaticamente ao bater a meta ou o stop — em vez de
+// depender de um novo sinal de indicador para decidir vender.
+function checkPositionTargets() {
+  if(!state.position || state.openSwap || !state.botRunning) return;
+  const entry = state.position.entryPrice;
+  if(!entry || state.currentPrice <= 0) return;
+  const unrealizedPct = ((state.currentPrice - entry) / entry) * 100;
+  const el = document.getElementById('aiReason');
+  if(el && !state.strategyActive) {
+    el.textContent = `💼 Posição aberta $${entry.toFixed(2)} | Não realizado: ${unrealizedPct>=0?'+':''}${unrealizedPct.toFixed(2)}% | Meta +${CONFIG.takeProfit}% · Stop ${CONFIG.stopLoss}%`;
+  }
+  if(unrealizedPct >= CONFIG.takeProfit) {
+    addLog(`🎯 Meta de lucro da posição atingida (${unrealizedPct.toFixed(2)}% ≥ +${CONFIG.takeProfit}%) — vendendo automaticamente.`, 'success');
+    manualSwap('SELL');
+  } else if(unrealizedPct <= CONFIG.stopLoss) {
+    addLog(`🛑 Stop loss da posição atingido (${unrealizedPct.toFixed(2)}% ≤ ${CONFIG.stopLoss}%) — vendendo automaticamente.`, 'error');
+    manualSwap('SELL');
   }
 }
 
@@ -1115,6 +1159,14 @@ function updatePrice(price) {
 // =============================================
 function manualSwap(direction) {
   if(!state.botRunning) { addLog('Inicie o bot primeiro.', 'error'); return; }
+  if(direction === 'BUY' && state.position) {
+    addLog(`⚠️ Já existe uma posição aberta (entrada $${state.position.entryPrice.toFixed(2)}). Aguardando meta de lucro ou stop antes de comprar de novo.`, 'warn');
+    return;
+  }
+  if(direction === 'SELL' && !state.position) {
+    addLog('⚠️ Nenhuma posição aberta para vender.', 'warn');
+    return;
+  }
   addLog(`Iniciando análise de segurança para ${direction}...`, 'info');
   runSecurityAnalysis(direction);
 }
@@ -1172,20 +1224,27 @@ async function processSwap(direction) {
     result = await simulateSwap(direction, priceAtExec);
   }
 
-  if(result) {
-    await refreshBalance();
-    // Calcula P&L: comparar preço após vs preço ao executar
-    await new Promise(r => setTimeout(r, 2000));
-    const priceAfter = state.currentPrice;
-    let pnlPct;
-    if(result.simulated) {
-      pnlPct = result.pnlPct || 0;
-    } else {
-      pnlPct = direction === 'BUY'
-        ? ((priceAfter - priceAtExec) / priceAtExec) * 100
-        : ((priceAtExec - priceAfter) / priceAtExec) * 100;
+  if(!result) return;
+  await refreshBalance();
+
+  if(direction === 'BUY') {
+    // ABRE posição — o lucro só é conhecido (e só existe de verdade) quando
+    // a posição for FECHADA com um SELL. Não há P&L "de compra".
+    state.position = { entryPrice: priceAtExec, entryTime: Date.now(), txHash: result.hash || 'SIM' };
+    addLog(`📈 Posição aberta em $${priceAtExec.toFixed(2)} | Meta: +${CONFIG.takeProfit}% · Stop: ${CONFIG.stopLoss}%`, 'swap');
+    updateUI();
+    saveToStorage();
+  } else {
+    // FECHA posição — P&L real = preço de saída vs preço de ENTRADA da posição,
+    // não uma comparação de preço com uma janela de tempo arbitrária.
+    if(!state.position) {
+      addLog('⚠️ Venda executada sem posição registrada — P&L não pôde ser calculado.', 'warn');
+      return;
     }
-    handleSwapResult(direction, pnlPct, priceAtExec, priceAfter, result.hash);
+    const entryPrice = state.position.entryPrice;
+    const pnlPct = ((priceAtExec - entryPrice) / entryPrice) * 100;
+    state.position = null;
+    handleSwapResult(direction, pnlPct, entryPrice, priceAtExec, result.hash);
   }
 }
 
@@ -1202,7 +1261,7 @@ function handleSwapResult(direction, pnlPct, priceIn, priceOut, txHash) {
     id: Date.now(),
     time: new Date().toLocaleTimeString('pt-BR'),
     pair: `${pair.symbolIn}/${pair.symbolOut}`,
-    direction,
+    direction: 'BUY→SELL',
     priceIn: priceIn.toFixed(2),
     priceOut: priceOut.toFixed(2),
     result: isWin ? 'WIN' : 'LOSS',
@@ -1212,7 +1271,7 @@ function handleSwapResult(direction, pnlPct, priceIn, priceOut, txHash) {
   state.trades.unshift(trade);
   if(isWin) { state.wins++; state.consecutiveLosses = 0; }
   else { state.losses++; state.consecutiveLosses++; }
-  addLog(`${isWin?'✅ WIN':'❌ LOSS'} | ${direction} ${pair.symbolIn}/${pair.symbolOut} | P&L: ${pnlPct>=0?'+':''}${pnlPct.toFixed(3)}%`, isWin?'success':'error');
+  addLog(`${isWin?'✅ WIN':'❌ LOSS'} | Posição fechada ${pair.symbolIn}/${pair.symbolOut} | Entrada $${priceIn.toFixed(2)} → Saída $${priceOut.toFixed(2)} | P&L real: ${pnlPct>=0?'+':''}${pnlPct.toFixed(3)}%`, isWin?'success':'error');
   document.getElementById('lastTrade').textContent = new Date().toLocaleTimeString('pt-BR').slice(0,5);
   updateUI();
   updateTradesTable();
@@ -1282,6 +1341,19 @@ function startTradingStrategy() {
   // Checar limites diários
   if(checkDailyLimits()) return;
 
+  // 22. Posição já aberta — não avalia novo sinal de ENTRADA aqui.
+  // O fechamento é decidido pelo lucro/prejuízo REAL da posição
+  // (checkPositionTargets, rodando a cada preço), não por flip de indicador.
+  // Isso evita o comportamento de comprar/vender sem parar.
+  if(state.position) {
+    const unrealizedPct = ((state.currentPrice - state.position.entryPrice) / state.position.entryPrice) * 100;
+    document.getElementById('aiDecision').textContent = '💼 Posição aberta';
+    document.getElementById('aiReason').textContent = `Entrada $${state.position.entryPrice.toFixed(2)} | Não realizado: ${unrealizedPct>=0?'+':''}${unrealizedPct.toFixed(2)}% | Meta +${CONFIG.takeProfit}% · Stop ${CONFIG.stopLoss}%`;
+    state.strategyActive = false;
+    state.strategyInterval = setTimeout(startTradingStrategy, 3000);
+    return;
+  }
+
   // Calcular indicadores
   const rsi   = calculateRSI(state.priceHistory, 14);
   const sma20 = calculateSMA(state.priceHistory, 20);
@@ -1319,18 +1391,19 @@ function startTradingStrategy() {
   }
 
   // Geração de sinal: RSI + SMA + MACD
+  // Só avalia ENTRADA (BUY) — chegamos aqui sabendo que não há posição aberta.
+  // A SAÍDA (SELL) nunca é decidida por indicador; só por checkPositionTargets(),
+  // que fecha a posição quando o lucro/prejuízo REAL bate a meta ou o stop.
   let dir = null;
   // 8. RSI + 11. SMA + 12. MACD
   if(rsi < CONFIG.rsiLow && sma20 !== null && state.currentPrice > sma20 && macd.histogram > 0) {
     dir = 'BUY';
-  } else if(rsi > CONFIG.rsiHigh && sma20 !== null && state.currentPrice < sma20 && macd.histogram < 0) {
-    dir = 'SELL';
   }
 
   if(dir) {
     document.getElementById('aiDecision').textContent = `→ ${dir}`;
     document.getElementById('aiReason').textContent = `RSI:${rsi.toFixed(1)} | MACD:${macd.histogram>0?'+':''} ${macd.histogram.toFixed(6)}`;
-    addLog(`📊 SINAL ${dir}: RSI=${rsi.toFixed(1)}, Vol OK, BB OK, MACD ${dir==='BUY'?'positivo':'negativo'}`, 'success');
+    addLog(`📊 SINAL ${dir}: RSI=${rsi.toFixed(1)}, Vol OK, BB OK, MACD positivo`, 'success');
     runSecurityAnalysis(dir);
   }
 
@@ -1344,20 +1417,20 @@ function startTradingStrategy() {
 function checkDailyLimits() {
   // 15. Daily P&L stop loss
   if(state.dailyProfitPct <= CONFIG.stopLoss) {
-    addLog(`🛑 Stop Loss diário atingido (${state.dailyProfitPct.toFixed(2)}% / ${CONFIG.stopLoss}%). Bot encerrado.`, 'error');
-    stopBot();
+    addLog(`🛑 Stop Loss diário atingido (${state.dailyProfitPct.toFixed(2)}% / ${CONFIG.stopLoss}%). Bot encerrado até o próximo dia.`, 'error');
+    stopBot('daily-limit');
     return true;
   }
   // 15. Daily P&L take profit
   if(state.dailyProfitPct >= CONFIG.takeProfit) {
-    addLog(`🏁 Meta diária atingida (+${state.dailyProfitPct.toFixed(2)}%). Bot encerrado.`, 'success');
-    stopBot();
+    addLog(`🏁 Meta diária atingida (+${state.dailyProfitPct.toFixed(2)}%). Bot encerrado até o próximo dia.`, 'success');
+    stopBot('daily-limit');
     return true;
   }
   // 5. Max trades
   if(state.tradesToday >= CONFIG.maxTrades) {
-    addLog(`🔒 ${CONFIG.maxTrades} swaps realizados hoje. Bot encerrado.`, 'warn');
-    stopBot();
+    addLog(`🔒 ${CONFIG.maxTrades} swaps realizados hoje. Bot encerrado até o próximo dia.`, 'warn');
+    stopBot('daily-limit');
     return true;
   }
   return false;
@@ -1448,7 +1521,8 @@ function saveToStorage() {
       wins: state.wins, losses: state.losses, trades: state.trades.slice(0,50),
       consecutiveLosses: state.consecutiveLosses, lastUpdate: new Date().toISOString(),
       cfg_stakePct: CONFIG.stakePct, cfg_slPct: -CONFIG.stopLoss,
-      cfg_tpPct: CONFIG.takeProfit, cfg_maxTrades: CONFIG.maxTrades
+      cfg_tpPct: CONFIG.takeProfit, cfg_maxTrades: CONFIG.maxTrades,
+      position: state.position
     };
     localStorage.setItem('octocookieSwapBot', JSON.stringify(data));
     if(db) {
@@ -1463,6 +1537,13 @@ function loadFromStorage() {
     const saved = localStorage.getItem('octocookieSwapBot');
     if(!saved) return;
     const data = JSON.parse(saved);
+    // Posição aberta sobrevive à virada de dia — você continua de posse dos
+    // tokens comprados independente do calendário, então isso é restaurado
+    // sempre, antes de checar se as estatísticas diárias devem ser zeradas.
+    if(data.position) {
+      state.position = data.position;
+      addLog(`💼 Posição aberta restaurada: entrada $${data.position.entryPrice.toFixed(2)}.`, 'info');
+    }
     // Verificar se é novo dia
     const lastDate = new Date(data.lastUpdate), today = new Date();
     if(lastDate.getDate() !== today.getDate() || lastDate.getMonth() !== today.getMonth()) {
@@ -1560,10 +1641,23 @@ document.addEventListener('DOMContentLoaded', function() {
   setInterval(updateTradingHourDisplay, 10000);
   setInterval(() => { document.getElementById('currentTime').textContent = new Date().toLocaleTimeString('pt-BR'); }, 1000);
   setInterval(saveToStorage, 15000);
-  // Midnight reset
-  const now = new Date();
-  const nextMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate()+1, 0,0,5);
-  setTimeout(() => { resetDaily(); addLog('🌅 Novo dia — reset automático.', 'info'); }, nextMidnight-now);
+  // Heartbeat para o Firebase: publica o estado real mesmo com o bot parado/pausado.
+  // Sem isso, o dashboard_analisador.html via o último retrato ANTES do bot parar
+  // (ex.: openContract=true) congelado pra sempre, e depois de 30s sem updatedAt
+  // novo mostrava "dados desatualizados — reconecte a carteira" mesmo tudo OK.
+  if(db) setInterval(publishLiveState, 5000);
+  // Midnight reset — reagenda a si mesmo a cada virada de dia (antes rodava só 1x,
+  // por isso parava de resetar/retomar depois do primeiro dia sem dar F5).
+  function scheduleMidnightReset() {
+    const now = new Date();
+    const nextMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate()+1, 0, 0, 5);
+    setTimeout(() => {
+      resetDaily();
+      addLog('🌅 Novo dia — reset automático.', 'info');
+      scheduleMidnightReset();
+    }, nextMidnight - now);
+  }
+  scheduleMidnightReset();
 
   // Terms
   const termsPopup = document.getElementById('termsPopup');
