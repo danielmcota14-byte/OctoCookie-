@@ -28,37 +28,6 @@
       measurementId: "G-C8JY1DHNRF"
     };
 
-    // ============================================================
-    // REGRAS NECESSÁRIAS NO FIREBASE REALTIME DATABASE (Rules)
-    // ------------------------------------------------------------
-    // Não é possível ler/alterar as Rules a partir deste arquivo (elas ficam no
-    // Console do Firebase, aba "Realtime Database > Regras"). Para que a
-    // publicação de posts em `posts/` e a leitura por qualquer usuário logado
-    // funcionem, as regras precisam permitir algo equivalente a:
-    //
-    // {
-    //   "rules": {
-    //     "posts": {
-    //       ".read": "auth != null",
-    //       "$postId": {
-    //         ".write": "auth != null && (!data.exists() || data.child('uid').val() === auth.uid)"
-    //       }
-    //     },
-    //     "users": {
-    //       "$uid": {
-    //         ".read": "auth != null",
-    //         ".write": "auth != null && auth.uid === $uid"
-    //       }
-    //     }
-    //   }
-    // }
-    //
-    // Se `posts/` não tiver `.write` liberado para usuários autenticados, o
-    // `set()` em submitPost() vai falhar com "PERMISSION_DENIED" — isso já
-    // aparece no console (console.error) e num toast de erro, então dá pra
-    // confirmar rapidamente se o problema é regra ou é outra coisa.
-    // ============================================================
-
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getDatabase(app);
@@ -96,18 +65,58 @@
       ethereum: [
         { symbol: 'USDT', address: '0xdAC17F958D2ee523a2206206994597C13D831ec7' },
         { symbol: 'USDC', address: '0xA0b86991c6218b36c1d19d4a2e9eb0ce3606eb48' },
-        { symbol: 'DAI', address: '0x6B175474E89094C44Da98b954EedeAC495271d0F' }
+        { symbol: 'DAI', address: '0x6B175474E89094C44Da98b954EedeAC495271d0F' },
+        { symbol: 'WBTC', address: '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599' },
+        { symbol: 'BTC', address: '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599' },
+        { symbol: 'LINK', address: '0x514910771AF9Ca656af840dff83E8264EcF986CA' },
+        { symbol: 'UNI', address: '0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984' },
+        { symbol: 'ERA', address: '0xE2AD0BF751834f2fbdC62A41014f84d67cA1de2A' },
+        { symbol: 'SHIB', address: '0x95aD61b0a150d79219dCF64E1E6Cc01f0B64C4cE' },
+        { symbol: 'PEPE', address: '0x6982508145454Ce325dDbE47a25d4ec3d2311933' },
+        { symbol: 'MATIC', address: '0x7D1AfA7B718fb893dB30A3aBc0Cfc608AaCfeBB0' },
+        { symbol: 'ARB', address: '0xB50721BCf8d664c30412Cfbc6cf7a15145234ad1' },
+        { symbol: 'AAVE', address: '0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9' },
+        { symbol: 'BNB', address: '0xB8c77482e45F1F44dE1745F52C74426C631bDD52' },
+        { symbol: 'SOL', address: '0xD31a59c85aE9D8edEFeC411D448f90841571b89c' },
+        { symbol: 'DOGE', address: '0x4206931337dc273a630d328dA6441786BfaD668f' },
+        { symbol: 'AVAX', address: '0x85f138bfEE4ef8e540890CFb48F620571d67Eda3' }
       ],
       bsc: [
+        { symbol: 'USDT', address: '0x55d398326f99059fF775485246999027B3197955' },
+        { symbol: 'USDC', address: '0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d' },
         { symbol: 'BUSD', address: '0xe9e7cea3dedca5984780bafc599bd69add087d56' },
         { symbol: 'CAKE', address: '0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82' },
+        { symbol: 'BTC', address: '0x7130d2A12B9BCbFAe4f2634d864A1Ee1Ce3Ead9c' },
+        { symbol: 'ETH', address: '0x2170Ed0880ac9A755fd29B2688956BD959F933F8' },
+        { symbol: 'DOGE', address: '0xbA2aE424d960c26247Dd6c32edC70B295c744C43' },
+        { symbol: 'ADA', address: '0x3EE2200Efb3400fAbB9AacF31297cBdD1d435D47' },
+        { symbol: 'XRP', address: '0x1D2F0da169ceB9fC7B3144628dB156f3F6c60dBE' },
+        { symbol: 'DOT', address: '0x7083609fCE4d1d8Dc0C979AAb8c869Ea2C873402' },
+        { symbol: 'LINK', address: '0xF8A0BF9cF54Bb92F17374d9e9A321E6a111a51bD' },
+        { symbol: 'SOL', address: '0x570A5D26f7765Ecb712C0924E4De545B89fD43dF' },
+        { symbol: 'ERA', address: '0x00312400303d02c323295f6E8b7309bc30FB6BcE' }
       ],
       polygon: [
         { symbol: 'USDT', address: '0x3813e82e6f7098b9583FC0F33a962D02018B6803' },
         { symbol: 'USDC', address: '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174' },
+        { symbol: 'DAI', address: '0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063' },
+        { symbol: 'BTC', address: '0x1BFD67037B42Cf73acF2047067bd4F2C47D9BfD6' },
+        { symbol: 'ETH', address: '0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619' },
+        { symbol: 'LINK', address: '0x53E0bca35eC356BD5ddDFebbd1Fc0fD03FaBad39' },
+        { symbol: 'AAVE', address: '0xD6DF932A45C0f255f85145f286eA0b292B21C90B' }
+      ],
+      arbitrum: [
+        { symbol: 'USDC', address: '0xaf88d065e77c8cC2239327C5EDb3A432268e5831' },
+        { symbol: 'USDT', address: '0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9' },
+        { symbol: 'ARB', address: '0x912CE59144191C1204E64559FE8253a0e49E6548' },
+        { symbol: 'BTC', address: '0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f' },
+        { symbol: 'LINK', address: '0xf97f4df75117a78c1A5a0DBb814Af92458539FB4' },
+        { symbol: 'UNI', address: '0xFa7F8980b0f1E64A2062791cc3b0871572f1F7f0' },
+        { symbol: 'ERA', address: '0x00312400303d02c323295f6E8b7309bc30FB6BcE' }
       ]
 
     };
+
 
     // ============================================================
     // UTILS
@@ -268,7 +277,6 @@
       const created = ethers.Wallet.fromPhrase(mnemonic);
       wallet = created.connect(getProvider(currentNetwork));
       walletAddress = created.address;
-      if (typeof updateReadOnlyBanner === 'function') updateReadOnlyBanner();
       return wallet;
     }
 
@@ -333,57 +341,91 @@
       };
     }
 
+    // fetchWithTimeout: aborts requests after `ms` to avoid infinite spinners
+    async function fetchWithTimeout(url, opts = {}, ms = 15000) {
+      const ctl = new AbortController();
+      const t = setTimeout(() => ctl.abort(), ms);
+      try {
+        return await fetch(url, { ...opts, signal: ctl.signal });
+      } finally {
+        clearTimeout(t);
+      }
+    }
+
+    // Safe JSON helper: tenta parsear, retorna null em qualquer falha (sem lançar)
+    async function safeJson(res) {
+      if (!res || !res.ok) return null;
+      try { return await res.json(); }
+      catch { try { const t = await res.text(); return JSON.parse(t); } catch { return null; } }
+    }
+
+    window.appFetchWithTimeout = fetchWithTimeout;
+    window.appSafeJson = safeJson;
+
+    const FALLBACK_MARKET_COINS = [
+      { id: 'bitcoin', symbol: 'btc', name: 'Bitcoin', image: 'https://assets.coingecko.com/coins/images/1/large/bitcoin.png', current_price: 118000, price_change_percentage_24h: 1.82, market_cap_rank: 1, sparkline_in_7d: { price: [111000,112500,113200,112900,115400,116800,118000] } },
+      { id: 'ethereum', symbol: 'eth', name: 'Ethereum', image: 'https://assets.coingecko.com/coins/images/279/large/ethereum.png', current_price: 3650, price_change_percentage_24h: 2.34, market_cap_rank: 2, sparkline_in_7d: { price: [3350,3400,3510,3480,3560,3610,3650] } },
+      { id: 'tether', symbol: 'usdt', name: 'Tether', image: 'https://assets.coingecko.com/coins/images/325/large/Tether.png', current_price: 1, price_change_percentage_24h: 0.01, market_cap_rank: 3, sparkline_in_7d: { price: [1,1,0.999,1.001,1,1,1] } },
+      { id: 'binancecoin', symbol: 'bnb', name: 'BNB', image: 'https://assets.coingecko.com/coins/images/825/large/bnb-icon2_2x.png', current_price: 715, price_change_percentage_24h: 1.12, market_cap_rank: 4, sparkline_in_7d: { price: [690,695,701,698,706,711,715] } },
+      { id: 'solana', symbol: 'sol', name: 'Solana', image: 'https://assets.coingecko.com/coins/images/4128/large/solana.png', current_price: 182, price_change_percentage_24h: -0.68, market_cap_rank: 5, sparkline_in_7d: { price: [188,186,184,185,183,181,182] } },
+      { id: 'usd-coin', symbol: 'usdc', name: 'USDC', image: 'https://assets.coingecko.com/coins/images/6319/large/usdc.png', current_price: 1, price_change_percentage_24h: 0, market_cap_rank: 6, sparkline_in_7d: { price: [1,1,1,0.999,1.001,1,1] } },
+      { id: 'ripple', symbol: 'xrp', name: 'XRP', image: 'https://assets.coingecko.com/coins/images/44/large/xrp-symbol-white-128.png', current_price: 2.95, price_change_percentage_24h: 0.93, market_cap_rank: 7, sparkline_in_7d: { price: [2.82,2.86,2.91,2.88,2.92,2.94,2.95] } },
+      { id: 'caldera', symbol: 'era', name: 'Caldera', image: 'https://assets.coingecko.com/coins/images/54674/large/era.jpg', current_price: 0.106, price_change_percentage_24h: 3.71, market_cap_rank: 240, sparkline_in_7d: { price: [0.095,0.098,0.101,0.099,0.103,0.105,0.106] } },
+      { id: 'chainlink', symbol: 'link', name: 'Chainlink', image: 'https://assets.coingecko.com/coins/images/877/large/chainlink-new-logo.png', current_price: 18.5, price_change_percentage_24h: 1.48, market_cap_rank: 15, sparkline_in_7d: { price: [17.6,17.9,18.1,18.0,18.2,18.4,18.5] } },
+      { id: 'uniswap', symbol: 'uni', name: 'Uniswap', image: 'https://assets.coingecko.com/coins/images/12504/large/uniswap-logo.png', current_price: 10.2, price_change_percentage_24h: -1.21, market_cap_rank: 22, sparkline_in_7d: { price: [10.6,10.5,10.3,10.4,10.1,10.0,10.2] } }
+    ];
+    window.FALLBACK_MARKET_COINS = FALLBACK_MARKET_COINS;
+
     async function getPortfolio() {
       try {
-        const res = await fetch(`https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=10&page=1&sparkline=true&x_cg_demo_api_key=${COINGECKO_KEY}`);
-        return await safeJson(res) ?? [];
-      } catch {
-        return [];
+        const res = await fetchWithTimeout(`https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=25&page=1&sparkline=true&x_cg_demo_api_key=${COINGECKO_KEY}`);
+        const data = await safeJson(res);
+        return Array.isArray(data) && data.length ? data : FALLBACK_MARKET_COINS;
+      } catch (e) {
+        console.warn('getPortfolio falhou:', e.message);
+        return FALLBACK_MARKET_COINS;
       }
     }
 
     async function getTxHistory(address) {
       try {
-        const res = await fetch(`https://api.etherscan.io/api?module=account&action=txlist&address=${address}&startblock=0&endblock=99999999&page=1&offset=10&sort=desc&apikey=${ETHERSCAN_KEY}`);
+        const res = await fetchWithTimeout(`https://api.etherscan.io/api?module=account&action=txlist&address=${address}&startblock=0&endblock=99999999&page=1&offset=10&sort=desc&apikey=${ETHERSCAN_KEY}`);
         const data = await safeJson(res);
         return data?.result ?? [];
-      } catch {
-        return [];
-      }
+      } catch { return []; }
     }
 
     async function getDexData(query) {
       try {
-        const res = await fetch(`https://api.dexscreener.com/latest/dex/search?q=${query}`);
+        const res = await fetchWithTimeout(`https://api.dexscreener.com/latest/dex/search?q=${encodeURIComponent(query)}`);
         const data = await safeJson(res);
-        return data?.pairs ? data.pairs.slice(0, 5) : [];
-      } catch {
-        return [];
-      }
+        return data?.pairs ? data.pairs.slice(0, 8) : [];
+      } catch { return []; }
     }
 
-    // Safe JSON helper: returns null if the response is not JSON (e.g. HTML error pages)
-    async function safeJson(res) {
-      const ct = res.headers.get('content-type') || '';
-      if (!ct.includes('application/json') && !ct.includes('text/json')) return null;
-      try { return await res.json(); } catch { return null; }
-    }
+    // Fallback hardcoded news, exibidas quando a API falha
+    const FALLBACK_NEWS = [
+      { title: 'Bitcoin ultrapassa novos patamares em 2026', source: { title: 'Fallback' }, url: 'https://www.coingecko.com/en/coins/bitcoin', published_at: new Date().toISOString(), currencies: [{ code: 'BTC' }] },
+      { title: 'Ethereum consolida upgrade e reduz taxas', source: { title: 'Fallback' }, url: 'https://www.coingecko.com/en/coins/ethereum', published_at: new Date().toISOString(), currencies: [{ code: 'ETH' }] },
+      { title: 'Stablecoins ganham espaço no mercado global', source: { title: 'Fallback' }, url: 'https://www.coingecko.com/en/coins/tether', published_at: new Date().toISOString(), currencies: [{ code: 'USDT' }] },
+    ];
 
     async function getCryptoNews() {
       try {
-        // CoinGecko trending (NewsAPI demo key não é válida, usamos direto o fallback)
-        const res = await fetch(`https://api.coingecko.com/api/v3/search/trending?x_cg_demo_api_key=${COINGECKO_KEY}`);
-        const data = await res.json();
-        return data.coins ? data.coins.slice(0, 10).map(c => ({
+        const res = await fetchWithTimeout(`https://api.coingecko.com/api/v3/search/trending?x_cg_demo_api_key=${COINGECKO_KEY}`);
+        const data = await safeJson(res);
+        const coins = data?.coins || [];
+        if (!coins.length) return FALLBACK_NEWS;
+        return coins.slice(0, 10).map(c => ({
           title: `${c.item.name} trending no mercado`,
           source: { title: 'CoinGecko' },
           url: `https://www.coingecko.com/en/coins/${c.item.id}`,
           published_at: new Date().toISOString(),
           currencies: [{ code: c.item.symbol.toUpperCase() }]
-        })) : [];
+        }));
       } catch (e) {
-        console.log('CoinGecko trending falhou:', e.message);
-        return [];
+        console.warn('CoinGecko trending falhou:', e.message);
+        return FALLBACK_NEWS;
       }
     }
 
@@ -439,73 +481,33 @@
     }
 
     onAuthStateChanged(auth, async (user) => {
-      console.log('[carregamento] etapa 1/4 — auth:', user ? `logado (${user.uid})` : 'deslogado');
       if (user) {
         currentUser = user;
         $('login-btn') && ($('login-btn').disabled = false, $('login-btn').textContent = "ENTRAR");
-        // Mostra o dashboard IMEDIATAMENTE com estados de "carregando" em vez de
-        // esperar todas as chamadas de rede terminarem — evita a tela em branco
-        // enquanto saldo/gas/mercado ainda estão sendo buscados.
-        showPage('dashboard');
-        setLoadingSkeleton();
         try {
-          console.log('[carregamento] etapa 2/4 — carteira: buscando dados no Firebase...');
           const walletData = await loadWalletFromFirebase(user.uid);
           if (walletData) {
             walletAddress = walletData.address;
             currentNetwork = walletData.network || "ethereum";
           }
           // Restaura carteira encriptada estritamente do IndexedDB local do usuário
-          await restoreWallet().catch((e) => console.warn('[carregamento] restoreWallet falhou (modo Somente Leitura provável):', e?.message));
-          console.log('[carregamento] etapa 2/4 — carteira OK. Endereço:', walletAddress || '(nenhuma)', '| Somente Leitura:', isReadOnly());
+          await restoreWallet().catch(() => { });
+          await initApp();
+          await loadDemoPortfolio();
+          requestNotificationPermission();
+          // use global loader to ensure inline handlers and UI bindings match
+          try { window.loadSocialFeed && window.loadSocialFeed(); } catch (e) { console.warn('loadSocialFeed failed', e); }
+          setInterval(() => { getGasPrice(); checkPriceAlerts(); }, 30000);
         } catch (e) {
-          console.error('[carregamento] etapa 2/4 — ERRO ao carregar carteira:', e);
-          showToast('Não foi possível carregar sua carteira — tentando continuar mesmo assim', 'error');
+          console.error('Erro ao carregar dados do usuário:', e);
+          showToast('Erro ao carregar dados — verifique sua conexão', 'error');
         }
-
-        // A partir daqui cada etapa é independente: uma falha (ex: mercado fora do ar)
-        // nunca deve travar as outras (ex: saldo, gas, social).
-        await initApp();
-
-        try { await loadDemoPortfolio(); }
-        catch (e) { console.error('[carregamento] portfólio demo falhou:', e); }
-
-        try { requestNotificationPermission(); }
-        catch (e) { console.warn('[carregamento] notificações falharam:', e); }
-
-        try { window.loadSocialFeed && window.loadSocialFeed(); }
-        catch (e) { console.warn('[carregamento] loadSocialFeed falhou', e); }
-
-        try { await loadGoal(); }
-        catch (e) { console.warn('[carregamento] meta financeira falhou:', e); }
-
-        initOnboarding();
-
-        setInterval(() => { loadGas(); checkPriceAlerts(); }, 30000);
+        showPage('dashboard');
       } else {
         currentUser = null;
         showPage('login');
       }
     });
-
-    // Preenche a interface com placeholders de "carregando" assim que o dashboard
-    // aparece, para nunca deixar NaN/undefined visível na tela.
-    function setLoadingSkeleton() {
-      const gasEl = $('gas-display');
-      if (gasEl) gasEl.textContent = 'Carregando taxa...';
-      const balEl = $('wallet-balance');
-      if (balEl && !walletAddress) balEl.textContent = 'Carregando...';
-      const usdEl = $('wallet-usd');
-      if (usdEl && !walletAddress) usdEl.textContent = '';
-    }
-
-    // Uma carteira está em modo Somente Leitura quando existe um endereço público
-    // (vindo do Firebase) mas não há chave privada local desbloqueada nem
-    // criptografada disponível para assinar transações.
-    function isReadOnly() {
-      return !!walletAddress && !wallet && !encryptedWallet;
-    }
-    window.isReadOnly = isReadOnly;
 
     async function initApp() {
       document.querySelectorAll('.app-name').forEach(el => el.textContent = APP_NAME);
@@ -516,40 +518,14 @@
         document.querySelectorAll('.user-email').forEach(el => el.textContent = currentUser.email || "");
         document.querySelectorAll('.user-avatar-letter').forEach(el => el.textContent = (currentUser.displayName || "U").charAt(0).toUpperCase());
       }
-      updateReadOnlyBanner();
-
-      // Cada bloco é isolado: se um falhar, os demais continuam normalmente
-      // e o erro fica registrado no console para facilitar o debug.
       if (walletAddress) {
-        try { await updateDashboard(); }
-        catch (e) { console.error('[carregamento] etapa 3/4 — ERRO ao atualizar saldo:', e); showToast('Não foi possível atualizar o saldo agora', 'error'); }
-      } else {
-        const balEl = $('wallet-balance'); if (balEl) balEl.textContent = '0.000000 ETH';
-        const usdEl = $('wallet-usd'); if (usdEl) usdEl.textContent = '≈ $0.00';
+        updateDashboard();
       }
-
-      try { await loadMarket(); console.log('[carregamento] etapa 4/4 — mercado OK'); }
-      catch (e) { console.error('[carregamento] etapa 4/4 — ERRO ao carregar mercado:', e); }
-
-      try { await loadNews(); }
-      catch (e) { console.error('[carregamento] notícias falharam:', e); }
-
-      try { await loadGas(); }
-      catch (e) { console.error('[carregamento] taxa de rede (gas) falhou:', e); }
-
-      try { if (window.populateSwapTokens) window.populateSwapTokens(); }
-      catch (e) { console.error('[carregamento] populateSwapTokens falhou:', e); }
-
-      try { if (window.loadSocialFeed) await window.loadSocialFeed(); }
-      catch (e) { console.error('[carregamento] social falhou:', e); }
-    }
-
-    // Mostra um aviso fixo (não apenas um toast) quando a carteira está em modo
-    // Somente Leitura, sem nunca bloquear a navegação entre as abas.
-    function updateReadOnlyBanner() {
-      const el = $('read-only-banner');
-      if (!el) return;
-      el.style.display = isReadOnly() ? 'block' : 'none';
+      await loadMarket();
+      await loadNews();
+      await loadGas();
+      if (window.populateSwapTokens) window.populateSwapTokens();
+      if (window.loadSocialFeed) await window.loadSocialFeed();
     }
 
     async function updateDashboard() {
@@ -593,32 +569,12 @@
       tokenList.innerHTML = rows.join('');
     }
 
-    let _allTxCache = [];
-    let _txPeriodFilter = 7; // dias (padrão)
-    let _txTypeFilter = 'all';
-
     async function loadTxHistory() {
       if (!walletAddress) return;
       const txs = await getTxHistory(walletAddress);
-      _allTxCache = Array.isArray(txs) ? txs : [];
-      renderTxHistory();
-    }
-
-    function renderTxHistory() {
       const list = $('tx-list');
-      if (!list) return;
-      if (!walletAddress) { list.innerHTML = '<p class="empty-msg">Nenhuma carteira vinculada ainda</p>'; return; }
-      const now = Date.now() / 1000;
-      const cutoff = _txPeriodFilter === 'all' ? 0 : now - (_txPeriodFilter * 86400);
-      const filtered = _allTxCache.filter(tx => {
-        if (Number(tx.timeStamp) < cutoff) return false;
-        const isOut = tx.from?.toLowerCase() === walletAddress.toLowerCase();
-        if (_txTypeFilter === 'out' && !isOut) return false;
-        if (_txTypeFilter === 'in' && isOut) return false;
-        return true;
-      });
-      if (!filtered.length) { list.innerHTML = '<p class="empty-msg">Nenhuma transação neste período</p>'; return; }
-      list.innerHTML = filtered.slice(0, 8).map(tx => {
+      if (!Array.isArray(txs) || !txs.length) { list.innerHTML = '<p class="empty-msg">Nenhuma transação encontrada</p>'; return; }
+      list.innerHTML = txs.slice(0, 8).map(tx => {
         const isOut = tx.from?.toLowerCase() === walletAddress.toLowerCase();
         const val = (parseInt(tx.value) / 1e18).toFixed(6);
         const date = new Date(tx.timeStamp * 1000).toLocaleDateString('pt-BR');
@@ -636,31 +592,25 @@
       }).join('');
     }
 
-    function setTxPeriodFilter(days, el) {
-      _txPeriodFilter = days;
-      document.querySelectorAll('.tx-filter-chip[data-period]').forEach(c => c.classList.toggle('active', c === el));
-      renderTxHistory();
-    }
-
-    function promptCustomPeriodFilter(el) {
-      const days = prompt('Ver transações dos últimos quantos dias?', '90');
-      if (!days || isNaN(parseInt(days))) return;
-      _txPeriodFilter = parseInt(days);
-      document.querySelectorAll('.tx-filter-chip[data-period]').forEach(c => c.classList.toggle('active', c === el));
-      renderTxHistory();
-    }
-
-    function setTxTypeFilter(type, el) {
-      _txTypeFilter = type;
-      document.querySelectorAll('.tx-filter-chip[data-type]').forEach(c => c.classList.toggle('active', c === el));
-      renderTxHistory();
-    }
-
     async function loadMarket() {
+      const list = $('market-list');
+      if (list && !portfolioData?.length) list.innerHTML = '<p class="loading-msg">Carregando mercado...</p>';
       const coins = await getPortfolio();
       portfolioData = coins;
-      const list = $('market-list');
+      window.portfolioData = portfolioData;
+      // Popula window._tokenMap com símbolo -> endereço (usando TOKEN_CONTRACTS conhecidos)
+      window._tokenMap = window._tokenMap || {};
+      window._tokenMapByNetwork = window._tokenMapByNetwork || {};
+      Object.entries(TOKEN_CONTRACTS || {}).forEach(([network, arr]) => {
+        window._tokenMapByNetwork[network] = window._tokenMapByNetwork[network] || {};
+        (arr || []).forEach(t => {
+          window._tokenMapByNetwork[network][t.symbol.toUpperCase()] = t.address;
+          if (!window._tokenMap[t.symbol.toUpperCase()]) window._tokenMap[t.symbol.toUpperCase()] = t.address;
+        });
+      });
+
       if (!list) return;
+      if (!coins.length) { list.innerHTML = '<p class="empty-msg">Mercado temporariamente indisponível.</p>'; return; }
 
       list.innerHTML = coins.map(c => {
         const change = c.price_change_percentage_24h || 0;
@@ -682,11 +632,16 @@
         <span class="coin-change ${change >= 0 ? 'pos' : 'neg'}">${change >= 0 ? '+' : ''}${change.toFixed(2)}%</span>
       </div>
       <div class="market-demo-actions">
-        <button class="btn-demo-buy" onclick="buyDemoAsset('${symbolUpper}', ${c.current_price})"> Comprar Demo</button>
-        <button class="btn-demo-sell" onclick="sellDemoAsset('${symbolUpper}', ${c.current_price})"> Vender Demo</button>
+        <button class="btn-demo-buy" onclick="buyDemoAsset('${symbolUpper}', ${c.current_price})">Comprar Demo</button>
+        <button class="btn-demo-sell" onclick="sellDemoAsset('${symbolUpper}', ${c.current_price})">Vender Demo</button>
+        <button class="btn-swap-real" onclick="openSwapWithToken('${symbolUpper}')">SWAP REAL</button>
+        <button class="btn-buy-real" onclick="openMoonPayForToken('${symbolUpper}')">COMPRAR REAL</button>
       </div>
     </div>`;
       }).join('');
+
+      // preenche também a aba Trading
+      if (window.renderTradingList) window.renderTradingList();
     }
 
     function createMiniChart(prices, positive) {
@@ -701,26 +656,22 @@
     }
 
     async function loadGas() {
-      const el = $('gas-display');
-      const elSend = $('gas-display-send');
-      if (el) el.textContent = 'Carregando taxa...';
-      if (elSend) elSend.textContent = 'Carregando taxa...';
       gasData = await getGasPrice();
-      const values = [gasData.SafeGasPrice, gasData.ProposeGasPrice, gasData.FastGasPrice];
-      const allValid = values.every(v => typeof v === 'number' && !Number.isNaN(v));
-      const html = allValid
-        ? `<span class="gas-low" title="Econômica"> ${gasData.SafeGasPrice}</span> <span class="gas-mid" title="Normal"> ${gasData.ProposeGasPrice}</span> <span class="gas-high" title="Rápida"> ${gasData.FastGasPrice}</span> <span class="gas-unit">Gwei</span>`
-        : null;
-      if (el) el.innerHTML = html || 'Taxa de Rede indisponível';
-      if (elSend) elSend.innerHTML = html || 'Taxa de Rede indisponível';
+      const el = $('gas-display');
+      if (!el) return;
+      if (gasData.SafeGasPrice) {
+        el.innerHTML = `<span class="gas-low" title="Lento"> ${gasData.SafeGasPrice}</span> <span class="gas-mid" title="Normal"> ${gasData.ProposeGasPrice}</span> <span class="gas-high" title="Rápido"> ${gasData.FastGasPrice}</span> <span class="gas-unit">Gwei</span>`;
+      } else {
+        el.textContent = "Gas: N/A";
+      }
     }
 
     async function loadNews() {
       const news = await getCryptoNews();
       const list = $('news-feed');
       if (!list) return;
-      if (!Array.isArray(news) || !news.length) { list.innerHTML = '<p class="empty-msg">Nenhuma notícia disponível</p>'; return; }
-      list.innerHTML = news.slice(0, 15).map(n => {
+      const items = (Array.isArray(news) && news.length) ? news : FALLBACK_NEWS;
+      list.innerHTML = items.slice(0, 15).map(n => {
         const time = new Date(n.published_at).toLocaleString('pt-BR');
         const currencies = (n.currencies || []).slice(0, 3).map(c => `<span class="tag">${c.code}</span>`).join('');
         return `<div class="news-card">
@@ -784,7 +735,6 @@
           value: ethers.parseEther(amount)
         });
         showToast(`Transação enviada: ${tx.hash}`, 'success');
-        triggerTrustPulse('🔒 Transação confirmada');
         $('send-to').value = '';
         $('send-amount').value = '';
         updateDashboard();
@@ -958,10 +908,22 @@
       if (!q) return;
       $('dex-results').innerHTML = '<p class="loading-msg">Buscando...</p>';
       const pairs = await getDexData(q);
-      if (!pairs.length) { $('dex-results').innerHTML = '<p class="empty-msg">Nenhum par encontrado</p>'; return; }
+      if (!pairs.length) { $('dex-results').innerHTML = `<p class="empty-msg">Nenhum par encontrado para '${escapeHtml(q)}'.</p>`; return; }
       $('dex-results').innerHTML = pairs.map(p => {
         const symbol = String(p.baseToken?.symbol || p.baseToken?.name || p.baseToken?.address || 'TOKEN').replace(/'/g, "\\'");
+        const address = p.baseToken?.address || '';
         const price = parseFloat(p.priceUsd || 0);
+        // registra endereço do token para uso pelo swap real
+        if (address && symbol) {
+          const network = DEX_CHAIN_TO_NETWORK[String(p.chainId || '').toLowerCase()];
+          window._tokenMap = window._tokenMap || {};
+          window._tokenMapByNetwork = window._tokenMapByNetwork || {};
+          window._tokenMap[symbol.toUpperCase()] = address;
+          if (network) {
+            window._tokenMapByNetwork[network] = window._tokenMapByNetwork[network] || {};
+            window._tokenMapByNetwork[network][symbol.toUpperCase()] = address;
+          }
+        }
         return `<div class="dex-pair">
         <div class="dex-pair-name">${p.baseToken?.symbol}/${p.quoteToken?.symbol} <span class="dex-exchange">${p.dexId}</span></div>
         <div class="dex-pair-info">
@@ -971,7 +933,11 @@
           <span>Liq: $${((p.liquidity?.usd || 0) / 1000).toFixed(1)}K</span>
         </div>
         <div class="dex-chain">${p.chainId} · <a href="${p.url}" target="_blank" rel="noopener">Ver no DEX </a></div>
-        <div class="dex-actions"><button class="dex-buy" onclick="buyDemoAsset('${symbol}', ${price})">Comprar Demo</button></div>
+        <div class="dex-actions">
+          <button class="dex-buy" onclick="buyDemoAsset('${symbol}', ${price})">Comprar Demo</button>
+          <button class="btn-swap-real" onclick="openSwapWithToken('${symbol}')">SWAP REAL</button>
+          <button class="btn-buy-real" onclick="openMoonPayForToken('${symbol}')">COMPRAR REAL</button>
+        </div>
       </div>`;
       }).join('');
     }
@@ -1005,7 +971,6 @@
         const w = await importWallet(mnemonic, pass);
         if (currentUser) await saveWalletData(currentUser.uid, "ethereum");
         showToast("Carteira importada com sucesso!", "success");
-        updateReadOnlyBanner();
         updateDashboard();
         showPage('dashboard');
       } catch (e) { showToast(e.message, "error"); }
@@ -1078,6 +1043,7 @@
       }
       if (page === 'swap') {
         if (window.populateSwapTokens) window.populateSwapTokens();
+        if (window.updateSwapNetworkBadge) window.updateSwapNetworkBadge();
       }
     }
 
@@ -1118,216 +1084,6 @@
       }
     }
 
-    // ============================================================
-    // AJUDA CONTEXTUAL (ícones "?") — usabilidade #6
-    // ============================================================
-    const HELP_TEXTS = {
-      slippage: { title: 'O que é Margem de variação?', body: 'É parecido com uma casa de câmbio: quando você troca reais por dólares, o preço pode mudar um pouquinho entre o momento em que você pede e o momento em que a troca é feita. A "margem de variação" é o quanto você aceita que o preço mude para cima ou para baixo antes de cancelar a troca automaticamente, te protegendo de uma cotação muito diferente da esperada.' },
-      taxa: { title: 'O que é Taxa de Rede?', body: 'É como uma tarifa bancária ou o custo de um DOC/TED: uma pequena taxa cobrada pela rede para processar sua transação. Ela varia de acordo com o quanto a rede está "cheia" no momento — em horários de pico, o valor sobe, assim como pedágios podem ficar mais caros em horário de rush.' },
-      extrato: { title: 'Como funciona o Extrato?', body: 'Aqui você acompanha tudo o que entrou e saiu da sua Carteira Digital, como um extrato bancário comum. Use os filtros para ver só os últimos 7 ou 30 dias, um período personalizado, ou apenas transferências enviadas ou recebidas.' },
-      meta: { title: 'Como funciona uma Meta?', body: 'Defina um valor que você quer alcançar (por exemplo, "Juntar 500 USDT") e acompanhe visualmente o seu progresso, como uma cofrinho digital. Assim que seu saldo se aproxima do valor definido, a barra de progresso vai enchendo.' },
-      trocar: { title: 'O que é Trocar Moedas?', body: 'Funciona como uma casa de câmbio digital: você entrega uma moeda e recebe outra na hora, seguindo a cotação do momento, sem precisar sair do app.' },
-      somenteLeitura: { title: 'O que é o modo Somente Leitura?', body: 'Quando sua carteira só tem o endereço público (sem a chave/seed phrase salva neste aparelho), você consegue consultar saldo, mercado e extrato normalmente, mas não pode assinar/autorizar transações — assim como consultar o saldo de uma conta sem ter o cartão em mãos.' },
-    };
-    function showHelp(topic) {
-      const info = HELP_TEXTS[topic] || { title: 'Ajuda', body: 'Em breve teremos mais detalhes sobre este recurso.' };
-      $('help-modal-title').textContent = info.title;
-      $('help-modal-body').textContent = info.body;
-      $('help-modal-overlay').classList.add('show');
-    }
-    function closeHelp() { $('help-modal-overlay').classList.remove('show'); }
-    window.showHelp = showHelp;
-    window.closeHelp = closeHelp;
-
-    // ============================================================
-    // ONBOARDING INTERATIVO — usabilidade #1 (3 a 5 passos, só na 1ª vez)
-    // ============================================================
-    const ONBOARDING_STEPS = [
-      { emoji: '👋', title: 'Bem-vindo(a) à sua Carteira Digital', body: 'Em poucos passos você vai entender como consultar saldo, transferir e trocar moedas, com a mesma facilidade de um banco digital.' },
-      { emoji: '💰', title: 'Seu saldo, sempre à vista', body: 'No topo da Carteira você vê seu saldo atualizado e um resumo do extrato — tudo em tempo real.' },
-      { emoji: '↔️', title: 'Enviar, Receber e Trocar', body: 'Use os botões de ação para transferir dinheiro, receber pagamentos ou trocar moedas, como faria em qualquer app de banco.' },
-      { emoji: '🎯', title: 'Defina suas metas', body: 'Quer juntar dinheiro para algo específico? Crie uma meta e acompanhe o progresso direto na tela da Carteira.' },
-      { emoji: '🤝', title: 'Estamos aqui para ajudar', body: 'Toque nos ícones "?" para tirar dúvidas rápidas, ou use o assistente virtual no canto da tela a qualquer momento.' },
-    ];
-    let _onboardingStep = 0;
-    function initOnboarding() {
-      if (localStorage.getItem('octo_onboarded')) return;
-      _onboardingStep = 0;
-      renderOnboardingStep();
-      $('onboarding-overlay').classList.add('show');
-    }
-    function renderOnboardingStep() {
-      const step = ONBOARDING_STEPS[_onboardingStep];
-      $('onboarding-emoji').textContent = step.emoji;
-      $('onboarding-title').textContent = step.title;
-      $('onboarding-body').textContent = step.body;
-      $('onboarding-dots').innerHTML = ONBOARDING_STEPS.map((_, i) => `<span class="onboarding-dot ${i === _onboardingStep ? 'active' : ''}"></span>`).join('');
-      $('onboarding-next-btn').textContent = _onboardingStep === ONBOARDING_STEPS.length - 1 ? 'Começar' : 'Próximo';
-    }
-    function nextOnboardingStep() {
-      if (_onboardingStep < ONBOARDING_STEPS.length - 1) { _onboardingStep++; renderOnboardingStep(); }
-      else closeOnboarding();
-    }
-    function closeOnboarding() {
-      localStorage.setItem('octo_onboarded', '1');
-      $('onboarding-overlay').classList.remove('show');
-    }
-    window.nextOnboardingStep = nextOnboardingStep;
-    window.closeOnboarding = closeOnboarding;
-
-    // ============================================================
-    // ASSISTENTE VIRTUAL (chatbot baseado em regras) — usabilidade #5
-    // ============================================================
-    const ASSISTANT_RULES = [
-      { match: /transfer|enviar|pix/i, reply: 'Para transferir: na Carteira, toque em "Enviar", informe o endereço de destino e o valor, revise a Taxa de Rede e confirme. É como fazer uma transferência bancária comum.' },
-      { match: /tax[ae]|gas/i, reply: 'A "Taxa de Rede" é como uma tarifa bancária: um valor pequeno cobrado para processar sua transação. Ela varia com o movimento da rede no momento.' },
-      { match: /trocar|swap|c[aâ]mbio/i, reply: 'Em "Trocar Moedas" você troca uma moeda por outra na hora, como numa casa de câmbio digital, direto pelo app.' },
-      { match: /somente leitura|read.?only/i, reply: 'No modo Somente Leitura você consulta saldo e extrato normalmente, mas para transferir ou trocar moedas é preciso importar sua seed phrase em Configurações.' },
-      { match: /meta|objetivo|juntar/i, reply: 'Você pode criar uma meta financeira na Carteira (ex: "Juntar 500 USDT") e acompanhar seu progresso com uma barra visual, como um cofrinho digital.' },
-      { match: /cart[aã]o/i, reply: 'Em "Meu Cartão" você vincula sua Carteira Digital ao MetaMask Card para usar seu saldo em compras do dia a dia, como um cartão de débito.' },
-      { match: /seed|frase|recupera/i, reply: 'A seed phrase é a sua chave mestra — como a senha de um cofre. Guarde-a em local seguro e nunca compartilhe com ninguém; ela é a única forma de recuperar sua carteira.' },
-    ];
-    function toggleAssistant() {
-      const overlay = $('assistant-overlay');
-      overlay.classList.toggle('show');
-    }
-    function assistantReply(text) {
-      const rule = ASSISTANT_RULES.find(r => r.match.test(text));
-      return rule ? rule.reply : 'Ainda estou aprendendo sobre isso 🙂 Tente perguntar sobre "transferência", "taxa de rede", "trocar moedas", "meta" ou "cartão".';
-    }
-    function appendAssistantMsg(text, who) {
-      const log = $('assistant-log');
-      const div = document.createElement('div');
-      div.className = `assistant-msg ${who}`;
-      div.textContent = text;
-      log.appendChild(div);
-      log.scrollTop = log.scrollHeight;
-    }
-    function sendAssistantMessage(presetText) {
-      const input = $('assistant-input');
-      const text = presetText || (input ? input.value.trim() : '');
-      if (!text) return;
-      appendAssistantMsg(text, 'user');
-      if (input) input.value = '';
-      setTimeout(() => appendAssistantMsg(assistantReply(text), 'bot'), 300);
-    }
-    window.toggleAssistant = toggleAssistant;
-    window.sendAssistantMessage = sendAssistantMessage;
-
-    // ============================================================
-    // METAS FINANCEIRAS — usabilidade #8
-    // ============================================================
-    async function promptSetGoal() {
-      const title = prompt('Qual o nome da sua meta? (ex: Viagem, Reserva de emergência)');
-      if (!title) return;
-      const target = parseFloat(prompt('Qual valor você quer alcançar, em dólares (USD)?', '500'));
-      if (!target || target <= 0) return showToast('Valor inválido', 'error');
-      const goal = { title, target, createdAt: Date.now() };
-      try {
-        if (currentUser) await set(ref(db, `users/${currentUser.uid}/goal`), goal);
-        localStorage.setItem('octo_goal', JSON.stringify(goal));
-        renderGoal(goal);
-        showToast('Meta definida com sucesso!', 'success');
-      } catch (e) {
-        console.error('[meta] erro ao salvar meta:', e);
-        showToast('Não foi possível salvar a meta agora', 'error');
-      }
-    }
-    async function loadGoal() {
-      let goal = null;
-      try {
-        if (currentUser) {
-          const snap = await get(ref(db, `users/${currentUser.uid}/goal`));
-          if (snap.exists()) goal = snap.val();
-        }
-      } catch (e) { console.warn('[meta] falha ao buscar meta no Firebase, usando cache local:', e?.message); }
-      if (!goal) {
-        try { goal = JSON.parse(localStorage.getItem('octo_goal') || 'null'); } catch { goal = null; }
-      }
-      if (goal) renderGoal(goal);
-    }
-    function renderGoal(goal) {
-      const current = parseFloat($('wallet-usd')?.textContent.replace(/[^0-9.]/g, '')) || 0;
-      const pct = Math.min(100, Math.round((current / goal.target) * 100));
-      $('goal-empty-msg').style.display = 'none';
-      $('goal-content').style.display = 'block';
-      $('goal-title-label').textContent = goal.title;
-      $('goal-percent-label').textContent = `${pct}%`;
-      $('goal-progress-fill').style.width = `${pct}%`;
-      $('goal-current-label').textContent = `$${current.toFixed(2)}`;
-      $('goal-target-label').textContent = `$${goal.target.toFixed(2)}`;
-    }
-    window.promptSetGoal = promptSetGoal;
-
-    // ============================================================
-    // MODO ACESSÍVEL — usabilidade #9
-    // ============================================================
-    function toggleA11yMode() {
-      const on = document.documentElement.classList.toggle('a11y-mode');
-      localStorage.setItem('octo_a11y', on ? '1' : '0');
-      const t = $('a11y-toggle'); if (t) t.classList.toggle('active', on);
-    }
-    function initA11yMode() {
-      const on = localStorage.getItem('octo_a11y') === '1';
-      document.documentElement.classList.toggle('a11y-mode', on);
-      const t = $('a11y-toggle'); if (t) t.classList.toggle('active', on);
-    }
-    window.toggleA11yMode = toggleA11yMode;
-
-    // ============================================================
-    // MICRO-FEEDBACK DE CONFIANÇA — usabilidade #10
-    // ============================================================
-    function triggerTrustPulse(msg) {
-      const el = $('trust-badge');
-      if (!el) return;
-      if (msg) el.textContent = msg;
-      el.classList.remove('trust-pulse');
-      void el.offsetWidth; // reinicia a animação
-      el.classList.add('trust-pulse');
-      setTimeout(() => { el.textContent = '🔒 Conexão segura'; }, 2500);
-    }
-    window.triggerTrustPulse = triggerTrustPulse;
-
-    // ============================================================
-    // INTEGRAÇÃO COM O METAMASK CARD — item 4
-    // ============================================================
-    function openMetaMaskCardModal() {
-      const hasEthereum = typeof window.ethereum !== 'undefined';
-      $('mm-card-no-extension').style.display = hasEthereum ? 'none' : 'block';
-      $('mm-card-explainer').style.display = hasEthereum ? 'block' : 'none';
-      $('mm-card-addr-preview').textContent = walletAddress ? truncAddr(walletAddress) : '(nenhum endereço vinculado ainda)';
-      $('metamask-card-modal-overlay').classList.add('show');
-    }
-    function closeMetaMaskCardModal() { $('metamask-card-modal-overlay').classList.remove('show'); }
-
-    async function connectMetaMaskCard() {
-      if (typeof window.ethereum === 'undefined') {
-        showToast('Instale a extensão MetaMask para continuar', 'error');
-        return;
-      }
-      try {
-        // Conecta automaticamente o endereço da carteira do usuário — ele não
-        // precisa copiar/colar nada manualmente.
-        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-        const address = accounts && accounts[0] ? accounts[0] : walletAddress;
-        if (!address) { showToast('Nenhum endereço disponível para vincular', 'error'); return; }
-        console.log('[MetaMask Card] vinculando endereço:', address);
-        // Abre o login do MetaMask Card já com o endereço público pronto para
-        // ser usado no vínculo (o endereço público não é segredo).
-        const cardUrl = `https://card.metamask.io/account/login?address=${encodeURIComponent(address)}`;
-        window.open(cardUrl, '_blank', 'noopener');
-        closeMetaMaskCardModal();
-        showToast(`Cartão vinculado à carteira ${truncAddr(address)}!`, 'success');
-        triggerTrustPulse('🔒 Cartão vinculado');
-      } catch (e) {
-        console.error('[MetaMask Card] erro ao conectar:', e);
-        showToast('Não foi possível conectar ao MetaMask agora', 'error');
-      }
-    }
-    window.openMetaMaskCardModal = openMetaMaskCardModal;
-    window.closeMetaMaskCardModal = closeMetaMaskCardModal;
-    window.connectMetaMaskCard = connectMetaMaskCard;
-
     window.handleLogin = handleLogin;
     window.handleRegister = handleRegister;
     window.handleLogout = handleLogout;
@@ -1354,9 +1110,6 @@
     window.sellDemoAsset = sellDemoAsset;
     window.connectWeb3 = connectWeb3;
     window.switchInnerPage = switchInnerPage;
-    window.setTxPeriodFilter = setTxPeriodFilter;
-    window.promptCustomPeriodFilter = promptCustomPeriodFilter;
-    window.setTxTypeFilter = setTxTypeFilter;
     window.initApp = initApp;
     window.switchTab = switchTab;
     window.selectGas = selectGas;
@@ -1529,30 +1282,17 @@
       try {
         const res = await fetch(`https://api.etherscan.io/api?module=gastracker&action=gasoracle&apikey=${ETHERSCAN_KEY}`);
         const data = await res.json();
-        // IMPORTANTE: quando a Etherscan retorna erro (chave inválida, rate limit, etc.)
-        // ela ainda envia um campo "result", só que como STRING de erro em vez de objeto
-        // com os preços. Um `if (data.result)` sozinho tratava essa string como válida e
-        // gerava "NaN Gwei" na tela. Por isso validamos status === "1" E o tipo do result.
-        const ok = data && data.status === "1" && data.result && typeof data.result === 'object';
-        if (!ok) {
-          console.error('[gas] resposta inesperada da Etherscan:', data && data.result);
-          return {};
+        if (data.result) {
+          gasData = data.result;
+          const gasPrices = { SafeGasPrice: parseFloat(data.result.SafeGasPrice), ProposeGasPrice: parseFloat(data.result.ProposeGasPrice), FastGasPrice: parseFloat(data.result.FastGasPrice) };
+          document.getElementById('gas-display') && (document.getElementById('gas-display').innerHTML = `
+        <span title="Lento"> ${gasPrices.SafeGasPrice}</span>
+        <span title="Normal"> ${gasPrices.ProposeGasPrice}</span>
+        <span title="Rápido"> ${gasPrices.FastGasPrice}</span> Gwei
+      `);
         }
-        const parsed = {
-          SafeGasPrice: parseFloat(data.result.SafeGasPrice),
-          ProposeGasPrice: parseFloat(data.result.ProposeGasPrice),
-          FastGasPrice: parseFloat(data.result.FastGasPrice)
-        };
-        // Se mesmo assim vier algum valor não numérico, não deixamos NaN escapar para a UI.
-        if (Object.values(parsed).some(v => Number.isNaN(v))) {
-          console.error('[gas] valores não numéricos recebidos:', data.result);
-          return {};
-        }
-        return parsed;
-      } catch (e) {
-        console.error('[gas] falha ao buscar taxa de rede:', e);
-        return {};
-      }
+        return data.result || {};
+      } catch { return {}; }
     }
 
     // ========== SEED PHRASE FUNCIONAL ==========
@@ -1802,26 +1542,37 @@
     const SWAP_TOKENS = {
       ethereum: [
         { symbol: 'ETH', address: '0x0000000000000000000000000000000000000000', decimals: 18, name: 'Ethereum' },
+        { symbol: 'BTC', address: '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599', decimals: 8, name: 'Wrapped Bitcoin' },
         { symbol: 'USDT', address: '0xdAC17F958D2ee523a2206206994597C13D831ec7', decimals: 6, name: 'Tether USD' },
         { symbol: 'USDC', address: '0xA0b86991c6218b36c1d19d4a2e9eb0ce3606eb48', decimals: 6, name: 'USD Coin' },
-        { symbol: 'DAI', address: '0x6B175474E89094C44Da98b954EedeAC495271d0F', decimals: 18, name: 'Dai Stablecoin' }
+        { symbol: 'DAI', address: '0x6B175474E89094C44Da98b954EedeAC495271d0F', decimals: 18, name: 'Dai Stablecoin' },
+        { symbol: 'LINK', address: '0x514910771AF9Ca656af840dff83E8264EcF986CA', decimals: 18, name: 'Chainlink' },
+        { symbol: 'UNI', address: '0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984', decimals: 18, name: 'Uniswap' },
+        { symbol: 'ERA', address: '0xE2AD0BF751834f2fbdC62A41014f84d67cA1de2A', decimals: 18, name: 'Caldera' }
       ],
       bsc: [
         { symbol: 'BNB', address: '0x0000000000000000000000000000000000000000', decimals: 18, name: 'Binance Coin' },
+        { symbol: 'BTC', address: '0x7130d2A12B9BCbFAe4f2634d864A1Ee1Ce3Ead9c', decimals: 18, name: 'BTCB Token' },
+        { symbol: 'ETH', address: '0x2170Ed0880ac9A755fd29B2688956BD959F933F8', decimals: 18, name: 'Ethereum Token' },
         { symbol: 'USDT', address: '0x55d398326f99059fF775485246999027B3197955', decimals: 18, name: 'Tether USD' },
         { symbol: 'BUSD', address: '0xe9e7cea3dedca5984780bafc599bd69add087d56', decimals: 18, name: 'Binance USD' },
-        { symbol: 'CAKE', address: '0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82', decimals: 18, name: 'PancakeSwap' }
+        { symbol: 'CAKE', address: '0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82', decimals: 18, name: 'PancakeSwap' },
+        { symbol: 'ERA', address: '0x00312400303d02c323295f6E8b7309bc30FB6BcE', decimals: 18, name: 'Caldera' }
       ],
       polygon: [
         { symbol: 'MATIC', address: '0x0000000000000000000000000000000000000000', decimals: 18, name: 'Polygon MATIC' },
+        { symbol: 'BTC', address: '0x1BFD67037B42Cf73acF2047067bd4F2C47D9BfD6', decimals: 8, name: 'Wrapped Bitcoin' },
+        { symbol: 'ETH', address: '0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619', decimals: 18, name: 'Wrapped Ether' },
         { symbol: 'USDT', address: '0xc2132D05D31c914a87C6611C10748AEb04B58e8F', decimals: 6, name: 'Tether USD' },
-        { symbol: 'USDC', address: '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174', decimals: 6, name: 'USD Coin' }
+        { symbol: 'USDC', address: '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174', decimals: 6, name: 'USD Coin' },
+        { symbol: 'LINK', address: '0x53E0bca35eC356BD5ddDFebbd1Fc0fD03FaBad39', decimals: 18, name: 'Chainlink' }
       ],
       arbitrum: [
         { symbol: 'ETH', address: '0x0000000000000000000000000000000000000000', decimals: 18, name: 'Ethereum' },
         { symbol: 'USDC', address: '0xaf88d065e77c8cC2239327C5EDb3A432268e5831', decimals: 6, name: 'USD Coin' },
         { symbol: 'USDT', address: '0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9', decimals: 6, name: 'Tether USD' },
-        { symbol: 'ARB', address: '0x912CE59144191C1204E64559FE8253a0e49E6548', decimals: 18, name: 'Arbitrum' }
+        { symbol: 'ARB', address: '0x912CE59144191C1204E64559FE8253a0e49E6548', decimals: 18, name: 'Arbitrum' },
+        { symbol: 'ERA', address: '0x00312400303d02c323295f6E8b7309bc30FB6BcE', decimals: 18, name: 'Caldera' }
       ]
     };
 
@@ -1837,12 +1588,12 @@
         if (mode === 'demo') {
           demoBtn.classList.add('active');
           realBtn.classList.remove('active');
-          executeBtn.textContent = 'TROCAR MOEDAS (SIMULAÇÃO)';
+          executeBtn.textContent = 'FAZER SWAP DEMO';
         } else {
           demoBtn.classList.add('active'); // fallback
           demoBtn.classList.toggle('active', mode === 'demo');
           realBtn.classList.toggle('active', mode === 'real');
-          executeBtn.textContent = mode === 'demo' ? 'TROCAR MOEDAS (SIMULAÇÃO)' : 'TROCAR MOEDAS';
+          executeBtn.textContent = mode === 'demo' ? 'FAZER SWAP DEMO' : 'FAZER SWAP REAL';
         }
       }
     }
@@ -2154,8 +1905,209 @@
     window.reverseSwapTokens = reverseSwapTokens;
     window.executeSwap = executeSwap;
 
-    // Aplica a preferência de Modo Acessível salva, já na primeira renderização.
-    initA11yMode();
+    // ========== NOVAS FUNÇÕES: SWAP REAL A PARTIR DO MERCADO ==========
+    // Atualiza o badge de rede visível na aba Swap
+    function updateSwapNetworkBadge() {
+      const badge = document.getElementById('swap-network-badge');
+      if (!badge) return;
+      const net = NETWORKS[currentNetwork];
+      if (!net) { badge.textContent = '—'; return; }
+      badge.textContent = net.name;
+      badge.style.background = (net.color || '#888') + '33';
+      badge.style.color = net.color || 'var(--text2)';
+    }
+    window.updateSwapNetworkBadge = updateSwapNetworkBadge;
+
+    const DEX_CHAIN_TO_NETWORK = {
+      ethereum: 'ethereum',
+      ether: 'ethereum',
+      eth: 'ethereum',
+      bsc: 'bsc',
+      binance: 'bsc',
+      polygon: 'polygon',
+      arbitrum: 'arbitrum',
+    };
+
+    function ensureTokenMaps() {
+      window._tokenMap = window._tokenMap || {};
+      window._tokenMapByNetwork = window._tokenMapByNetwork || {};
+      Object.entries(SWAP_TOKENS || {}).forEach(([network, tokens]) => {
+        window._tokenMapByNetwork[network] = window._tokenMapByNetwork[network] || {};
+        (tokens || []).forEach(t => {
+          const sym = String(t.symbol || '').toUpperCase();
+          if (!sym || t.address === '0x0000000000000000000000000000000000000000') return;
+          window._tokenMapByNetwork[network][sym] = t.address;
+          if (!window._tokenMap[sym]) window._tokenMap[sym] = t.address;
+        });
+      });
+      Object.entries(TOKEN_CONTRACTS || {}).forEach(([network, tokens]) => {
+        window._tokenMapByNetwork[network] = window._tokenMapByNetwork[network] || {};
+        (tokens || []).forEach(t => {
+          const sym = String(t.symbol || '').toUpperCase();
+          if (!sym || !t.address) return;
+          window._tokenMapByNetwork[network][sym] = t.address;
+          if (!window._tokenMap[sym]) window._tokenMap[sym] = t.address;
+        });
+      });
+    }
+
+    async function resolveTokenForSwap(symbol) {
+      ensureTokenMaps();
+      const sym = String(symbol || '').toUpperCase();
+      if (!sym) return null;
+      const currentTokens = SWAP_TOKENS[currentNetwork] || [];
+      const existing = currentTokens.find(t => String(t.symbol).toUpperCase() === sym);
+      if (existing) return { network: currentNetwork, token: existing };
+
+      const currentAddress = window._tokenMapByNetwork?.[currentNetwork]?.[sym];
+      if (currentAddress) {
+        return { network: currentNetwork, token: { symbol: sym, address: currentAddress, decimals: sym === 'BTC' ? 8 : 18, name: sym } };
+      }
+
+      for (const network of ['ethereum', 'bsc', 'polygon', 'arbitrum']) {
+        const token = (SWAP_TOKENS[network] || []).find(t => String(t.symbol).toUpperCase() === sym);
+        if (token) return { network, token };
+        const address = window._tokenMapByNetwork?.[network]?.[sym];
+        if (address) return { network, token: { symbol: sym, address, decimals: sym === 'BTC' ? 8 : 18, name: sym } };
+      }
+
+      try {
+        const res = await fetchWithTimeout(`https://api.dexscreener.com/latest/dex/search?q=${encodeURIComponent(sym)}`, {}, 8000);
+        const data = await safeJson(res);
+        const pairs = Array.isArray(data?.pairs) ? data.pairs : [];
+        for (const p of pairs) {
+          const network = DEX_CHAIN_TO_NETWORK[String(p.chainId || '').toLowerCase()];
+          const base = p.baseToken || {};
+          if (!network || String(base.symbol || '').toUpperCase() !== sym || !base.address) continue;
+          window._tokenMapByNetwork[network] = window._tokenMapByNetwork[network] || {};
+          window._tokenMapByNetwork[network][sym] = base.address;
+          if (!window._tokenMap[sym]) window._tokenMap[sym] = base.address;
+          return { network, token: { symbol: sym, address: base.address, decimals: sym === 'BTC' ? 8 : 18, name: base.name || sym } };
+        }
+      } catch (e) {
+        console.warn('resolveTokenForSwap falhou:', e.message);
+      }
+      return null;
+    }
+
+    // Abre a aba Swap com o token de destino pré-selecionado.
+    // Se o token não estiver em SWAP_TOKENS da rede atual, adiciona dinamicamente
+    // usando window._tokenMap (populado por loadMarket / dexSearch).
+    async function openSwapWithToken(symbol) {
+      try {
+        if (!symbol) return;
+        const sym = String(symbol).toUpperCase();
+
+        // Sempre navega primeiro — o usuário vê algo acontecer
+        if (typeof switchInnerPage === 'function') switchInnerPage('swap');
+
+        showToast(`Preparando swap de ${sym}...`, 'info');
+
+        let resolved = null;
+        try { resolved = await resolveTokenForSwap(sym); } catch (e) { console.warn('resolveTokenForSwap erro:', e); }
+
+        if (!resolved) {
+          return showToast(`${sym} não encontrado em DEXs suportadas. Tente buscar manualmente na aba DEX.`, 'warn');
+        }
+
+        if (resolved.network !== currentNetwork) {
+          currentNetwork = resolved.network;
+          document.querySelectorAll('.net-option').forEach(n => n.classList.toggle('active', n.dataset.net === currentNetwork));
+          try { if (currentUser) set(ref(db, `users/${currentUser.uid}/wallet/network`), currentNetwork); } catch(_){}
+          showToast(`Rede ajustada para ${NETWORKS[currentNetwork]?.name || currentNetwork}`, 'info');
+        }
+
+        const tokens = SWAP_TOKENS[currentNetwork] = SWAP_TOKENS[currentNetwork] || [];
+        let target = tokens.find(t => t.symbol.toUpperCase() === sym);
+        if (!target) {
+          const addr = resolved.token.address || window._tokenMapByNetwork?.[currentNetwork]?.[sym] || window._tokenMap?.[sym];
+          if (!addr) return showToast(`Endereço de contrato para ${sym} não encontrado nesta rede.`, 'warn');
+          target = { symbol: sym, address: addr, decimals: resolved.token.decimals || 18, name: resolved.token.name || sym };
+          tokens.push(target);
+        }
+
+        if (window.populateSwapTokens) window.populateSwapTokens();
+
+        const net = NETWORKS[currentNetwork];
+        const fromSel = document.getElementById('swap-from-token');
+        const toSel = document.getElementById('swap-to-token');
+        if (fromSel && net) {
+          const nativeOpt = Array.from(fromSel.options).find(o => o.value === net.symbol);
+          if (nativeOpt) fromSel.value = net.symbol;
+        }
+        if (toSel && target) {
+          const opt = Array.from(toSel.options).find(o => o.value === target.symbol);
+          if (opt) toSel.value = target.symbol;
+          else {
+            // adiciona a option manualmente se populateSwapTokens não repovoou
+            const o = document.createElement('option');
+            o.value = target.symbol; o.textContent = target.symbol;
+            toSel.appendChild(o); toSel.value = target.symbol;
+          }
+        }
+        if (window.calculateSwapOutput) window.calculateSwapOutput();
+        if (typeof updateSwapNetworkBadge === 'function') updateSwapNetworkBadge();
+        showToast(`${sym} pronto para swap na rede ${NETWORKS[currentNetwork]?.name || currentNetwork}`, 'success');
+      } catch (err) {
+        console.error('openSwapWithToken erro:', err);
+        showToast(`Erro ao preparar swap: ${err.message || err}`, 'error');
+      }
+    }
+    window.openSwapWithToken = openSwapWithToken;
+    window.resolveTokenForSwap = resolveTokenForSwap;
+
+
+    // Abre a MoonPay com um símbolo pré-selecionado (COMPRAR REAL)
+    async function openMoonPayForToken(symbol) {
+      if (!walletAddress) return showToast('Crie ou importe uma carteira antes de comprar', 'error');
+      const currencyCode = String(symbol || NETWORKS[currentNetwork].symbol).toLowerCase();
+      const params = new URLSearchParams({
+        currencyCode,
+        walletAddress,
+        baseCurrencyCode: 'brl',
+      });
+      window.open(`https://buy.moonpay.com?${params.toString()}`, '_blank');
+    }
+    window.openMoonPayForToken = openMoonPayForToken;
+
+    // Renderiza a aba Trading a partir do portfolioData carregado
+    function renderTradingList() {
+      const el = document.getElementById('trading-list');
+      if (!el) return;
+      const coins = portfolioData || [];
+      if (!coins.length) { el.innerHTML = '<p class="empty-msg">Nenhum ativo carregado ainda.</p>'; return; }
+      el.innerHTML = coins.map(c => {
+        const symbolUpper = c.symbol.toUpperCase();
+        const change = c.price_change_percentage_24h || 0;
+        return `<div class="market-item">
+          <div class="market-left">
+            <img src="${c.image}" alt="${c.symbol}" class="coin-img" onerror="this.style.display='none'">
+            <div>
+              <span class="coin-name">${c.name}</span>
+              <span class="coin-sym">${symbolUpper}</span>
+            </div>
+          </div>
+          <div class="market-right">
+            <span class="coin-price">$${c.current_price?.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 6 })}</span>
+            <span class="coin-change ${change >= 0 ? 'pos' : 'neg'}">${change >= 0 ? '+' : ''}${change.toFixed(2)}%</span>
+          </div>
+          <div class="market-demo-actions">
+            <button class="btn-demo-buy" onclick="buyDemoAsset('${symbolUpper}', ${c.current_price})">Comprar Demo</button>
+            <button class="btn-swap-real" onclick="openSwapWithToken('${symbolUpper}')">SWAP REAL</button>
+            <button class="btn-buy-real" onclick="openMoonPayForToken('${symbolUpper}')">COMPRAR REAL</button>
+          </div>
+        </div>`;
+      }).join('');
+    }
+    window.renderTradingList = renderTradingList;
+
+    // Atualiza badge sempre que a rede/pagina mudar
+    const _origSwitchNetwork = window.switchNetwork;
+    if (typeof switchNetwork === 'function') {
+      const _sn = switchNetwork;
+      window.switchNetwork = function(n) { _sn(n); updateSwapNetworkBadge(); };
+    }
+
     // ========== INTEGRAÇÃO COM O MERCADO (botões comprar/vender demo) ==========
     // Dentro da função loadMarket, adicione botões Compra/Venda Demo
     // Substitua a criação do market-item para incluir:
@@ -2199,36 +2151,6 @@
   --nav-h: 64px;
   --top-h: 52px;
 }
-
-:root.light {
-  --bg: #f8f8f6;
-  --bg2: rgba(0,0,0,0.03);
-  --bg3: rgba(0,0,0,0.06);
-  --bg4: rgba(0,0,0,0.11);
-  --border: rgba(0,0,0,0.09);
-  --border2: rgba(0,0,0,0.18);
-  --glass: rgba(255,255,255,0.8);
-  --text: #111111;
-  --text2: rgba(17,17,17,0.6);
-  --text3: rgba(17,17,17,0.35);
-  --green: #16a34a;
-  --red: #dc2626;
-  --yellow: #b45309;
-}
-:root.light body { background: var(--bg); color: var(--text); }
-:root.light .top-bar { background: rgba(248,248,246,0.92); border-bottom-color: var(--border); }
-:root.light .app-shell { background: var(--bg); }
-:root.light .wallet-card { background: rgba(255,255,255,0.9); box-shadow: 0 8px 32px rgba(0,0,0,0.1); }
-:root.light .card { background: rgba(255,255,255,0.85); box-shadow: 0 2px 12px rgba(0,0,0,0.07); }
-:root.light .bottom-nav { background: rgba(248,248,246,0.95); border-top-color: var(--border); }
-:root.light .notif-btn { background: var(--bg3); border-color: var(--border); }
-:root.light .gas-bar { background: var(--bg3); border-color: var(--border); }
-:root.light .net-option { background: var(--bg3); border-color: var(--border); }
-:root.light .seed-word { background: var(--bg3); border-color: var(--border); }
-:root.light .auth-tab.active { background: rgba(124,111,255,0.15); }
-:root.light .field-input { background: rgba(0,0,0,0.04); border-color: var(--border); color: var(--text); }
-:root.light .btn-primary { background: linear-gradient(135deg, var(--accent), var(--accent2)); }
-:root.light .main-content::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); }
 
 html { scroll-behavior: smooth; }
 
@@ -2491,8 +2413,9 @@ select.field-input option { background: #0e0e16; }
 .main-content::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 2px; }
 
 /* Inner pages */
-.inner-page { display: none; min-height: 100%; animation: fadeIn 0.22s ease; padding-bottom: calc(var(--nav-h) + 8px); }
+.inner-page { display: none; animation: fadeIn 0.22s ease; padding-bottom: calc(var(--nav-h) + 30px); }
 .inner-page.active { display: block; }
+.settings-box { padding-bottom: calc(var(--nav-h) + 30px); }
 
 .page-inner-header {
   font-family: var(--font-head); font-size: 20px; font-weight: 800;
@@ -3056,6 +2979,17 @@ select.field-input option { background: #0e0e16; }
 .btn-demo-buy:hover { border-color: rgba(74,222,128,0.4); color: var(--green); }
 .btn-demo-sell:hover { border-color: rgba(248,113,113,0.4); color: var(--red); }
 
+.btn-swap-real, .btn-buy-real {
+  font-size: 10px; padding: 4px 9px; border-radius: 6px;
+  border: 1px solid transparent; cursor: pointer;
+  transition: all 0.2s; color: #fff; font-family: var(--font-mono); font-weight: 700;
+}
+.btn-swap-real { background: linear-gradient(135deg, var(--accent2, #7c3aed), var(--accent, #22d3ee)); }
+.btn-buy-real { background: linear-gradient(135deg, #f59e0b, #ef4444); }
+.btn-swap-real:hover, .btn-buy-real:hover { filter: brightness(1.15); }
+.market-demo-actions { flex-wrap: wrap; }
+.dex-actions { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
+
 .btn-small {
   background: var(--bg3); border: 1px solid var(--border); border-radius: 6px;
   padding: 4px 10px; font-size: 11px; cursor: pointer; color: var(--text2);
@@ -3159,7 +3093,7 @@ html, body { overflow-x: hidden; max-width: 100vw; width: 100%; }
 .portfolio-card { overflow: hidden; }
 
 /* Inner page padding bottom: account for safe area */
-.inner-page { padding-bottom: calc(var(--nav-h) + env(safe-area-inset-bottom, 0px) + 8px); }
+.inner-page { padding-bottom: calc(var(--nav-h) + env(safe-area-inset-bottom, 0px) + 30px); }
 
 /* Bottom nav: safe area padding fix */
 .bottom-nav {
@@ -3192,98 +3126,6 @@ html, body { overflow-x: hidden; max-width: 100vw; width: 100%; }
 
 /* Scroll containers: touch friendly */
 .net-scroll, .cat-filter, .trending-scroll { -webkit-overflow-scrolling: touch; }
-
-/* ============================================================
-   NOVOS COMPONENTES — experiência de banco digital
-   ============================================================ */
-
-/* Ícone de ajuda contextual "?" */
-.help-tip {
-  display: inline-flex; align-items: center; justify-content: center;
-  width: 15px; height: 15px; border-radius: 50%; font-size: 10px; font-weight: 700;
-  background: var(--bg3); border: 1px solid var(--border); color: var(--text2);
-  cursor: pointer; margin-left: 4px; vertical-align: middle;
-}
-.help-tip:hover, .help-tip:focus { background: rgba(124,111,255,0.25); color: var(--text); outline: none; }
-
-/* Modal genérico reaproveitado por ajuda / onboarding / assistente / cartão */
-.generic-modal-overlay {
-  display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6);
-  z-index: 500; align-items: center; justify-content: center; padding: 20px;
-}
-.generic-modal-overlay.show { display: flex; }
-.generic-modal-box {
-  background: var(--bg); border: 1px solid var(--border); border-radius: 16px;
-  max-width: 380px; width: 100%; padding: 20px; max-height: 85vh; overflow-y: auto;
-}
-.generic-modal-box h3 { font-size: 16px; margin-bottom: 10px; }
-.generic-modal-box p { font-size: 13px; color: var(--text2); line-height: 1.5; margin-bottom: 10px; }
-.generic-modal-close { text-align: right; }
-
-/* Onboarding */
-#onboarding-overlay .generic-modal-box { text-align: center; }
-.onboarding-step-dots { display: flex; justify-content: center; gap: 6px; margin: 14px 0; }
-.onboarding-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--border); }
-.onboarding-dot.active { background: var(--accent); width: 16px; border-radius: 3px; }
-.onboarding-emoji { font-size: 38px; margin-bottom: 8px; }
-
-/* Assistente virtual (chatbot) */
-#assistant-fab {
-  position: fixed; bottom: calc(var(--nav-h) + 16px); right: 16px; z-index: 400;
-  width: 46px; height: 46px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--accent2));
-  color: #fff; border: none; font-size: 20px; cursor: pointer; box-shadow: 0 6px 18px rgba(124,111,255,0.4);
-}
-#assistant-log { display: flex; flex-direction: column; gap: 8px; max-height: 260px; overflow-y: auto; margin-bottom: 10px; }
-.assistant-msg { font-size: 12.5px; padding: 8px 10px; border-radius: 10px; max-width: 85%; line-height: 1.4; }
-.assistant-msg.bot { background: var(--bg3); align-self: flex-start; }
-.assistant-msg.user { background: rgba(124,111,255,0.2); align-self: flex-end; }
-.assistant-suggestions { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
-.assistant-chip {
-  font-size: 11px; padding: 5px 10px; border-radius: 20px; background: var(--bg3);
-  border: 1px solid var(--border); color: var(--text2); cursor: pointer;
-}
-.assistant-chip:hover { color: var(--text); border-color: var(--border2); }
-
-/* Metas financeiras */
-.goal-card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius2); padding: 14px; }
-.goal-progress-track { background: var(--bg3); border-radius: 20px; height: 10px; overflow: hidden; margin: 8px 0; }
-.goal-progress-fill { background: linear-gradient(90deg, var(--accent), var(--accent2)); height: 100%; border-radius: 20px; transition: width .4s ease; }
-.goal-progress-label { display: flex; justify-content: space-between; font-size: 11px; color: var(--text2); }
-
-/* Filtros do extrato */
-.tx-filter-row { display: flex; gap: 6px; flex-wrap: wrap; margin: 8px 0 12px; }
-.tx-filter-chip {
-  font-size: 11px; padding: 5px 10px; border-radius: 20px; background: var(--bg3);
-  border: 1px solid var(--border); color: var(--text2); cursor: pointer;
-}
-.tx-filter-chip.active { background: rgba(124,111,255,0.2); color: var(--text); border-color: rgba(124,111,255,0.4); }
-
-/* Micro-feedback de confiança */
-.trust-badge {
-  display: inline-flex; align-items: center; gap: 4px; font-size: 10px; color: #00e676;
-  background: rgba(0,230,118,0.1); border: 1px solid rgba(0,230,118,0.25); border-radius: 20px;
-  padding: 3px 8px; margin-top: 6px;
-}
-@keyframes trust-pulse { 0% { transform: scale(0.9); opacity: 0; } 60% { transform: scale(1.05); opacity: 1; } 100% { transform: scale(1); } }
-.trust-pulse { animation: trust-pulse .4s ease; }
-
-/* Modo acessível (alto contraste + fonte ampliada) */
-:root.a11y-mode { --text3: rgba(240,240,240,0.75) !important; }
-:root.a11y-mode body { font-size: 17px; }
-:root.a11y-mode .field-input, :root.a11y-mode button, :root.a11y-mode .settings-item-text { font-size: 1.1em; }
-:root.a11y-mode * :focus-visible {
-  outline: 3px solid #ffd400 !important; outline-offset: 2px;
-}
-:root.light.a11y-mode { --text3: rgba(17,17,17,0.75) !important; }
-
-/* MetaMask Card */
-.card-visual {
-  background: linear-gradient(135deg, #1a1a2e, #16213e); border-radius: 14px; padding: 18px;
-  color: #fff; margin-bottom: 14px; border: 1px solid rgba(255,255,255,0.1);
-}
-.card-visual .card-brand { font-size: 11px; letter-spacing: 0.1em; opacity: 0.7; margin-bottom: 20px; }
-.card-visual .card-addr { font-family: var(--font-mono); font-size: 13px; letter-spacing: 0.05em; }
-
   </style>
 </head>
 
@@ -4138,8 +3980,7 @@ html, body { overflow-x: hidden; max-width: 100vw; width: 100%; }
             <span class="logo-name app-name">OCTOCOOKIE</span>
           </div>
           <div class="top-bar-right">
-            <div class="gas-bar" id="gas-display" title="Taxa de Rede (Gwei)">Taxa —</div>
-            <button onclick="toggleThemeCrx()" id="themeToggleCrx" title="Alternar tema" style="width:30px;height:30px;background:var(--bg3);border:1px solid var(--border);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;cursor:pointer;transition:background .2s;padding:0;flex-shrink:0">☀️</button>
+            <div class="gas-bar" id="gas-display" title="Gas prices (Gwei)">GAS —</div>
             <div class="notif-btn" title="Notificações" onclick="toggleNotifications()"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" width="18" height="18"><path d="M10 2a6 6 0 0 1 6 6v3l1.5 2.5H2.5L4 11V8a6 6 0 0 1 6-6z"/><path d="M8 16a2 2 0 0 0 4 0"/></svg><span class="notif-dot"></span></div>
             <div class="avatar-btn user-avatar-letter" onclick="switchInnerPage('settings')">U</div>
           </div>
@@ -4150,10 +3991,6 @@ html, body { overflow-x: hidden; max-width: 100vw; width: 100%; }
 
           <!-- ===================== WALLET INNER PAGE ===================== -->
           <div class="inner-page active" id="inner-wallet">
-            <!-- Aviso fixo de modo Somente Leitura (nunca bloqueia a navegação, só avisa) -->
-            <div id="read-only-banner" style="display:none;background:rgba(255,82,82,0.08);border:1px solid rgba(255,82,82,0.35);color:#ff8a8a;border-radius:10px;padding:10px 12px;font-size:12px;margin-bottom:12px;line-height:1.4">
-              Esta carteira está em modo Somente Leitura. Importe sua seed phrase nas Configurações para transacionar.
-            </div>
             <!-- Wallet Card -->
             <div class="wallet-card">
               <div class="wallet-network">
@@ -4165,11 +4002,10 @@ html, body { overflow-x: hidden; max-width: 100vw; width: 100%; }
               </div>
               <div class="wallet-balance" id="wallet-balance">0.000000 ETH</div>
               <div class="wallet-usd" id="wallet-usd">≈ $0.00</div>
-              <div class="trust-badge" id="trust-badge">🔒 Conexão segura</div>
               <div class="wallet-actions">
                 <button class="action-btn" onclick="switchInnerPage('send')"><span class="icon">↑</span>Enviar</button>
                 <button class="action-btn" onclick="switchInnerPage('receive')"><span class="icon">↓</span>Receber</button>
-                <button class="action-btn" onclick="switchInnerPage('swap')"><span class="icon">⇄</span>Trocar</button>
+                <button class="action-btn" onclick="switchInnerPage('swap')"><span class="icon">⇄</span>Swap</button>
                 <button class="action-btn" onclick="updateDashboard()"><span class="icon">↺</span>Atualizar</button>
               </div>
             </div>
@@ -4204,40 +4040,12 @@ html, body { overflow-x: hidden; max-width: 100vw; width: 100%; }
 
             <!-- Transactions -->
             <div class="section-header" style="margin-top:10px">
-              <span class="section-title">EXTRATO <span class="help-tip" tabindex="0" role="button" aria-label="Ajuda sobre o extrato" onclick="showHelp('extrato')">?</span></span>
+              <span class="section-title">TRANSAÇÕES RECENTES</span>
               <span class="section-action" onclick="loadTxHistory()">Ver mais</span>
-            </div>
-            <div class="tx-filter-row" role="group" aria-label="Filtros do extrato">
-              <button class="tx-filter-chip active" data-period="7" onclick="setTxPeriodFilter(7, this)">7 dias</button>
-              <button class="tx-filter-chip" data-period="30" onclick="setTxPeriodFilter(30, this)">30 dias</button>
-              <button class="tx-filter-chip" data-period="custom" onclick="promptCustomPeriodFilter(this)">Personalizado</button>
-              <button class="tx-filter-chip active" data-type="all" onclick="setTxTypeFilter('all', this)">Todas</button>
-              <button class="tx-filter-chip" data-type="out" onclick="setTxTypeFilter('out', this)">Enviadas</button>
-              <button class="tx-filter-chip" data-type="in" onclick="setTxTypeFilter('in', this)">Recebidas</button>
             </div>
             <div class="tx-list" id="tx-list">
               <p class="empty-msg">Nenhuma transação</p>
             </div>
-
-            <!-- Meta Financeira -->
-            <div class="section-header" style="margin-top:10px">
-              <span class="section-title">MINHA META <span class="help-tip" tabindex="0" role="button" aria-label="Ajuda sobre metas" onclick="showHelp('meta')">?</span></span>
-              <span class="section-action" onclick="promptSetGoal()">Definir</span>
-            </div>
-            <div class="goal-card" id="goal-card">
-              <p class="empty-msg" id="goal-empty-msg">Nenhuma meta definida ainda. Toque em "Definir" para começar a juntar dinheiro para um objetivo.</p>
-              <div id="goal-content" style="display:none">
-                <div class="goal-progress-label"><span id="goal-title-label">Meta</span><span id="goal-percent-label">0%</span></div>
-                <div class="goal-progress-track"><div class="goal-progress-fill" id="goal-progress-fill" style="width:0%"></div></div>
-                <div class="goal-progress-label"><span id="goal-current-label">$0</span><span id="goal-target-label">$0</span></div>
-              </div>
-            </div>
-
-            <!-- MetaMask Card -->
-            <div class="section-header" style="margin-top:10px">
-              <span class="section-title">MEU CARTÃO</span>
-            </div>
-            <button class="btn-ghost" style="width:100%" onclick="openMetaMaskCardModal()">💳 Meu Cartão</button>
 
             <!-- Price Alert -->
             <div class="section-header" style="margin-top:10px">
@@ -4402,12 +4210,13 @@ html, body { overflow-x: hidden; max-width: 100vw; width: 100%; }
           <div class="inner-page" id="inner-swap">
             <div style="display:flex;align-items:center;gap:12px;padding:16px 16px 0">
               <button onclick="switchInnerPage('wallet')" style="color:var(--text3);font-size:22px;padding:4px;background:none;border:none;cursor:pointer">←</button>
-              <h2 class="page-inner-header" style="padding:0">Trocar Moedas</h2>
+              <h2 class="page-inner-header" style="padding:0;flex:1">Swap (DEX)</h2>
+              <span id="swap-network-badge" style="font-size:10px;font-weight:700;padding:4px 8px;border-radius:6px;background:rgba(255,255,255,0.08);color:var(--text2)">—</span>
             </div>
             <div style="padding:14px">
               <div class="tab-row" style="margin:0 0 16px;padding:0">
-                <button class="tab-btn active" id="swap-mode-demo-btn" onclick="setSwapMode('demo')">Simulação</button>
-                <button class="tab-btn" id="swap-mode-real-btn" onclick="setSwapMode('real')">Troca Real</button>
+                <button class="tab-btn active" id="swap-mode-demo-btn" onclick="setSwapMode('demo')">Swap Demo</button>
+                <button class="tab-btn" id="swap-mode-real-btn" onclick="setSwapMode('real')">Swap Real</button>
               </div>
               <div class="field-group" style="margin-bottom:12px">
                 <label class="field-label">De</label>
@@ -4430,14 +4239,17 @@ html, body { overflow-x: hidden; max-width: 100vw; width: 100%; }
                 <div style="display:flex;justify-content:space-between;margin-bottom:6px"><span>Rota</span><span id="swap-route">Uniswap V2</span></div>
                 <div style="display:flex;justify-content:space-between;margin-bottom:6px"><span>Câmbio</span><span id="swap-rate">—</span></div>
                 <div style="display:flex;justify-content:space-between;margin-bottom:6px;align-items:center">
-                  <span>Margem de variação <span class="help-tip" tabindex="0" role="button" aria-label="Ajuda sobre margem de variação" onclick="showHelp('slippage')">?</span></span>
+                  <span>Slippage</span>
                   <select class="field-input" id="swap-slippage" style="width:70px;padding:2px 6px;height:24px;font-size:11px;border-radius:4px;background:var(--bg3)">
                     <option value="0.5">0.5%</option><option value="1.0" selected>1.0%</option><option value="2.0">2.0%</option>
                   </select>
                 </div>
-                <div style="display:flex;justify-content:space-between"><span>Taxa de Rede estimada</span><span id="swap-gas">—</span></div>
+                <div style="display:flex;justify-content:space-between"><span>Gas estimado</span><span id="swap-gas">—</span></div>
               </div>
-              <button class="btn-primary" id="swap-execute-btn" onclick="executeSwap()">TROCAR MOEDAS (SIMULAÇÃO)</button>
+              <div style="display:flex;gap:8px">
+                <button class="btn-primary" id="swap-execute-btn" onclick="setSwapMode('demo');executeSwap()" style="flex:1">FAZER SWAP DEMO</button>
+                <button class="btn-primary" id="swap-execute-real-btn" onclick="setSwapMode('real');executeSwap()" style="flex:1;background:linear-gradient(135deg,var(--accent2),var(--accent))">FAZER SWAP REAL</button>
+              </div>
             </div>
           </div>
 
@@ -4598,7 +4410,7 @@ html, body { overflow-x: hidden; max-width: 100vw; width: 100%; }
 
               <div class="settings-section">
                 <div class="settings-section-title">Carteira</div>
-                <div class="settings-item" onclick="showPage('import')">
+                <div class="settings-item" onclick="switchInnerPage('import')">
                   <div class="settings-item-left">
                     <span class="settings-item-icon"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" width="18" height="18"><circle cx="7" cy="11" r="4"/><path d="M11 7l8 8M16 7l2 2"/></svg></span>
                     <div>
@@ -4627,28 +4439,6 @@ html, body { overflow-x: hidden; max-width: 100vw; width: 100%; }
                     </div>
                   </div>
                   <span class="settings-arrow">›</span>
-                </div>
-              </div>
-
-                <div class="settings-item" onclick="openMetaMaskCardModal()">
-                  <div class="settings-item-left">
-                    <span class="settings-item-icon">💳</span>
-                    <div>
-                      <div class="settings-item-text">Meu Cartão</div>
-                      <div class="settings-item-sub">Vincular ao MetaMask Card</div>
-                    </div>
-                  </div>
-                  <span class="settings-arrow">›</span>
-                </div>
-                <div class="settings-item" onclick="event.stopPropagation();toggleA11yMode()">
-                  <div class="settings-item-left">
-                    <span class="settings-item-icon"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" width="18" height="18"><circle cx="10" cy="10" r="8"/><path d="M10 6v4l3 3"/></svg></span>
-                    <div>
-                      <div class="settings-item-text">Modo leitura acessível</div>
-                      <div class="settings-item-sub">Alto contraste e fonte ampliada</div>
-                    </div>
-                  </div>
-                  <div class="toggle" id="a11y-toggle" onclick="event.stopPropagation();toggleA11yMode()"></div>
                 </div>
               </div>
 
@@ -4734,7 +4524,7 @@ html, body { overflow-x: hidden; max-width: 100vw; width: 100%; }
       <div class="modal-title">Confirmar Envio</div>
       <div class="modal-detail"><span class="label">Para</span><span id="confirm-to">—</span></div>
       <div class="modal-detail"><span class="label">Valor</span><span id="confirm-amount">—</span></div>
-      <div class="modal-detail"><span class="label">Taxa de Rede</span><span id="confirm-gas">—</span></div>
+      <div class="modal-detail"><span class="label">Gas</span><span id="confirm-gas">—</span></div>
       <div class="modal-actions">
         <button class="btn-ghost" onclick="$('confirm-modal').style.display='none'">Cancelar</button>
         <button class="btn-primary" onclick="confirmSend()">CONFIRMAR</button>
@@ -4775,73 +4565,6 @@ html, body { overflow-x: hidden; max-width: 100vw; width: 100%; }
         <button class="btn-ghost" style="flex:1" onclick="$('coin-detail-modal').style.display='none'">Fechar</button>
         <button class="btn-primary" style="flex:1" id="detail-buy-btn">Comprar Demo</button>
       </div>
-    </div>
-  </div>
-
-  <!-- Modal de Ajuda Contextual (item 6) -->
-  <div class="generic-modal-overlay" id="help-modal-overlay">
-    <div class="generic-modal-box">
-      <h3 id="help-modal-title">Ajuda</h3>
-      <p id="help-modal-body"></p>
-      <div class="generic-modal-close"><button class="btn-ghost" onclick="closeHelp()">Fechar</button></div>
-    </div>
-  </div>
-
-  <!-- Onboarding interativo (item 1) -->
-  <div class="generic-modal-overlay" id="onboarding-overlay">
-    <div class="generic-modal-box">
-      <div class="onboarding-emoji" id="onboarding-emoji">👋</div>
-      <h3 id="onboarding-title" style="text-align:center">Bem-vindo(a)</h3>
-      <p id="onboarding-body" style="text-align:center"></p>
-      <div class="onboarding-step-dots" id="onboarding-dots"></div>
-      <div style="display:flex;gap:10px">
-        <button class="btn-ghost" style="flex:1" onclick="closeOnboarding()">Pular</button>
-        <button class="btn-primary" style="flex:1" id="onboarding-next-btn" onclick="nextOnboardingStep()">Próximo</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Assistente Virtual / chatbot (item 5) -->
-  <button id="assistant-fab" title="Assistente virtual" onclick="toggleAssistant()">💬</button>
-  <div class="generic-modal-overlay" id="assistant-overlay">
-    <div class="generic-modal-box">
-      <h3>Assistente da Carteira Digital</h3>
-      <div id="assistant-log">
-        <div class="assistant-msg bot">Oi! Posso ajudar com dúvidas sobre transferências, taxas, trocar moedas, metas ou o Meu Cartão. É só perguntar 🙂</div>
-      </div>
-      <div class="assistant-suggestions">
-        <button class="assistant-chip" onclick="sendAssistantMessage('Como faço uma transferência?')">Como transferir?</button>
-        <button class="assistant-chip" onclick="sendAssistantMessage('O que é a Taxa de Rede?')">O que é Taxa de Rede?</button>
-        <button class="assistant-chip" onclick="sendAssistantMessage('O que é modo Somente Leitura?')">Somente Leitura?</button>
-      </div>
-      <div style="display:flex;gap:8px">
-        <input class="field-input" id="assistant-input" placeholder="Digite sua dúvida..." style="flex:1" onkeydown="if(event.key==='Enter')sendAssistantMessage()">
-        <button class="btn-primary" onclick="sendAssistantMessage()">Enviar</button>
-      </div>
-      <div class="generic-modal-close" style="margin-top:8px"><button class="btn-ghost" onclick="toggleAssistant()">Fechar</button></div>
-    </div>
-  </div>
-
-  <!-- MetaMask Card (item 4) -->
-  <div class="generic-modal-overlay" id="metamask-card-modal-overlay">
-    <div class="generic-modal-box">
-      <h3>💳 Meu Cartão</h3>
-      <div class="card-visual">
-        <div class="card-brand">CARTEIRA DIGITAL × METAMASK CARD</div>
-        <div class="card-addr" id="mm-card-addr-preview">—</div>
-      </div>
-      <div id="mm-card-explainer">
-        <p>O <strong>MetaMask Card</strong> é um cartão de débito que usa o saldo da sua Carteira Digital para pagamentos do dia a dia, como um cartão de débito comum ligado à sua conta.</p>
-        <p>Ao continuar, vamos conectar automaticamente o endereço público da sua carteira e abrir a página de login do MetaMask Card para você concluir o vínculo — você não precisa copiar nem colar nada.</p>
-        <button class="btn-primary" style="width:100%" onclick="connectMetaMaskCard()">Continuar e Vincular Cartão</button>
-      </div>
-      <div id="mm-card-no-extension" style="display:none">
-        <p>Para vincular seu Cartão, você precisa ter a extensão <strong>MetaMask</strong> instalada no seu navegador. É rápido:</p>
-        <p>1. Clique aqui para abrir a <a href="https://metamask.io/download/" target="_blank" rel="noopener">página de instalação do MetaMask</a>.<br>
-        2. Depois de instalar, clique no ícone da raposa 🦊 que vai aparecer no seu navegador e crie ou importe uma carteira.<br>
-        3. Volte para este app e clique em "Meu Cartão" novamente.</p>
-      </div>
-      <div class="generic-modal-close" style="margin-top:8px"><button class="btn-ghost" onclick="closeMetaMaskCardModal()">Fechar</button></div>
     </div>
   </div>
 
@@ -4907,28 +4630,69 @@ html, body { overflow-x: hidden; max-width: 100vw; width: 100%; }
     if (!el) return;
     el.innerHTML = '<p class="loading-msg">Carregando...</p>';
     try {
-      const res = await fetch('https://api.coingecko.com/api/v3/search/trending');
-      const data = await res.json();
-      const coins = data.coins || [];
+      const fetcher = window.appFetchWithTimeout || fetch;
+      const parser = window.appSafeJson || ((r) => r.json());
+      const res = await fetcher('https://api.coingecko.com/api/v3/search/trending', {}, 10000);
+      const data = await parser(res);
+      let coins = data?.coins || [];
+      if (!coins.length) {
+        coins = (window.FALLBACK_MARKET_COINS || []).slice(0, 8).map((coin, index) => ({
+          item: {
+            id: coin.id,
+            symbol: coin.symbol,
+            name: coin.name,
+            thumb: coin.image,
+            score: index,
+          }
+        }));
+      }
       el.innerHTML = coins.slice(0,10).map((c,i) => {
         const item = c.item;
+        const sym = (item.symbol || '').toUpperCase().replace(/'/g, "");
         return `<div class="market-item" style="cursor:pointer">
           <div class="market-left">
             <span class="coin-rank">#${i+1}</span>
             <img src="${item.thumb}" alt="${item.symbol}" class="coin-img" onerror="this.style.display='none'">
             <div>
               <span class="coin-name">${item.name}</span>
-              <span class="coin-sym">${item.symbol.toUpperCase()}</span>
+              <span class="coin-sym">${sym}</span>
             </div>
           </div>
           <div class="market-right">
             <span class="coin-price">Score: ${item.score+1}</span>
             <a href="https://www.coingecko.com/en/coins/${item.id}" target="_blank" rel="noopener" style="font-size:10px;color:var(--accent2);text-decoration:none">Ver ›</a>
           </div>
+          <div class="market-demo-actions">
+            <button class="btn-swap-real" onclick="event.stopPropagation();openSwapWithToken('${sym}')">SWAP REAL</button>
+            <button class="btn-buy-real" onclick="event.stopPropagation();openMoonPayForToken('${sym}')">COMPRAR REAL</button>
+          </div>
         </div>`;
       }).join('');
+      // dispara trading tab preencher também
+      if (window.renderTradingList) window.renderTradingList();
     } catch(e) {
-      el.innerHTML = '<p class="empty-msg">Erro ao carregar trending</p>';
+      const fallbackCoins = (window.FALLBACK_MARKET_COINS || []).slice(0, 8);
+      el.innerHTML = fallbackCoins.length ? fallbackCoins.map((coin, i) => {
+        const sym = (coin.symbol || '').toUpperCase().replace(/'/g, "");
+        return `<div class="market-item" style="cursor:pointer">
+          <div class="market-left">
+            <span class="coin-rank">#${i+1}</span>
+            <img src="${coin.image}" alt="${coin.symbol}" class="coin-img" onerror="this.style.display='none'">
+            <div>
+              <span class="coin-name">${coin.name}</span>
+              <span class="coin-sym">${sym}</span>
+            </div>
+          </div>
+          <div class="market-right">
+            <span class="coin-price">$${coin.current_price?.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 6 })}</span>
+            <span class="coin-change ${(coin.price_change_percentage_24h || 0) >= 0 ? 'pos' : 'neg'}">${(coin.price_change_percentage_24h || 0) >= 0 ? '+' : ''}${(coin.price_change_percentage_24h || 0).toFixed(2)}%</span>
+          </div>
+          <div class="market-demo-actions">
+            <button class="btn-swap-real" onclick="event.stopPropagation();openSwapWithToken('${sym}')">SWAP REAL</button>
+            <button class="btn-buy-real" onclick="event.stopPropagation();openMoonPayForToken('${sym}')">COMPRAR REAL</button>
+          </div>
+        </div>`;
+      }).join('') : '<p class="empty-msg">Trending temporariamente indisponível.</p>';
     }
   }
 
@@ -5063,9 +4827,5 @@ html, body { overflow-x: hidden; max-width: 100vw; width: 100%; }
   };
   </script>
 
-  <script>
-    (function(){var s=localStorage.getItem('octo-theme');if(s==='light'){document.documentElement.classList.add('light');var b=document.getElementById('themeToggleCrx');if(b)b.textContent='🌙';}})();
-    function toggleThemeCrx(){var l=document.documentElement.classList.toggle('light');var b=document.getElementById('themeToggleCrx');if(b)b.textContent=l?'🌙':'☀️';localStorage.setItem('octo-theme',l?'light':'dark');}
-  </script>
 </body>
 </html>
