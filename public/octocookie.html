@@ -20,18 +20,6 @@
   --radius:18px;--radius2:12px;--radius3:8px;
   --font-mono:'Space Mono',monospace;--font-head:'Syne',sans-serif;
 }
-:root.light{
-  --bg:#f8f8f6;--bg2:rgba(0,0,0,0.03);--bg3:rgba(0,0,0,0.06);--bg4:rgba(0,0,0,0.10);
-  --border:rgba(0,0,0,0.09);--border2:rgba(0,0,0,0.18);
-  --text:#111111;--text2:rgba(17,17,17,0.6);--text3:rgba(17,17,17,0.35);
-  --green:#1a8c1a;--red:#c0392b;--yellow:#b8860b;--blue:#1d6fa4;
-}
-:root.light body::before{background:radial-gradient(ellipse 60% 50% at 20% 30%,rgba(0,0,0,0.025) 0%,transparent 70%),radial-gradient(ellipse 40% 60% at 80% 70%,rgba(0,0,0,0.015) 0%,transparent 70%)}
-:root.light .cursor-glow{background:radial-gradient(circle,rgba(0,0,0,0.04) 0%,rgba(0,0,0,0.01) 40%,transparent 70%);mix-blend-mode:multiply}
-:root.light .card{background:rgba(255,255,255,0.85);box-shadow:0 4px 24px rgba(0,0,0,0.07),inset 0 1px 0 rgba(255,255,255,0.8)}
-:root.light .log-box{background:rgba(0,0,0,0.05)}
-:root.light button.primary{background:#111111;color:#fff;border-color:#111111}
-:root.light .theme-toggle-oc{border-color:var(--border2);background:var(--bg3);color:var(--text2)}
 html{scroll-behavior:smooth}
 body{background:var(--bg);color:var(--text);font-family:var(--font-mono);font-size:14px;line-height:1.5;min-height:100vh;overflow-x:hidden}
 body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 60% 50% at 20% 30%,rgba(255,255,255,0.03) 0%,transparent 70%),radial-gradient(ellipse 40% 60% at 80% 70%,rgba(255,255,255,0.02) 0%,transparent 70%);pointer-events:none;z-index:0}
@@ -165,7 +153,6 @@ tr:hover td{background:var(--bg3)}
       </div>
       <div id="currentTime" style="font-size:11px;color:var(--text3);font-family:var(--font-mono)">--:--:--</div>
       <div id="botStatus" class="status offline"><span class="api-dot offline" id="botStatusDot"></span> OFFLINE</div>
-      <button class="theme-toggle-oc" onclick="toggleThemeOc()" id="themeToggleOc" style="padding:6px 12px;font-size:10px;font-weight:700;letter-spacing:.08em;font-family:var(--font-mono);background:rgba(255,255,255,0.06);border:1px solid var(--border2);border-radius:20px;color:var(--text2);cursor:pointer;text-transform:uppercase;transition:all .2s;white-space:nowrap">☀️ Claro</button>
     </div>
   </div>
 
@@ -353,7 +340,7 @@ tr:hover td{background:var(--bg3)}
     <!-- STATUS DAS APIs -->
     <div class="api-status">
       <div class="api-badge"><div id="providerStatus" class="api-dot api-offline"></div><span>RPC Provider</span></div>
-      <div class="api-badge"><div id="coinGeckoStatus" class="api-dot api-paused"></div><span>CoinGecko</span></div>
+      <div class="api-badge"><div id="coinGeckoStatus" class="api-dot api-paused"></div><span>Binance</span></div>
       <div class="api-badge"><div id="dexStatus" class="api-dot api-paused"></div><span>DEX Router</span></div>
       <div class="api-badge"><div id="botEngineStatus" class="api-dot api-offline"></div><span>Bot Engine</span></div>
     </div>
@@ -416,7 +403,7 @@ tr:hover td{background:var(--bg3)}
 //  OCTOCOOKIE — CRYPTO SWAP TRADER BOT
 //  Estratégia: RSI + SMA + MACD + Bollinger
 //  Execução: DEX Swap via ethers.js
-//  Preços: CoinGecko API
+//  Preços: Binance API
 // =============================================
 
 // --- FIREBASE ---
@@ -445,14 +432,21 @@ const NETWORKS = {
 };
 
 const TOKEN_PAIRS = {
-  WETH_USDC: { tokenIn:"0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2", tokenOut:"0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48", symbolIn:"ETH",  symbolOut:"USDC", cgIn:"ethereum",        cgOut:"usd-coin",    decimalsIn:18, decimalsOut:6 },
-  WBTC_USDC: { tokenIn:"0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599", tokenOut:"0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48", symbolIn:"WBTC", symbolOut:"USDC", cgIn:"wrapped-bitcoin",  cgOut:"usd-coin",    decimalsIn:8,  decimalsOut:6 },
+  WETH_USDC: { tokenIn:"0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2", tokenOut:"0xA0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", symbolIn:"ETH",  symbolOut:"USDC", cgIn:"ethereum",        cgOut:"usd-coin",    decimalsIn:18, decimalsOut:6 },
+  WBTC_USDC: { tokenIn:"0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599", tokenOut:"0xA0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", symbolIn:"WBTC", symbolOut:"USDC", cgIn:"wrapped-bitcoin",  cgOut:"usd-coin",    decimalsIn:8,  decimalsOut:6 },
   WETH_USDT: { tokenIn:"0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2", tokenOut:"0xdAC17F958D2ee523a2206206994597C13D831ec7", symbolIn:"ETH",  symbolOut:"USDT", cgIn:"ethereum",        cgOut:"tether",      decimalsIn:18, decimalsOut:6 },
-  BNB_BUSD:  { tokenIn:"0xB8c77482e45F1F44dE1745F52C74426C631bDD52", tokenOut:"0x4Fabb145d64652a948d72533023f6E7A623C7C53", symbolIn:"BNB",  symbolOut:"BUSD", cgIn:"binancecoin",     cgOut:"binance-usd", decimalsIn:18, decimalsOut:18},
-  MATIC_USDC:{ tokenIn:"0x7D1AfA7B718fb893dB30A3aBc0Cfc608AaCfeBB0",tokenOut:"0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48", symbolIn:"MATIC",symbolOut:"USDC", cgIn:"matic-network",   cgOut:"usd-coin",    decimalsIn:18, decimalsOut:6 }
+  BNB_BUSD:  { tokenIn:"0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c", tokenOut:"0xe9e7cea3dedca5984780bafc599bd69add087d56", symbolIn:"BNB",  symbolOut:"BUSD", cgIn:"binancecoin",     cgOut:"binance-usd", decimalsIn:18, decimalsOut:18},
+  MATIC_USDC:{ tokenIn:"0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270",tokenOut:"0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174", symbolIn:"MATIC",symbolOut:"USDC", cgIn:"matic-network",   cgOut:"usd-coin",    decimalsIn:18, decimalsOut:6 }
 };
 
-const COINGECKO_KEY = "CG-8o9D3j5kmHipYh4ayEFGXjDt";
+const COINGECKO_KEY = "CG-8o9D3j5kmHipYh4ayEFGXjDt"; // não usada mais, mantida só de referência
+// Mapa dos ids internos (cgIn) para os símbolos de ticker da Binance.
+// A Binance não exige API key para o endpoint público de preço e tem CORS liberado.
+const BINANCE_SYMBOLS = { ethereum: "ETHUSDT", "wrapped-bitcoin": "BTCUSDT", binancecoin: "BNBUSDT", "matic-network": "POLUSDT" }; // MATIC migrou para POL na Binance em 2024 — MATICUSDT foi deslistado
+// Preços aproximados usados apenas para destravar o histórico se a API
+// falhar logo na primeira chamada (currentPrice nunca sai de 0 sem isso).
+// São só uma semente inicial — assim que a API voltar, os preços reais assumem.
+const SEED_PRICES = { ethereum: 3500, "wrapped-bitcoin": 65000, tether: 1, "usd-coin": 1, binancecoin: 600, "matic-network": 0.6 };
 const INFURA_KEY = "1f56a4faa8e2403da1ed011dc2895a2f";
 
 // =============================================
@@ -506,9 +500,7 @@ let state = {
   startedAt: new Date().toISOString(),
   snapshotCount: 0,
   lastLatencyMs: 0,
-  latencyHistory: [],
-  stoppedByDailyLimit: false,
-  position: null // { entryPrice, entryTime, txHash } — null = flat (sem posição aberta)
+  latencyHistory: []
 };
 
 // =============================================
@@ -635,20 +627,23 @@ async function refreshBalance() {
 }
 
 // =============================================
-//  PREÇO VIA COINGECKO
+//  PREÇO VIA BINANCE (API pública, sem key, CORS liberado)
 // =============================================
 async function fetchPrice() {
   const pair = TOKEN_PAIRS[CONFIG.pair];
   const cgId = pair.cgIn;
+  const symbol = BINANCE_SYMBOLS[cgId];
   const t0 = performance.now();
   try {
-    const res = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${cgId}&vs_currencies=usd&x_cg_demo_api_key=${COINGECKO_KEY}`, { cache:'no-store' });
-    if(!res.ok) throw new Error('CoinGecko HTTP ' + res.status);
+    if(!symbol) throw new Error('Sem símbolo Binance mapeado para ' + cgId);
+    const res = await fetch(`https://api.binance.com/api/v3/ticker/price?symbol=${symbol}`, { cache:'no-store' });
+    if(!res.ok) throw new Error('Binance HTTP ' + res.status);
     const data = await res.json();
-    const price = data[cgId]?.usd;
+    const price = data?.price;
     if(!price) throw new Error('Preço não retornado');
     state.apiStatus.coingecko = true;
     updateAPIStatus();
+    state.cgFailCount = 0;
     state.lastLatencyMs = performance.now() - t0;
     state.latencyHistory.push(state.lastLatencyMs);
     if(state.latencyHistory.length > 30) state.latencyHistory.shift();
@@ -656,8 +651,19 @@ async function fetchPrice() {
   } catch(e) {
     state.apiStatus.coingecko = false;
     updateAPIStatus();
+    state.cgFailCount = (state.cgFailCount || 0) + 1;
+    // Loga o motivo real da falha (antes isso era engolido em silêncio)
+    if(state.cgFailCount === 1 || state.cgFailCount % 5 === 0) {
+      addLog(`❌ Feed de preço falhou (${state.cgFailCount}x): ${e.message}`, 'error');
+    }
     // fallback: variação leve no último preço para manter o histórico vivo
     if(state.currentPrice > 0) return state.currentPrice * (1 + (Math.random()-0.5)*0.001);
+    // Sem preço inicial nunca definido: usa um preço-semente para destravar
+    // o histórico em vez de ficar preso em 0 para sempre.
+    if(state.cgFailCount >= 3) {
+      addLog('⚠️ Feed de preço indisponível — usando preço-semente para destravar o bot.', 'warn');
+      return SEED_PRICES[cgId] || 0;
+    }
     return 0;
   }
 }
@@ -752,9 +758,19 @@ async function executeSwap(direction) {
 
 // Versão SIMULADA do swap (sem carteira ou modo demo)
 async function simulateSwap(direction, priceAtExec) {
+  const pair = TOKEN_PAIRS[CONFIG.pair];
+  const stakeAmount = state.balance > 0 ? state.balance * (CONFIG.stakePct/100) : 1.0;
   await new Promise(r => setTimeout(r, 800 + Math.random()*400));
+  // Simula resultado com base na variação de preço após o sinal
+  const priceAfter = state.currentPrice;
+  let pnlPct;
+  if(direction === 'BUY') {
+    pnlPct = ((priceAfter - priceAtExec) / priceAtExec) * 100;
+  } else {
+    pnlPct = ((priceAtExec - priceAfter) / priceAtExec) * 100;
+  }
   const fakeHash = '0xSIM' + Math.random().toString(16).slice(2,12);
-  return { hash: fakeHash, gasUsed: '120000', priceAtExec, simulated: true };
+  return { hash: fakeHash, gasUsed: '120000', priceAtExec, pnlPct, simulated: true };
 }
 
 // =============================================
@@ -1033,24 +1049,13 @@ function pauseBot() {
   addLog('⏸ Bot pausado.', 'warn');
 }
 
-function stopBot(reason) {
+function stopBot() {
   state.botRunning = false;
   state.strategyActive = false;
   if(state.priceInterval) { clearInterval(state.priceInterval); state.priceInterval = null; }
   if(state.strategyInterval) { clearTimeout(state.strategyInterval); state.strategyInterval = null; }
-  state.stoppedByDailyLimit = (reason === 'daily-limit');
   updateStatus('offline');
-  // A carteira NUNCA é desconectada aqui — state.wallet/state.provider continuam
-  // vivos em memória. Só deixamos isso claro na barra de status para não parecer
-  // que é preciso reconectar a carteira.
-  if(state.wallet) {
-    const trunc = state.walletAddress.slice(0,6)+'...'+state.walletAddress.slice(-4);
-    updateConnectionBar('', reason === 'daily-limit'
-      ? `Bot parado (limite diário atingido) — carteira ${trunc} continua conectada.`
-      : `Bot parado pelo usuário — carteira ${trunc} continua conectada.`);
-  } else {
-    updateConnectionBar('', 'Bot parado pelo usuário.');
-  }
+  updateConnectionBar('', 'Bot parado pelo usuário.');
   addLog('⏹ Bot parado.', 'error');
   updateUI();
 }
@@ -1060,15 +1065,6 @@ function resetDaily() {
   state.trades = []; state.consecutiveLosses = 0; state.isWaitingForRecovery = false;
   updateUI(); updateTradesTable();
   addLog('🔄 Estatísticas diárias resetadas.', 'info');
-
-  // Se o bot foi parado por ter batido meta/stop/limite de trades do dia ANTERIOR,
-  // e a carteira ainda está conectada em memória, religa o bot automaticamente
-  // para o novo dia — sem precisar recarregar a página nem reconectar a carteira.
-  if(state.stoppedByDailyLimit && state.wallet) {
-    state.stoppedByDailyLimit = false;
-    addLog('🔁 Limite diário anterior zerado — retomando o bot automaticamente para o novo dia.', 'success');
-    startBot();
-  }
 }
 
 // =============================================
@@ -1082,32 +1078,7 @@ function startPriceFeed() {
     if(price > 0) updatePrice(price);
   };
   tick();
-  state.priceInterval = setInterval(tick, 8000); // CoinGecko rate limit friendly
-}
-
-function publishLiveState() {
-  if(!db) return;
-  const avg = state.latencyHistory.length ? state.latencyHistory.reduce((a,b)=>a+b,0)/state.latencyHistory.length : 0;
-  const max = state.latencyHistory.length ? Math.max(...state.latencyHistory) : 0;
-  db.ref('live_state').set({
-    // campos equivalentes a /api/latest
-    currentPrice: state.currentPrice, priceHistory: state.priceHistory.slice(-100),
-    dailyProfit: state.dailyProfitPct, wins: state.wins, losses: state.losses,
-    tradesToday: state.tradesToday, maxTrades: CONFIG.maxTrades, balance: state.balance,
-    securityLevel: CONFIG.securityLevel, riskLevel: CONFIG.riskLevel,
-    stopLoss: CONFIG.stopLoss, takeProfit: CONFIG.takeProfit, maxVolatility: CONFIG.maxVolatility,
-    botRunning: state.botRunning, openContract: state.openSwap,
-    consecutiveLosses: state.consecutiveLosses, symbol: CONFIG.pair,
-    walletAddress: state.walletAddress,
-    openPosition: !!state.position,
-    entryPrice: state.position ? state.position.entryPrice : null,
-    unrealizedPnlPct: state.position ? (((state.currentPrice - state.position.entryPrice) / state.position.entryPrice) * 100) : null,
-    // campos equivalentes a /api/dashboard
-    snapshots: state.snapshotCount, uptime_since: state.startedAt,
-    circuit_breaker: 'CLOSED', data_fresh: true,
-    latency: { last_ms: state.lastLatencyMs, avg_ms: avg, max_ms: max, history: state.latencyHistory },
-    updatedAt: Date.now()
-  }).catch(e => console.warn('Falha ao publicar live_state:', e.message));
+  state.priceInterval = setInterval(tick, 8000); // Binance tem rate limit bem mais folgado, mas mantemos 8s
 }
 
 function updatePrice(price) {
@@ -1125,32 +1096,25 @@ function updatePrice(price) {
   updateCharts();
   // Publica o estado ao vivo no Firebase para o Dashboard Analisador ler
   state.snapshotCount++;
-  publishLiveState();
-  checkPositionTargets();
-}
-
-// =============================================
-//  MONITOR DE POSIÇÃO ABERTA (Take Profit / Stop Loss real)
-// =============================================
-// Roda a cada atualização de preço. Se houver posição aberta, calcula o
-// lucro/prejuízo NÃO REALIZADO (preço atual vs preço de entrada real) e
-// fecha a posição automaticamente ao bater a meta ou o stop — em vez de
-// depender de um novo sinal de indicador para decidir vender.
-function checkPositionTargets() {
-  if(!state.position || state.openSwap || !state.botRunning) return;
-  const entry = state.position.entryPrice;
-  if(!entry || state.currentPrice <= 0) return;
-  const unrealizedPct = ((state.currentPrice - entry) / entry) * 100;
-  const el = document.getElementById('aiReason');
-  if(el && !state.strategyActive) {
-    el.textContent = `💼 Posição aberta $${entry.toFixed(2)} | Não realizado: ${unrealizedPct>=0?'+':''}${unrealizedPct.toFixed(2)}% | Meta +${CONFIG.takeProfit}% · Stop ${CONFIG.stopLoss}%`;
-  }
-  if(unrealizedPct >= CONFIG.takeProfit) {
-    addLog(`🎯 Meta de lucro da posição atingida (${unrealizedPct.toFixed(2)}% ≥ +${CONFIG.takeProfit}%) — vendendo automaticamente.`, 'success');
-    manualSwap('SELL');
-  } else if(unrealizedPct <= CONFIG.stopLoss) {
-    addLog(`🛑 Stop loss da posição atingido (${unrealizedPct.toFixed(2)}% ≤ ${CONFIG.stopLoss}%) — vendendo automaticamente.`, 'error');
-    manualSwap('SELL');
+  if(db) {
+    const avg = state.latencyHistory.length ? state.latencyHistory.reduce((a,b)=>a+b,0)/state.latencyHistory.length : 0;
+    const max = state.latencyHistory.length ? Math.max(...state.latencyHistory) : 0;
+    db.ref('live_state').set({
+      // campos equivalentes a /api/latest
+      currentPrice: state.currentPrice, priceHistory: state.priceHistory.slice(-100),
+      dailyProfit: state.dailyProfitPct, wins: state.wins, losses: state.losses,
+      tradesToday: state.tradesToday, maxTrades: CONFIG.maxTrades, balance: state.balance,
+      securityLevel: CONFIG.securityLevel, riskLevel: CONFIG.riskLevel,
+      stopLoss: CONFIG.stopLoss, takeProfit: CONFIG.takeProfit, maxVolatility: CONFIG.maxVolatility,
+      botRunning: state.botRunning, openContract: state.openSwap,
+      consecutiveLosses: state.consecutiveLosses, symbol: CONFIG.pair,
+      walletAddress: state.walletAddress,
+      // campos equivalentes a /api/dashboard
+      snapshots: state.snapshotCount, uptime_since: state.startedAt,
+      circuit_breaker: 'CLOSED', data_fresh: true,
+      latency: { last_ms: state.lastLatencyMs, avg_ms: avg, max_ms: max, history: state.latencyHistory },
+      updatedAt: Date.now()
+    }).catch(e => console.warn('Falha ao publicar live_state:', e.message));
   }
 }
 
@@ -1159,14 +1123,6 @@ function checkPositionTargets() {
 // =============================================
 function manualSwap(direction) {
   if(!state.botRunning) { addLog('Inicie o bot primeiro.', 'error'); return; }
-  if(direction === 'BUY' && state.position) {
-    addLog(`⚠️ Já existe uma posição aberta (entrada $${state.position.entryPrice.toFixed(2)}). Aguardando meta de lucro ou stop antes de comprar de novo.`, 'warn');
-    return;
-  }
-  if(direction === 'SELL' && !state.position) {
-    addLog('⚠️ Nenhuma posição aberta para vender.', 'warn');
-    return;
-  }
   addLog(`Iniciando análise de segurança para ${direction}...`, 'info');
   runSecurityAnalysis(direction);
 }
@@ -1224,27 +1180,20 @@ async function processSwap(direction) {
     result = await simulateSwap(direction, priceAtExec);
   }
 
-  if(!result) return;
-  await refreshBalance();
-
-  if(direction === 'BUY') {
-    // ABRE posição — o lucro só é conhecido (e só existe de verdade) quando
-    // a posição for FECHADA com um SELL. Não há P&L "de compra".
-    state.position = { entryPrice: priceAtExec, entryTime: Date.now(), txHash: result.hash || 'SIM' };
-    addLog(`📈 Posição aberta em $${priceAtExec.toFixed(2)} | Meta: +${CONFIG.takeProfit}% · Stop: ${CONFIG.stopLoss}%`, 'swap');
-    updateUI();
-    saveToStorage();
-  } else {
-    // FECHA posição — P&L real = preço de saída vs preço de ENTRADA da posição,
-    // não uma comparação de preço com uma janela de tempo arbitrária.
-    if(!state.position) {
-      addLog('⚠️ Venda executada sem posição registrada — P&L não pôde ser calculado.', 'warn');
-      return;
+  if(result) {
+    await refreshBalance();
+    // Calcula P&L: comparar preço após vs preço ao executar
+    await new Promise(r => setTimeout(r, 2000));
+    const priceAfter = state.currentPrice;
+    let pnlPct;
+    if(result.simulated) {
+      pnlPct = result.pnlPct || 0;
+    } else {
+      pnlPct = direction === 'BUY'
+        ? ((priceAfter - priceAtExec) / priceAtExec) * 100
+        : ((priceAtExec - priceAfter) / priceAtExec) * 100;
     }
-    const entryPrice = state.position.entryPrice;
-    const pnlPct = ((priceAtExec - entryPrice) / entryPrice) * 100;
-    state.position = null;
-    handleSwapResult(direction, pnlPct, entryPrice, priceAtExec, result.hash);
+    handleSwapResult(direction, pnlPct, priceAtExec, priceAfter, result.hash);
   }
 }
 
@@ -1261,7 +1210,7 @@ function handleSwapResult(direction, pnlPct, priceIn, priceOut, txHash) {
     id: Date.now(),
     time: new Date().toLocaleTimeString('pt-BR'),
     pair: `${pair.symbolIn}/${pair.symbolOut}`,
-    direction: 'BUY→SELL',
+    direction,
     priceIn: priceIn.toFixed(2),
     priceOut: priceOut.toFixed(2),
     result: isWin ? 'WIN' : 'LOSS',
@@ -1271,7 +1220,7 @@ function handleSwapResult(direction, pnlPct, priceIn, priceOut, txHash) {
   state.trades.unshift(trade);
   if(isWin) { state.wins++; state.consecutiveLosses = 0; }
   else { state.losses++; state.consecutiveLosses++; }
-  addLog(`${isWin?'✅ WIN':'❌ LOSS'} | Posição fechada ${pair.symbolIn}/${pair.symbolOut} | Entrada $${priceIn.toFixed(2)} → Saída $${priceOut.toFixed(2)} | P&L real: ${pnlPct>=0?'+':''}${pnlPct.toFixed(3)}%`, isWin?'success':'error');
+  addLog(`${isWin?'✅ WIN':'❌ LOSS'} | ${direction} ${pair.symbolIn}/${pair.symbolOut} | P&L: ${pnlPct>=0?'+':''}${pnlPct.toFixed(3)}%`, isWin?'success':'error');
   document.getElementById('lastTrade').textContent = new Date().toLocaleTimeString('pt-BR').slice(0,5);
   updateUI();
   updateTradesTable();
@@ -1341,19 +1290,6 @@ function startTradingStrategy() {
   // Checar limites diários
   if(checkDailyLimits()) return;
 
-  // 22. Posição já aberta — não avalia novo sinal de ENTRADA aqui.
-  // O fechamento é decidido pelo lucro/prejuízo REAL da posição
-  // (checkPositionTargets, rodando a cada preço), não por flip de indicador.
-  // Isso evita o comportamento de comprar/vender sem parar.
-  if(state.position) {
-    const unrealizedPct = ((state.currentPrice - state.position.entryPrice) / state.position.entryPrice) * 100;
-    document.getElementById('aiDecision').textContent = '💼 Posição aberta';
-    document.getElementById('aiReason').textContent = `Entrada $${state.position.entryPrice.toFixed(2)} | Não realizado: ${unrealizedPct>=0?'+':''}${unrealizedPct.toFixed(2)}% | Meta +${CONFIG.takeProfit}% · Stop ${CONFIG.stopLoss}%`;
-    state.strategyActive = false;
-    state.strategyInterval = setTimeout(startTradingStrategy, 3000);
-    return;
-  }
-
   // Calcular indicadores
   const rsi   = calculateRSI(state.priceHistory, 14);
   const sma20 = calculateSMA(state.priceHistory, 20);
@@ -1391,19 +1327,18 @@ function startTradingStrategy() {
   }
 
   // Geração de sinal: RSI + SMA + MACD
-  // Só avalia ENTRADA (BUY) — chegamos aqui sabendo que não há posição aberta.
-  // A SAÍDA (SELL) nunca é decidida por indicador; só por checkPositionTargets(),
-  // que fecha a posição quando o lucro/prejuízo REAL bate a meta ou o stop.
   let dir = null;
   // 8. RSI + 11. SMA + 12. MACD
   if(rsi < CONFIG.rsiLow && sma20 !== null && state.currentPrice > sma20 && macd.histogram > 0) {
     dir = 'BUY';
+  } else if(rsi > CONFIG.rsiHigh && sma20 !== null && state.currentPrice < sma20 && macd.histogram < 0) {
+    dir = 'SELL';
   }
 
   if(dir) {
     document.getElementById('aiDecision').textContent = `→ ${dir}`;
     document.getElementById('aiReason').textContent = `RSI:${rsi.toFixed(1)} | MACD:${macd.histogram>0?'+':''} ${macd.histogram.toFixed(6)}`;
-    addLog(`📊 SINAL ${dir}: RSI=${rsi.toFixed(1)}, Vol OK, BB OK, MACD positivo`, 'success');
+    addLog(`📊 SINAL ${dir}: RSI=${rsi.toFixed(1)}, Vol OK, BB OK, MACD ${dir==='BUY'?'positivo':'negativo'}`, 'success');
     runSecurityAnalysis(dir);
   }
 
@@ -1417,20 +1352,20 @@ function startTradingStrategy() {
 function checkDailyLimits() {
   // 15. Daily P&L stop loss
   if(state.dailyProfitPct <= CONFIG.stopLoss) {
-    addLog(`🛑 Stop Loss diário atingido (${state.dailyProfitPct.toFixed(2)}% / ${CONFIG.stopLoss}%). Bot encerrado até o próximo dia.`, 'error');
-    stopBot('daily-limit');
+    addLog(`🛑 Stop Loss diário atingido (${state.dailyProfitPct.toFixed(2)}% / ${CONFIG.stopLoss}%). Bot encerrado.`, 'error');
+    stopBot();
     return true;
   }
   // 15. Daily P&L take profit
   if(state.dailyProfitPct >= CONFIG.takeProfit) {
-    addLog(`🏁 Meta diária atingida (+${state.dailyProfitPct.toFixed(2)}%). Bot encerrado até o próximo dia.`, 'success');
-    stopBot('daily-limit');
+    addLog(`🏁 Meta diária atingida (+${state.dailyProfitPct.toFixed(2)}%). Bot encerrado.`, 'success');
+    stopBot();
     return true;
   }
   // 5. Max trades
   if(state.tradesToday >= CONFIG.maxTrades) {
-    addLog(`🔒 ${CONFIG.maxTrades} swaps realizados hoje. Bot encerrado até o próximo dia.`, 'warn');
-    stopBot('daily-limit');
+    addLog(`🔒 ${CONFIG.maxTrades} swaps realizados hoje. Bot encerrado.`, 'warn');
+    stopBot();
     return true;
   }
   return false;
@@ -1521,8 +1456,7 @@ function saveToStorage() {
       wins: state.wins, losses: state.losses, trades: state.trades.slice(0,50),
       consecutiveLosses: state.consecutiveLosses, lastUpdate: new Date().toISOString(),
       cfg_stakePct: CONFIG.stakePct, cfg_slPct: -CONFIG.stopLoss,
-      cfg_tpPct: CONFIG.takeProfit, cfg_maxTrades: CONFIG.maxTrades,
-      position: state.position
+      cfg_tpPct: CONFIG.takeProfit, cfg_maxTrades: CONFIG.maxTrades
     };
     localStorage.setItem('octocookieSwapBot', JSON.stringify(data));
     if(db) {
@@ -1537,13 +1471,6 @@ function loadFromStorage() {
     const saved = localStorage.getItem('octocookieSwapBot');
     if(!saved) return;
     const data = JSON.parse(saved);
-    // Posição aberta sobrevive à virada de dia — você continua de posse dos
-    // tokens comprados independente do calendário, então isso é restaurado
-    // sempre, antes de checar se as estatísticas diárias devem ser zeradas.
-    if(data.position) {
-      state.position = data.position;
-      addLog(`💼 Posição aberta restaurada: entrada $${data.position.entryPrice.toFixed(2)}.`, 'info');
-    }
     // Verificar se é novo dia
     const lastDate = new Date(data.lastUpdate), today = new Date();
     if(lastDate.getDate() !== today.getDate() || lastDate.getMonth() !== today.getMonth()) {
@@ -1641,23 +1568,10 @@ document.addEventListener('DOMContentLoaded', function() {
   setInterval(updateTradingHourDisplay, 10000);
   setInterval(() => { document.getElementById('currentTime').textContent = new Date().toLocaleTimeString('pt-BR'); }, 1000);
   setInterval(saveToStorage, 15000);
-  // Heartbeat para o Firebase: publica o estado real mesmo com o bot parado/pausado.
-  // Sem isso, o dashboard_analisador.html via o último retrato ANTES do bot parar
-  // (ex.: openContract=true) congelado pra sempre, e depois de 30s sem updatedAt
-  // novo mostrava "dados desatualizados — reconecte a carteira" mesmo tudo OK.
-  if(db) setInterval(publishLiveState, 5000);
-  // Midnight reset — reagenda a si mesmo a cada virada de dia (antes rodava só 1x,
-  // por isso parava de resetar/retomar depois do primeiro dia sem dar F5).
-  function scheduleMidnightReset() {
-    const now = new Date();
-    const nextMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate()+1, 0, 0, 5);
-    setTimeout(() => {
-      resetDaily();
-      addLog('🌅 Novo dia — reset automático.', 'info');
-      scheduleMidnightReset();
-    }, nextMidnight - now);
-  }
-  scheduleMidnightReset();
+  // Midnight reset
+  const now = new Date();
+  const nextMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate()+1, 0,0,5);
+  setTimeout(() => { resetDaily(); addLog('🌅 Novo dia — reset automático.', 'info'); }, nextMidnight-now);
 
   // Terms
   const termsPopup = document.getElementById('termsPopup');
@@ -1673,12 +1587,8 @@ document.addEventListener('DOMContentLoaded', function() {
   } catch(e) { if(termsPopup) termsPopup.style.display='flex'; }
 
   addLog('✅ OCTOCOOKIE Swap Trader Bot pronto. Conecte sua carteira e clique INICIAR.', 'success');
-  addLog('APIs: CoinGecko (preços) · ethers.js (execução) · Uniswap/PancakeSwap (DEX)', 'info');
+  addLog('APIs: Binance (preços) · ethers.js (execução) · Uniswap/PancakeSwap (DEX)', 'info');
 });
 </script>
-  <script>
-    (function(){var s=localStorage.getItem('octo-theme');if(s==='light'){document.documentElement.classList.add('light');var b=document.getElementById('themeToggleOc');if(b){b.textContent='🌙 Escuro';}}})();
-    function toggleThemeOc(){var l=document.documentElement.classList.toggle('light');var b=document.getElementById('themeToggleOc');if(b){b.textContent=l?'🌙 Escuro':'☀️ Claro';}localStorage.setItem('octo-theme',l?'light':'dark');}
-  </script>
 </body>
 </html>
