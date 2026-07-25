@@ -66,7 +66,7 @@ function SimulatorPage() {
     <div className="flex h-screen w-full">
       <AppSidebar threads={threads} onThreadsChange={setThreads} />
       <main className="flex-1 overflow-y-auto">
-        <div className="mx-auto max-w-5xl px-6 py-10">
+        <div className="mx-auto max-w-5xl px-6 pb-10 pt-16 md:pt-10">
           <div className="mb-6">
             <h1 className="text-2xl font-semibold">Simulador de bot de trading</h1>
             <p className="mt-1 text-sm text-muted-foreground">

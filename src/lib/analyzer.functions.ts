@@ -63,11 +63,11 @@ export const analyzeToken = createServerFn({ method: "POST" })
 
     let analysis = "";
     try {
-      const key = process.env.LOVABLE_API_KEY;
+      const key = process.env.GROQ_API_KEY;
       if (key) {
         const gateway = createLovableAiGatewayProvider(key);
         const { text } = await generateText({
-          model: gateway("google/gemini-3.6-flash"),
+          model: gateway("llama-3.3-70b-versatile"),
           prompt: `Você é o OctoCookie, analista educacional. Explique em português BR de forma didática e neutra o token abaixo em 3 parágrafos curtos:
 1) O que é o projeto (com base na descrição).
 2) O que os números atuais dizem (preço, market cap, variações 24h/7d/30d, volume, distância do ATH).

@@ -71,7 +71,7 @@ export function ChatWindow({ thread, onUpdate }: Props) {
             <img src={mascot} alt="OctoCookie" width={96} height={96} className="h-24 w-24 opacity-90" />
           </div>
         ) : (
-          <div className="mx-auto flex max-w-3xl flex-col gap-6 px-6 py-8 pb-40">
+          <div className="mx-auto flex max-w-3xl flex-col gap-6 px-4 pb-40 pt-16 sm:px-6 md:pt-8">
             {messages.map((m) => {
               const text = m.parts
                 .map((p) => (p.type === "text" ? p.text : ""))
@@ -79,7 +79,7 @@ export function ChatWindow({ thread, onUpdate }: Props) {
               if (m.role === "user") {
                 return (
                   <div key={m.id} className="flex justify-end">
-                    <div className="max-w-[80%] whitespace-pre-wrap rounded-2xl bg-secondary px-4 py-2.5 text-sm text-secondary-foreground">
+                    <div className="max-w-[85%] whitespace-pre-wrap rounded-2xl bg-secondary px-4 py-2.5 text-sm text-secondary-foreground sm:max-w-[80%]">
                       {text}
                     </div>
                   </div>
@@ -98,7 +98,7 @@ export function ChatWindow({ thread, onUpdate }: Props) {
         )}
       </div>
 
-      <div className={cn("absolute inset-x-0 bottom-0 flex justify-center px-6 pb-8", isEmpty ? "top-1/2 translate-y-6 items-start" : "")}>
+      <div className={cn("absolute inset-x-0 bottom-0 flex justify-center px-3 pb-6 sm:px-6 sm:pb-8", isEmpty ? "top-1/2 translate-y-6 items-start" : "")}>
         <form
           onSubmit={handleSubmit}
           className="w-full max-w-3xl rounded-3xl bg-muted/80 p-2 shadow-sm ring-1 ring-border/60 backdrop-blur"

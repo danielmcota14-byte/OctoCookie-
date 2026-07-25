@@ -64,7 +64,7 @@ function IdePage() {
     <div className="flex h-screen w-full">
       <AppSidebar threads={threads} onThreadsChange={setThreads} />
       <main className="flex-1 overflow-y-auto">
-        <div className="mx-auto max-w-6xl px-6 py-10">
+        <div className="mx-auto max-w-6xl px-6 pb-10 pt-16 md:pt-10">
           <div className="mb-6 flex items-start justify-between gap-4">
             <div>
               <h1 className="text-2xl font-semibold">CookieScript IDE</h1>
