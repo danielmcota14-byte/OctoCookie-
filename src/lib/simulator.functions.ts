@@ -53,8 +53,8 @@ const Trades = z.object({
 export const runSimulation = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => Input.parse(input))
   .handler(async ({ data }) => {
-    const key = process.env.LOVABLE_API_KEY;
-    if (!key) throw new Error("Missing LOVABLE_API_KEY");
+    const key = process.env.GROQ_API_KEY;
+    if (!key) throw new Error("Missing GROQ_API_KEY");
 
     const seed = data.seed ?? Math.floor(Math.random() * 1e9);
     const candles = synth(data.bars, seed);
@@ -83,7 +83,7 @@ Responda APENAS com JSON válido no formato:
     let parsed: z.infer<typeof Trades>;
     try {
       const { text } = await generateText({
-        model: gateway("google/gemini-3.6-flash"),
+        model: gateway("llama-3.3-70b-versatile"),
         prompt,
       });
       const jsonStr = text.replace(/^```json\s*/i, "").replace(/^```\s*/i, "").replace(/```\s*$/i, "").trim();

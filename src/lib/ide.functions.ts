@@ -18,8 +18,8 @@ const IdeSchema = z.object({
 export const runCookieScript = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => IdeInput.parse(input))
   .handler(async ({ data }) => {
-    const key = process.env.LOVABLE_API_KEY;
-    if (!key) throw new Error("Missing LOVABLE_API_KEY");
+    const key = process.env.GROQ_API_KEY;
+    if (!key) throw new Error("Missing GROQ_API_KEY");
 
     const gateway = createLovableAiGatewayProvider(key);
     const prompt = `Você é o interpretador educacional do CookieScript, uma linguagem didática em português com módulos como:
@@ -46,7 +46,7 @@ Responda APENAS com JSON válido no formato:
 
     try {
       const { text } = await generateText({
-        model: gateway("google/gemini-3.6-flash"),
+        model: gateway("llama-3.3-70b-versatile"),
         prompt,
       });
       const clean = text.replace(/^```json\s*/i, "").replace(/^```\s*/i, "").replace(/```\s*$/i, "").trim();

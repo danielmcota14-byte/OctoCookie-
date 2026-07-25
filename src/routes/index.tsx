@@ -31,16 +31,16 @@ function Home() {
     <div className="flex h-screen w-full">
       <AppSidebar threads={threads} onThreadsChange={setThreads} />
       <main className="flex flex-1 flex-col">
-        <div className="flex items-center justify-between border-b px-6 py-3">
-          <div className="flex items-center gap-2">
-            <img src={mascot} alt="" width={20} height={20} className="h-5 w-5" />
-            <h1 className="text-sm font-medium">Cryptex — Carteira</h1>
+        <div className="flex flex-wrap items-center justify-between gap-x-2 gap-y-1 border-b py-3 pl-14 pr-4 md:px-6">
+          <div className="flex min-w-0 items-center gap-2">
+            <img src={mascot} alt="" width={20} height={20} className="h-5 w-5 shrink-0" />
+            <h1 className="truncate text-sm font-medium">Cryptex — Carteira</h1>
           </div>
           <a
             href="/octocookie-app/cryptex.html"
             target="_blank"
             rel="noreferrer"
-            className="text-xs text-muted-foreground hover:text-foreground"
+            className="shrink-0 text-xs text-muted-foreground hover:text-foreground"
           >
             Abrir em nova aba
           </a>

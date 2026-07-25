@@ -30,13 +30,13 @@ function BotTrading() {
     <div className="flex h-screen w-full">
       <AppSidebar threads={threads} onThreadsChange={setThreads} />
       <main className="flex flex-1 flex-col">
-        <div className="flex items-center justify-between border-b px-6 py-3">
-          <h1 className="text-sm font-medium">Bot Trading</h1>
+        <div className="flex flex-wrap items-center justify-between gap-x-2 gap-y-1 border-b py-3 pl-14 pr-4 md:px-6">
+          <h1 className="truncate text-sm font-medium">Bot Trading</h1>
           <a
             href="/octocookie-app/octocookie.html"
             target="_blank"
             rel="noreferrer"
-            className="text-xs text-muted-foreground hover:text-foreground"
+            className="shrink-0 text-xs text-muted-foreground hover:text-foreground"
           >
             Abrir em nova aba
           </a>

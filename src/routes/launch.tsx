@@ -29,7 +29,7 @@ function Launch() {
     <div className="flex h-screen w-full">
       <AppSidebar threads={threads} onThreadsChange={setThreads} />
       <main className="flex-1 overflow-y-auto">
-        <div className="mx-auto max-w-3xl px-6 py-12">
+        <div className="mx-auto max-w-3xl px-6 pb-12 pt-16 md:pt-12">
           <h1 className="text-2xl font-semibold">Explorar</h1>
           <p className="mt-2 text-sm text-muted-foreground">
             Trilhas de aprendizado. Escolha um tema e comece uma conversa com o OctoCookie.
