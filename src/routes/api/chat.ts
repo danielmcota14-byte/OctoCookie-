@@ -28,11 +28,18 @@ export const Route = createFileRoute("/api/chat")({
         const key = process.env.GROQ_API_KEY;
         if (!key) return new Response("Missing GROQ_API_KEY", { status: 500 });
 
+        // Mantém só as últimas mensagens no histórico enviado ao modelo.
+        // O plano gratuito da Groq tem um limite de tokens por minuto; como o
+        // histórico completo é reenviado a cada nova pergunta, conversas mais
+        // longas rapidamente estouram esse limite. Isso permite mais perguntas
+        // seguidas antes de esbarrar no limite.
+        const recentMessages = (messages as UIMessage[]).slice(-16);
+
         const gateway = createLovableAiGatewayProvider(key);
         const result = streamText({
           model: gateway("llama-3.3-70b-versatile"),
           system: SYSTEM_PROMPT,
-          messages: await convertToModelMessages(messages as UIMessage[]),
+          messages: await convertToModelMessages(recentMessages),
         });
 
         return result.toUIMessageStreamResponse({

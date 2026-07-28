@@ -16,7 +16,7 @@ export function ChatWindow({ thread, onUpdate }: Props) {
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  const { messages, sendMessage, status } = useChat({
+  const { messages, sendMessage, status, error } = useChat({
     id: thread.id,
     messages: thread.messages,
     transport: new DefaultChatTransport({ api: "/api/chat" }),
@@ -93,6 +93,13 @@ export function ChatWindow({ thread, onUpdate }: Props) {
             })}
             {status === "submitted" && (
               <div className="text-sm text-muted-foreground">Pensando…</div>
+            )}
+            {error && (
+              <div className="rounded-lg border border-destructive/40 bg-destructive/10 px-4 py-3 text-sm text-destructive">
+                {/rate.?limit|429|quota/i.test(error.message)
+                  ? "Muitas mensagens em pouco tempo — o limite de uso da IA foi atingido. Espere um minuto e tente de novo."
+                  : "Não foi possível obter uma resposta agora. Tente novamente em instantes."}
+              </div>
             )}
           </div>
         )}

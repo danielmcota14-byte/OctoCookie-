@@ -8,11 +8,29 @@ const IdeInput = z.object({
 });
 
 const IdeSchema = z.object({
-  output: z.string(),
-  variables: z.record(z.string(), z.string()).default({}),
-  files: z.array(z.object({ path: z.string(), preview: z.string() })).default([]),
-  errors: z.array(z.string()).default([]),
-  explanation: z.string(),
+  output: z
+    .union([z.string(), z.array(z.union([z.string(), z.number()]))])
+    .transform((v) => (Array.isArray(v) ? v.join("\n") : v)),
+  variables: z
+    .record(z.string(), z.any())
+    .default({})
+    .transform((obj) => {
+      const out: Record<string, string> = {};
+      for (const [k, v] of Object.entries(obj)) {
+        out[k] = typeof v === "string" ? v : JSON.stringify(v);
+      }
+      return out;
+    }),
+  files: z
+    .array(
+      z.object({
+        path: z.string(),
+        preview: z.union([z.string(), z.number()]).transform(String),
+      }),
+    )
+    .default([]),
+  errors: z.array(z.union([z.string(), z.number()]).transform(String)).default([]),
+  explanation: z.string().default(""),
 });
 
 export const runCookieScript = createServerFn({ method: "POST" })
@@ -42,7 +60,9 @@ ${data.code}
 \`\`\`
 
 Responda APENAS com JSON válido no formato:
-{"output":"stdout linha a linha","variables":{"nome":"valor",...},"files":[{"path":"arquivo.txt","preview":"conteúdo simulado (até 400 chars)"}],"errors":["mensagem de erro se houver"],"explanation":"explicação didática curta em pt-BR do que o código faz e possíveis melhorias"}`;
+{"output":"stdout linha a linha","variables":{"nome":"valor sempre como string, mesmo números (ex: \\"12\\" e não 12)",...},"files":[{"path":"arquivo.txt","preview":"conteúdo simulado (até 400 chars)"}],"errors":["mensagem de erro se houver"],"explanation":"explicação didática curta em pt-BR do que o código faz e possíveis melhorias"}
+
+IMPORTANTE: todo valor dentro de "variables" deve ser sempre uma string entre aspas no JSON, mesmo quando o valor real é um número, booleano ou objeto.`;
 
     try {
       const { text } = await generateText({
