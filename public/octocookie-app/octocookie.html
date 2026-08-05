@@ -720,6 +720,43 @@ async function fetchPrice() {
 }
 
 // =============================================
+//  HELPERS UNISWAP V3
+// =============================================
+// Testa exactInputSingle nas fee tiers mais comuns (0.3% / 0.05% / 1%) via
+// staticCall antes de enviar de verdade — evita queimar gas em pool inexistente
+// e evita o CALL_EXCEPTION "silencioso" de tentar a tier errada.
+async function trySwapV3ExactInputSingle(router, baseParams, feeTiers, overrides) {
+  let lastErr;
+  for(const fee of feeTiers) {
+    const params = { ...baseParams, fee };
+    try {
+      await router.exactInputSingle.staticCall(params, overrides);
+      return await router.exactInputSingle(params, overrides);
+    } catch(err) {
+      lastErr = err;
+    }
+  }
+  throw lastErr || new Error('Nenhuma pool Uniswap V3 encontrada para este par.');
+}
+
+// Mesma lógica, mas via multicall (swap + unwrapWETH9) para o caminho Token → ETH
+async function trySwapV3Multicall(router, baseParams, feeTiers, deadline, recipient, overrides) {
+  let lastErr;
+  for(const fee of feeTiers) {
+    const params = { ...baseParams, fee };
+    const swapData = router.interface.encodeFunctionData("exactInputSingle", [params]);
+    const unwrapData = router.interface.encodeFunctionData("unwrapWETH9", [0n, recipient]);
+    try {
+      await router.multicall.staticCall(deadline, [swapData, unwrapData], overrides);
+      return await router.multicall(deadline, [swapData, unwrapData], overrides);
+    } catch(err) {
+      lastErr = err;
+    }
+  }
+  throw lastErr || new Error('Nenhuma pool Uniswap V3 encontrada para este par.');
+}
+
+// =============================================
 //  EXECUÇÃO REAL DE SWAP (ethers.js + DEX)
 // =============================================
 async function executeSwap(direction) {
@@ -736,10 +773,6 @@ async function executeSwap(direction) {
   try {
     const stakeAmount = state.balance * (CONFIG.stakePct / 100);
     const amountIn = ethers.parseEther(stakeAmount.toFixed(6));
-    if (amountIn === 0n) {
-      addLog('Valor de swap é zero. Saldo muito baixo ou stake% demasiado baixo.', 'error');
-      return null;
-    }
     const deadline = Math.floor(Date.now()/1000) + 300;
     const slippageFactor = BigInt(Math.floor((1 - CONFIG.slippage/100) * 10000));
     // Obter quote do preço atual
@@ -751,44 +784,81 @@ async function executeSwap(direction) {
       const expectedOut = stakeAmount * priceAtExec;
       const outRaw = BigInt(Math.floor(expectedOut * Math.pow(10, pair.decimalsOut)));
       amountOutMin = (outRaw * slippageFactor) / BigInt(10000);
-      if (amountOutMin === 0n) {
-        addLog('Quantidade mínima de saída é zero. Verifique slippage ou preço.', 'warn');
-      }
     }
 
-    const isV3Router = net.dex === 'Uniswap V3';
+    // ABI do router Uniswap V2 / PancakeSwap / QuickSwap (redes bsc, polygon)
+    const routerABIv2 = [
+      "function swapExactETHForTokens(uint amountOutMin, address[] calldata path, address to, uint deadline) external payable returns (uint[] memory amounts)",
+      "function swapExactTokensForETH(uint amountIn, uint amountOutMin, address[] calldata path, address to, uint deadline) external returns (uint[] memory amounts)",
+      "function getAmountsOut(uint amountIn, address[] calldata path) external view returns (uint[] memory amounts)"
+    ];
+
+    // ABI do SwapRouter Uniswap V3 (redes ethereum, arbitrum) — o router V3
+    // NÃO tem swapExactETHForTokens/swapExactTokensForETH, por isso o swap
+    // revertia (CALL_EXCEPTION) ao chamar essas funções nesse contrato.
+    const routerABIv3 = [
+      "function exactInputSingle((address tokenIn,address tokenOut,uint24 fee,address recipient,uint256 deadline,uint256 amountIn,uint256 amountOutMinimum,uint160 sqrtPriceLimitX96)) external payable returns (uint256 amountOut)",
+      "function multicall(uint256 deadline, bytes[] data) external payable returns (bytes[] memory results)",
+      "function unwrapWETH9(uint256 amountMinimum, address recipient) external payable"
+    ];
+
+    const isV3 = net.dex === "Uniswap V3";
     const WETH = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2";
-
-    const routerABI = isV3Router
-      ? [
-          "function exactInputSingle((address tokenIn,address tokenOut,uint24 fee,address recipient,uint256 deadline,uint256 amountIn,uint256 amountOutMinimum,uint160 sqrtPriceLimitX96)) external payable returns (uint256 amountOut)",
-          "function refundETH() external payable"
-        ]
-      : [
-          "function swapExactETHForTokens(uint amountOutMin, address[] calldata path, address to, uint deadline) external payable returns (uint[] memory amounts)",
-          "function swapExactTokensForETH(uint amountIn, uint amountOutMin, address[] calldata path, address to, uint deadline) external returns (uint[] memory amounts)",
-          "function getAmountsOut(uint amountIn, address[] calldata path) external view returns (uint[] memory amounts)"
-        ];
-
-    const router = new ethers.Contract(net.router, routerABI, state.wallet);
+    // Endereço mágico do Uniswap V3: significa "mantenha o token no próprio router"
+    // (usado quando o output ainda precisa ser desembrulhado de WETH para ETH)
+    const ADDRESS_THIS = "0x00000000000000000000000000000000000002";
+    const FEE_TIERS_V3 = [3000, 500, 10000]; // 0.3% / 0.05% / 1% — tenta nessa ordem
+    const router = new ethers.Contract(net.router, isV3 ? routerABIv3 : routerABIv2, state.wallet);
 
     let tx;
     const gasPrice = await state.provider.getFeeData();
-    const gasOpts = { gasLimit: 400000n, maxFeePerGas: gasPrice.maxFeePerGas, maxPriorityFeePerGas: gasPrice.maxPriorityFeePerGas };
+    const gasOpts = { gasLimit: isV3 ? 400000n : 300000n, maxFeePerGas: gasPrice.maxFeePerGas, maxPriorityFeePerGas: gasPrice.maxPriorityFeePerGas };
 
-    if(direction === 'BUY') {
-      if(isV3Router) {
-        tx = await router.exactInputSingle({
-          tokenIn: ethers.ZeroAddress,
+    if(isV3) {
+      // ---- UNISWAP V3 ----
+      if(direction === 'BUY') {
+        // ETH → Token: o router faz o wrap do ETH enviado em msg.value automaticamente
+        // quando tokenIn = WETH, então basta mandar `value: amountIn`.
+        const baseParams = {
+          tokenIn: WETH,
           tokenOut: pair.tokenOut,
-          fee: 3000,
           recipient: state.walletAddress,
           deadline,
           amountIn,
           amountOutMinimum: amountOutMin,
           sqrtPriceLimitX96: 0n
-        }, { ...gasOpts, value: amountIn });
+        };
+        tx = await trySwapV3ExactInputSingle(router, baseParams, FEE_TIERS_V3, { ...gasOpts, value: amountIn });
       } else {
+        // Token → ETH: precisa approve, depois exactInputSingle mandando o WETH
+        // resultante para o próprio router (ADDRESS_THIS) e, no mesmo multicall,
+        // um unwrapWETH9 que converte para ETH nativo e manda pro usuário.
+        const tokenABI = [
+          "function approve(address spender, uint256 amount) external returns (bool)",
+          "function balanceOf(address) view returns (uint256)",
+          "function allowance(address owner, address spender) view returns (uint256)"
+        ];
+        const tokenContract = new ethers.Contract(pair.tokenIn, tokenABI, state.wallet);
+        const tokenBalance = await tokenContract.balanceOf(state.walletAddress);
+        const currentAllowance = await tokenContract.allowance(state.walletAddress, net.router);
+        if(currentAllowance < tokenBalance) {
+          const approveTx = await tokenContract.approve(net.router, tokenBalance);
+          await approveTx.wait(); // espera minerar, senão o swap pode reverter por falta de allowance
+        }
+        const baseParams = {
+          tokenIn: pair.tokenIn,
+          tokenOut: WETH,
+          recipient: ADDRESS_THIS,
+          deadline,
+          amountIn: tokenBalance,
+          amountOutMinimum: 0n,
+          sqrtPriceLimitX96: 0n
+        };
+        tx = await trySwapV3Multicall(router, baseParams, FEE_TIERS_V3, deadline, state.walletAddress, gasOpts);
+      }
+    } else {
+      // ---- UNISWAP V2 / PANCAKESWAP / QUICKSWAP ----
+      if(direction === 'BUY') {
         tx = await router.swapExactETHForTokens(
           amountOutMin,
           [WETH, pair.tokenOut],
@@ -796,37 +866,19 @@ async function executeSwap(direction) {
           deadline,
           { ...gasOpts, value: amountIn }
         );
-      }
-    } else {
-      // SELL direction: sell tokenIn for ETH
-      const tokenABI = ["function approve(address spender, uint256 amount) external returns (bool)","function balanceOf(address) view returns (uint256)","function allowance(address owner, address spender) view returns (uint256)"];
-      const tokenContract = new ethers.Contract(pair.tokenIn, tokenABI, state.wallet);
-      const tokenBalance = await tokenContract.balanceOf(state.walletAddress);
-      if (tokenBalance === 0n) {
-        addLog('Saldo insuficiente do token para vender.', 'error');
-        return null;
-      }
-      
-      // Check if we need to approve (only if allowance is insufficient)
-      const allowance = await tokenContract.allowance(state.walletAddress, net.router);
-      if (allowance < tokenBalance) {
-        const approveTx = await tokenContract.approve(net.router, tokenBalance);
-        await approveTx.wait();
-        addLog('✅ Aprovação do token concedida.', 'info');
-      }
-
-      if(isV3Router) {
-        tx = await router.exactInputSingle({
-          tokenIn: pair.tokenIn,
-          tokenOut: ethers.ZeroAddress,
-          fee: 3000,
-          recipient: state.walletAddress,
-          deadline,
-          amountIn: tokenBalance,
-          amountOutMinimum: 0n,
-          sqrtPriceLimitX96: 0n
-        }, gasOpts);
       } else {
+        const tokenABI = [
+          "function approve(address spender, uint256 amount) external returns (bool)",
+          "function balanceOf(address) view returns (uint256)",
+          "function allowance(address owner, address spender) view returns (uint256)"
+        ];
+        const tokenContract = new ethers.Contract(pair.tokenIn, tokenABI, state.wallet);
+        const tokenBalance = await tokenContract.balanceOf(state.walletAddress);
+        const currentAllowance = await tokenContract.allowance(state.walletAddress, net.router);
+        if(currentAllowance < tokenBalance) {
+          const approveTx = await tokenContract.approve(net.router, tokenBalance);
+          await approveTx.wait(); // espera minerar antes de tentar o swap
+        }
         tx = await router.swapExactTokensForETH(
           tokenBalance,
           0n,
@@ -850,19 +902,7 @@ async function executeSwap(direction) {
     state.openSwap = false;
     state.apiStatus.dex = false;
     updateAPIStatus();
-    let errorMsg = 'Erro desconhecido';
-    if (e) {
-      if (e.reason) errorMsg = e.reason;
-      else if (e.message) errorMsg = e.message;
-      else errorMsg = String(e);
-      
-      // Try to get more detailed error info
-      if (e.error && e.error.reason) errorMsg = e.error.reason;
-      if (e.error && e.error.message) errorMsg = e.error.message;
-    }
-    addLog('❌ Erro no swap: ' + errorMsg, 'error');
-    // Log adicional para depuração
-    console.error('Swap error details:', e);
+    addLog('❌ Erro no swap: ' + e.message, 'error');
     return null;
   }
 }
