@@ -736,6 +736,10 @@ async function executeSwap(direction) {
   try {
     const stakeAmount = state.balance * (CONFIG.stakePct / 100);
     const amountIn = ethers.parseEther(stakeAmount.toFixed(6));
+    if (amountIn === 0n) {
+      addLog('Valor de swap é zero. Saldo muito baixo ou stake% demasiado baixo.', 'error');
+      return null;
+    }
     const deadline = Math.floor(Date.now()/1000) + 300;
     const slippageFactor = BigInt(Math.floor((1 - CONFIG.slippage/100) * 10000));
     // Obter quote do preço atual
@@ -747,47 +751,91 @@ async function executeSwap(direction) {
       const expectedOut = stakeAmount * priceAtExec;
       const outRaw = BigInt(Math.floor(expectedOut * Math.pow(10, pair.decimalsOut)));
       amountOutMin = (outRaw * slippageFactor) / BigInt(10000);
+      if (amountOutMin === 0n) {
+        addLog('Quantidade mínima de saída é zero. Verifique slippage ou preço.', 'warn');
+      }
     }
 
-    // ABI mínimo do router Uniswap V2/PancakeSwap
-    const routerABI = [
-      "function swapExactETHForTokens(uint amountOutMin, address[] calldata path, address to, uint deadline) external payable returns (uint[] memory amounts)",
-      "function swapExactTokensForETH(uint amountIn, uint amountOutMin, address[] calldata path, address to, uint deadline) external returns (uint[] memory amounts)",
-      "function getAmountsOut(uint amountIn, address[] calldata path) external view returns (uint[] memory amounts)"
-    ];
-
-    // Para Uniswap V3 usamos uma interface diferente mas simplificamos aqui
-    // Em produção, usar o QuoterV2 para obter amountOutMin real
+    const isV3Router = net.dex === 'Uniswap V3';
     const WETH = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2";
+
+    const routerABI = isV3Router
+      ? [
+          "function exactInputSingle((address tokenIn,address tokenOut,uint24 fee,address recipient,uint256 deadline,uint256 amountIn,uint256 amountOutMinimum,uint160 sqrtPriceLimitX96)) external payable returns (uint256 amountOut)",
+          "function refundETH() external payable"
+        ]
+      : [
+          "function swapExactETHForTokens(uint amountOutMin, address[] calldata path, address to, uint deadline) external payable returns (uint[] memory amounts)",
+          "function swapExactTokensForETH(uint amountIn, uint amountOutMin, address[] calldata path, address to, uint deadline) external returns (uint[] memory amounts)",
+          "function getAmountsOut(uint amountIn, address[] calldata path) external view returns (uint[] memory amounts)"
+        ];
+
     const router = new ethers.Contract(net.router, routerABI, state.wallet);
 
     let tx;
     const gasPrice = await state.provider.getFeeData();
-    const gasOpts = { gasLimit: 300000n, maxFeePerGas: gasPrice.maxFeePerGas, maxPriorityFeePerGas: gasPrice.maxPriorityFeePerGas };
+    const gasOpts = { gasLimit: 400000n, maxFeePerGas: gasPrice.maxFeePerGas, maxPriorityFeePerGas: gasPrice.maxPriorityFeePerGas };
 
     if(direction === 'BUY') {
-      // ETH → Token (comprar o par base)
-      tx = await router.swapExactETHForTokens(
-        amountOutMin,
-        [WETH, pair.tokenOut],
-        state.walletAddress,
-        deadline,
-        { ...gasOpts, value: amountIn }
-      );
+      if(isV3Router) {
+        tx = await router.exactInputSingle({
+          tokenIn: ethers.ZeroAddress,
+          tokenOut: pair.tokenOut,
+          fee: 3000,
+          recipient: state.walletAddress,
+          deadline,
+          amountIn,
+          amountOutMinimum: amountOutMin,
+          sqrtPriceLimitX96: 0n
+        }, { ...gasOpts, value: amountIn });
+      } else {
+        tx = await router.swapExactETHForTokens(
+          amountOutMin,
+          [WETH, pair.tokenOut],
+          state.walletAddress,
+          deadline,
+          { ...gasOpts, value: amountIn }
+        );
+      }
     } else {
-      // Token → ETH (vender par)
-      const tokenABI = ["function approve(address spender, uint256 amount) external returns (bool)","function balanceOf(address) view returns (uint256)"];
+      // SELL direction: sell tokenIn for ETH
+      const tokenABI = ["function approve(address spender, uint256 amount) external returns (bool)","function balanceOf(address) view returns (uint256)","function allowance(address owner, address spender) view returns (uint256)"];
       const tokenContract = new ethers.Contract(pair.tokenIn, tokenABI, state.wallet);
       const tokenBalance = await tokenContract.balanceOf(state.walletAddress);
-      await tokenContract.approve(net.router, tokenBalance);
-      tx = await router.swapExactTokensForETH(
-        tokenBalance,
-        0n,
-        [pair.tokenIn, WETH],
-        state.walletAddress,
-        deadline,
-        gasOpts
-      );
+      if (tokenBalance === 0n) {
+        addLog('Saldo insuficiente do token para vender.', 'error');
+        return null;
+      }
+      
+      // Check if we need to approve (only if allowance is insufficient)
+      const allowance = await tokenContract.allowance(state.walletAddress, net.router);
+      if (allowance < tokenBalance) {
+        const approveTx = await tokenContract.approve(net.router, tokenBalance);
+        await approveTx.wait();
+        addLog('✅ Aprovação do token concedida.', 'info');
+      }
+
+      if(isV3Router) {
+        tx = await router.exactInputSingle({
+          tokenIn: pair.tokenIn,
+          tokenOut: ethers.ZeroAddress,
+          fee: 3000,
+          recipient: state.walletAddress,
+          deadline,
+          amountIn: tokenBalance,
+          amountOutMinimum: 0n,
+          sqrtPriceLimitX96: 0n
+        }, gasOpts);
+      } else {
+        tx = await router.swapExactTokensForETH(
+          tokenBalance,
+          0n,
+          [pair.tokenIn, WETH],
+          state.walletAddress,
+          deadline,
+          gasOpts
+        );
+      }
     }
 
     addLog(`📤 TX enviada: ${tx.hash.slice(0,16)}...`, 'swap');
@@ -802,7 +850,19 @@ async function executeSwap(direction) {
     state.openSwap = false;
     state.apiStatus.dex = false;
     updateAPIStatus();
-    addLog('❌ Erro no swap: ' + e.message, 'error');
+    let errorMsg = 'Erro desconhecido';
+    if (e) {
+      if (e.reason) errorMsg = e.reason;
+      else if (e.message) errorMsg = e.message;
+      else errorMsg = String(e);
+      
+      // Try to get more detailed error info
+      if (e.error && e.error.reason) errorMsg = e.error.reason;
+      if (e.error && e.error.message) errorMsg = e.error.message;
+    }
+    addLog('❌ Erro no swap: ' + errorMsg, 'error');
+    // Log adicional para depuração
+    console.error('Swap error details:', e);
     return null;
   }
 }
