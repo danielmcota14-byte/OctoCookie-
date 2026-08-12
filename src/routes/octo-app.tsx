@@ -42,7 +42,7 @@ function BotTrading() {
           </a>
         </div>
         <iframe
-          src="/octocookie-app/octocookie.html"
+          src="/octocookie-app/octocookie1.html"
           title="Bot Trading"
           className="h-full w-full flex-1 border-0 bg-background"
         />
