@@ -33,7 +33,7 @@ function BotTrading() {
         <div className="flex flex-wrap items-center justify-between gap-x-2 gap-y-1 border-b py-3 pl-14 pr-4 md:px-6">
           <h1 className="truncate text-sm font-medium">Bot Trading</h1>
           <a
-            href="/octocookie-app/octocookie.html"
+            href="/octocookie-app/octocookie1.html"
             target="_blank"
             rel="noreferrer"
             className="shrink-0 text-xs text-muted-foreground hover:text-foreground"
