@@ -266,7 +266,7 @@ a { color:#2563eb; }
     <!-- CONTROLE DO BOT -->
     <div class="card">
       <div class="card-header"><i class="fas fa-robot"></i> Controle do Bot</div>
-  <button onclick="window.open('https://mpago.la/2YQLZA8')" style="padding:6px 14px;font-size:11px">Iniciar Bot</button>
+  <button onclick="openPaymentTermsPopup()" style="padding:6px 14px;font-size:11px">Iniciar Bot</button>
 <p1>: Use o plano pago para desbloquear o controle do bot completo</p1>
 </div>
       <div class="grid-2col">
@@ -413,6 +413,42 @@ a { color:#2563eb; }
     </div>
   </div>
 </div>
+
+<!-- PAYMENT TERMS POPUP -->
+<div class="popup-overlay" id="paymentTermsPopup">
+  <div class="popup-container">
+    <div class="popup-header">
+      <h2><i class="fas fa-file-contract"></i> Termos de Uso — Plano Pago</h2>
+      <button class="close-btn" id="closePaymentTermsBtn">&times;</button>
+    </div>
+    <div class="popup-content">
+      <p style="color:var(--yellow);font-weight:700;font-size:13px">⚠️ ATENÇÃO: É DE EXTREMA IMPORTÂNCIA QUE VOCÊ COPIE E SALVE O LINK PARA O QUAL SERÁ REDIRECIONADO APÓS O PAGAMENTO.</p>
+      <p>Ao clicar em "Aceitar e Ir para Pagamento", você será direcionado ao checkout do Mercado Pago. Após a confirmação do pagamento, você será redirecionado automaticamente para o link de acesso ao bot completo.</p>
+      <p style="color:var(--yellow);font-weight:700;font-size:13px">⚠️ REFORÇANDO: COPIE E GUARDE ESSE LINK DE REDIRECIONAMENTO ASSIM QUE ELE APARECER. Ele não fica salvo automaticamente em nosso sistema, pois o link de pagamento é o mesmo para todos os clientes e não é possível vinculá-lo individualmente à sua conta.</p>
+      <p>Caso você feche a página ou perca esse link sem copiá-lo, envie uma mensagem para o número de contato disponível na página inicial para receber suporte.</p>
+      <p>Ao continuar, você declara estar ciente destas condições.</p>
+    </div>
+    <div class="popup-footer">
+      <button id="closePaymentTermsBtn2" style="background:transparent">Cancelar</button>
+      <button id="acceptPaymentTermsBtn" class="primary">Aceitar e Ir para Pagamento</button>
+    </div>
+  </div>
+</div>
+
+<script>
+function openPaymentTermsPopup(){
+  document.getElementById('paymentTermsPopup').style.display = 'flex';
+}
+function closePaymentTermsPopup(){
+  document.getElementById('paymentTermsPopup').style.display = 'none';
+}
+document.getElementById('closePaymentTermsBtn').addEventListener('click', closePaymentTermsPopup);
+document.getElementById('closePaymentTermsBtn2').addEventListener('click', closePaymentTermsPopup);
+document.getElementById('acceptPaymentTermsBtn').addEventListener('click', function(){
+  closePaymentTermsPopup();
+  window.open('https://mpago.la/2YQLZA8');
+});
+</script>
 
 <script>
 // =============================================
