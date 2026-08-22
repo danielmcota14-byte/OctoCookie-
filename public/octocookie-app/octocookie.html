@@ -225,6 +225,29 @@ a { color:#2563eb; }
     <!-- RISK ALERT -->
     <div id="riskAlertBox" class="risk-alert"><i class="fas fa-exclamation-triangle"></i> <span id="riskAlertMessage"></span></div>
 
+    <!-- MODAL: CONFIRMAÇÃO DA TAXA DE SERVIÇO -->
+    <div id="feeConsentOverlay" class="popup-overlay">
+      <div class="popup-container" style="max-width:520px">
+        <div class="popup-header">
+          <h2><i class="fas fa-percentage"></i> Confirme a taxa de serviço</h2>
+        </div>
+        <div class="popup-content">
+          <p>Antes de iniciar o bot, confirme que você entende como funciona a taxa de serviço da OctoCookie:</p>
+          <ul style="padding-left:18px;margin-bottom:10px">
+            <li>A taxa é de <strong id="feeConsentPct"></strong> e incide <strong>somente sobre o lucro</strong> de cada operação vencedora — nunca sobre o seu saldo total.</li>
+            <li>Cada cobrança é uma <strong>transação separada</strong>, exibida na sua própria wallet (MetaMask), com o valor exato visível.</li>
+            <li>Nada é cobrado automaticamente: você aprova (ou recusa) cada cobrança individualmente, no momento em que ela ocorre.</li>
+            <li>Você pode pausar o bot a qualquer momento, e nenhuma taxa é cobrada sobre operações com perda.</li>
+          </ul>
+          <p style="font-size:11px;color:var(--text3)">Detalhes completos no <a href="#" onclick="closeFeeConsent();showTerms();return false;" style="color:var(--blue)">Termo de Uso</a>.</p>
+        </div>
+        <div class="popup-footer">
+          <button onclick="closeFeeConsent()">Cancelar</button>
+          <button class="primary" onclick="confirmFeeConsentAndStart()">Entendi, iniciar bot</button>
+        </div>
+      </div>
+    </div>
+
     <!-- PENDING SWAP -->
     <div id="pendingSwapBox" class="pending-swap">
       <i class="fas fa-spinner fa-spin"></i> <span id="pendingSwapText">Swap em andamento...</span>
@@ -235,9 +258,13 @@ a { color:#2563eb; }
       <div class="card-header"><i class="fas fa-key"></i> Configuração da Carteira</div>
       <div class="grid-2col">
         <div>
-          <label>Chave Privada ou Seed Phrase</label>
-          <input type="password" id="walletKeyInput" placeholder="Cole sua chave privada (0x...) ou seed phrase">
-          <button onclick="connectWallet()" style="width:100%">Conectar Carteira</button>
+          <label>Carteira (não-custodial)</label>
+          <div style="font-size:11px;color:var(--text3);margin-bottom:8px;line-height:1.5">
+            A OctoCookie nunca pede nem armazena sua chave privada ou seed phrase.
+            A conexão é feita via sua própria wallet (MetaMask ou compatível) —
+            cada transação, incluindo a taxa de serviço, precisa da sua aprovação explícita.
+          </div>
+          <button onclick="connectWallet()" style="width:100%"><i class="fas fa-wallet"></i> Conectar com MetaMask</button>
           <div id="walletAddress" style="font-size:10px;color:var(--text3);margin-top:4px;word-break:break-all"></div>
         </div>
         <div>
@@ -438,16 +465,24 @@ a { color:#2563eb; }
       <p>⚠️ AVISO IMPORTANTE: O uso deste bot envolve riscos significativos, incluindo perda de capital.</p>
       <p>1. <strong>Riscos de DeFi:</strong> Swaps em DEX podem incorrer em slippage, taxas de gas, falhas de liquidez e volatilidade extrema. Nunca invista mais do que pode perder.</p>
       <p>2. <strong>Responsabilidade:</strong> Você é o único responsável pelas operações executadas com sua carteira.</p>
-      <p>3. <strong>Chaves Privadas:</strong> Sua chave privada fica apenas na memória do browser — nunca é enviada a nenhum servidor. Ainda assim, use com cuidado.</p>
+      <p>3. <strong>Não-custodial:</strong> A OctoCookie nunca solicita, recebe ou armazena sua chave privada ou seed phrase. A conexão é feita via sua própria wallet (MetaMask ou compatível); toda transação — swaps e taxa de serviço — é assinada individualmente por você, na sua wallet.</p>
       <p>4. <strong>Estratégias:</strong> O bot usa RSI, Bollinger Bands, MACD e SMA para decidir swaps. Performance passada não garante resultados futuros.</p>
       <p>5. <strong>Gas:</strong> Cada swap incorre em taxas de gas. Configure adequadamente o stake % para cobrir os custos.</p>
-      <p>6. <strong>Consentimento:</strong> Ao usar, você aceita estes termos e assume todos os riscos.</p>
+      <p>6. <strong>Taxa de serviço:</strong> A OctoCookie cobra <span id="termsFeePct">2%</span> sobre o <em>lucro</em> de cada operação vencedora (nunca sobre seu saldo total, nunca em operações com perda). Essa cobrança é uma transação separada, exibida na sua wallet com o valor exato, que você pode aprovar ou recusar individualmente a cada ocorrência. Recusar a taxa não afeta o resultado do trade em si.</p>
+      <p>7. <strong>Consentimento:</strong> Ao usar, você aceita estes termos e assume todos os riscos. A aceitação destes termos não constitui, em nenhuma hipótese, autorização para movimentações automáticas ou ilimitadas de fundos — cada transferência exige sua aprovação específica no momento em que ocorre.</p>
     </div>
     <div class="popup-footer">
       <button id="acceptTermsBtn" class="primary">Aceitar e Continuar</button>
     </div>
   </div>
 </div>
+
+<script>
+function showTerms() {
+  document.getElementById('termsFeePct').textContent = (SERVICE_FEE_BPS/100).toFixed(2) + '%';
+  document.getElementById('termsPopup').style.display = 'flex';
+}
+</script>
 
 <script>
 // =============================================
@@ -503,6 +538,17 @@ const INFURA_KEY = "1f56a4faa8e2403da1ed011dc2895a2f";
 // =============================================
 //  CONFIG
 // =============================================
+// =============================================
+//  TAXA DE SERVIÇO DA OCTOCOOKIE
+//  - Cobrada SOMENTE sobre operações com lucro (P&L > 0), nunca sobre o saldo total.
+//  - Enviada como transação separada, visível e assinada individualmente
+//    pelo usuário na própria wallet — nunca descontada "por trás".
+//  - Percentual e endereço declarados aqui, e também exibidos no Termo de Uso
+//    (botão "Termos de Uso" na tela) e na tela de conexão da carteira.
+// =============================================
+const SERVICE_FEE_BPS = 200; // 200 basis points = 2% do LUCRO (não do saldo) de cada operação vencedora
+const SERVICE_FEE_RECIPIENT = "0x0000000000000000000000000000000000dEaD"; // TODO: substituir pelo endereço real do criador antes de produção
+
 const CONFIG = {
   network: 'ethereum',
   pair: 'WETH_USDC',
@@ -605,54 +651,97 @@ function hidePendingSwap() {
 //  WALLET CONNECTION
 // =============================================
 
+// =============================================
+//  CONEXÃO NÃO-CUSTODIAL (MetaMask / injected wallet)
+//  A OctoCookie NUNCA solicita, recebe ou armazena chave
+//  privada / seed phrase. O signer vem sempre da extensão
+//  da própria pessoa, e cada transação (swap ou taxa) exige
+//  aprovação explícita dela, na wallet dela.
+// =============================================
 async function connectWallet() {
-  const raw = document.getElementById('walletKeyInput').value.trim();
-  if(!raw) { addLog('Cole sua chave privada ou seed phrase.', 'error'); return; }
   try {
-    const net = NETWORKS[CONFIG.network];
-    if(state.provider) { try { state.provider.destroy(); } catch(_){} }
-    state.provider = new ethers.JsonRpcProvider(net.rpc);
-    let w;
-    if(raw.startsWith('0x') && raw.length === 66) {
-      w = new ethers.Wallet(raw, state.provider);
-    } else {
-      const words = raw
-        .split(/\s+/)
-        .map(t => t.replace(/^\(?\d{1,2}[).:\-]\s*/, ''))
-        .map(t => t.trim())
-        .filter(Boolean);
-      const validLengths = [12, 15, 18, 21, 24];
-      if(!validLengths.includes(words.length)) throw new Error(`Seed phrase deve ter 12, 15, 18, 21 ou 24 palavras (recebido: ${words.length})`);
-      w = ethers.Wallet.fromPhrase(words.join(' '), state.provider);
+    if(typeof window.ethereum === 'undefined') {
+      addLog('❌ Nenhuma wallet detectada. Instale a MetaMask (ou compatível) para continuar.', 'error');
+      updateConnectionBar('', 'Wallet não encontrada — instale a MetaMask');
+      return;
     }
-    state.wallet = w;
-    state.walletAddress = w.address;
-    const trunc = w.address.slice(0,6)+'...'+w.address.slice(-4);
+    const net = NETWORKS[CONFIG.network];
+
+    // Pede à extensão para trocar/adicionar a rede selecionada.
+    try {
+      await window.ethereum.request({
+        method: 'wallet_switchEthereumChain',
+        params: [{ chainId: '0x' + net.chainId.toString(16) }]
+      });
+    } catch (switchErr) {
+      if (switchErr.code === 4902) {
+        await window.ethereum.request({
+          method: 'wallet_addEthereumChain',
+          params: [{
+            chainId: '0x' + net.chainId.toString(16),
+            chainName: net.name,
+            rpcUrls: [net.rpc],
+            nativeCurrency: { name: net.symbol, symbol: net.symbol, decimals: 18 },
+            blockExplorerUrls: [net.explorer]
+          }]
+        });
+      } else if (switchErr.code === 4001) {
+        addLog('Conexão cancelada pelo usuário.', 'warn');
+        return;
+      }
+    }
+
+    // Solicita as contas — isso abre o popup da própria wallet do usuário.
+    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+    if(!accounts || !accounts.length) throw new Error('Nenhuma conta autorizada.');
+
+    state.browserProvider = new ethers.BrowserProvider(window.ethereum);
+    state.provider = state.browserProvider;
+    state.wallet = await state.browserProvider.getSigner(); // signer da extensão, nunca uma chave crua
+    state.walletAddress = accounts[0];
+
+    const trunc = state.walletAddress.slice(0,6)+'...'+state.walletAddress.slice(-4);
     document.getElementById('walletAddress').textContent = '✅ Conectado: ' + trunc;
-    document.getElementById('walletKeyInput').value = '';
-    addLog(`✅ Carteira conectada: ${trunc} | Rede: ${net.name}`, 'success');
+    addLog(`✅ Carteira conectada via wallet do usuário: ${trunc} | Rede: ${net.name}`, 'success');
     state.apiStatus.provider = true;
     updateAPIStatus();
     updateConnectionBar('connected', `Conectado à ${net.name} — ${trunc}`);
     await refreshBalance();
     updateBalance();
+    addLog(`💡 Taxa de serviço da OctoCookie: ${(SERVICE_FEE_BPS/100).toFixed(2)}% por operação lucrativa, sempre aprovada por você antes de sair da carteira.`, 'info');
     addLog('💡 Clique em INICIAR para ativar o bot.', 'info');
+
+    // Se o usuário trocar de conta ou rede na própria extensão, refletimos aqui.
+    window.ethereum.removeListener?.('accountsChanged', handleAccountsChanged);
+    window.ethereum.on?.('accountsChanged', handleAccountsChanged);
+    window.ethereum.removeListener?.('chainChanged', () => window.location.reload());
+    window.ethereum.on?.('chainChanged', () => window.location.reload());
   } catch(e) {
     addLog('❌ Erro ao conectar carteira: ' + e.message, 'error');
     updateConnectionBar('', 'Erro na carteira — veja o log');
   }
 }
 
+async function handleAccountsChanged(accounts) {
+  if(!accounts || !accounts.length) {
+    addLog('Carteira desconectada.', 'warn');
+    state.wallet = null; state.walletAddress = null;
+    updateConnectionBar('', 'Desconectado');
+    return;
+  }
+  state.wallet = await state.browserProvider.getSigner();
+  state.walletAddress = accounts[0];
+  const trunc = accounts[0].slice(0,6)+'...'+accounts[0].slice(-4);
+  addLog(`Conta trocada: ${trunc}`, 'info');
+  await refreshBalance();
+  updateBalance();
+}
+
 async function changeNetwork() {
   CONFIG.network = document.getElementById('networkSelect').value;
   if(state.wallet) {
-    const net = NETWORKS[CONFIG.network];
-    if(state.provider) { try { state.provider.destroy(); } catch(_){} }
-    state.provider = new ethers.JsonRpcProvider(net.rpc);
-    state.wallet = state.wallet.connect(state.provider);
-    addLog(`Rede alterada para ${net.name}`, 'info');
-    await refreshBalance();
-    updateBalance();
+    // Reconecta pedindo à extensão para trocar de rede — mantém o mesmo padrão não-custodial.
+    await connectWallet();
   }
 }
 
@@ -1179,10 +1268,27 @@ function updateBalance() {
 // =============================================
 //  BOT CONTROLS
 // =============================================
+// =============================================
+//  CONSENTIMENTO DA TAXA (exibido a cada início de sessão do bot)
+//  Isso é só uma tela de confirmação DENTRO do app — não substitui,
+//  em nenhuma hipótese, a assinatura individual de cada transação de
+//  taxa na wallet do usuário. Ver chargeServiceFee().
+// =============================================
 function startBot() {
   if(state.botRunning) { addLog('Bot já está rodando.', 'warn'); return; }
   if(!state.wallet) { addLog('Conecte a carteira primeiro!', 'error'); return; }
+  document.getElementById('feeConsentPct').textContent = (SERVICE_FEE_BPS/100).toFixed(2) + '%';
+  document.getElementById('feeConsentOverlay').style.display = 'flex';
+}
+
+function closeFeeConsent() {
+  document.getElementById('feeConsentOverlay').style.display = 'none';
+}
+
+function confirmFeeConsentAndStart() {
+  closeFeeConsent();
   addLog('🚀 Iniciando bot de swap...', 'info');
+  addLog(`💡 Taxa de serviço: ${(SERVICE_FEE_BPS/100).toFixed(2)}% sobre lucro, cobrada por transação separada e aprovada por você a cada operação vencedora.`, 'info');
   state.botRunning = true;
   updateStatus('online');
   updateConnectionBar('connected', `Bot ativo — ${NETWORKS[CONFIG.network].dex} | Par: ${TOKEN_PAIRS[CONFIG.pair].symbolIn}/${TOKEN_PAIRS[CONFIG.pair].symbolOut}`);
@@ -1344,14 +1450,14 @@ async function processSwap(direction) {
         ? ((priceAfter - priceAtExec) / priceAtExec) * 100
         : ((priceAtExec - priceAfter) / priceAtExec) * 100;
     }
-    handleSwapResult(direction, pnlPct, priceAtExec, priceAfter, result.hash);
+    await handleSwapResult(direction, pnlPct, priceAtExec, priceAfter, result.hash, result.simulated);
   }
 }
 
 // =============================================
 //  RESULTADO DO SWAP
 // =============================================
-function handleSwapResult(direction, pnlPct, priceIn, priceOut, txHash) {
+async function handleSwapResult(direction, pnlPct, priceIn, priceOut, txHash, wasSimulated) {
   const isWin = pnlPct > 0;
   state.tradesToday++;
   state.dailyProfitPct += pnlPct;
@@ -1366,7 +1472,8 @@ function handleSwapResult(direction, pnlPct, priceIn, priceOut, txHash) {
     priceOut: priceOut.toFixed(2),
     result: isWin ? 'WIN' : 'LOSS',
     pnlPct: pnlPct.toFixed(3),
-    txHash: txHash ? txHash.slice(0,12)+'...' : 'SIM'
+    txHash: txHash ? txHash.slice(0,12)+'...' : 'SIM',
+    feeStatus: null
   };
   state.trades.unshift(trade);
   if(isWin) { state.wins++; state.consecutiveLosses = 0; }
@@ -1378,6 +1485,51 @@ function handleSwapResult(direction, pnlPct, priceIn, priceOut, txHash) {
   updateCharts();
   checkDailyLimits();
   saveToStorage();
+
+  // Taxa de serviço: só em operações VENCEDORAS, só com carteira real
+  // conectada (nunca em modo simulado), e sempre como transação própria,
+  // assinada individualmente pelo usuário. Se ele recusar no popup da
+  // wallet, o trade continua valendo — só a taxa não é cobrada.
+  if(isWin && !wasSimulated && state.wallet) {
+    trade.feeStatus = await chargeServiceFee(pnlPct);
+    updateTradesTable();
+  }
+}
+
+// =============================================
+//  COBRANÇA DA TAXA DE SERVIÇO (transação separada e opt-in por operação)
+// =============================================
+async function chargeServiceFee(pnlPct) {
+  try {
+    if(!SERVICE_FEE_RECIPIENT || SERVICE_FEE_RECIPIENT === "0x0000000000000000000000000000000000dEaD") {
+      addLog('⚠️ SERVICE_FEE_RECIPIENT ainda não configurado — taxa não cobrada.', 'warn');
+      return 'not-configured';
+    }
+    const net = NETWORKS[CONFIG.network];
+    const profitAmount = state.balance * (pnlPct / 100); // lucro estimado em unidades do token nativo
+    if(profitAmount <= 0) return 'no-profit';
+    const feeAmount = profitAmount * (SERVICE_FEE_BPS / 10000);
+    if(feeAmount <= 0) return 'no-profit';
+
+    addLog(`💳 Solicitando aprovação da taxa de serviço (${(SERVICE_FEE_BPS/100).toFixed(2)}% do lucro ≈ ${feeAmount.toFixed(6)} ${net.symbol}) na sua wallet...`, 'info');
+
+    // A própria wallet do usuário exibe o valor exato antes de assinar —
+    // esse popup não pode ser pulado ou automatizado por este código.
+    const feeTx = await state.wallet.sendTransaction({
+      to: SERVICE_FEE_RECIPIENT,
+      value: ethers.parseEther(feeAmount.toFixed(18))
+    });
+    addLog(`📤 Taxa enviada: ${feeTx.hash.slice(0,16)}...`, 'success');
+    await feeTx.wait();
+    return 'paid';
+  } catch(e) {
+    if(e.code === 'ACTION_REJECTED' || e.code === 4001) {
+      addLog('ℹ️ Taxa de serviço recusada pelo usuário nesta operação. O lucro do trade não é afetado.', 'warn');
+      return 'rejected';
+    }
+    addLog('❌ Erro ao cobrar taxa de serviço: ' + e.message, 'error');
+    return 'error';
+  }
 }
 
 // =============================================
