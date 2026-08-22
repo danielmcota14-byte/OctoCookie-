@@ -638,6 +638,7 @@
         <button class="btn-demo-sell" onclick="sellDemoAsset('${symbolUpper}', ${c.current_price})">Vender Demo</button>
         <button class="btn-swap-real" onclick="openSwapWithToken('${symbolUpper}')">SWAP REAL</button>
         <button class="btn-buy-real" onclick="openMoonPayForToken('${symbolUpper}')">COMPRAR REAL</button>
+        <button class="btn-buy-real btn-metamask-buy" onclick="openMetaMaskBuy()">🦊 METAMASK</button>
       </div>
     </div>`;
       }).join('');
@@ -939,6 +940,7 @@
           <button class="dex-buy" onclick="buyDemoAsset('${symbol}', ${price})">Comprar Demo</button>
           <button class="btn-swap-real" onclick="openSwapWithToken('${symbol}')">SWAP REAL</button>
           <button class="btn-buy-real" onclick="openMoonPayForToken('${symbol}')">COMPRAR REAL</button>
+          <button class="btn-buy-real btn-metamask-buy" onclick="openMetaMaskBuy()">🦊 METAMASK</button>
         </div>
       </div>`;
       }).join('');
@@ -2072,6 +2074,20 @@
     }
     window.openMoonPayForToken = openMoonPayForToken;
 
+    // Abre o MetaMask Buy (app.metamask.io/buy) com o endereço público da
+    // carteira do site. A página do MetaMask não tem parâmetro de URL
+    // documentado para pré-preencher o endereço, então copiamos o endereço
+    // pro clipboard automaticamente e avisamos o usuário, pra ele só colar.
+    async function openMetaMaskBuy() {
+      if (!walletAddress) return showToast('Crie ou importe uma carteira antes de comprar', 'error');
+      try {
+        await copyToClipboard(walletAddress);
+        showToast(`Endereço copiado (${walletAddress.slice(0,6)}...${walletAddress.slice(-4)}) — cole na página do MetaMask`, 'success');
+      } catch (_) {}
+      window.open('https://app.metamask.io/buy', '_blank');
+    }
+    window.openMetaMaskBuy = openMetaMaskBuy;
+
     // Renderiza a aba Trading a partir do portfolioData carregado
     function renderTradingList() {
       const el = document.getElementById('trading-list');
@@ -2097,6 +2113,7 @@
             <button class="btn-demo-buy" onclick="buyDemoAsset('${symbolUpper}', ${c.current_price})">Comprar Demo</button>
             <button class="btn-swap-real" onclick="openSwapWithToken('${symbolUpper}')">SWAP REAL</button>
             <button class="btn-buy-real" onclick="openMoonPayForToken('${symbolUpper}')">COMPRAR REAL</button>
+            <button class="btn-buy-real btn-metamask-buy" onclick="openMetaMaskBuy()">🦊 METAMASK</button>
           </div>
         </div>`;
       }).join('');
@@ -2555,6 +2572,7 @@ body{padding:24px 16px;}
 .btn-demo-buy{background:#f0fdf4;color:var(--success);border-color:#dcfce7;}
 .btn-demo-sell{background:#fef2f2;color:var(--danger);border-color:#fee2e2;}
 .btn-swap-real,.btn-buy-real{background:var(--accent);color:var(--accent-fg);border-color:var(--accent);}
+.btn-metamask-buy{background:#f6851b;border-color:#f6851b;color:#fff;}
 
 /* DEX */
 .dex-box{display:flex;flex-direction:column;gap:12px;}
@@ -3648,6 +3666,7 @@ body{padding:24px 16px;}
           <div class="market-demo-actions">
             <button class="btn-swap-real" onclick="event.stopPropagation();openSwapWithToken('${sym}')">SWAP REAL</button>
             <button class="btn-buy-real" onclick="event.stopPropagation();openMoonPayForToken('${sym}')">COMPRAR REAL</button>
+            <button class="btn-buy-real btn-metamask-buy" onclick="event.stopPropagation();openMetaMaskBuy()">🦊 METAMASK</button>
           </div>
         </div>`;
       }).join('');
@@ -3673,6 +3692,7 @@ body{padding:24px 16px;}
           <div class="market-demo-actions">
             <button class="btn-swap-real" onclick="event.stopPropagation();openSwapWithToken('${sym}')">SWAP REAL</button>
             <button class="btn-buy-real" onclick="event.stopPropagation();openMoonPayForToken('${sym}')">COMPRAR REAL</button>
+            <button class="btn-buy-real btn-metamask-buy" onclick="event.stopPropagation();openMetaMaskBuy()">🦊 METAMASK</button>
           </div>
         </div>`;
       }).join('') : '<p class="empty-msg">Trending temporariamente indisponível.</p>';
