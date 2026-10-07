@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { generateText } from "ai";
 import { z } from "zod";
-import { createLovableAiGatewayProvider, withGroqKeyRotation } from "./ai-gateway.server";
+import { createLovableAiGatewayProvider, withGroqModelFallback } from "./ai-gateway.server";
 
 const Input = z.object({ coinId: z.string().min(1).max(60) });
 
@@ -63,10 +63,10 @@ export const analyzeToken = createServerFn({ method: "POST" })
 
     let analysis = "";
     try {
-      analysis = await withGroqKeyRotation(async (key) => {
+      analysis = await withGroqModelFallback(async (key, modelId) => {
         const gateway = createLovableAiGatewayProvider(key);
         const { text } = await generateText({
-          model: gateway("openai/gpt-oss-120b"),
+          model: gateway(modelId),
           prompt: `Você é o OctoCookie, analista educacional. Explique em português BR de forma didática e neutra o token abaixo em 3 parágrafos curtos:
 1) O que é o projeto (com base na descrição).
 2) O que os números atuais dizem (preço, market cap, variações 24h/7d/30d, volume, distância do ATH).

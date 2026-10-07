@@ -2,27 +2,26 @@ import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
 
 /** Cooldown após rate-limit (ms). Plano free Groq ~1 min. */
 const RATE_LIMIT_COOLDOWN_MS = 65_000;
-/** Cooldown curto para chave inválida (não fica tentando a mesma o tempo todo). */
+/** Cooldown para chave inválida. */
 const INVALID_KEY_COOLDOWN_MS = 30 * 60_000;
+
+/** Modelos em ordem de preferência (os da conta atual do Groq). */
+export const GROQ_MODELS = [
+  process.env.GROQ_MODEL?.trim(),
+  "openai/gpt-oss-120b",
+  "qwen/qwen3.8-27b",
+  "openai/gpt-oss-20b",
+].filter((m): m is string => Boolean(m));
 
 type KeyState = {
   key: string;
-  /** timestamp até quando a chave está em cooldown */
   coolUntil: number;
-  /** motivo do último cooldown */
   reason?: "rate_limit" | "invalid" | "error";
 };
 
 let pool: KeyState[] | null = null;
-/** índice da próxima chave a tentar (round-robin) */
 let nextIndex = 0;
 
-/**
- * Carrega até 5 chaves a partir de:
- * - GROQ_API_KEYS=key1,key2,key3,key4,key5
- * - ou GROQ_API_KEY + GROQ_API_KEY_2 … GROQ_API_KEY_5
- * - ou GROQ_API_KEY_1 … GROQ_API_KEY_5
- */
 function loadKeys(): string[] {
   const fromList = (process.env.GROQ_API_KEYS ?? "")
     .split(/[,;\s]+/)
@@ -60,7 +59,6 @@ function getPool(): KeyState[] {
   return pool;
 }
 
-/** Reinicia o pool (útil em testes ou após mudar env em runtime). */
 export function resetGroqKeyPool() {
   pool = null;
   nextIndex = 0;
@@ -74,11 +72,12 @@ export function createLovableAiGatewayProvider(apiKey: string) {
   return createOpenAICompatible({
     name: "groq",
     baseURL: "https://api.groq.com/openai/v1",
+    apiKey,
     headers: { Authorization: `Bearer ${apiKey}` },
   });
 }
 
-export function createGroqModel(apiKey: string, modelId = "openai/gpt-oss-120b") {
+export function createGroqModel(apiKey: string, modelId = GROQ_MODELS[0] ?? "openai/gpt-oss-120b") {
   return createLovableAiGatewayProvider(apiKey)(modelId);
 }
 
@@ -88,6 +87,10 @@ function isRateLimitError(msg: string): boolean {
 
 function isInvalidKeyError(msg: string): boolean {
   return /invalid.?api.?key|incorrect.?api.?key|401|unauthorized|authentication/i.test(msg);
+}
+
+function isModelNotFoundError(msg: string): boolean {
+  return /model.*does not exist|model_not_found|404.*model|do not have access to it/i.test(msg);
 }
 
 function markCooldown(state: KeyState, reason: KeyState["reason"]) {
@@ -107,7 +110,6 @@ function markCooldown(state: KeyState, reason: KeyState["reason"]) {
 /**
  * Executa `fn(apiKey)` tentando as chaves em rodízio.
  * Se uma esgotar (rate limit) ou for inválida, passa para a próxima.
- * Só falha se todas as chaves falharem.
  */
 export async function withGroqKeyRotation<T>(
   fn: (apiKey: string) => Promise<T>,
@@ -115,7 +117,7 @@ export async function withGroqKeyRotation<T>(
   const keys = getPool();
   if (keys.length === 0) {
     throw new Error(
-      "Nenhuma GROQ_API_KEY configurada. Defina GROQ_API_KEYS=key1,key2,... (até 5) ou GROQ_API_KEY / GROQ_API_KEY_2 … no .env ou nas Environment Variables do Vercel.",
+      "Nenhuma GROQ_API_KEY configurada. Defina GROQ_API_KEYS=key1,key2,... (até 5) no .env ou nas Environment Variables do Vercel e faça Redeploy.",
     );
   }
 
@@ -124,8 +126,6 @@ export async function withGroqKeyRotation<T>(
   let lastError: Error | null = null;
   let tried = 0;
 
-  // 1ª passagem: só chaves fora de cooldown
-  // 2ª passagem: se todas em cooldown, tenta mesmo assim (a mais antiga)
   for (const force of [false, true]) {
     for (let i = 0; i < keys.length; i++) {
       const idx = (start + i) % keys.length;
@@ -135,7 +135,6 @@ export async function withGroqKeyRotation<T>(
       tried++;
       try {
         const result = await fn(state.key);
-        // sucesso → próxima chamada começa na seguinte (rodízio)
         nextIndex = (idx + 1) % keys.length;
         if (state.coolUntil > 0) {
           state.coolUntil = 0;
@@ -146,6 +145,10 @@ export async function withGroqKeyRotation<T>(
         const msg = err instanceof Error ? err.message : String(err);
         lastError = err instanceof Error ? err : new Error(msg);
 
+        // Modelo inexistente: não adianta trocar de chave — propaga na hora
+        if (isModelNotFoundError(msg)) {
+          throw lastError;
+        }
         if (isInvalidKeyError(msg)) {
           markCooldown(state, "invalid");
           continue;
@@ -154,16 +157,44 @@ export async function withGroqKeyRotation<T>(
           markCooldown(state, "rate_limit");
           continue;
         }
-        // Outros erros: tenta a próxima chave também (rede/temporário)
         markCooldown(state, "error");
         continue;
       }
     }
-    if (tried > 0 && !force) {
-      continue;
-    }
+    if (tried > 0 && !force) continue;
     break;
   }
 
   throw lastError ?? new Error("Todas as chaves Groq falharam (rate limit / inválidas). Aguarde ~1 min.");
+}
+
+/**
+ * streamText/generateText com rodízio de chaves E fallback de modelos.
+ * Tenta cada modelo da lista GROQ_MODELS até um funcionar.
+ */
+export async function withGroqModelFallback<T>(
+  fn: (apiKey: string, modelId: string) => Promise<T>,
+): Promise<T> {
+  const models = GROQ_MODELS.length > 0 ? GROQ_MODELS : ["openai/gpt-oss-120b"];
+  let lastError: Error | null = null;
+
+  for (const modelId of models) {
+    try {
+      return await withGroqKeyRotation((apiKey) => fn(apiKey, modelId));
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      lastError = err instanceof Error ? err : new Error(msg);
+      if (isModelNotFoundError(msg)) {
+        console.warn(`[groq-pool] modelo ${modelId} indisponível, tentando próximo…`);
+        continue;
+      }
+      // rate limit / invalid já tentou todas as chaves para este modelo
+      if (isRateLimitError(msg) || /Todas as chaves/i.test(msg)) {
+        throw lastError;
+      }
+      continue;
+    }
+  }
+
+  throw lastError ?? new Error(`Nenhum modelo Groq disponível. Tentados: ${models.join(", ")}`);
 }

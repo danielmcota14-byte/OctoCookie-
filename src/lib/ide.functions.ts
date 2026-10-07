@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { generateText } from "ai";
 import { z } from "zod";
-import { createLovableAiGatewayProvider, withGroqKeyRotation } from "./ai-gateway.server";
+import { createLovableAiGatewayProvider, withGroqModelFallback } from "./ai-gateway.server";
 
 const IdeInput = z.object({
   code: z.string().min(1).max(10000),
@@ -61,10 +61,10 @@ Responda APENAS com JSON válido no formato:
 IMPORTANTE: todo valor dentro de "variables" deve ser sempre uma string entre aspas no JSON, mesmo quando o valor real é um número, booleano ou objeto.`;
 
     try {
-      const text = await withGroqKeyRotation(async (key) => {
+      const text = await withGroqModelFallback(async (key, modelId) => {
         const gateway = createLovableAiGatewayProvider(key);
         const r = await generateText({
-          model: gateway("openai/gpt-oss-120b"),
+          model: gateway(modelId),
           prompt,
         });
         return r.text;

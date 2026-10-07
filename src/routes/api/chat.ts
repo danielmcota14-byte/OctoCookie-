@@ -1,4 +1,4 @@
-import { createLovableAiGatewayProvider, withGroqKeyRotation } from "@/lib/ai-gateway.server";
+import { createLovableAiGatewayProvider, withGroqModelFallback } from "@/lib/ai-gateway.server";
 import { createFileRoute } from "@tanstack/react-router";
 import { convertToModelMessages, streamText, type UIMessage } from "ai";
 
@@ -101,15 +101,28 @@ export const Route = createFileRoute("/api/chat")({
           const recentMessages = (messages as UIMessage[]).slice(-16);
           const modelMessages = await convertToModelMessages(recentMessages);
 
-          // Rodízio entre até 5 chaves: se uma estourar rate-limit ou for inválida,
-          // tenta a próxima automaticamente.
-          return await withGroqKeyRotation(async (key) => {
+          // Rodízio de chaves + fallback de modelos (gpt-oss-120b → qwen → gpt-oss-20b).
+          // O deploy antigo quebrava com llama-3.3-70b-versatile (404 / model_not_found).
+          return await withGroqModelFallback(async (key, modelId) => {
             const gateway = createLovableAiGatewayProvider(key);
             const result = streamText({
-              model: gateway("openai/gpt-oss-120b"),
+              model: gateway(modelId),
               system: SYSTEM_PROMPT,
               messages: modelMessages,
             });
+            // Força o request HTTP para capturar 401/404/429 antes de devolver o stream
+            try {
+              const raw = await result.response;
+              if (raw && !raw.ok) {
+                const body = await raw.text().catch(() => "");
+                throw new Error(body || `HTTP ${raw.status}`);
+              }
+            } catch (e) {
+              // result.response pode não existir em todas as versões do AI SDK
+              if (e instanceof Error && (/HTTP |model|api.?key|rate.?limit|429|401|404/i.test(e.message))) {
+                throw e;
+              }
+            }
             return result.toUIMessageStreamResponse({
               originalMessages: messages as UIMessage[],
             });
@@ -122,6 +135,12 @@ export const Route = createFileRoute("/api/chat")({
             return new Response(
               "Nenhuma GROQ_API_KEY configurada. Defina GROQ_API_KEYS=key1,key2,key3,key4,key5 (até 5) no .env ou no Vercel e faça Redeploy.",
               { status: 500 },
+            );
+          }
+          if (/model.*does not exist|model_not_found|do not have access to it/i.test(msg)) {
+            return new Response(
+              "Modelo de IA indisponível na conta Groq. O app tenta openai/gpt-oss-120b e qwen/qwen3.8-27b — faça Redeploy com o código atualizado.",
+              { status: 404 },
             );
           }
           if (/invalid.?api.?key|incorrect.?api.?key|401|unauthorized/i.test(msg)) {
