@@ -8,10 +8,10 @@ const INVALID_KEY_COOLDOWN_MS = 30 * 60_000;
 /** Modelos em ordem de preferência (os da conta atual do Groq). */
 export const GROQ_MODELS = [
   process.env.GROQ_MODEL?.trim(),
-  "openai/gpt-oss-120b",
   "qwen/qwen3.8-27b",
+  "openai/gpt-oss-120b",
   "openai/gpt-oss-20b",
-].filter((m): m is string => Boolean(m));
+].filter((m): m is string => Boolean(m)).filter((m): m is string => Boolean(m));
 
 type KeyState = {
   key: string;
@@ -66,6 +66,10 @@ export function resetGroqKeyPool() {
 
 export function getGroqKeyCount(): number {
   return getPool().length;
+}
+
+export function getGroqKeys(): string[] {
+  return loadKeys();
 }
 
 export function createLovableAiGatewayProvider(apiKey: string) {

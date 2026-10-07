@@ -1,4 +1,4 @@
-import { createLovableAiGatewayProvider, withGroqModelFallback } from "@/lib/ai-gateway.server";
+import { createLovableAiGatewayProvider, resetGroqKeyPool, getGroqKeys } from "@/lib/ai-gateway.server";
 import { createFileRoute } from "@tanstack/react-router";
 import { convertToModelMessages, streamText, type UIMessage } from "ai";
 
@@ -88,77 +88,92 @@ export const Route = createFileRoute("/api/chat")({
     handlers: {
       POST: async ({ request }) => {
         try {
-          const { messages } = (await request.json()) as { messages?: unknown };
+          const body = (await request.json()) as { messages?: unknown };
+          const messages = body.messages;
           if (!Array.isArray(messages)) {
             return new Response("Messages are required", { status: 400 });
           }
 
-          // Mantém só as últimas mensagens no histórico enviado ao modelo.
-          // O plano gratuito da Groq tem um limite de tokens por minuto; como o
-          // histórico completo é reenviado a cada nova pergunta, conversas mais
-          // longas rapidamente estouram esse limite. Isso permite mais perguntas
-          // seguidas antes de esbarrar no limite.
-          const recentMessages = (messages as UIMessage[]).slice(-16);
-          const modelMessages = await convertToModelMessages(recentMessages);
+          // Recarrega chaves a cada request (serverless / env do Vercel)
+          resetGroqKeyPool();
 
-          // Rodízio de chaves + fallback de modelos (gpt-oss-120b → qwen → gpt-oss-20b).
-          // Fallback automatico de modelos disponiveis na conta Groq.
-          return await withGroqModelFallback(async (key, modelId) => {
-            const gateway = createLovableAiGatewayProvider(key);
-            const result = streamText({
-              model: gateway(modelId),
-              system: SYSTEM_PROMPT,
-              messages: modelMessages,
-            });
-            // Força o request HTTP para capturar 401/404/429 antes de devolver o stream
-            try {
-              const raw = await result.response;
-              if (raw && !raw.ok) {
-                const body = await raw.text().catch(() => "");
-                throw new Error(body || `HTTP ${raw.status}`);
-              }
-            } catch (e) {
-              // result.response pode não existir em todas as versões do AI SDK
-              if (e instanceof Error && (/HTTP |model|api.?key|rate.?limit|429|401|404/i.test(e.message))) {
-                throw e;
-              }
-            }
-            return result.toUIMessageStreamResponse({
-              originalMessages: messages as UIMessage[],
-            });
-          });
-        } catch (err) {
-          const msg = err instanceof Error ? err.message : String(err);
-          console.error("[/api/chat]", msg);
-
-          if (/Nenhuma GROQ_API_KEY|não configurada/i.test(msg)) {
+          const keys = getGroqKeys();
+          if (keys.length === 0) {
             return new Response(
-              "Nenhuma GROQ_API_KEY configurada. Defina GROQ_API_KEYS=key1,key2,key3,key4,key5 (até 5) no .env ou no Vercel e faça Redeploy.",
+              "GROQ_API_KEYS não configurada no Vercel. Settings → Environment Variables → GROQ_API_KEYS = chave1,chave2,... → Redeploy.",
               { status: 500 },
             );
           }
-          if (/model.*does not exist|model_not_found|do not have access to it/i.test(msg)) {
-            return new Response(
-              "Modelo de IA indisponível na conta Groq. O app tenta openai/gpt-oss-120b e qwen/qwen3.8-27b — faça Redeploy com o código atualizado.",
-              { status: 404 },
-            );
+
+          // Histórico curto para não estourar TPM do plano free
+          const recentMessages = (messages as UIMessage[]).slice(-16);
+          const modelMessages = await convertToModelMessages(recentMessages);
+
+          const models = [
+            process.env.GROQ_MODEL?.trim(),
+            "qwen/qwen3.8-27b",
+            "openai/gpt-oss-120b",
+            "openai/gpt-oss-20b",
+          ].filter((m): m is string => Boolean(m));
+
+          let lastError = "Falha desconhecida";
+
+          for (const modelId of models) {
+            for (const key of keys) {
+              try {
+                // Preflight real no chat (detecta 401/404/429 ANTES do stream)
+                const probe = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+                  method: "POST",
+                  headers: {
+                    Authorization: `Bearer ${key}`,
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify({
+                    model: modelId,
+                    messages: [{ role: "user", content: "ok" }],
+                    max_tokens: 1,
+                  }),
+                });
+                if (!probe.ok) {
+                  const errBody = await probe.text();
+                  lastError = `HTTP ${probe.status} model=${modelId} key=…${key.slice(-6)}: ${errBody.slice(0, 180)}`;
+                  console.error("[/api/chat] preflight", lastError);
+                  if (probe.status === 404 || /model_not_found|does not exist/i.test(errBody)) {
+                    break; // próximo modelo
+                  }
+                  continue; // próxima chave
+                }
+
+                const gateway = createLovableAiGatewayProvider(key);
+                const result = streamText({
+                  model: gateway(modelId),
+                  system: SYSTEM_PROMPT,
+                  messages: modelMessages,
+                  maxRetries: 0,
+                });
+
+                return result.toUIMessageStreamResponse({
+                  originalMessages: messages as UIMessage[],
+                });
+              } catch (err) {
+                lastError = err instanceof Error ? err.message : String(err);
+                console.error(`[/api/chat] model=${modelId} key=…${key.slice(-6)}:`, lastError);
+                if (/model.*does not exist|model_not_found|do not have access/i.test(lastError)) {
+                  break;
+                }
+                continue;
+              }
+            }
           }
-          if (/invalid.?api.?key|incorrect.?api.?key|401|unauthorized/i.test(msg)) {
-            return new Response(
-              "Todas as chaves GROQ estão inválidas ou revogadas. Gere novas em https://console.groq.com e atualize GROQ_API_KEYS.",
-              { status: 401 },
-            );
-          }
-          if (/rate.?limit|429|quota|too many|Todas as chaves/i.test(msg)) {
-            return new Response(
-              "Limite de uso de todas as chaves Groq atingido. Aguarde cerca de 1 minuto e tente de novo.",
-              { status: 429 },
-            );
-          }
+
           return new Response(
-            `Falha ao obter resposta da IA: ${msg.slice(0, 200)}`,
+            `Não foi possível obter resposta da IA. Último erro: ${lastError.slice(0, 300)}`,
             { status: 502 },
           );
+        } catch (err) {
+          const msg = err instanceof Error ? err.message : String(err);
+          console.error("[/api/chat] fatal:", msg);
+          return new Response(`Erro no chat: ${msg.slice(0, 300)}`, { status: 500 });
         }
       },
     },
