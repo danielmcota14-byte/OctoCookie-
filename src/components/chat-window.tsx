@@ -1,6 +1,6 @@
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport, type UIMessage } from "ai";
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import ReactMarkdown from "react-markdown";
 import { Globe, Plus, ArrowUp } from "lucide-react";
 import mascot from "@/assets/octocookie-mascot.png";
@@ -15,42 +15,60 @@ type Props = {
 export function ChatWindow({ thread, onUpdate }: Props) {
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const lastSavedSig = useRef<string>("");
+  const threadRef = useRef(thread);
+  threadRef.current = thread;
+  const onUpdateRef = useRef(onUpdate);
+  onUpdateRef.current = onUpdate;
+
+  const persist = useCallback((msgs: UIMessage[]) => {
+    const sig = msgs.map((m) => m.id).join("|") + "#" + msgs.length;
+    if (sig === lastSavedSig.current) return;
+    lastSavedSig.current = sig;
+    const t = threadRef.current;
+    const updated: Thread = {
+      ...t,
+      messages: msgs,
+      title: deriveTitle(msgs) || t.title,
+      updatedAt: Date.now(),
+    };
+    onUpdateRef.current(updated);
+    const all = loadThreads();
+    const next = all.some((x) => x.id === t.id)
+      ? all.map((x) => (x.id === t.id ? updated : x))
+      : [updated, ...all];
+    saveThreads(next);
+  }, []);
 
   const { messages, sendMessage, status, error } = useChat({
     id: thread.id,
     messages: thread.messages,
     transport: new DefaultChatTransport({ api: "/api/chat" }),
     onError: (e) => console.error(e),
+    onFinish: ({ messages: finalMsgs }) => {
+      // Só persiste quando a resposta termina — evita loop (React #185)
+      persist(finalMsgs as UIMessage[]);
+    },
   });
 
-  // Persist messages back to the thread whenever they change
+  // Persiste também mensagens do usuário assim que entram (antes do stream)
   useEffect(() => {
-    if (messages === thread.messages) return;
-    const updated: Thread = {
-      ...thread,
-      messages: messages as UIMessage[],
-      title: deriveTitle(messages as UIMessage[]) || thread.title,
-      updatedAt: Date.now(),
-    };
-    onUpdate(updated);
-    // Also update stored threads list
-    const all = loadThreads();
-    const next = all.some((t) => t.id === thread.id)
-      ? all.map((t) => (t.id === thread.id ? updated : t))
-      : [updated, ...all];
-    saveThreads(next);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [messages]);
+    if (status === "streaming" || status === "submitted") return;
+    if (messages.length === 0) return;
+    persist(messages as UIMessage[]);
+  }, [messages, status, persist]);
 
-  // Autoscroll
+  // Autoscroll (sem setState)
   useEffect(() => {
-    scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
+    const el = scrollRef.current;
+    if (!el) return;
+    el.scrollTop = el.scrollHeight;
   }, [messages, status]);
 
   // Focus composer
   useEffect(() => {
     inputRef.current?.focus();
-  }, [thread.id, status]);
+  }, [thread.id]);
 
   const isLoading = status === "submitted" || status === "streaming";
   const isEmpty = messages.length === 0;
