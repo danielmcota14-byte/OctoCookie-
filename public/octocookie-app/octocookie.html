@@ -120,6 +120,24 @@ tr:hover td{background:var(--bg3)}
 .popup-content h2,.popup-content h3{font-family:var(--font-head);color:var(--text);margin-bottom:8px;margin-top:14px}
 .popup-footer{display:flex;justify-content:flex-end;margin-top:16px;padding-top:12px;border-top:1px solid var(--border);gap:10px}
 @media(max-width:600px){.app-wrapper{padding:10px}.oc-top-bar{flex-wrap:wrap;gap:8px}.card{padding:14px}table{font-size:11px}th,td{padding:6px 4px}.log-box{max-height:140px;font-size:10px}.dashboard{grid-template-columns:1fr 1fr}}
+
+.lim-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin:10px 0}
+.lim-box{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius3);padding:8px 10px}
+.lim-box span{display:block;font-size:10px;color:var(--text3)}.lim-box b{font-size:13px}
+.hg-head{display:grid;grid-template-columns:1.1fr 1fr;gap:22px;padding:22px 24px;border-color:rgba(96,165,250,.35)}
+.hg-title{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--text2)}.hg-title small{color:var(--yellow);text-transform:none;letter-spacing:0}
+.hg-big{font-size:52px;font-weight:800;line-height:1.1;margin:4px 0 8px}
+.hg-left input[type=range]{width:100%;height:34px}
+.hg-scale{display:flex;justify-content:space-between;font-size:10px;color:var(--text3)}
+.hg-auto{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:11px;margin-top:6px}.hg-auto input[type=number]{width:60px;padding:4px 8px}
+.hg-right{display:grid;grid-template-columns:1fr 1fr;gap:10px;align-content:start}
+.hg-stat{background:var(--bg3);border-radius:12px;padding:12px 14px}.hg-stat span{display:block;font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--text3)}
+.hg-num{display:block;font-size:26px;font-weight:700;margin:2px 0}.hg-stat em{display:block;font-size:10px;font-style:normal;color:var(--text3);line-height:1.3}
+.hg-status{grid-column:1/-1;font-size:11px;color:var(--text2);border-top:1px solid var(--border);padding-top:10px}
+.hg-warn{background:rgba(250,204,21,.1);border:1px solid rgba(250,204,21,.4);border-radius:8px;padding:8px 10px;font-size:11px;margin-top:8px}
+@media(max-width:760px){.hg-head{grid-template-columns:1fr}.hg-big{font-size:42px}}
+.lim-row{display:flex;flex-wrap:wrap;gap:12px;align-items:center;font-size:11px;margin-top:8px}.lim-row input[type=number]{width:64px;padding:5px 8px}.lim-row select{width:auto;padding:5px 8px}
+#limCurva{width:100%;font-size:11px;border-collapse:collapse}#limCurva th,#limCurva td{padding:4px 6px;text-align:left}
 </style>
 
 <style id="octo-light-override">
@@ -211,7 +229,7 @@ a { color:#2563eb; }
     <div class="flex-between" style="margin-bottom:20px">
       <div>
         <div class="app-title"><i class="fas fa-bolt"></i> SWAP TRADER BOT</div>
-        <div style="font-size:10px;color:var(--text3)">DEX Swap · RSI+SMA+MACD+Bollinger · Uniswap / PancakeSwap · Multi-rede</div>
+        <div style="font-size:10px;color:var(--text3)">DEX Swap · Holograma tendência 100% (padrão) · opcional RSI/SMA/MACD/Bollinger · Uniswap / PancakeSwap · Multi-rede</div>
       </div>
     </div>
 
@@ -307,6 +325,27 @@ a { color:#2563eb; }
       </div>
     </div>
 
+    <!-- CABEÇALHO DO HOLOGRAMA: potência do risco + dados básicos -->
+    <div class="card hg-head" id="hgHead">
+      <div class="hg-left">
+        <label class="hg-auto" style="display:block;margin-bottom:10px"><b>Modo do trader:</b> <select id="hgTrader" style="max-width:100%"><option value="original">Trader original (RSI+SMA+MACD+Bollinger)</option><option value="combinado">Trader original + limitador do Holograma</option><option value="holograma" selected>Só Holograma (regra do Python) · padrão</option></select></label>
+        <div id="hgTraderTxt" style="font-size:10px;color:var(--text3);margin:-4px 0 10px"></div>
+        <div class="hg-title"><i class="fas fa-atom"></i> Potência do risco <small id="hgAutoTag"></small></div>
+        <div class="hg-big" id="hgBarraVal">100%</div>
+        <input type="range" id="hgBarra" min="0" max="100" value="100" step="5">
+        <div class="hg-scale"><span>0% · cauteloso</span><span>100% · como foi testado</span></div>
+        <div id="hgParams" class="lim-grid"></div>
+        <label class="hg-auto"><input type="checkbox" id="hgAuto"> Automática · queda máx. aceita <input type="number" id="hgQmax" value="25" min="5" max="90"> %</label>
+      </div>
+      <div class="hg-right">
+        <div class="hg-stat"><span>Saldo</span><b class="hg-num" id="hgSaldo">—</b><em id="hgSaldoSub"></em></div>
+        <div class="hg-stat"><span>Lucro</span><b class="hg-num" id="hgLucro">—</b><em id="hgLucroSub"></em></div>
+        <div class="hg-stat"><span>Probabilidade</span><b class="hg-num" id="hgProb">—</b><em id="hgProbSub"></em></div>
+        <div class="hg-stat"><span>Posição da regra</span><b class="hg-num" id="hgPos">—</b><em id="hgPosSub"></em></div>
+      </div>
+      <div class="hg-status" id="hgStatus">Carregando velas e preço da Binance...</div>
+    </div>
+
     <!-- DASHBOARD -->
     <div class="dashboard">
       <div class="dash-card">
@@ -340,7 +379,7 @@ a { color:#2563eb; }
 
     <!-- PARÂMETROS -->
     <div class="card">
-      <div class="card-header"><i class="fas fa-sliders-h"></i> Parâmetros de Trade</div>
+      <div class="card-header"><i class="fas fa-sliders-h"></i> Parâmetros de Trade <small style="color:var(--text3);font-weight:400">· stake e horário valem só para ordens manuais</small></div>
       <div class="grid-2col">
         <div>
           <label>% do Portfólio por Swap</label>
@@ -366,6 +405,7 @@ a { color:#2563eb; }
           </div>
         </div>
       </div>
+      <label style="display:flex;gap:8px;align-items:center;font-size:11px;margin-top:10px"><input type="checkbox" id="usarLimDia"> Aplicar stop/meta diários à regra (desligado = como no Python; ligado zera a posição e para o bot)</label>
       <div class="flex-between" style="margin-top:10px;background:var(--bg3);padding:10px;border-radius:10px;font-size:11px">
         <span><i class="fas fa-crosshairs"></i> Meta: <strong id="dailyTarget">+0.00%</strong></span>
         <span><i class="fas fa-hand-paper"></i> Stop: <strong id="dailyStop">-0.00%</strong></span>
@@ -376,7 +416,7 @@ a { color:#2563eb; }
     <!-- SLIDERS DE SEGURANÇA -->
     <div class="grid-2col">
       <div class="card">
-        <div class="card-header"><i class="fas fa-shield-alt"></i> Segurança</div>
+        <div class="card-header"><i class="fas fa-shield-alt"></i> Segurança <small style="color:var(--text3);font-weight:400">· só ordens manuais</small></div>
         <input type="range" id="securityLevel" min="10" max="100" value="70" step="5">
         <div class="flex-between" style="font-size:11px;margin-top:4px">
           <span>Nível: <strong id="securityValue">70%</strong></span>
@@ -385,7 +425,7 @@ a { color:#2563eb; }
         <div style="font-size:10px;color:var(--text3);margin-top:6px">10% = Agressivo | 100% = Conservador</div>
       </div>
       <div class="card">
-        <div class="card-header"><i class="fas fa-bolt"></i> Agressividade</div>
+        <div class="card-header"><i class="fas fa-bolt"></i> Agressividade <small style="color:var(--text3);font-weight:400">· só ordens manuais</small></div>
         <input type="range" id="riskLevel" min="10" max="100" value="40" step="5">
         <div class="flex-between" style="font-size:11px;margin-top:4px">
           <span>Nível: <strong id="riskValue">40%</strong></span>
@@ -401,6 +441,36 @@ a { color:#2563eb; }
       <div class="simulation-timer" id="simulationTimer">ANALISANDO: 0.0s</div>
       <div style="font-size:11px;color:var(--text2)">Verificando indicadores antes de executar swap...</div>
       <div id="simulationResult" class="simulation-result"></div>
+    </div>
+
+    <!-- HOLOGRAMA QUÂNTICO: detalhes da regra que decide as ordens -->
+    <div class="card" id="hgDetalhes">
+      <div class="card-header"><i class="fas fa-atom"></i> Regra do Holograma Quântico · detalhes (decide as ordens do bot)</div>
+      <div id="hgMotor" style="font-size:10px;color:var(--text3)"></div>
+      <div class="lim-row">
+        <label>Decisão: <select id="hgModo"><option value="quantica">quântica (o circuito decide)</option><option value="tendencia" selected>tendência (preço puro)</option><option value="escala">escala (experimental)</option></select></label>
+        <label>Limiar Q <input type="number" id="hgLq" value="0.3" min="0.05" max="0.95" step="0.05"></label>
+        <label><input type="checkbox" id="hgStopVivo"> Stop no preço ao vivo (não testado)</label>
+      </div>
+      <div class="lim-row">
+        <label>Filtro de entrada (só no modo "Só Holograma"): <select id="hgFiltro"><option value="votacao">votação (RSI, SMA20, MACD, Bollinger)</option><option value="estrito">estrito (os 4 precisam confirmar)</option><option value="off" selected>desligado (só a regra decide)</option></select></label>
+        <label>Mín. de votos <input type="number" id="hgFiltroN" value="3" min="1" max="4"></label>
+      </div>
+      <div id="hgFiltroSt" style="font-size:10px;color:var(--text3);margin-bottom:6px"></div>
+      <div id="hgAviso" class="hg-warn" style="display:none">Neste histórico o circuito NÃO superou a tendência pura. Considere o modo "tendência".</div>
+      <div class="card-header" style="margin-top:14px"><i class="fas fa-crosshairs"></i> Sinal agora</div>
+      <div id="hgSinal" class="lim-grid"></div>
+      <div class="card-header" style="margin-top:14px"><i class="fas fa-history"></i> Histórico (velas de 8h, custo 0,10%)</div>
+      <div id="hgHist" class="lim-grid"></div>
+      <div style="font-size:10px;color:var(--text3)">"Chance de perda em 30 dias" = fração das janelas históricas de 30 dias que terminaram no negativo. É passado, não previsão.</div>
+      <div class="card-header" style="margin-top:14px"><i class="fas fa-atom"></i> Circuito de 8 qubits (simulado, sem hardware quântico)</div>
+      <div class="grid-2col"><div id="hgMapa"></div><div id="hgHolo"></div></div>
+      <div id="hgQ" class="lim-grid"></div>
+      <div class="card-header" style="margin-top:14px"><i class="fas fa-wallet"></i> Carteira virtual (usada quando não há carteira conectada)</div>
+      <div class="lim-row"><label>Saldo inicial (USDC) <input type="number" id="hgSaldoIni" value="1000" min="10" step="100"></label><button class="close-btn" id="hgZerar" style="width:auto;padding:4px 12px;font-size:11px">Zerar carteira virtual</button></div>
+      <div class="card-header" style="margin-top:14px"><i class="fas fa-table"></i> Curva da barra (histórico)</div>
+      <div style="overflow-x:auto"><table id="hgCurva"></table></div>
+      <div style="font-size:10px;color:var(--text3);margin-top:8px">Só o ponto de 100% foi testado; os intermediários são interpolação sem teste próprio. O circuito usa as mesmas variáveis de preço da tendência: confira no histórico acima se ele supera a tendência pura antes de confiar nele. Conteúdo educacional, sem recomendação de investimento. Operar criptoativos pode causar perda total.</div>
     </div>
 
     <!-- GRÁFICOS -->
@@ -466,7 +536,7 @@ a { color:#2563eb; }
       <p>1. <strong>Riscos de DeFi:</strong> Swaps em DEX podem incorrer em slippage, taxas de gas, falhas de liquidez e volatilidade extrema. Nunca invista mais do que pode perder.</p>
       <p>2. <strong>Responsabilidade:</strong> Você é o único responsável pelas operações executadas com sua carteira.</p>
       <p>3. <strong>Não-custodial:</strong> A OctoCookie nunca solicita, recebe ou armazena sua chave privada ou seed phrase. A conexão é feita via sua própria wallet (MetaMask ou compatível); toda transação — swaps e taxa de serviço — é assinada individualmente por você, na sua wallet.</p>
-      <p>4. <strong>Estratégias:</strong> O bot usa RSI, Bollinger Bands, MACD e SMA para decidir swaps. Performance passada não garante resultados futuros.</p>
+      <p>4. <strong>Estratégia:</strong> Por padrão o bot usa a regra do Holograma Quântico em modo tendência (preço em velas de 8h, stop móvel, potência 100%). Opcionalmente, pode usar o trader original (RSI, Bollinger, MACD e SMA), o limitador do Holograma sobre o trader original, ou o circuito quântico simulado de 8 qubits. Não prevê preços e não garante lucro; performance passada não garante resultados futuros.</p>
       <p>5. <strong>Gas:</strong> Cada swap incorre em taxas de gas. Configure adequadamente o stake % para cobrir os custos.</p>
       <p>6. <strong>Taxa de serviço:</strong> A OctoCookie cobra <span id="termsFeePct">2%</span> sobre o <em>lucro</em> de cada operação vencedora (nunca sobre seu saldo total, nunca em operações com perda). Essa cobrança é uma transação separada, exibida na sua wallet com o valor exato, que você pode aprovar ou recusar individualmente a cada ocorrência. Recusar a taxa não afeta o resultado do trade em si.</p>
       <p>7. <strong>Consentimento:</strong> Ao usar, você aceita estes termos e assume todos os riscos. A aceitação destes termos não constitui, em nenhuma hipótese, autorização para movimentações automáticas ou ilimitadas de fundos — cada transferência exige sua aprovação específica no momento em que ocorre.</p>
@@ -487,7 +557,7 @@ function showTerms() {
 <script>
 // =============================================
 //  OCTOCOOKIE — CRYPTO SWAP TRADER BOT
-//  Estratégia: RSI + SMA + MACD + Bollinger
+//  Estratégia: Holograma tendência 100% (padrão) · opcional: trader original (RSI/SMA/MACD/Bollinger), combinado, ou circuito quântico
 //  Execução: DEX Swap via ethers.js
 //  Preços: Binance API
 // =============================================
@@ -750,6 +820,7 @@ function changePair() {
   const p = TOKEN_PAIRS[CONFIG.pair];
   addLog(`Par alterado: ${p.symbolIn} ↔ ${p.symbolOut}`, 'info');
   state.priceHistory = [];
+  try { HG.reset(); } catch(e) {}
 }
 
 async function refreshBalance() {
@@ -784,12 +855,14 @@ async function fetchPrice() {
     state.apiStatus.coingecko = true;
     updateAPIStatus();
     state.cgFailCount = 0;
+    state.priceOk = true;
     state.lastLatencyMs = performance.now() - t0;
     state.latencyHistory.push(state.lastLatencyMs);
     if(state.latencyHistory.length > 30) state.latencyHistory.shift();
     return parseFloat(price);
   } catch(e) {
     state.apiStatus.coingecko = false;
+    state.priceOk = false; // preço de fallback/semente NÃO é real: o motor da regra não opera com ele
     updateAPIStatus();
     state.cgFailCount = (state.cgFailCount || 0) + 1;
     // Loga o motivo real da falha (antes isso era engolido em silêncio)
@@ -848,7 +921,8 @@ async function trySwapV3Multicall(router, baseParams, feeTiers, deadline, recipi
 // =============================================
 //  EXECUÇÃO REAL DE SWAP (ethers.js + DEX)
 // =============================================
-async function executeSwap(direction) {
+async function executeSwap(direction, opts) {
+  opts = opts || {}; // opts.amountEth (ETH->token) ou opts.amountToken (token->ETH, BigInt): usados pelo motor da regra
   // direction: 'BUY' = comprar tokenIn com tokenOut, 'SELL' = o inverso
   if(!state.wallet) { addLog('Sem carteira conectada.', 'error'); return null; }
   if(state.openSwap) { addLog('Swap já em andamento.', 'warn'); return null; }
@@ -860,7 +934,7 @@ async function executeSwap(direction) {
   showPendingSwap(`Executando ${direction} ${pair.symbolIn}/${pair.symbolOut}...`);
 
   try {
-    const stakeAmount = state.balance * (CONFIG.stakePct / 100);
+    const stakeAmount = (opts.amountEth != null) ? opts.amountEth : state.balance * (CONFIG.stakePct / 100);
     const amountIn = ethers.parseEther(stakeAmount.toFixed(6));
     const deadline = Math.floor(Date.now()/1000) + 300;
     const slippageFactor = BigInt(Math.floor((1 - CONFIG.slippage/100) * 10000));
@@ -929,6 +1003,7 @@ async function executeSwap(direction) {
         ];
         const tokenContract = new ethers.Contract(pair.tokenIn, tokenABI, state.wallet);
         const tokenBalance = await tokenContract.balanceOf(state.walletAddress);
+        const swapIn = (opts.amountToken != null && opts.amountToken < tokenBalance) ? opts.amountToken : tokenBalance;
         const currentAllowance = await tokenContract.allowance(state.walletAddress, net.router);
         if(currentAllowance < tokenBalance) {
           const approveTx = await tokenContract.approve(net.router, tokenBalance);
@@ -939,7 +1014,7 @@ async function executeSwap(direction) {
           tokenOut: WETH,
           recipient: ADDRESS_THIS,
           deadline,
-          amountIn: tokenBalance,
+          amountIn: swapIn,
           amountOutMinimum: 0n,
           sqrtPriceLimitX96: 0n
         };
@@ -963,13 +1038,14 @@ async function executeSwap(direction) {
         ];
         const tokenContract = new ethers.Contract(pair.tokenIn, tokenABI, state.wallet);
         const tokenBalance = await tokenContract.balanceOf(state.walletAddress);
+        const swapIn = (opts.amountToken != null && opts.amountToken < tokenBalance) ? opts.amountToken : tokenBalance;
         const currentAllowance = await tokenContract.allowance(state.walletAddress, net.router);
         if(currentAllowance < tokenBalance) {
           const approveTx = await tokenContract.approve(net.router, tokenBalance);
           await approveTx.wait(); // espera minerar antes de tentar o swap
         }
         tx = await router.swapExactTokensForETH(
-          tokenBalance,
+          swapIn,
           0n,
           [pair.tokenIn, WETH],
           state.walletAddress,
@@ -1276,7 +1352,10 @@ function updateBalance() {
 // =============================================
 function startBot() {
   if(state.botRunning) { addLog('Bot já está rodando.', 'warn'); return; }
-  if(!state.wallet) { addLog('Conecte a carteira primeiro!', 'error'); return; }
+  if(!state.wallet) {
+    if(window.HG && HG.modo()==='holograma') addLog('ℹ️ Sem carteira conectada: a regra vai operar em SIMULAÇÃO (carteira virtual, preço real). Conecte a MetaMask para operar on-chain.', 'warn');
+    else { addLog('Conecte a carteira primeiro!', 'error'); return; }
+  }
   document.getElementById('feeConsentPct').textContent = (SERVICE_FEE_BPS/100).toFixed(2) + '%';
   document.getElementById('feeConsentOverlay').style.display = 'flex';
 }
@@ -1318,6 +1397,7 @@ function stopBot() {
 }
 
 function resetDaily() {
+  try { HG.resetDia(); } catch(e) {}
   state.dailyProfitPct = 0; state.tradesToday = 0; state.wins = 0; state.losses = 0;
   state.trades = []; state.consecutiveLosses = 0; state.isWaitingForRecovery = false;
   updateUI(); updateTradesTable();
@@ -1341,6 +1421,7 @@ function startPriceFeed() {
 function updatePrice(price) {
   const prev = state.currentPrice;
   state.currentPrice = price;
+  state.priceTs = Date.now();
   state.priceHistory.push(price);
   if(state.priceHistory.length > 120) state.priceHistory.shift();
   document.getElementById('currentPrice').textContent = '$' + price.toLocaleString('en-US', {minimumFractionDigits:2,maximumFractionDigits:4});
@@ -1544,6 +1625,8 @@ function isWithinTradingHours() {
 }
 
 function startTradingStrategy() {
+  // Modo "Só Holograma": a regra do Python decide. Nos outros modos vale o SEU trader (código abaixo, igual ao original).
+  if(window.HG && HG.modo()==='holograma') { if(!state.botRunning) return; HG.iniciar(); return; }
   if(!state.botRunning || state.strategyActive) return;
   state.strategyActive = true;
 
@@ -1642,6 +1725,16 @@ function startTradingStrategy() {
     document.getElementById('aiDecision').textContent = `→ ${dir}`;
     document.getElementById('aiReason').textContent = `RSI:${rsi.toFixed(1)} | MACD:${macd.histogram>0?'+':''} ${macd.histogram.toFixed(6)}`;
     addLog(`📊 SINAL ${dir}: RSI=${rsi.toFixed(1)}, Vol OK, BB OK, MACD ${dir==='BUY'?'positivo':'negativo'}`, 'success');
+        if(window.HG && HG.modo()==='combinado') {
+      const v = HG.permite(dir);
+      if(!v.ok) {
+        if(v.log) addLog(`🛡️ Limitador do Holograma vetou ${dir}: ${v.motivo}`, 'warn');
+        document.getElementById('aiReason').textContent = `🛡️ ${dir} vetado pelo Holograma (${v.curto})`;
+        state.strategyActive = false;
+        state.strategyInterval = setTimeout(startTradingStrategy, 3000);
+        return;
+      }
+    }
     runSecurityAnalysis(dir);
   }
 
@@ -1653,6 +1746,7 @@ function startTradingStrategy() {
 //  DAILY LIMITS (#3 Stop Loss, #4 Take Profit)
 // =============================================
 function checkDailyLimits() {
+  if(window.HG && HG.modo()==='holograma') return checkDailyLimitsHolograma();
   // 15. Daily P&L stop loss
   if(state.dailyProfitPct <= CONFIG.stopLoss) {
     addLog(`🛑 Stop Loss diário atingido (${state.dailyProfitPct.toFixed(2)}% / ${CONFIG.stopLoss}%). Bot encerrado.`, 'error');
@@ -1669,6 +1763,25 @@ function checkDailyLimits() {
   if(state.tradesToday >= CONFIG.maxTrades) {
     addLog(`🔒 ${CONFIG.maxTrades} swaps realizados hoje. Bot encerrado.`, 'warn');
     stopBot();
+    return true;
+  }
+  return false;
+}
+
+function checkDailyLimitsHolograma() {
+  // Opcional (caixa "Aplicar stop/meta diários à regra"). Desligado = como no Python, que não tem limite diário.
+  if(!(window.HG && HG.limitesDia())) return false;
+  const parar = async (msg, tipo) => {
+    addLog(msg, tipo);
+    try { await HG.sairAgora('Limite diário atingido'); } catch(e) { addLog('Falha ao zerar a posição: ' + e.message, 'error'); }
+    stopBot();
+  };
+  if(state.dailyProfitPct <= CONFIG.stopLoss) {
+    parar(`🛑 Stop Loss diário atingido (${state.dailyProfitPct.toFixed(2)}% / ${CONFIG.stopLoss}%). Zerando e encerrando.`, 'error');
+    return true;
+  }
+  if(state.dailyProfitPct >= CONFIG.takeProfit) {
+    parar(`🏁 Meta diária atingida (+${state.dailyProfitPct.toFixed(2)}%). Zerando e encerrando.`, 'success');
     return true;
   }
   return false;
@@ -1706,9 +1819,9 @@ function updateTradesTable() {
     row.innerHTML = `<td>${t.time}</td>
       <td style="color:var(--text2)">${t.pair}</td>
       <td style="color:${isBuy?'var(--green)':'var(--red)'};font-weight:700">${t.direction}</td>
-      <td>$${t.priceIn}</td>
-      <td class="${t.result==='WIN'?'positive':'negative'}">${t.result}</td>
-      <td class="${pnl>=0?'positive':'negative'}">${pnl>=0?'+':''}${pnl.toFixed(3)}%</td>
+      <td>$${t.valor || t.priceIn}</td>
+      <td class="${t.result==='WIN'?'positive':t.result==='LOSS'?'negative':''}">${t.result}</td>
+      <td class="${isNaN(pnl)?'':pnl>=0?'positive':'negative'}">${isNaN(pnl)?'—':(pnl>=0?'+':'')+pnl.toFixed(3)+'%'}</td>
       <td style="font-size:10px;color:var(--text3)">${t.txHash}</td>`;
   });
 }
@@ -1807,6 +1920,7 @@ window.addEventListener('message', (ev) => {
   const now = Date.now();
   if(now - lastDashClickTs < DASH_CLICK_COOLDOWN_MS) return;
   lastDashClickTs = now;
+  if(window.HG && HG.ativo() && HG.modo()==='holograma') { addLog(`🖱️ Sinal ${msg.action} do Dashboard ignorado: quem decide as ordens é a regra do Holograma.`, 'warn'); return; }
   const btnId = msg.action === 'BUY' ? 'buyManualBtn' : msg.action === 'SELL' ? 'sellManualBtn' : null;
   if(!btnId) return;
   const btn = document.getElementById(btnId);
@@ -1892,6 +2006,777 @@ document.addEventListener('DOMContentLoaded', function() {
   addLog('✅ OCTOCOOKIE Swap Trader Bot pronto. Conecte sua carteira e clique INICIAR.', 'success');
   addLog('APIs: Binance (preços) · ethers.js (execução) · Uniswap/PancakeSwap (DEX)', 'info');
 });
+</script>
+<script>
+/* HOLOGRAMA QUÂNTICO — a regra do holograma_quantico.py decide as ordens do trader (porte validado contra o Python). */
+(function(){
+const Q=(function(){
+// Circuito de 8 qubits simulado em Node (sem Qiskit). Mesmo circuito do Python:
+// RY codifica a demanda (ETH, qubits 0-3), CNOT+X faz o complemento (USDC, qubits 4-7), CZ encadeia 0-1-2-3.
+// Todas as portas são reais, então o vetor de estado é real.
+const ARESTAS = [[0, 1], [1, 2], [2, 3], [4, 5], [5, 6], [6, 7], [0, 4], [1, 5], [2, 6], [3, 7]];
+const N = 8;
+/** Autovalores/autovetores de matriz simétrica real (Jacobi cíclico). Autovetor i = coluna i de V. */
+function eigSym(M) {
+    const n = M.length;
+    const A = M.map((r) => r.slice());
+    const V = Array.from({ length: n }, (_, i) => Array.from({ length: n }, (_, j) => (i === j ? 1 : 0)));
+    for (let sw = 0; sw < 80; sw++) {
+        let off = 0;
+        for (let i = 0; i < n; i++)
+            for (let j = i + 1; j < n; j++)
+                off += A[i][j] ** 2;
+        if (off < 1e-24)
+            break;
+        for (let p = 0; p < n - 1; p++)
+            for (let q = p + 1; q < n; q++) {
+                if (Math.abs(A[p][q]) < 1e-300)
+                    continue;
+                const th = (A[q][q] - A[p][p]) / (2 * A[p][q]);
+                const t = (th >= 0 ? 1 : -1) / (Math.abs(th) + Math.sqrt(th * th + 1));
+                const c = 1 / Math.sqrt(t * t + 1), s = t * c;
+                for (let k = 0; k < n; k++) {
+                    const a = A[k][p], b = A[k][q];
+                    A[k][p] = c * a - s * b;
+                    A[k][q] = s * a + c * b;
+                }
+                for (let k = 0; k < n; k++) {
+                    const a = A[p][k], b = A[q][k];
+                    A[p][k] = c * a - s * b;
+                    A[q][k] = s * a + c * b;
+                }
+                for (let k = 0; k < n; k++) {
+                    const a = V[k][p], b = V[k][q];
+                    V[k][p] = c * a - s * b;
+                    V[k][q] = s * a + c * b;
+                }
+            }
+    }
+    return { w: A.map((r, i) => r[i]), V };
+}
+function estado(f) {
+    const psi = new Float64Array(1 << N);
+    psi[0] = 1;
+    const bit = (i, q) => (i >> q) & 1;
+    const ry = (th, q) => {
+        const c = Math.cos(th / 2), s = Math.sin(th / 2);
+        for (let i = 0; i < psi.length; i++)
+            if (!bit(i, q)) {
+                const j = i | (1 << q), a = psi[i], b = psi[j];
+                psi[i] = c * a - s * b;
+                psi[j] = s * a + c * b;
+            }
+    };
+    const cx = (c, t) => { for (let i = 0; i < psi.length; i++)
+        if (bit(i, c) && !bit(i, t)) {
+            const j = i | (1 << t);
+            [psi[i], psi[j]] = [psi[j], psi[i]];
+        } };
+    const x = (q) => { for (let i = 0; i < psi.length; i++)
+        if (!bit(i, q)) {
+            const j = i | (1 << q);
+            [psi[i], psi[j]] = [psi[j], psi[i]];
+        } };
+    const cz = (a, b) => { for (let i = 0; i < psi.length; i++)
+        if (bit(i, a) && bit(i, b))
+            psi[i] = -psi[i]; };
+    f.forEach((v, i) => { ry((Math.PI * (1 + v)) / 2, i); cx(i, i + 4); x(i + 4); });
+    for (let i = 0; i < 3; i++)
+        cz(i, i + 1);
+    return psi;
+}
+function rho(psi, keep) {
+    const rest = [...Array(N).keys()].filter((q) => !keep.includes(q));
+    const dk = 1 << keep.length, de = 1 << rest.length;
+    const R = Array.from({ length: dk }, () => new Array(dk).fill(0));
+    for (let e = 0; e < de; e++) {
+        let base = 0;
+        rest.forEach((q, b) => { if ((e >> b) & 1)
+            base |= 1 << q; });
+        const v = new Array(dk).fill(0);
+        for (let k = 0; k < dk; k++) {
+            let idx = base;
+            keep.forEach((q, b) => { if ((k >> b) & 1)
+                idx |= 1 << q; });
+            v[k] = psi[idx];
+        }
+        for (let a = 0; a < dk; a++)
+            for (let b = 0; b < dk; b++)
+                R[a][b] += v[a] * v[b];
+    }
+    return R;
+}
+const ent = (R) => -eigSym(R).w.reduce((s, l) => (l > 1e-12 ? s + l * Math.log2(l) : s), 0);
+/** 4 features direcionais em [-1,1] (tendência longa, base, curta e momentum), só com o passado. */
+function features(c, janela, limPct) {
+    const lim = limPct / 100, i = c.length - 1;
+    return [janela * 2, janela, Math.max(2, Math.floor(janela / 3)), 3].map((h) => Math.tanh(Math.log(c[i] / c[Math.max(0, i - h)]) / (lim * Math.sqrt(h / janela))));
+}
+function analisarQuantico(f) {
+    const psi = estado(f), todos = [...Array(N).keys()];
+    const p1 = todos.map((i) => psi.reduce((s, a, k) => (((k >> i) & 1) ? s + a * a : s), 0));
+    const S = todos.map((i) => ent(rho(psi, [i])));
+    const mi = todos.map(() => new Array(N).fill(0));
+    for (let a = 0; a < N; a++)
+        for (let b = a + 1; b < N; b++)
+            mi[a][b] = mi[b][a] = Math.max(0, (S[a] + S[b] - ent(rho(psi, [a, b]))) / 2);
+    const mx = Math.max(...mi.flat(), 1e-9);
+    const D2 = mi.map((r, a) => r.map((m, b) => (a === b ? 0 : (1 - m / mx) ** 2)));
+    const rm = D2.map((r) => r.reduce((s, x) => s + x, 0) / N), tm = rm.reduce((s, x) => s + x, 0) / N;
+    const B = D2.map((r, a) => r.map((x, b) => -0.5 * (x - rm[a] - rm[b] + tm)));
+    const { w, V } = eigSym(B);
+    const ord = w.map((x, i) => [x, i]).sort((a, b) => b[0] - a[0]).slice(0, 3).map((x) => x[1]);
+    const xyz = todos.map((r) => ord.map((k) => V[r][k] * Math.sqrt(Math.max(w[k], 0))));
+    const mz = Math.max(...xyz.map((p) => Math.abs(p[2])), 1e-9);
+    xyz.forEach((p) => { p[2] /= mz; });
+    const sGrupo = ent(rho(psi, [0, 1, 2, 3]));
+    const hBorn = -Array.from(psi).reduce((s, a) => { const p = Math.min(Math.max(a * a, 1e-12), 1); return s + p * Math.log2(p); }, 0);
+    return {
+        qubits: todos.map((i) => ({ nome: i < 4 ? `E${i}` : `U${i - 4}`, grupo: i < 4 ? "ETH" : "USDC", p1: p1[i], s: S[i] })),
+        arestas: ARESTAS, mi, coords: xyz, sGrupo, caos: sGrupo / 4, hBorn,
+        direcao: [0, 1, 2, 3].reduce((s, i) => s + (2 * p1[i] - 1), 0) / 4,
+        circuito: { qubits: 8, cx: 4, profundidade: 5, swaps: 0 },
+    };
+}
+
+return {analisarQuantico,features,ARESTAS,eigSym};})();
+const L=(function(){
+/** Arredondamento do Python (metade vai para o par): 58,5 → 58. */
+const arredondaPar = (x) => (Math.abs(x - Math.floor(x) - 0.5) < 1e-9 ? 2 * Math.round(x / 2) : Math.round(x));
+function paramsBarra(v) {
+    const f = Math.max(0, Math.min(100, v)) / 100;
+    // stop mais largo (3%→8%) e limiar um pouco mais alto no extremo agressivo (7%→3.5%)
+    // para reduzir saídas prematuras em altas prolongadas com pullbacks de 4–6%.
+    return { expo: 100 * f, stop: 3 + 5 * f, lim: 3.5 + 3.5 * (1 - f), janela: arredondaPar(30 + 30 * (1 - f)) };
+}
+/** Posição base da tendência (histerese): >+lim compra, <-lim vende, senão mantém. Só passado. */
+function posBase(c, janela, lim) {
+    const out = [];
+    let at = 0;
+    for (let i = 0; i < c.length - 1; i++) {
+        const s = Math.log(c[i] / c[Math.max(0, i - janela)]);
+        at = s > lim ? 1 : s < -lim ? 0 : at;
+        out.push(at);
+    }
+    return out;
+}
+/** Limitador sobre a posição base. 'trade' = stop móvel do topo desde a entrada; 'carteira' = queda do patrimônio. */
+function aplicarLimitador(base, r, X, modo, custo) {
+    const lx = Math.log(1 - X);
+    const pos = new Array(r.length).fill(0);
+    let bloq = false, prev = 0, cum = 0, topo = 0, eq = 0, eqPico = 0, pend = false;
+    for (let i = 0; i < r.length; i++) {
+        if (i > 0 && pos[i - 1] === 1) {
+            cum += r[i - 1];
+            eq += r[i - 1];
+        }
+        const b = base[i];
+        if (b === 0)
+            bloq = false;
+        // recuperação parcial (~40% do stop): libera o bloqueio sem exigir sinal de venda completo
+        if (bloq && b === 1) {
+            if (modo === "trade" && cum - topo > lx * 0.4) bloq = false;
+            else if (modo === "carteira" && eq - eqPico > lx * 0.4) bloq = false;
+        }
+        let quer = b === 1 && !bloq;
+        if (quer && prev === 0) {
+            cum = 0;
+            topo = 0;
+            if (pend) {
+                eqPico = eq;
+                pend = false;
+            }
+        }
+        else if (quer && prev === 1) {
+            topo = Math.max(topo, cum);
+            eqPico = Math.max(eqPico, eq);
+            if ((modo === "trade" && cum - topo <= lx) || (modo === "carteira" && eq - eqPico <= lx)) {
+                quer = false;
+                bloq = true;
+                pend = true;
+            }
+        }
+        pos[i] = quer ? 1 : 0;
+        if (pos[i] !== prev)
+            eq -= custo;
+        prev = pos[i];
+    }
+    return pos;
+}
+const logRet = (c) => c.slice(1).map((x, i) => Math.log(x / c[i]));
+/** Retorno (log) por vela e posição do sistema com a barra em v. */
+function liqBarra(c, v, custo, modo = "trade") {
+    const p = paramsBarra(v), r = logRet(c);
+    const base = posBase(c, p.janela, p.lim / 100);
+    const pos0 = p.stop > 0 ? aplicarLimitador(base, r, p.stop / 100, modo, custo) : base;
+    const pos = pos0.map((x) => x * (p.expo / 100));
+    const liq = pos.map((x, i) => x * r[i] - Math.abs(x - (i ? pos[i - 1] : 0)) * custo);
+    return { liq, pos, pos0 };
+}
+function curva(x) {
+    let cs = 0, pico = 0, dd = 0;
+    const acc = [];
+    for (const v of x) {
+        cs += v;
+        acc.push(cs);
+        pico = Math.max(pico, cs);
+        dd = Math.min(dd, Math.exp(cs - pico) - 1);
+    }
+    return { acc, ret: (Math.exp(cs) - 1) * 100, dd: dd * 100 };
+}
+/** Histórico com a barra em v: sistema x comprar e segurar, e chance de perda em 30 dias (janelas de 90 velas). */
+function projecao(c, v, custo = 0.001, modo = "trade") {
+    const { liq, pos0 } = liqBarra(c, v, custo, modo);
+    const s = curva(liq), b = curva(logRet(c));
+    const a = [0, ...s.acc];
+    let n = 0, neg = 0;
+    for (let i = 90; i < a.length; i++) {
+        n++;
+        if (a[i] - a[i - 90] < 0)
+            neg++;
+    }
+    let trocas = 0;
+    pos0.forEach((x, i) => { if (x !== (i ? pos0[i - 1] : 0))
+        trocas++; });
+    return { v, ret: s.ret, dd: s.dd, retBh: b.ret, ddBh: b.dd, vant: s.ret - b.ret, perda30: n ? (100 * neg) / n : 0, trocas, posAtual: (pos0[pos0.length - 1] ?? 0), n: liq.length };
+}
+const curvaBarra = (c, custo = 0.001, modo = "trade") => Array.from({ length: 21 }, (_, k) => projecao(c, k * 5, custo, modo));
+/** Barra automática: maior vantagem sobre comprar e segurar cuja pior queda histórica cabe no limite aceito. */
+function barraAuto(cv, qmax) {
+    const ok = cv.filter((x) => x.dd >= -qmax);
+    const pick = ok.length ? ok.reduce((a, b) => (b.vant > a.vant || (b.vant === a.vant && b.v > a.v) ? b : a)) : cv.reduce((a, b) => (b.dd > a.dd ? b : a));
+    return pick.v;
+}
+
+return {paramsBarra,projecao,curvaBarra,barraAuto,aplicarLimitador,posBase,liqBarra};})();
+
+/* ================= NÚCLEO DA REGRA (porte de holograma_quantico.py + teste_rapido.py) ================= */
+const arPar = (x) => (Math.abs(x - Math.floor(x) - 0.5) < 1e-9 ? 2 * Math.round(x / 2) : Math.round(x)); // round() do Python
+const clamp1 = (x) => Math.max(-1, Math.min(1, x));
+
+/** Forma fechada do circuito (igual ao Qiskit): devolve {direcao, caos}. Usada no histórico (1000 velas). */
+function saidasFormula(f) {
+  const p1 = f.map((v) => (1 + Math.sin((Math.PI * v) / 2)) / 2);
+  const H = p1.map((p) => (p <= 1e-12 || p >= 1 - 1e-12 ? 0 : -(p * Math.log2(p) + (1 - p) * Math.log2(1 - p))));
+  return { direcao: p1.reduce((s, p) => s + (2 * p - 1), 0) / 4, caos: H.reduce((s, h) => s + h, 0) / 4 };
+}
+
+/** 4 features em [-1,1] no índice i (só passado). lim = fração (0.03). */
+function featI(c, i, janela, lim) {
+  return [janela * 2, janela, Math.max(2, Math.floor(janela / 3)), 3].map((h) => {
+    const i0 = Math.max(0, i - h);
+    const v = c[i0] > 0 && c[i] > 0 ? Math.log(c[i] / c[i0]) : 0;
+    return Math.tanh(v / (lim * Math.sqrt(h / janela)));
+  });
+}
+
+/** sinal_tendencia: retorno log da janela, alinhado a r (tamanho n-1). */
+function sinalTendencia(c, janela) {
+  const out = [];
+  for (let i = 0; i < c.length - 1; i++) { const i0 = Math.max(0, i - janela); out.push(c[i0] > 0 && c[i] > 0 ? Math.log(c[i] / c[i0]) : 0); }
+  return out;
+}
+
+/** sinal_quantico: Q = (1 - desordem) * direção, alinhado a r. */
+function sinalQuantico(c, janela, lim) {
+  const out = [];
+  for (let i = 0; i < c.length - 1; i++) { const o = saidasFormula(featI(c, i, janela, lim)); out.push((1 - o.caos) * o.direcao); }
+  return out;
+}
+
+const posRegra = (s, atual, lim) => (s > lim ? 1 : s < -lim ? 0 : atual);
+
+/** backtest() do Python: histerese + custo por troca. */
+function backtest(closes, sinal, lim, custo) {
+  const r = closes.slice(1).map((x, i) => Math.log(x / closes[i]));
+  const pos = new Array(r.length).fill(0);
+  let at = 0;
+  for (let i = 0; i < r.length; i++) { at = posRegra(sinal[i], at, lim); pos[i] = at; }
+  let soma = 0, somaBh = 0, trocas = 0, em = 0, emAlta = 0;
+  for (let i = 0; i < r.length; i++) {
+    const tr = Math.abs(pos[i] - (i ? pos[i - 1] : 0));
+    trocas += tr; soma += pos[i] * r[i] - tr * custo; somaBh += r[i];
+    if (pos[i] === 1) { em++; if (r[i] > 0) emAlta++; }
+  }
+  return { regra: (Math.exp(soma) - 1) * 100, bh: (Math.exp(somaBh) - 1) * 100, trocas: Math.round(trocas), n: r.length,
+    posFinal: pos.length ? pos[pos.length - 1] : 0, prob: em ? emAlta / em : null, probN: em };
+}
+
+/** Um passo da decisão (Motor.passo). C = {janela, lim, modo, lq, stopPct, stopVivo}; st = {regraPos, pos, stopBloq, topo};
+ *  a = saídas do circuito {direcao, caos}. Não altera nada: devolve o novo estado. */
+function decidir(C, closes, p, st, a, entradaOk = true) {
+  const c = closes;
+  const sT = Math.log(p / c[c.length - C.janela]);
+  const Qv = (1 - a.caos) * a.direcao;
+  let s, limiar, sn, expo = 1;
+  if (C.modo === 'escala') { s = sT; limiar = C.lim; sn = clamp1(sT / (2 * C.lim)); expo = 1 - a.caos; }
+  else if (C.modo === 'quantica') { s = Qv; limiar = C.lq; sn = clamp1(Qv); }
+  else { s = sT; limiar = C.lim; sn = clamp1(sT / (2 * C.lim)); }
+  const novaR = posRegra(s, st.regraPos, limiar);
+  let nova = novaR, stopBloq = st.stopBloq, topo = st.topo;
+  if (C.stopPct > 0) {
+    // stop móvel: sai se o preço cair stopPct do topo desde a entrada.
+    // Reentrada: (a) regra volta a 0 e depois compra de novo, OU (b) recuperação parcial (~40% do stop)
+    // enquanto a regra ainda manda comprar — evita ficar de fora em altas com pullbacks.
+    const ref = C.stopVivo ? p : c[c.length - 1];
+    if (novaR === 0) { stopBloq = false; topo = null; }
+    else if (!stopBloq) {
+      topo = (st.pos === 0 || topo === null) ? ref : Math.max(topo, ref);
+      if (ref <= topo * (1 - C.stopPct)) stopBloq = true;
+    } else if (topo != null && ref >= topo * (1 - C.stopPct * 0.4)) {
+      stopBloq = false; // recuperação parcial na mesma tendência
+    }
+    nova = novaR === 1 && !stopBloq ? 1 : 0;
+  }
+  // Filtro de entrada (lógica antiga RSI/SMA/MACD/Bollinger): só segura a ENTRADA (0 -> 1). Saída, stop e tamanho da posição não mudam.
+  const bloqEntrada = nova === 1 && st.pos === 0 && !entradaOk;
+  if (bloqEntrada) nova = 0;
+  return { st: { regraPos: novaR, pos: nova, stopBloq, topo }, s, limiar, sn, sT, Qv, expo, bloqEntrada };
+}
+
+/** Motor.rebalancear() sobre a carteira virtual w = {usdc, eth, entrada}. Devolve o que foi negociado (ou null). */
+function rebalVirtual(w, p, pos, risco, expo, custo) {
+  const equity = w.usdc + w.eth * p;
+  const alvo = pos === 1 ? (risco / 100) * expo * equity : 0;
+  const troca = alvo - w.eth * p;
+  let ordem = null;
+  if (Math.abs(troca) > 0.001 * equity) {
+    const ethAntes = w.eth;
+    w.eth += troca / p;
+    w.usdc -= troca + Math.abs(troca) * custo;
+    ordem = { lado: troca > 0 ? 'BUY' : 'SELL', valorUsd: Math.abs(troca), abriu: ethAntes * p < 0.001 * equity && troca > 0, ethAntes };
+  }
+  let fechou = false, pnlPct = null;
+  if (w.eth * p < 0.001 * equity) {
+    if (w.entrada !== null && w.entrada !== undefined && ordem && ordem.lado === 'SELL') { fechou = true; pnlPct = (p / w.entrada - 1) * 100; }
+    w.eth = 0; w.entrada = null;
+  } else if (w.entrada === null || w.entrada === undefined) w.entrada = p;
+  if (ordem) { ordem.fechou = fechou; ordem.pnlPct = pnlPct; }
+  return ordem;
+}
+
+/** Histórico das velas com a barra em v (Motor.proj): usa só as velas fechadas. */
+function projFechadas(closes, v, custo) { return L.projecao(closes, v, custo, 'trade'); }
+function curvaFechadas(closes, custo) { return L.curvaBarra(closes, custo, 'trade'); }
+
+/* ---------- LÓGICA ANTIGA COMO REGRA DE ENTRADA ----------
+ * Mesmas fórmulas de calculateRSI / calculateSMA / calculateMACD / calculateBollingerBands (RSI 14, SMA 20, MACD 12/26/9, Bollinger 20x2),
+ * mas calculadas em série (uma passada) para dar para usar no histórico. As 4 condições (do código antigo) para ENTRAR comprado:
+ *   RSI na faixa normal (limite baixo < RSI < limite alto, como a checagem de segurança do RSI)  ·  preço > SMA20
+ *   ·  histograma do MACD > 0  ·  preço dentro das bandas de Bollinger.
+ * (O sinal antigo pedia RSI < limite baixo e logo depois a checagem de segurança pedia RSI > limite baixo: as duas coisas nunca valiam juntas.) */
+function indSerie(c) {
+  const n = c.length, rsi = new Array(n).fill(50), sma = new Array(n).fill(null), hist = new Array(n).fill(0), bbL = new Array(n).fill(null), bbU = new Array(n).fill(null);
+  for (let i = 0; i < n; i++) {
+    if (i + 1 >= 15) {
+      let g = 0, l = 0;
+      for (let k = i - 13; k <= i; k++) { const ch = c[k] - c[k - 1]; if (ch >= 0) g += ch; else l += Math.abs(ch); }
+      const ag = g / 14, al = l / 14;
+      rsi[i] = al === 0 ? 100 : 100 - 100 / (1 + ag / al);
+    }
+    if (i + 1 >= 20) {
+      let t = 0; for (let k = i - 19; k <= i; k++) t += c[k];
+      const m = t / 20; let v = 0; for (let k = i - 19; k <= i; k++) v += Math.pow(c[k] - m, 2);
+      const sd = Math.sqrt(v / 20); sma[i] = m; bbL[i] = m - 2 * sd; bbU[i] = m + 2 * sd;
+    }
+  }
+  let e12 = null, e26 = null, sig = null; const mac = [];
+  for (let i = 0; i < n; i++) {
+    if (i === 11) { let t = 0; for (let k = 0; k < 12; k++) t += c[k]; e12 = t / 12; } else if (i > 11) e12 = (c[i] - e12) * (2 / 13) + e12;
+    if (i === 25) { let t = 0; for (let k = 0; k < 26; k++) t += c[k]; e26 = t / 26; } else if (i > 25) e26 = (c[i] - e26) * (2 / 27) + e26;
+    if (i >= 26) {
+      const m = e12 - e26; mac.push(m);
+      if (mac.length === 9) { let t = 0; for (let k = 0; k < 9; k++) t += mac[k]; sig = t / 9; }
+      else if (mac.length > 9) sig = (m - sig) * (2 / 10) + sig;
+      if (mac.length >= 9) hist[i] = m - (sig || 0);
+    }
+  }
+  return { rsi, sma, hist, bbL, bbU };
+}
+
+/** Avalia as 4 condições antigas no índice i da série (preço p). min = votos necessários (4 = estrito). */
+function votosEntrada(S, i, p, rsiLow, rsiHigh, min) {
+  const itens = [
+    { nome: 'RSI', ok: S.rsi[i] > rsiLow && S.rsi[i] < rsiHigh, txt: `RSI ${S.rsi[i].toFixed(1)} ${S.rsi[i] > rsiLow && S.rsi[i] < rsiHigh ? 'na' : 'fora da'} faixa ${Math.floor(rsiLow)}–${Math.floor(rsiHigh)}` },
+    { nome: 'SMA20', ok: S.sma[i] !== null && p > S.sma[i], txt: S.sma[i] === null ? 'SMA20 —' : `preço ${p > S.sma[i] ? 'acima' : 'abaixo'} da SMA20` },
+    { nome: 'MACD', ok: S.hist[i] > 0, txt: `MACD hist ${S.hist[i] > 0 ? '+' : '-'}` },
+    { nome: 'Bollinger', ok: S.bbL[i] !== null && p > S.bbL[i] && p < S.bbU[i], txt: `preço ${S.bbL[i] !== null && p > S.bbL[i] && p < S.bbU[i] ? 'dentro' : 'fora'} das bandas` },
+  ];
+  const votos = itens.filter((x) => x.ok).length;
+  return { itens, votos, min, ok: votos >= min, txt: itens.map((x) => (x.ok ? '✓ ' : '✗ ') + x.txt).join(' · ') };
+}
+
+/** Modo do filtro -> votos mínimos. 'off' = sem filtro, 'estrito' = os 4, 'votacao' = n de 4. */
+const minVotos = (filtro, n) => (filtro === 'off' ? 0 : filtro === 'estrito' ? 4 : Math.max(1, Math.min(4, Math.round(n) || 3)));
+
+/** Avaliação AO VIVO: velas fechadas + preço ao vivo como última vela. */
+function avaliarEntrada(closes, p, filtro, n, rsiLow, rsiHigh) {
+  const c = closes.concat([p]), S = indSerie(c);
+  return votosEntrada(S, c.length - 1, p, rsiLow, rsiHigh, minVotos(filtro, n));
+}
+
+/** backtest() com a porta de entrada: a regra (Q ou tendência) manda comprar E a lógica antiga confirma. Saída = regra. */
+function backtestFiltro(closes, sinal, lim, custo, filtro, n, rsiLow, rsiHigh) {
+  const min = minVotos(filtro, n), S = indSerie(closes);
+  const r = closes.slice(1).map((x, i) => Math.log(x / closes[i]));
+  const pos = new Array(r.length).fill(0);
+  let reg = 0, ef = 0, bloq = 0;
+  for (let i = 0; i < r.length; i++) {
+    reg = posRegra(sinal[i], reg, lim);
+    if (reg === 0) ef = 0;
+    else if (ef === 0) { if (votosEntrada(S, i, closes[i], rsiLow, rsiHigh, min).ok) ef = 1; else bloq++; }
+    pos[i] = ef;
+  }
+  let soma = 0, trocas = 0, em = 0, emAlta = 0;
+  for (let i = 0; i < r.length; i++) {
+    const tr = Math.abs(pos[i] - (i ? pos[i - 1] : 0));
+    trocas += tr; soma += pos[i] * r[i] - tr * custo;
+    if (pos[i] === 1) { em++; if (r[i] > 0) emAlta++; }
+  }
+  return { regra: (Math.exp(soma) - 1) * 100, trocas: Math.round(trocas), n: r.length, posFinal: pos.length ? pos[pos.length - 1] : 0, bloq, prob: em ? emAlta / em : null, probN: em };
+}
+
+const HG_CORE = { Q, L, arPar, saidasFormula, featI, sinalTendencia, sinalQuantico, posRegra, backtest, decidir, rebalVirtual, projFechadas, curvaFechadas, indSerie, votosEntrada, minVotos, avaliarEntrada, backtestFiltro };
+if (typeof window !== 'undefined') window.HG_CORE = HG_CORE;
+
+
+/* ================= INTEGRAÇÃO COM O TRADER =================
+ * A regra do holograma_quantico.py (circuito de 8 qubits -> Q, tendência, stop móvel, barra de risco) DECIDE as ordens.
+ * Sem carteira conectada: carteira virtual (como o --simulado do Python, mas com preço real da Binance).
+ * Com carteira conectada (ETH/USDC ou ETH/USDT na Ethereum): rebalanceia a carteira real para a exposição alvo.        */
+const K = HG_CORE;
+const $ = (id) => document.getElementById(id);
+const pct = (v, d = 1) => (v >= 0 ? '+' : '') + v.toFixed(d) + '%';
+const usd = (v) => (v < 0 ? '-$' : '$') + Math.abs(v).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const box = (t, v) => `<div class="lim-box"><span>${t}</span><b>${v}</b></div>`;
+const LS = 'octo_hg_v3';
+const BASES = ['https://api.binance.com/api/v3', 'https://fapi.binance.com/fapi/v1'];
+const GAS_RESERVA = 0.01; // ETH que o motor nunca negocia (para pagar gás)
+
+const ENG = {
+  custo: 0.001, lq: 0.3, modo: 'tendencia', barra: 100, auto: false, qmax: 25, stopVivo: false, filtro: 'off', filtroN: 3, trader: 'holograma', rodAnt: false, vetoKey: '', vetoTs: 0,
+  janela: 30, lim: 0.03, stopPct: 0.05, risco: 100, expo: 1, expoAp: 1,
+  sym: null, closes: [], tVelas: 0, p: null, p0: null,
+  regraPos: 0, pos: 0, stopBloq: false, topo: null, reb: true, pronto: false,
+  btT: null, btQ: null, bt: null, btF: null, curva: [], sigT: null, sigQ: null, ind: null, bloqEntrada: false, bloqAnt: false,
+  q: null, sn: 0, sRaw: 0, sT: 0, limAtivo: 0.3,
+  w: { usdc: 1000, eth: 0, entrada: null, inicial: 1000 },
+  real: null, baseReal: null, entradaReal: null, cooldown: 0, diaIni: null,
+  erro: '', tickBusy: false, pxCache: { t: 0, v: null }, avisouPar: false,
+};
+try { const j = JSON.parse(localStorage.getItem(LS) || 'null'); if (j) { ['barra', 'auto', 'qmax', 'modo', 'lq', 'stopVivo', 'filtro', 'filtroN', 'trader'].forEach((k) => { if (j[k] !== undefined) ENG[k] = j[k]; }); if (j.w) ENG.w = j.w; if (j.p0) ENG.p0 = j.p0; } } catch (e) {}
+const salvar = () => { try { localStorage.setItem(LS, JSON.stringify({ barra: ENG.barra, auto: ENG.auto, qmax: ENG.qmax, modo: ENG.modo, lq: ENG.lq, stopVivo: ENG.stopVivo, filtro: ENG.filtro, filtroN: ENG.filtroN, trader: ENG.trader, w: ENG.w, p0: ENG.p0 })); } catch (e) {} };
+
+const par = () => TOKEN_PAIRS[CONFIG.pair];
+const simbolo = () => BINANCE_SYMBOLS[par().cgIn];
+const cfg = () => ({ janela: ENG.janela, lim: ENG.lim, modo: ENG.modo, lq: ENG.lq, stopPct: ENG.stopPct, stopVivo: ENG.stopVivo });
+const modoReal = () => !!(state.wallet && state.apiStatus.provider && state.balance > 0.001 && CONFIG.network === 'ethereum' && par().symbolIn === 'ETH');
+
+/* ---------- dados ---------- */
+async function velas(sym) {
+  let erro = 'falha de rede';
+  for (const b of BASES) {
+    try {
+      const k = await fetch(`${b}/klines?symbol=${sym}&interval=8h&limit=1000`, { cache: 'no-store' });
+      if (!k.ok) { erro = 'HTTP ' + k.status; continue; }
+      const j = await k.json(), agora = Date.now();
+      const cs = j.filter((x) => x[6] < agora).map((x) => parseFloat(x[4]));
+      if (cs.length >= 200) return cs;
+      erro = 'poucas velas (' + cs.length + ')';
+    } catch (e) { erro = e.message || erro; }
+  }
+  throw new Error('Velas de 8h indisponíveis: ' + erro);
+}
+async function precoVivo() {
+  if (Date.now() - ENG.pxCache.t < 12000 && ENG.pxCache.v) return ENG.pxCache.v;
+  let erro = 'falha de rede';
+  for (const b of BASES) {
+    try { const r = await fetch(`${b}/ticker/price?symbol=${simbolo()}`, { cache: 'no-store' }); if (!r.ok) { erro = 'HTTP ' + r.status; continue; } const v = parseFloat((await r.json()).price); if (v > 0) { ENG.pxCache = { t: Date.now(), v }; return v; } } catch (e) { erro = e.message || erro; }
+  }
+  throw new Error('Preço indisponível: ' + erro);
+}
+
+/* ---------- cálculo da regra ---------- */
+function recalcular() {
+  const c = ENG.closes; if (!c.length) return;
+  ENG.sigT = K.sinalTendencia(c, ENG.janela); ENG.sigQ = K.sinalQuantico(c, ENG.janela, ENG.lim);
+  ENG.btT = K.backtest(c, ENG.sigT, ENG.lim, ENG.custo);
+  ENG.btQ = K.backtest(c, ENG.sigQ, ENG.lq, ENG.custo);
+  ENG.bt = ENG.modo === 'quantica' ? ENG.btQ : ENG.btT;
+  ENG.btF = ENG.filtro === 'off' ? null : (ENG.modo === 'quantica' ? K.backtestFiltro(c, ENG.sigQ, ENG.lq, ENG.custo, ENG.filtro, ENG.filtroN, CONFIG.rsiLow, CONFIG.rsiHigh) : K.backtestFiltro(c, ENG.sigT, ENG.lim, ENG.custo, ENG.filtro, ENG.filtroN, CONFIG.rsiLow, CONFIG.rsiHigh));
+  ENG.curva = K.curvaFechadas(c, ENG.custo);
+}
+function aplicarBarra(v) { // UMA barra regula exposição, stop, limiar e janela (params_barra do Python)
+  v = Math.max(0, Math.min(100, +v));
+  const pr = L.paramsBarra(v);
+  ENG.barra = v; ENG.janela = pr.janela; ENG.lim = pr.lim / 100; ENG.stopPct = pr.stop / 100; ENG.risco = K.arPar(pr.expo); ENG.reb = true;
+  recalcular();
+}
+function aplicarAuto() {
+  if (!ENG.auto || !ENG.curva.length) return;
+  const v = L.barraAuto(ENG.curva, ENG.qmax);
+  if (Math.round(v) !== Math.round(ENG.barra)) aplicarBarra(v);
+}
+function resetarPosicao() {
+  if (!ENG.bt) return;
+  ENG.regraPos = ENG.bt.posFinal; ENG.pos = (ENG.filtro === 'off' || ENG.trader !== 'holograma') ? ENG.bt.posFinal : 0; /* com filtro, mesmo a entrada inicial espera a confirmação */ ENG.stopBloq = false; ENG.topo = null; ENG.reb = true; ENG.pronto = false;
+}
+async function garantirVelas() {
+  const sym = simbolo(); if (!sym) throw new Error('Par sem símbolo na Binance');
+  if (ENG.closes.length && ENG.sym === sym && Date.now() - ENG.tVelas < 600000) return;
+  const primeira = !ENG.closes.length || ENG.sym !== sym;
+  ENG.closes = await velas(sym); ENG.sym = sym; ENG.tVelas = Date.now();
+  if (primeira) { aplicarBarra(ENG.barra); resetarPosicao(); } else recalcular();
+  aplicarAuto();
+}
+
+/* ---------- carteira real ---------- */
+async function lerReal() {
+  const pr = par();
+  const tk = new ethers.Contract(pr.tokenOut, ['function balanceOf(address) view returns (uint256)'], state.provider);
+  const [b, u] = await Promise.all([state.provider.getBalance(state.walletAddress), tk.balanceOf(state.walletAddress)]);
+  return { ethBal: parseFloat(ethers.formatEther(b)), usdc: parseFloat(ethers.formatUnits(u, pr.decimalsOut)), ts: Date.now() };
+}
+function equity(p) {
+  if (modoReal() && ENG.real) return ENG.real.ethBal * p + ENG.real.usdc;
+  return ENG.w.usdc + ENG.w.eth * p;
+}
+
+/* ---------- ordens ---------- */
+function registrar(o, p, hash, sim) {
+  const pr = par();
+  const t = { id: Date.now(), time: new Date().toLocaleTimeString('pt-BR'), pair: `${pr.symbolIn}/${pr.symbolOut}`, direction: o.lado,
+    priceIn: p.toFixed(2), priceOut: p.toFixed(2), valor: o.valorUsd.toFixed(2), result: o.fechou ? (o.pnlPct > 0 ? 'WIN' : 'LOSS') : '—',
+    pnlPct: o.fechou ? o.pnlPct.toFixed(3) : null, txHash: hash ? hash.slice(0, 12) + '...' : 'SIM', feeStatus: null };
+  state.trades.unshift(t); state.tradesToday++;
+  if (o.fechou) { if (o.pnlPct > 0) { state.wins++; state.consecutiveLosses = 0; } else { state.losses++; state.consecutiveLosses++; } state.lastProfitPct = o.pnlPct; }
+  addLog(`${sim ? '🧪' : '📤'} ${o.lado === 'BUY' ? 'COMPRA' : 'VENDA'} ${pr.symbolIn} ≈ ${usd(o.valorUsd)} @ ${usd(p)}${o.fechou ? ` · fechou ${pct(o.pnlPct, 2)}` : ''} · ${sim ? 'carteira virtual' : 'on-chain'}`, o.fechou && o.pnlPct < 0 ? 'error' : 'success');
+  updateUI(); updateTradesTable(); saveToStorage();
+  return t;
+}
+
+async function rebalReal(p) {
+  if (state.openSwap) return;
+  const pr = par();
+  try {
+    const r = await lerReal(); ENG.real = r;
+    const trad = Math.max(0, r.ethBal - GAS_RESERVA), eq = trad * p + r.usdc;
+    const alvo = ENG.pos === 1 ? (ENG.risco / 100) * ENG.expo * eq : 0;
+    const troca = alvo - trad * p, minimo = Math.max(0.01 * eq, 5);
+    if (Math.abs(troca) <= minimo) { ENG.reb = false; return; }
+    let res = null, abriu = false, fechou = false;
+    if (troca > 0) {
+      const v = Math.min(troca, r.usdc), amt = BigInt(Math.floor(v * 10 ** pr.decimalsOut));
+      if (amt <= 0n) { ENG.reb = false; return; }
+      addLog(`⚙️ Regra: comprar ${pr.symbolIn} com ${usd(v)} de ${pr.symbolOut} (alvo ${(100 * alvo / eq).toFixed(0)}% do patrimônio)`, 'info');
+      res = await executeSwap('SELL', { amountToken: amt }); // no executeSwap, SELL = token -> ETH
+      abriu = trad * p < minimo;
+    } else {
+      const e = Math.min(-troca / p, trad);
+      addLog(`⚙️ Regra: vender ${e.toFixed(5)} ${pr.symbolIn} (alvo ${(100 * alvo / eq).toFixed(0)}% do patrimônio)`, 'info');
+      res = await executeSwap('BUY', { amountEth: e });  // no executeSwap, BUY = ETH -> token
+      fechou = alvo === 0;
+    }
+    if (!res) { ENG.cooldown = Date.now() + 60000; addLog('Ordem não executada; nova tentativa em 60s.', 'warn'); return; }
+    ENG.reb = false;
+    if (abriu) ENG.entradaReal = p;
+    let pnl = null; if (fechou && ENG.entradaReal) { pnl = (p / ENG.entradaReal - 1) * 100; ENG.entradaReal = null; }
+    const t = registrar({ lado: troca > 0 ? 'BUY' : 'SELL', valorUsd: Math.abs(troca), fechou: pnl !== null, pnlPct: pnl }, p, res.hash, false);
+    try { await refreshBalance(); ENG.real = await lerReal(); } catch (e) {}
+    if (pnl !== null && pnl > 0 && state.wallet) { t.feeStatus = await chargeServiceFee(pnl * (ENG.risco / 100) * ENG.expoAp); updateTradesTable(); }
+  } catch (e) { ENG.cooldown = Date.now() + 60000; addLog('❌ Erro ao rebalancear on-chain: ' + (e.message || e), 'error'); }
+}
+
+async function rebalancear(p) {
+  ENG.expoAp = ENG.expo;
+  if (modoReal()) return rebalReal(p);
+  const o = K.rebalVirtual(ENG.w, p, ENG.pos, ENG.risco, ENG.expo, ENG.custo);
+  ENG.reb = false;
+  if (o) registrar(o, p, null, true);
+  salvar();
+}
+
+/* ---------- um passo (Motor.passo) ---------- */
+async function tick() {
+  if (ENG.tickBusy) return;
+  ENG.tickBusy = true;
+  try {
+    await garantirVelas();
+    const ativo = state.botRunning;
+    if (ativo && !ENG.rodAnt && ENG.trader === 'combinado') resetarPosicao(); // limitador: acompanha a posição da regra desde o início
+    ENG.rodAnt = ativo;
+    const opera = ativo && ENG.trader === 'holograma';       // só neste modo o motor manda ordens
+    const rodando = ativo && ENG.trader !== 'original';      // modo 'original': o holograma é só pré-visualização
+    let p;
+    if (rodando) {
+      if (!(state.priceOk && Date.now() - state.priceTs < 60000)) { ENG.erro = 'Sem preço real ao vivo — a regra não opera com preço inventado.'; return; }
+      p = state.currentPrice;
+    } else p = await precoVivo();
+    ENG.p = p; if (!ENG.p0) ENG.p0 = p;
+    const c = ENG.closes;
+    ENG.q = Q.analisarQuantico(Q.features(c.concat([p]), ENG.janela, ENG.lim * 100));
+    const ind = K.avaliarEntrada(c, p, ENG.filtro, ENG.filtroN, CONFIG.rsiLow, CONFIG.rsiHigh); ENG.ind = ind;
+    const d = K.decidir(cfg(), c, p, { regraPos: ENG.regraPos, pos: ENG.pos, stopBloq: ENG.stopBloq, topo: ENG.topo }, ENG.q, ind.ok || ENG.trader !== 'holograma');
+    ENG.bloqEntrada = d.bloqEntrada;
+    ENG.sn = d.sn; ENG.sRaw = d.s; ENG.sT = d.sT; ENG.limAtivo = d.limiar;
+    if (rodando) {
+      const flip = ENG.pronto && d.st.pos !== ENG.pos;
+      Object.assign(ENG, d.st); ENG.expo = d.expo;
+      if (!opera) { // limitador: só acompanha a posição da regra, NÃO manda ordens
+        if (flip) addLog(`🛡️ Limitador do Holograma: tendência agora ${ENG.pos ? 'de ALTA (libera BUY)' : 'fora/de BAIXA (libera SELL)'}${ENG.stopBloq ? ' · stop móvel acionado' : ''}`, 'info');
+        ENG.pronto = true;
+      } else {
+      if (d.bloqEntrada !== ENG.bloqAnt) {
+        if (d.bloqEntrada) addLog(`⏳ A regra manda COMPRAR ${par().symbolIn}, mas a lógica antiga ainda não confirmou (${ind.votos}/${ind.min} votos): ${ind.txt}. Aguardando.`, 'info');
+        else if (ENG.bloqAnt && d.st.pos === 1) addLog(`✅ Lógica antiga confirmou a entrada (${ind.votos}/4 votos): ${ind.txt}`, 'success');
+        ENG.bloqAnt = d.bloqEntrada;
+      }
+      if (flip) addLog(`📊 REGRA muda a posição: ${ENG.pos ? 'COMPRA' : 'VENDA'} ${par().symbolIn} · sinal ${d.s.toFixed(3)} (limiar ${d.limiar.toFixed(3)})${ENG.stopBloq ? ' · stop móvel acionado' : ''}`, 'success');
+      const precisa = flip || ENG.reb || (ENG.modo === 'escala' && ENG.pronto && ENG.pos === 1 && Math.abs(ENG.expo - ENG.expoAp) > 0.10);
+      ENG.pronto = true;
+      if (modoReal() && !ENG.real) { try { ENG.real = await lerReal(); } catch (e) {} }
+      if (precisa && Date.now() >= ENG.cooldown) await rebalancear(p);
+      else if (modoReal() && !state.openSwap && (!ENG.real || Date.now() - ENG.real.ts > 30000)) { try { ENG.real = await lerReal(); } catch (e) {} }
+      if (!modoReal() && state.wallet && !ENG.avisouPar) { ENG.avisouPar = true; addLog('ℹ️ Carteira/par sem execução on-chain suportada (só ETH na Ethereum): regra rodando na carteira virtual.', 'warn'); }
+      }
+    }
+    const eq = equity(p);
+    if (ENG.diaIni === null) ENG.diaIni = eq;
+    if (opera && ENG.diaIni > 0) state.dailyProfitPct = (eq / ENG.diaIni - 1) * 100;
+    if (modoReal() && ENG.real && ENG.baseReal === null) ENG.baseReal = eq;
+    ENG.erro = '';
+    const decisao = $('aiDecision'), motivo = $('aiReason');
+    if (opera && decisao) {
+      decisao.textContent = ENG.pos ? `Em ${par().symbolIn}` : `Em ${par().symbolOut}`;
+      motivo.textContent = `${ENG.modo === 'quantica' ? 'Q' : 'sinal'} ${d.s.toFixed(3)} (lim ${d.limiar.toFixed(3)}) · tend. ${pct(100 * d.sT, 1)}${ENG.stopBloq ? ' · stop' : ''}${ENG.filtro !== 'off' ? ` · filtro ${ind.votos}/${ind.min}${d.bloqEntrada ? ' (aguardando)' : ''}` : ''}`;
+    }
+  } catch (e) { ENG.erro = e.message || String(e); }
+  finally { ENG.tickBusy = false; render(); }
+}
+
+/* ---------- painel ---------- */
+function mapa(q) {
+  const P = (i) => ({ x: 50 + (i % 4) * 100, y: i < 4 ? 40 : 120 });
+  let s = '<svg viewBox="0 0 400 160" style="width:100%;border:1px solid var(--border);border-radius:12px;color:var(--text)">';
+  q.arestas.forEach(([a, b]) => { const m = Math.min(1, q.mi[a][b]); s += `<line x1="${P(a).x}" y1="${P(a).y}" x2="${P(b).x}" y2="${P(b).y}" stroke="currentColor" stroke-opacity="${0.15 + 0.6 * m}" stroke-width="${1 + 5 * m}"/>`; });
+  q.qubits.forEach((n, i) => { s += `<circle cx="${P(i).x}" cy="${P(i).y}" r="16" fill="hsl(${200 - 170 * n.p1} 70% 45%)"/><text x="${P(i).x}" y="${P(i).y + 4}" text-anchor="middle" font-size="11" fill="#fff">${n.nome}</text>`; });
+  return s + '<text x="6" y="14" font-size="10" fill="currentColor" opacity=".6">Mapa de qubits (cor = P(1), linha = informação mútua)</text></svg>';
+}
+function holo(q) {
+  const xs = q.coords.map((p) => p[0]), ys = q.coords.map((p) => p[1]);
+  const sx = (v) => 30 + ((v - Math.min(...xs)) / Math.max(Math.max(...xs) - Math.min(...xs), 1e-9)) * 340;
+  const sy = (v) => 30 + ((v - Math.min(...ys)) / Math.max(Math.max(...ys) - Math.min(...ys), 1e-9)) * 100;
+  let s = '<svg viewBox="0 0 400 160" style="width:100%;border:1px solid var(--border);border-radius:12px;color:var(--text)">';
+  q.arestas.forEach(([a, b]) => { s += `<line x1="${sx(q.coords[a][0])}" y1="${sy(q.coords[a][1])}" x2="${sx(q.coords[b][0])}" y2="${sy(q.coords[b][1])}" stroke="currentColor" stroke-opacity="${0.1 + 0.5 * Math.min(1, q.mi[a][b])}"/>`; });
+  q.coords.forEach((p, i) => { const z = (p[2] + 1) / 2; s += `<circle cx="${sx(p[0])}" cy="${sy(p[1])}" r="${5 + 5 * z}" fill="${i < 4 ? 'hsl(190 80% 55%)' : 'hsl(40 90% 60%)'}" fill-opacity="${0.5 + 0.4 * z}"/>`; });
+  return s + '<text x="6" y="14" font-size="10" fill="currentColor" opacity=".6">Holograma (distância = pouca informação mútua)</text></svg>';
+}
+
+function render() {
+  if (!$('hgBarra')) return;
+  const rodando = state.botRunning && ENG.trader !== 'original', real = modoReal(), pr = par();
+  const p = ENG.p, pm = L.paramsBarra(ENG.barra);
+  $('hgBarraVal').textContent = ENG.barra + '%';
+  $('hgAutoTag').textContent = ENG.auto ? 'automática' : '';
+  if (+$('hgBarra').value !== ENG.barra) $('hgBarra').value = ENG.barra;
+  $('hgAuto').checked = ENG.auto;
+  $('hgParams').innerHTML = box(`${pr.symbolIn} no patrimônio`, ENG.risco + '%') + box('Stop móvel', pm.stop.toFixed(1) + '%') + box('Limiar de tendência', pm.lim.toFixed(1) + '%') + box('Janela', pm.janela + ' velas de 8h');
+  const st = $('hgStatus');
+  const tt = { original: 'Trader original: quem decide e opera é o SEU código (RSI/SMA/MACD/Bollinger). O painel do holograma abaixo é só pré-visualização; nada é negociado por ele.', combinado: 'Trader original + limitador: o seu código gera os sinais; o Holograma só VETA BUY quando a tendência dele não é de alta (ou o stop móvel acionou) e SELL quando é de alta. Ele não manda ordens.', holograma: 'Só Holograma: a regra do holograma_quantico.py decide e opera. O seu trader original fica desligado.' };
+  $('hgTraderTxt').textContent = tt[ENG.trader]; if ($('hgTrader').value !== ENG.trader) $('hgTrader').value = ENG.trader; $('hgTrader').disabled = !!state.botRunning;
+  if (ENG.erro) st.textContent = '⚠️ ' + ENG.erro;
+  else if (rodando && ENG.trader === 'combinado' && ENG.closes.length && p) st.textContent = `Limitador ativo (acompanhando a tendência do holograma) · ${pr.symbolIn} ${usd(p)} · tendência: ${ENG.pos ? 'ALTA (BUY liberado)' : 'fora/BAIXA (SELL liberado)'}${ENG.stopBloq ? ' · stop móvel acionado' : ''}`;
+  else if (!ENG.closes.length || !p) st.textContent = 'Carregando velas e preço da Binance...';
+  else if (!rodando) st.textContent = `Pré-visualização: bot parado, nada é negociado. A regra só opera depois de INICIAR. ${pr.symbolIn} ${usd(p)}`;
+  else st.textContent = `${real ? 'Operando com a carteira conectada (on-chain)' : 'Operando em SIMULAÇÃO (carteira virtual, preço real)'} · ${pr.symbolIn} ${usd(p)} · ${new Date().toLocaleTimeString('pt-BR')}`;
+  if (!p || !ENG.bt) return;
+  const eq = equity(p), ini = real ? (ENG.baseReal ?? eq) : ENG.w.inicial, lucro = eq - ini;
+  $('hgSaldo').textContent = usd(eq);
+  $('hgSaldoSub').textContent = real ? 'carteira conectada (ETH + ' + pr.symbolOut + ')' : 'virtual · inicial ' + usd(ini);
+  const L1 = $('hgLucro'); L1.textContent = (lucro >= 0 ? '+' : '-') + usd(Math.abs(lucro)).replace('-', ''); L1.className = 'hg-num ' + (lucro >= 0 ? 'positive' : 'negative');
+  $('hgLucroSub').textContent = pct(ini > 0 ? (lucro / ini) * 100 : 0, 2) + (real ? ' desde que o motor iniciou' : ' sobre o saldo virtual');
+  const bt = ENG.bt;
+  $('hgProb').textContent = bt.prob === null ? '—' : (100 * bt.prob).toFixed(0) + '%';
+  $('hgProbSub').textContent = `histórico: vela de 8h em alta com a regra em ${pr.symbolIn} (n=${bt.probN}). Não é previsão.`;
+  $('hgPos').textContent = (ENG.pos ? pr.symbolIn : pr.symbolOut) + (ENG.pos ? ` · ${(ENG.risco * ENG.expo).toFixed(0)}%` : '');
+  $('hgPosSub').textContent = ENG.bloqEntrada ? 'regra manda comprar, mas a lógica antiga (RSI/SMA/MACD/Bollinger) ainda não confirmou a entrada' : ENG.stopBloq ? 'stop móvel acionado: espera novo sinal de compra' : (ENG.pos ? 'regra manda estar comprado' : 'regra manda ficar fora');
+  /* detalhes */
+  if ($('hgModo').value !== ENG.modo) $('hgModo').value = ENG.modo;
+  $('hgSinal').innerHTML = box(ENG.modo === 'quantica' ? 'Sinal Q (circuito)' : 'Sinal da regra', ENG.sRaw.toFixed(3)) + box('Limiar', '±' + ENG.limAtivo.toFixed(3)) + box('Tendência na janela', pct(100 * ENG.sT, 2)) + box('Stop: topo ref.', ENG.topo ? usd(ENG.topo) : '—') + box('Exposição (escala)', (100 * ENG.expo).toFixed(0) + '%') + (ENG.ind ? box('Filtro de entrada (lógica antiga)', ENG.filtro === 'off' ? 'desligado' : `${ENG.ind.votos}/${ENG.ind.min} votos · ${ENG.ind.ok ? 'libera' : 'segura'}`) : '');
+  $('hgFiltroSt').textContent = ENG.ind ? (ENG.filtro === 'off' ? 'Filtro desligado: só a regra decide a entrada.' : `Agora: ${ENG.ind.txt}`) : '';
+  const q = ENG.btQ, t = ENG.btT, pj = K.projFechadas(ENG.closes, ENG.barra, ENG.custo);
+  $('hgHist').innerHTML = box('Quântica (histórico)', pct(q.regra) + ' · ' + q.trocas + ' trocas') + box('Tendência (histórico)', pct(t.regra) + ' · ' + t.trocas + ' trocas') + box('Comprar e segurar', pct(q.bh)) + (ENG.btF ? box('Regra + filtro antigo (histórico)', pct(ENG.btF.regra) + ' · ' + ENG.btF.trocas + ' trocas · ' + ENG.btF.bloq + ' velas seguradas') : '') + box('Sistema c/ barra + stop', pct(pj.ret)) + box('Queda máx. sistema', pct(pj.dd)) + box('Queda máx. comprar e segurar', pct(pj.ddBh)) + box('Chance de perda em 30 dias', pj.perda30.toFixed(0) + '%') + box('Velas', q.n);
+  $('hgAviso').style.display = ENG.modo === 'quantica' && q.regra <= t.regra ? '' : 'none';
+  $('hgMapa').innerHTML = mapa(ENG.q); $('hgHolo').innerHTML = holo(ENG.q);
+  const a = ENG.q;
+  $('hgQ').innerHTML = box('Desordem ETH|USDC', a.caos.toFixed(2)) + box('Entropia Von Neumann', a.sGrupo.toFixed(3) + ' bits') + box('Entropia de Born', a.hBorn.toFixed(3) + ' bits') + box('Direção de Born', a.direcao.toFixed(3)) + box('Circuito', a.circuito.qubits + 'q · ' + a.circuito.cx + ' CNOT · prof. ' + a.circuito.profundidade);
+  $('hgCurva').innerHTML = '<tr><th>Barra</th><th>Retorno</th><th>Queda máx.</th><th>Vantagem</th><th>Perda 30d</th></tr>' + ENG.curva.filter((x) => x.v % 20 === 0 || x.v === ENG.barra).map((x) => `<tr${x.v === ENG.barra ? ' style="font-weight:700"' : ''}><td>${x.v}%</td><td>${pct(x.ret)}</td><td>${pct(x.dd)}</td><td>${pct(x.vant)}</td><td>${x.perda30.toFixed(0)}%</td></tr>`).join('');
+  if (document.activeElement !== $('hgSaldoIni')) $('hgSaldoIni').value = ENG.w.inicial;
+  if (document.activeElement !== $('hgLq')) $('hgLq').value = ENG.lq;
+  if (document.activeElement !== $('hgQmax')) $('hgQmax').value = ENG.qmax;
+  $('hgStopVivo').checked = ENG.stopVivo;
+  if ($('hgFiltro').value !== ENG.filtro) $('hgFiltro').value = ENG.filtro;
+  if (document.activeElement !== $('hgFiltroN')) $('hgFiltroN').value = ENG.filtroN;
+  $('hgFiltroN').disabled = ENG.filtro !== 'votacao';
+  $('hgMotor').textContent = `Decisão: ${ENG.modo.toUpperCase()} · janela ${ENG.janela} · limiar ${(100 * ENG.lim).toFixed(1)}% · limiar Q ${ENG.lq} · custo ${(100 * ENG.custo).toFixed(2)}% · velas atualizadas ${new Date(ENG.tVelas).toLocaleTimeString('pt-BR')}`;
+}
+
+/* ---------- interações ---------- */
+let deb = null;
+const logo = () => { clearTimeout(deb); deb = setTimeout(() => { salvar(); tick(); }, 350); };
+$('hgBarra').addEventListener('input', (e) => { ENG.auto = false; if (ENG.closes.length) aplicarBarra(+e.target.value); else ENG.barra = +e.target.value; render(); logo(); });
+$('hgAuto').addEventListener('change', (e) => { ENG.auto = e.target.checked; aplicarAuto(); render(); logo(); });
+$('hgQmax').addEventListener('change', (e) => { ENG.qmax = Math.max(5, Math.min(90, +e.target.value || 25)); aplicarAuto(); render(); logo(); });
+$('hgModo').addEventListener('change', (e) => { ENG.modo = e.target.value; recalcular(); if (state.botRunning) resetarPosicao(); render(); logo(); });
+$('hgLq').addEventListener('change', (e) => { ENG.lq = Math.max(0.05, Math.min(0.95, +e.target.value || 0.3)); recalcular(); render(); logo(); });
+$('hgTrader').addEventListener('change', (e) => { if (state.botRunning) { render(); return; } ENG.trader = e.target.value; ENG.rodAnt = false; ENG.pronto = false; salvar(); addLog('Modo do trader: ' + ({ original: 'trader original', combinado: 'trader original + limitador do Holograma', holograma: 'só Holograma' })[ENG.trader], 'info'); render(); });
+$('hgFiltro').addEventListener('change', (e) => { ENG.filtro = e.target.value; recalcular(); render(); logo(); }); // não mexe na posição aberta: o filtro só segura ENTRADAS
+$('hgFiltroN').addEventListener('change', (e) => { ENG.filtroN = Math.max(1, Math.min(4, Math.round(+e.target.value) || 3)); recalcular(); render(); logo(); });
+$('hgStopVivo').addEventListener('change', (e) => { ENG.stopVivo = e.target.checked; render(); logo(); });
+$('hgSaldoIni').addEventListener('change', (e) => { const v = Math.max(10, +e.target.value || 1000); ENG.w = { usdc: v, eth: 0, entrada: null, inicial: v }; ENG.p0 = null; ENG.reb = true; render(); logo(); });
+$('hgZerar').addEventListener('click', () => { const v = ENG.w.inicial || 1000; ENG.w = { usdc: v, eth: 0, entrada: null, inicial: v }; ENG.p0 = null; ENG.reb = true; addLog('Carteira virtual zerada.', 'info'); render(); logo(); });
+
+/* ---------- API para o resto do trader ---------- */
+window.HG = {
+  iniciar() {
+    ENG.avisouPar = false; ENG.cooldown = 0; resetarPosicao();
+    const q = ENG.btQ, t = ENG.btT;
+    if (q && t) {
+      addLog(`🧠 Regra do Python ativa · decisão ${ENG.modo.toUpperCase()} · janela ${ENG.janela} · limiar ${(100 * ENG.lim).toFixed(1)}% · limiar Q ${ENG.lq} · custo ${(100 * ENG.custo).toFixed(2)}%`, 'info');
+      addLog(`Histórico ${q.n} velas (com custos): quântica ${pct(q.regra)} (${q.trocas} trocas) | tendência ${pct(t.regra)} (${t.trocas} trocas) | comprar e segurar ${pct(q.bh)}`, 'info');
+      if (ENG.filtro !== 'off') addLog(`🔎 Filtro de entrada (lógica antiga) ativo: ${ENG.filtro === 'estrito' ? 'RSI + SMA20 + MACD + Bollinger precisam confirmar' : `${ENG.filtroN} de 4 entre RSI/SMA20/MACD/Bollinger`} · só vale para ENTRAR; a saída é da regra.${ENG.btF ? ` Histórico com filtro: ${pct(ENG.btF.regra)} (${ENG.btF.trocas} trocas) contra ${pct(ENG.bt.regra)} sem filtro.` : ''}`, 'info');
+      if (ENG.modo === 'quantica' && q.regra <= t.regra) addLog('⚠️ Neste histórico o circuito NÃO superou a tendência pura. Considere o modo "tendência".', 'warn');
+    }
+    tick();
+  },
+  async sairAgora(motivo) { // vende tudo para USDC (usado quando um limite diário dispara)
+    if (!ENG.p) return;
+    ENG.pos = ENG.regraPos = 0; ENG.topo = null; ENG.stopBloq = false; ENG.expo = 1;
+    addLog('🛑 ' + motivo + ' — levando a carteira para ' + par().symbolOut + '.', 'warn');
+    await rebalancear(ENG.p);
+  },
+  reset() { ENG.closes = []; ENG.sym = null; ENG.w = { usdc: ENG.w.inicial, eth: 0, entrada: null, inicial: ENG.w.inicial }; ENG.p0 = null; ENG.real = null; ENG.entradaReal = null; ENG.pxCache = { t: 0, v: null }; ENG.pronto = false; tick(); },
+  resetDia() { ENG.diaIni = null; },
+  limitesDia() { const el = $('usarLimDia'); return !!(el && el.checked); },
+  ativo() { return state.botRunning; },
+  modo() { return ENG.trader; },
+  /** Limitador: o seu trader pediu `dir` (BUY/SELL). Devolve se o Holograma deixa passar. Sem dados do holograma, NÃO bloqueia (não trava o seu trader por uma falha de rede). */
+  permite(dir) {
+    if (ENG.trader !== 'combinado') return { ok: true };
+    if (!ENG.pronto || !ENG.closes.length || !ENG.p || ENG.erro) return { ok: true, aviso: 'holograma sem dados' };
+    const alta = ENG.pos === 1;
+    const ok = dir === 'BUY' ? alta : !alta;
+    if (ok) { ENG.vetoKey = ''; return { ok: true }; }
+    const motivo = dir === 'BUY' ? `tendência do holograma não é de alta${ENG.stopBloq ? ' (stop móvel acionado)' : ''}` : 'tendência do holograma é de alta';
+    const key = dir + motivo, agora = Date.now(), log = key !== ENG.vetoKey || agora - ENG.vetoTs > 60000;
+    if (log) { ENG.vetoKey = key; ENG.vetoTs = agora; }
+    return { ok: false, motivo, curto: dir === 'BUY' ? 'sem alta' : 'em alta', log };
+  },
+  estado: ENG,
+};
+tick(); setInterval(tick, 5000); setInterval(salvar, 15000);
+
+})();
 </script>
 </body>
 </html>

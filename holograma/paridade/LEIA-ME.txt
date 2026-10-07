@@ -1,0 +1,29 @@
+TESTES DA REGRA (o motor dentro do octocookie.html contra o holograma_quantico.py original)
+
+1) Paridade com o Python (sem navegador):
+   python gerar_esperado.py <pasta onde estão holograma_quantico.py e teste_rapido.py>
+   node rodar_paridade.mjs
+   Roda 108 casos (3 modos x 3 barras x 2 tipos de stop x 6 séries) e compara cada passo:
+   posição, stop, saldo, ETH, sinal, exposição, backtests, projeção e barra automática.
+
+2) Página inteira num navegador simulado (precisa: npm i jsdom):
+   node e2e_simulacao.cjs           -> bot em simulação, slider, queda, preço falhando
+   node e2e_onchain_simulado.cjs    -> caminho on-chain com a carteira/ethers SIMULADOS (nenhuma transação real)
+
+Estes testes NÃO usam a Binance real nem uma carteira real.
+
+
+FILTRO DE ENTRADA (lógica antiga RSI/SMA20/MACD/Bollinger somada à regra)
+3) Unitário (sem navegador): node filtro_unitario.mjs
+   - indicadores em série == calculateRSI/SMA/MACD/Bollinger originais da página (prefixo a prefixo)
+   - decidir() com filtro liberado == decidir() anterior (que bate com o Python)
+   - filtro bloqueando: não entra, mas sai normalmente
+   - backtestFiltro('off') == backtest()
+4) Página inteira (npm i jsdom):
+   node e2e_filtro.cjs <semente> <votacao|estrito|off> [espera-bloqueio]
+   Ex.: 100 votacao (libera) | 197 estrito espera-bloqueio (segura e depois libera) | 197 off
+   O primeiro tick após INICIAR pode levar até ~5 s (espera o preço ao vivo): os testes esperam 7 s.
+
+5) Modos do trader (npm i jsdom): node modos.cjs
+   Confere: padrão = trader original; modo 1 nunca veta e o holograma não negocia; modo 2 libera/veta BUY e SELL conforme a tendência,
+   stop móvel veta BUY, veto não enche o log, sem dados deixa passar; modo 3 desliga o trader original; seletor trava com o bot rodando.
