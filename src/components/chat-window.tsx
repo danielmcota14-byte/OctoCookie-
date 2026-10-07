@@ -124,9 +124,23 @@ export function ChatWindow({ thread, onUpdate }: Props) {
             )}
             {error && (
               <div className="rounded-lg border border-destructive/40 bg-destructive/10 px-4 py-3 text-sm text-destructive">
-                {/rate.?limit|429|quota/i.test(error.message)
-                  ? "Muitas mensagens em pouco tempo — o limite de uso da IA foi atingido. Espere um minuto e tente de novo."
-                  : "Não foi possível obter uma resposta agora. Tente novamente em instantes."}
+                {(() => {
+                  const m = error.message ?? "";
+                  if (/rate.?limit|429|quota|too many/i.test(m)) {
+                    return "Muitas mensagens em pouco tempo — o limite de uso da IA foi atingido. Espere um minuto e tente de novo.";
+                  }
+                  if (/invalid.?api.?key|incorrect.?api.?key|401|unauthorized|GROQ_API_KEY inválida/i.test(m)) {
+                    return "Chave da IA inválida ou revogada. Gere uma nova em https://console.groq.com, coloque em GROQ_API_KEY (.env local ou variáveis do Vercel) e reinicie o servidor / faça redeploy.";
+                  }
+                  if (/GROQ_API_KEY não configurada|não configurada/i.test(m)) {
+                    return "GROQ_API_KEY não configurada. Crie uma chave em https://console.groq.com e defina no .env (local) ou nas Environment Variables do Vercel, depois reinicie / redeploy.";
+                  }
+                  // Se a API devolveu texto legível (nosso handler), mostra direto
+                  if (m.length > 0 && m.length < 400 && !/fetch|network|failed to/i.test(m)) {
+                    return m;
+                  }
+                  return "Não foi possível obter uma resposta agora. Verifique a GROQ_API_KEY e tente novamente em instantes.";
+                })()}
               </div>
             )}
           </div>

@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { generateText } from "ai";
 import { z } from "zod";
-import { createLovableAiGatewayProvider } from "./ai-gateway.server";
+import { createLovableAiGatewayProvider, withGroqKeyRotation } from "./ai-gateway.server";
 
 const Input = z.object({
   code: z.string().min(1).max(20000),
@@ -53,14 +53,10 @@ const Trades = z.object({
 export const runSimulation = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => Input.parse(input))
   .handler(async ({ data }) => {
-    const key = process.env.GROQ_API_KEY;
-    if (!key) throw new Error("GROQ_API_KEY não configurada. Defina nas Environment Variables do Vercel e faça redeploy.");
-
     const seed = data.seed ?? Math.floor(Math.random() * 1e9);
     const candles = synth(data.bars, seed);
     const closes = candles.map((c) => c.c.toFixed(2)).join(",");
 
-    const gateway = createLovableAiGatewayProvider(key);
     const prompt = `Você é um simulador educacional de estratégias de trading. Analise o CÓDIGO abaixo (pode ser Python, JavaScript, pseudocódigo ou CookieScript) e simule seus sinais sobre a série de preços fornecida.
 
 MERCADO: ${data.symbol} timeframe ${data.timeframe}, ${data.bars} candles.
@@ -82,9 +78,13 @@ Responda APENAS com JSON válido no formato:
 
     let parsed: z.infer<typeof Trades>;
     try {
-      const { text } = await generateText({
-        model: gateway("llama-3.3-70b-versatile"),
-        prompt,
+      const text = await withGroqKeyRotation(async (key) => {
+        const gateway = createLovableAiGatewayProvider(key);
+        const r = await generateText({
+          model: gateway("openai/gpt-oss-120b"),
+          prompt,
+        });
+        return r.text;
       });
       const jsonStr = text.replace(/^```json\s*/i, "").replace(/^```\s*/i, "").replace(/```\s*$/i, "").trim();
       const first = jsonStr.indexOf("{");

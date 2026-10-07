@@ -1,4 +1,4 @@
-import { createLovableAiGatewayProvider } from "@/lib/ai-gateway.server";
+import { createLovableAiGatewayProvider, withGroqKeyRotation } from "@/lib/ai-gateway.server";
 import { createFileRoute } from "@tanstack/react-router";
 import { convertToModelMessages, streamText, type UIMessage } from "ai";
 
@@ -87,31 +87,60 @@ export const Route = createFileRoute("/api/chat")({
   server: {
     handlers: {
       POST: async ({ request }) => {
-        const { messages } = (await request.json()) as { messages?: unknown };
-        if (!Array.isArray(messages)) {
-          return new Response("Messages are required", { status: 400 });
+        try {
+          const { messages } = (await request.json()) as { messages?: unknown };
+          if (!Array.isArray(messages)) {
+            return new Response("Messages are required", { status: 400 });
+          }
+
+          // Mantém só as últimas mensagens no histórico enviado ao modelo.
+          // O plano gratuito da Groq tem um limite de tokens por minuto; como o
+          // histórico completo é reenviado a cada nova pergunta, conversas mais
+          // longas rapidamente estouram esse limite. Isso permite mais perguntas
+          // seguidas antes de esbarrar no limite.
+          const recentMessages = (messages as UIMessage[]).slice(-16);
+          const modelMessages = await convertToModelMessages(recentMessages);
+
+          // Rodízio entre até 5 chaves: se uma estourar rate-limit ou for inválida,
+          // tenta a próxima automaticamente.
+          return await withGroqKeyRotation(async (key) => {
+            const gateway = createLovableAiGatewayProvider(key);
+            const result = streamText({
+              model: gateway("openai/gpt-oss-120b"),
+              system: SYSTEM_PROMPT,
+              messages: modelMessages,
+            });
+            return result.toUIMessageStreamResponse({
+              originalMessages: messages as UIMessage[],
+            });
+          });
+        } catch (err) {
+          const msg = err instanceof Error ? err.message : String(err);
+          console.error("[/api/chat]", msg);
+
+          if (/Nenhuma GROQ_API_KEY|não configurada/i.test(msg)) {
+            return new Response(
+              "Nenhuma GROQ_API_KEY configurada. Defina GROQ_API_KEYS=key1,key2,key3,key4,key5 (até 5) no .env ou no Vercel e faça Redeploy.",
+              { status: 500 },
+            );
+          }
+          if (/invalid.?api.?key|incorrect.?api.?key|401|unauthorized/i.test(msg)) {
+            return new Response(
+              "Todas as chaves GROQ estão inválidas ou revogadas. Gere novas em https://console.groq.com e atualize GROQ_API_KEYS.",
+              { status: 401 },
+            );
+          }
+          if (/rate.?limit|429|quota|too many|Todas as chaves/i.test(msg)) {
+            return new Response(
+              "Limite de uso de todas as chaves Groq atingido. Aguarde cerca de 1 minuto e tente de novo.",
+              { status: 429 },
+            );
+          }
+          return new Response(
+            `Falha ao obter resposta da IA: ${msg.slice(0, 200)}`,
+            { status: 502 },
+          );
         }
-
-        const key = process.env.GROQ_API_KEY;
-        if (!key) return new Response("GROQ_API_KEY não configurada. No Vercel: Settings → Environment Variables → adicione GROQ_API_KEY (Production/Preview/Development) e faça Redeploy.", { status: 500 });
-
-        // Mantém só as últimas mensagens no histórico enviado ao modelo.
-        // O plano gratuito da Groq tem um limite de tokens por minuto; como o
-        // histórico completo é reenviado a cada nova pergunta, conversas mais
-        // longas rapidamente estouram esse limite. Isso permite mais perguntas
-        // seguidas antes de esbarrar no limite.
-        const recentMessages = (messages as UIMessage[]).slice(-16);
-
-        const gateway = createLovableAiGatewayProvider(key);
-        const result = streamText({
-          model: gateway("llama-3.3-70b-versatile"),
-          system: SYSTEM_PROMPT,
-          messages: await convertToModelMessages(recentMessages),
-        });
-
-        return result.toUIMessageStreamResponse({
-          originalMessages: messages as UIMessage[],
-        });
       },
     },
   },

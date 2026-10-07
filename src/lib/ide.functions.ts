@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { generateText } from "ai";
 import { z } from "zod";
-import { createLovableAiGatewayProvider } from "./ai-gateway.server";
+import { createLovableAiGatewayProvider, withGroqKeyRotation } from "./ai-gateway.server";
 
 const IdeInput = z.object({
   code: z.string().min(1).max(10000),
@@ -36,10 +36,6 @@ const IdeSchema = z.object({
 export const runCookieScript = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => IdeInput.parse(input))
   .handler(async ({ data }) => {
-    const key = process.env.GROQ_API_KEY;
-    if (!key) throw new Error("GROQ_API_KEY não configurada. Defina nas Environment Variables do Vercel e faça redeploy.");
-
-    const gateway = createLovableAiGatewayProvider(key);
     const prompt = `Você é o interpretador educacional do CookieScript, uma linguagem didática em português com módulos como:
 - filesystem.escrever_arquivo(caminho, conteudo, modo?)
 - network.http_request(url, metodo)
@@ -65,9 +61,13 @@ Responda APENAS com JSON válido no formato:
 IMPORTANTE: todo valor dentro de "variables" deve ser sempre uma string entre aspas no JSON, mesmo quando o valor real é um número, booleano ou objeto.`;
 
     try {
-      const { text } = await generateText({
-        model: gateway("llama-3.3-70b-versatile"),
-        prompt,
+      const text = await withGroqKeyRotation(async (key) => {
+        const gateway = createLovableAiGatewayProvider(key);
+        const r = await generateText({
+          model: gateway("openai/gpt-oss-120b"),
+          prompt,
+        });
+        return r.text;
       });
       const clean = text.replace(/^```json\s*/i, "").replace(/^```\s*/i, "").replace(/```\s*$/i, "").trim();
       const first = clean.indexOf("{");

@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { generateText } from "ai";
 import { z } from "zod";
-import { createLovableAiGatewayProvider } from "./ai-gateway.server";
+import { createLovableAiGatewayProvider, withGroqKeyRotation } from "./ai-gateway.server";
 
 const Input = z.object({ coinId: z.string().min(1).max(60) });
 
@@ -63,11 +63,10 @@ export const analyzeToken = createServerFn({ method: "POST" })
 
     let analysis = "";
     try {
-      const key = process.env.GROQ_API_KEY;
-      if (key) {
+      analysis = await withGroqKeyRotation(async (key) => {
         const gateway = createLovableAiGatewayProvider(key);
         const { text } = await generateText({
-          model: gateway("llama-3.3-70b-versatile"),
+          model: gateway("openai/gpt-oss-120b"),
           prompt: `Você é o OctoCookie, analista educacional. Explique em português BR de forma didática e neutra o token abaixo em 3 parágrafos curtos:
 1) O que é o projeto (com base na descrição).
 2) O que os números atuais dizem (preço, market cap, variações 24h/7d/30d, volume, distância do ATH).
@@ -79,10 +78,10 @@ TOKEN: ${coin.name} (${coin.symbol})
 DESCRIÇÃO: ${descRaw}
 DADOS: preço $${coin.price}, market cap $${coin.marketCap}, vol 24h $${coin.volume24h}, 24h ${coin.change24h?.toFixed(2)}%, 7d ${coin.change7d?.toFixed(2)}%, 30d ${coin.change30d?.toFixed(2)}%, ATH $${coin.ath}, ATL $${coin.atl}, supply ${coin.supply}`,
         });
-        analysis = text.trim();
-      }
+        return text.trim();
+      });
     } catch {
-      /* ignore analysis errors */
+      /* ignore analysis errors (sem chave ou todas falharam) */
     }
 
     return { error: null as string | null, coin, sparkline, analysis };
