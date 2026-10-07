@@ -10,12 +10,12 @@ export const Route = createFileRoute("/octo-app")({
       {
         name: "description",
         content:
-          "Bot Trading: painel educacional de swap trading em DEX com dashboard analisador integrado, dentro do OctoCookie.",
+          "Bot Trading: swap DEX com Holograma Quântico (tendência + stop móvel), trader clássico opcional e dashboard analisador — conteúdo educacional.",
       },
       { property: "og:title", content: "Bot Trading — Swap Trader educacional" },
       {
         property: "og:description",
-        content: "Painel educacional de swap trading integrado ao OctoCookie.",
+        content: "Swap Trader com Holograma Quântico e simulação — educacional, sem recomendação de investimento.",
       },
     ],
   }),

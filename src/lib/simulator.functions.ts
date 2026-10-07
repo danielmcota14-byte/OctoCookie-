@@ -54,7 +54,7 @@ export const runSimulation = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => Input.parse(input))
   .handler(async ({ data }) => {
     const key = process.env.GROQ_API_KEY;
-    if (!key) throw new Error("Missing GROQ_API_KEY");
+    if (!key) throw new Error("GROQ_API_KEY não configurada. Defina nas Environment Variables do Vercel e faça redeploy.");
 
     const seed = data.seed ?? Math.floor(Math.random() * 1e9);
     const candles = synth(data.bars, seed);

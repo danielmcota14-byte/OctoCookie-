@@ -4,10 +4,10 @@
   "sideEffects": false,
   "type": "module",
   "scripts": {
-    "dev": "dotenv -e .env -- vite dev",
-    "build": "dotenv -e .env -- vite build",
-    "build:dev": "dotenv -e .env -- vite build --mode development",
-    "preview": "dotenv -e .env -- vite preview",
+    "dev": "vite dev",
+    "build": "vite build",
+    "build:dev": "vite build --mode development",
+    "preview": "vite preview",
     "lint": "eslint .",
     "format": "prettier --write ."
   },
@@ -47,8 +47,8 @@
     "@streamdown/mermaid": "^1.0.2",
     "@tailwindcss/vite": "^4.2.1",
     "@tanstack/react-query": "^5.101.1",
-    "@tanstack/react-router": "^1.170.16",
-    "@tanstack/react-start": "^1.168.26",
+    "@tanstack/react-router": "1.170.41",
+    "@tanstack/react-start": "1.168.60",
     "@tanstack/router-plugin": "^1.168.18",
     "ai": "^7.0.37",
     "class-variance-authority": "^0.7.1",
@@ -96,5 +96,11 @@
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.56.1",
     "vite": "^8.0.16"
+  },
+  "overrides": {
+    "@tanstack/start-server-core": "1.169.39",
+    "@tanstack/react-start": "1.168.60",
+    "@tanstack/react-start-server": "1.167.46",
+    "@tanstack/react-start-client": "1.168.39"
   }
 }

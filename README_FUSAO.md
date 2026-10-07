@@ -25,7 +25,7 @@ O zip original trazia um `.env` com uma GROQ_API_KEY. Ele não foi copiado: revo
 
 
 ## Modos do trader (seletor no topo do card do Holograma)
-1. **Trader original (padrão):** o seu código de RSI/SMA/MACD/Bollinger decide e opera, como sempre. `startTradingStrategy`,
+1. **Trader original:** o seu código de RSI/SMA/MACD/Bollinger decide e opera. `startTradingStrategy`,
    `checkDailyLimits`, indicadores, checagens de segurança, `processSwap` e `handleSwapResult` estão idênticos ao original
    (a única diferença é um despacho de modo e o ponto de veto). O painel do Holograma é só pré-visualização.
 2. **Trader original + limitador do Holograma:** o seu trader gera os sinais; o Holograma só VETA: BUY só com tendência de alta
@@ -36,3 +36,11 @@ O modo não troca com o bot rodando.
 ## Filtro de entrada (modo "Só Holograma")
 Só segura a ENTRADA comprada: a regra precisa mandar comprar E RSI(14) na faixa normal, preço > SMA20, MACD > 0 e preço dentro do Bollinger confirmar.
 Modos: votação (mínimo de 1 a 4, padrão 3), estrito (os 4) ou desligado.
+
+## Deploy no Vercel
+1. Atualize as dependências TanStack (já com override `>=1.169.39` / `>=1.168.60` para o CVE XSS).
+2. Em **Project → Settings → Environment Variables**, crie:
+   - `GROQ_API_KEY` = sua chave `gsk_...` (Production, Preview e Development)
+3. **Não** use o prefixo `VITE_` na chave da Groq (ficaria pública no bundle).
+4. Redeploy após salvar as variáveis.
+5. A IA do chat, o analisador e o simulador leem `process.env.GROQ_API_KEY` só no servidor.

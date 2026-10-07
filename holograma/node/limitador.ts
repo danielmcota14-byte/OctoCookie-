@@ -7,7 +7,8 @@ const arredondaPar = (x: number) => (Math.abs(x - Math.floor(x) - 0.5) < 1e-9 ? 
 
 export function paramsBarra(v: number): Barra {
   const f = Math.max(0, Math.min(100, v)) / 100;
-  return { expo: 100 * f, stop: 2 + 3 * f, lim: 3 + 4 * (1 - f), janela: arredondaPar(30 + 30 * (1 - f)) };
+  // stop mais largo (3%→8%) e limiar um pouco mais alto no extremo agressivo (7%→3.5%)
+  return { expo: 100 * f, stop: 3 + 5 * f, lim: 3.5 + 3.5 * (1 - f), janela: arredondaPar(30 + 30 * (1 - f)) };
 }
 
 /** Posição base da tendência (histerese): >+lim compra, <-lim vende, senão mantém. Só passado. */
@@ -31,6 +32,11 @@ export function aplicarLimitador(base: number[], r: number[], X: number, modo: "
     if (i > 0 && pos[i - 1] === 1) { cum += r[i - 1]; eq += r[i - 1]; }
     const b = base[i];
     if (b === 0) bloq = false;
+    // recuperação parcial (~40% do stop): libera o bloqueio sem exigir sinal de venda completo
+    if (bloq && b === 1) {
+      if (modo === "trade" && cum - topo > lx * 0.4) bloq = false;
+      else if (modo === "carteira" && eq - eqPico > lx * 0.4) bloq = false;
+    }
     let quer = b === 1 && !bloq;
     if (quer && prev === 0) { cum = 0; topo = 0; if (pend) { eqPico = eq; pend = false; } }
     else if (quer && prev === 1) {

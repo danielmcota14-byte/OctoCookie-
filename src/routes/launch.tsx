@@ -17,8 +17,8 @@ export const Route = createFileRoute("/launch")({
 const topics = [
   { icon: BookOpen, title: "Educação financeira", desc: "Orçamento, juros compostos, gestão de risco e planejamento." },
   { icon: Coins, title: "Fundamentos de cripto", desc: "Blockchain, tokens, wallets, DeFi — sem hype." },
-  { icon: LineChart, title: "Análise & indicadores", desc: "Aprenda RSI, MACD, médias móveis e backtesting." },
-  { icon: Bot, title: "Bots de investimento", desc: "Arquitetura, estratégias (DCA, grid), APIs de exchanges." },
+  { icon: LineChart, title: "Análise & indicadores", desc: "RSI, MACD, médias, Bollinger, backtest e leitura do card do Holograma." },
+  { icon: Bot, title: "Swap Trader & Holograma", desc: "Bot DEX, regra de tendência, stop móvel, carteira virtual e modos de operação." },
 ];
 
 function Launch() {

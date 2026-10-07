@@ -63,12 +63,40 @@ export function ChatWindow({ thread, onUpdate }: Props) {
     if (inputRef.current) inputRef.current.value = "";
   }
 
+  function sendPreset(text: string) {
+    if (isLoading) return;
+    void sendMessage({ text });
+  }
+
+  const starters = [
+    "Me ensina a usar o bot do zero",
+    "O que é o modo Só Holograma?",
+    "Como funciona a carteira virtual?",
+    "Qual a diferença entre tendência e quântica?",
+  ];
+
   return (
     <div className="relative flex h-screen flex-1 flex-col">
       <div ref={scrollRef} className="flex-1 overflow-y-auto">
         {isEmpty ? (
-          <div className="flex h-full items-center justify-center">
+          <div className="flex h-full flex-col items-center justify-center gap-6 px-4">
             <img src={mascot} alt="OctoCookie" width={96} height={96} className="h-24 w-24 opacity-90" />
+            <div className="max-w-md text-center">
+              <p className="text-sm font-medium text-foreground">Olá! Eu ensino o OctoCookie do zero.</p>
+              <p className="mt-1 text-xs text-muted-foreground">Escolha um atalho ou digite sua dúvida. Conteúdo educacional — sem recomendação de investimento.</p>
+            </div>
+            <div className="flex max-w-lg flex-wrap justify-center gap-2">
+              {starters.map((s) => (
+                <button
+                  key={s}
+                  type="button"
+                  onClick={() => sendPreset(s)}
+                  className="rounded-full border border-border/80 bg-background/80 px-3 py-1.5 text-xs text-foreground shadow-sm hover:bg-muted"
+                >
+                  {s}
+                </button>
+              ))}
+            </div>
           </div>
         ) : (
           <div className="mx-auto flex max-w-3xl flex-col gap-6 px-4 pb-40 pt-16 sm:px-6 md:pt-8">
@@ -113,7 +141,7 @@ export function ChatWindow({ thread, onUpdate }: Props) {
           <textarea
             ref={inputRef}
             rows={1}
-            placeholder="Envie uma mensagem"
+            placeholder="Ex.: me ensina a usar o bot do zero"
             className="block max-h-40 min-h-11 w-full resize-none bg-transparent px-3 py-2 text-sm outline-none placeholder:text-muted-foreground"
             onKeyDown={(e) => {
               if (e.key === "Enter" && !e.shiftKey) {

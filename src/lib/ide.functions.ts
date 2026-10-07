@@ -37,7 +37,7 @@ export const runCookieScript = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => IdeInput.parse(input))
   .handler(async ({ data }) => {
     const key = process.env.GROQ_API_KEY;
-    if (!key) throw new Error("Missing GROQ_API_KEY");
+    if (!key) throw new Error("GROQ_API_KEY não configurada. Defina nas Environment Variables do Vercel e faça redeploy.");
 
     const gateway = createLovableAiGatewayProvider(key);
     const prompt = `Você é o interpretador educacional do CookieScript, uma linguagem didática em português com módulos como:

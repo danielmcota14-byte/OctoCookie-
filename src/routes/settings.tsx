@@ -33,9 +33,11 @@ function SettingsPage() {
             <section className="rounded-xl border p-5">
               <h2 className="text-sm font-medium">Sobre o OctoCookie</h2>
               <p className="mt-2 text-sm text-muted-foreground">
-                O OctoCookie é uma IA puramente educacional. Não oferecemos recomendações
-                de investimento nem sinais de compra/venda. Todo o conteúdo é para fins
-                de aprendizado sobre finanças, criptomoedas e desenvolvimento de bots.
+                O OctoCookie é uma plataforma educacional: chat com IA, Swap Trader Bot
+                (Holograma Quântico em modo tendência por padrão, trader clássico opcional)
+                e ferramentas de estudo em cripto. Não oferecemos recomendações de
+                investimento nem sinais de compra/venda. A chave da IA (GROQ_API_KEY)
+                fica só no servidor (variáveis de ambiente do Vercel) — nunca no navegador.
               </p>
             </section>
             <section className="rounded-xl border p-5">
