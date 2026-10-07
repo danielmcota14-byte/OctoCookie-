@@ -102,7 +102,7 @@ export const Route = createFileRoute("/api/chat")({
           const modelMessages = await convertToModelMessages(recentMessages);
 
           // Rodízio de chaves + fallback de modelos (gpt-oss-120b → qwen → gpt-oss-20b).
-          // O deploy antigo quebrava com llama-3.3-70b-versatile (404 / model_not_found).
+          // Fallback automatico de modelos disponiveis na conta Groq.
           return await withGroqModelFallback(async (key, modelId) => {
             const gateway = createLovableAiGatewayProvider(key);
             const result = streamText({

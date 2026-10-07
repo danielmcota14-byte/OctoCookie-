@@ -1,0 +1,20 @@
+Arquivos de CÓDIGO alterados (não é só README):
+
+1. src/lib/ai-gateway.server.ts  (quase reescrito)
+   - Rodízio de até 5 chaves GROQ_API_KEYS
+   - Fallback de modelos: openai/gpt-oss-120b → qwen/qwen3.8-27b → openai/gpt-oss-20b
+   - Cooldown automático quando rate-limit
+
+2. src/routes/api/chat.ts
+   - ANTES: model: gateway("llama-3.3-70b-versatile")  ← causa do 404 no Vercel
+   - AGORA: withGroqModelFallback + modelos novos
+
+3. src/components/chat-window.tsx
+   - Mensagens de erro mais claras (chave inválida, rate limit, etc.)
+
+4. src/lib/analyzer.functions.ts
+5. src/lib/ide.functions.ts
+6. src/lib/simulator.functions.ts
+   - Mesmo rodízio de chaves + modelos
+
+README NÃO foi a mudança principal.
