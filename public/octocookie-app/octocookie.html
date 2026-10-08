@@ -229,7 +229,7 @@ a { color:#2563eb; }
     <div class="flex-between" style="margin-bottom:20px">
       <div>
         <div class="app-title"><i class="fas fa-bolt"></i> SWAP TRADER BOT</div>
-        <div style="font-size:10px;color:var(--text3)">DEX Swap · Holograma tendência 100% (padrão) · opcional RSI/SMA/MACD/Bollinger · Uniswap / PancakeSwap · Multi-rede</div>
+        <div style="font-size:10px;color:var(--text3)">DEX Swap · 7 perfis (quiz) · Holograma / clássico / quântico · Uniswap · Multi-rede</div>
       </div>
     </div>
 
@@ -2000,7 +2000,7 @@ document.addEventListener('DOMContentLoaded', function() {
   if(termsPopup) termsPopup.addEventListener('click', e => { if(e.target===termsPopup) closeTerms(); });
   document.addEventListener('keydown', e => { if(e.key==='Escape') closeTerms(); });
   try {
-    if(!localStorage.getItem('termsAcceptedSwap')) setTimeout(() => { if(termsPopup) termsPopup.style.display='flex'; }, 400);
+    if(!localStorage.getItem('termsAcceptedSwap') && !localStorage.getItem('octocookie.perfil.v1') && !window.OctoPerfis) setTimeout(() => { if(termsPopup) termsPopup.style.display='flex'; }, 400);
   } catch(e) { if(termsPopup) termsPopup.style.display='flex'; }
 
   addLog('✅ OCTOCOOKIE Swap Trader Bot pronto. Conecte sua carteira e clique INICIAR.', 'success');
@@ -2614,7 +2614,7 @@ async function tick() {
     } else p = await precoVivo();
     ENG.p = p; if (!ENG.p0) ENG.p0 = p;
     const c = ENG.closes;
-    ENG.q = Q.analisarQuantico(Q.features(c.concat([p]), ENG.janela, ENG.lim * 100));
+    ENG.q = Q.analisarQuantico(Q.features(c.concat([p]), ENG.janela, ENG.lim * 100)); /* circuito 8q sempre calculado; decide só se ENG.modo==='quantica' */
     const ind = K.avaliarEntrada(c, p, ENG.filtro, ENG.filtroN, CONFIG.rsiLow, CONFIG.rsiHigh); ENG.ind = ind;
     const d = K.decidir(cfg(), c, p, { regraPos: ENG.regraPos, pos: ENG.pos, stopBloq: ENG.stopBloq, topo: ENG.topo }, ENG.q, ind.ok || ENG.trader !== 'holograma');
     ENG.bloqEntrada = d.bloqEntrada;
@@ -2776,7 +2776,15 @@ window.HG = {
 };
 tick(); setInterval(tick, 5000); setInterval(salvar, 15000);
 
+// API para perfis (quiz / painel simples)
+window.__OCTO_ENG = ENG;
+window.__OCTO_aplicarBarra = aplicarBarra;
+window.__OCTO_tick = tick;
+window.__OCTO_salvar = salvar;
+window.__OCTO_K = K;
+
 })();
 </script>
+<script src="./perfis.js"></script>
 </body>
 </html>

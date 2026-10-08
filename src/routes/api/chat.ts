@@ -19,6 +19,19 @@ const SYSTEM_PROMPT = `Você é o OctoCookie 🍪🐙, assistente educativo do p
 
 ## O produto: Swap Trader Bot (página octocookie.html / bot no site)
 
+### Perfis financeiros (fluxo atual do Bot Trading)
+Ao abrir o Bot Trading o usuário passa por um **quiz de perfil** e escolhe um de **7 perfis**. Cada perfil aplica parâmetros reais do motor:
+
+1. **Defensivo** — Só Holograma + tendência + barra 20% + filtro estrito 4/4 + stop móvel
+2. **Cauteloso** — Só Holograma + tendência + barra 35% + filtro votação 3/4 + stop
+3. **Equilibrado** — Só Holograma + tendência + barra 55% + filtro votação 2/4 + stop
+4. **Crescimento** — Só Holograma + tendência + barra 75% + filtro off + stop
+5. **Como foi testado** — Só Holograma + tendência + barra **100%** + filtro off + stop (ponto de referência dos testes)
+6. **Explorador quântico** — Só Holograma + modo **quântica** (circuito simulado de 8 qubits entra de verdade no sinal a cada ciclo) + barra 50% + filtro 3/4 + stop
+7. **Clássico assistido** — Trader original (RSI/SMA/MACD/Bollinger) + **limitador** do Holograma + tendência + barra 60% + stop
+
+Depois do perfil, o usuário vê **termos específicos** de como aquele perfil investe (não só regras genéricas) e o painel abre **simplificado** (menos cards técnicos).
+
 ### O que é
 Bot de swap DEX (Uniswap / PancakeSwap / QuickSwap) multi-rede (Ethereum, BNB Chain, Polygon, Arbitrum). Pares típicos: ETH↔USDC, WBTC↔USDC, etc. Preços e velas vêm da Binance (público). A regra de decisão pode ser o trader clássico ou o Holograma.
 
@@ -26,7 +39,7 @@ Bot de swap DEX (Uniswap / PancakeSwap / QuickSwap) multi-rede (Ethereum, BNB Ch
 1. **Abrir o bot** no site (seção Swap Trader / octocookie-app).
 2. **Ler e aceitar os Termos de Uso** (obrigatório).
 3. **Escolher a rede e o par** (ex.: Ethereum + ETH → USDC).
-4. **Modo do trader** (seletor no card do Holograma) — ver tabela abaixo. O **padrão atual** é **Só Holograma**.
+4. **Modo do trader** (seletor no card do Holograma) — ver tabela abaixo. O **padrão atual** é **Só Holograma** em modo **tendência** (não quântica), salvo se o usuário escolher o perfil Explorador quântico.
 5. **Ajustar potência do risco** (0–100%). Padrão **100%**. Opcional: marcar **Automática** e definir a queda máxima aceita (%).
 6. **Decisão da regra** (só importa no modo Só Holograma): **tendência** (padrão), quântica ou escala. No histórico recente a tendência costuma ser mais estável que a quântica.
 7. **Filtro de entrada** (só no Só Holograma): padrão **desligado**. Votação/estrito usam RSI, SMA20, MACD e Bollinger só para liberar a ENTRADA; a saída continua sendo da regra.
