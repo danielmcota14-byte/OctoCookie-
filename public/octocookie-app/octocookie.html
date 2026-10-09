@@ -332,7 +332,7 @@ a { color:#2563eb; }
       <p style="font-size:11px;color:var(--text3);margin:0 0 10px">Roda no Render mesmo com o PC desligado · paper trading · preços reais Binance</p>
       <label style="font-size:11px;display:block;margin-bottom:4px">URL do serviço</label>
       <div style="display:flex;gap:8px;margin-bottom:10px">
-        <input id="bot24Url" type="url" placeholder="https://octocookie-bot-24x7.onrender.com" style="flex:1;padding:8px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text)">
+        <input id="bot24Url" type="url" placeholder="vazio = este site (/api/bot)" style="flex:1;padding:8px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text)">
         <button class="primary" onclick="bot24SaveUrl()" style="white-space:nowrap"><i class="fas fa-save"></i></button>
       </div>
       <div id="bot24Status" style="font-size:12px;padding:10px;border-radius:8px;background:var(--surface-2);margin-bottom:10px;min-height:48px">
@@ -1376,7 +1376,17 @@ const BOT24_KEY = 'octocookie_bot24_url';
 function bot24GetUrl() {
   const el = document.getElementById('bot24Url');
   let u = (el && el.value.trim()) || localStorage.getItem(BOT24_KEY) || '';
+  // vazio = API embutida no mesmo site
+  if (!u) return '';
   return u.replace(/\/$/, '');
+}
+function bot24StatusPath() {
+  const b = bot24GetUrl();
+  return b ? b + '/status' : '/api/bot';
+}
+function bot24ActionPath(action) {
+  const b = bot24GetUrl();
+  return b ? b + '/' + action : '/api/bot?action=' + action;
 }
 
 function bot24SaveUrl() {
@@ -1390,11 +1400,14 @@ function bot24SaveUrl() {
 }
 
 async function bot24Fetch(path, method) {
-  const base = bot24GetUrl();
-  if (!base) throw new Error('URL do bot 24/7 não configurada');
-  const res = await fetch(base + path, {
+  // path: '/status' | '/start' | '/stop' | '/reset' (legado bot-server)
+  let url;
+  if (path === '/status' || path === '') url = bot24StatusPath();
+  else url = bot24ActionPath(path.replace(/^\//, ''));
+  const res = await fetch(url, {
     method: method || 'GET',
-    headers: { 'Accept': 'application/json' },
+    headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
+    body: method === 'POST' ? JSON.stringify({ action: path.replace(/^\//, '') }) : undefined,
   });
   if (!res.ok) throw new Error('HTTP ' + res.status);
   return res.json();
@@ -1470,11 +1483,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const el = document.getElementById('bot24Url');
   const saved = localStorage.getItem(BOT24_KEY);
   if (el && saved) el.value = saved;
-  if (saved) setTimeout(bot24Refresh, 800);
-  // auto-refresh a cada 30s se URL configurada
-  setInterval(() => {
-    if (bot24GetUrl()) bot24Refresh().catch(() => {});
-  }, 30000);
+  setTimeout(bot24Refresh, 800);
+  setInterval(() => { bot24Refresh().catch(() => {}); }, 30000);
 });
 
 

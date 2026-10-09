@@ -65,17 +65,23 @@ function Bot24Page() {
     setUrl(saved);
   }, []);
 
-  const base = url.replace(/\/$/, "");
+  // Vazio = mesmo site (/api/bot). URL externa = bot-server separado no Render.
+  const base = url.trim().replace(/\/$/, "");
+  const apiRoot = base || ""; // same origin
+
+  function statusUrl() {
+    return base ? `${base}/status` : "/api/bot";
+  }
+  function actionUrl(action: string) {
+    if (base) return `${base}/${action}`;
+    return `/api/bot?action=${action}`;
+  }
 
   const refresh = useCallback(async () => {
-    if (!base) {
-      setError("Cole a URL do Render e salve.");
-      return;
-    }
     setLoading(true);
     setError("");
     try {
-      const res = await fetch(`${base}/status`);
+      const res = await fetch(statusUrl());
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = (await res.json()) as BotStatus;
       setStatus(data);
@@ -83,7 +89,7 @@ function Bot24Page() {
       setStatus(null);
       setError(
         e instanceof Error
-          ? e.message + " — confira a URL e se o serviço acordou (plano free pode dormir)."
+          ? e.message + " — se usou URL externa, confira o serviço. No mesmo site use URL vazia."
           : "Falha ao conectar"
       );
     } finally {
@@ -106,10 +112,14 @@ function Bot24Page() {
   }
 
   async function call(path: string) {
-    if (!base) return;
     setLoading(true);
     try {
-      const res = await fetch(`${base}${path}`, { method: "POST" });
+      const action = path.replace(/^\//, ""); // start | stop | reset
+      const res = await fetch(actionUrl(action), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action }),
+      });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       await refresh();
     } catch (e: unknown) {
@@ -148,14 +158,14 @@ function Bot24Page() {
         <div className="mx-auto w-full max-w-2xl space-y-4 p-4 md:p-6">
           <div className="rounded-lg border bg-card p-4 space-y-3">
             <p className="text-xs text-muted-foreground">
-              Conecte a URL do seu serviço no Render. O bot roda paper trading
-              24/7 com preços reais da Binance, mesmo com o PC desligado.
+              Por padrão usa o bot embutido neste site (/api/bot). Deixe a URL vazia.
+              Opcional: cole a URL de um bot-server separado no Render.
             </p>
             <div className="flex gap-2">
               <Input
                 value={url}
                 onChange={(e) => setUrl(e.target.value)}
-                placeholder="https://octocookie-bot-24x7.onrender.com"
+                placeholder="(vazio = este site) ou https://outro-bot.onrender.com"
               />
               <Button onClick={saveUrl} disabled={loading}>
                 Salvar
@@ -174,7 +184,7 @@ function Bot24Page() {
                 variant="outline"
                 size="sm"
                 onClick={refresh}
-                disabled={loading || !base}
+                disabled={loading}
               >
                 <RefreshCw className="mr-1 h-3.5 w-3.5" />
                 Atualizar
@@ -230,7 +240,7 @@ function Bot24Page() {
               <Button
                 size="sm"
                 onClick={() => call("/start")}
-                disabled={loading || !base}
+                disabled={loading}
               >
                 <Play className="mr-1 h-3.5 w-3.5" /> Start
               </Button>
@@ -238,7 +248,7 @@ function Bot24Page() {
                 size="sm"
                 variant="destructive"
                 onClick={() => call("/stop")}
-                disabled={loading || !base}
+                disabled={loading}
               >
                 <Square className="mr-1 h-3.5 w-3.5" /> Stop
               </Button>
@@ -248,17 +258,15 @@ function Bot24Page() {
                 onClick={() => {
                   if (confirm("Zerar saldo paper?")) call("/reset");
                 }}
-                disabled={loading || !base}
+                disabled={loading}
               >
                 <RotateCcw className="mr-1 h-3.5 w-3.5" /> Reset
               </Button>
-              {base && (
-                <Button size="sm" variant="ghost" asChild>
-                  <a href={base} target="_blank" rel="noreferrer">
+              <Button size="sm" variant="ghost" asChild>
+                  <a href={base || "/api/bot"} target="_blank" rel="noreferrer">
                     <ExternalLink className="mr-1 h-3.5 w-3.5" /> API
                   </a>
                 </Button>
-              )}
             </div>
           </div>
 
