@@ -1,260 +1,128 @@
 /**
- * OctoCookie Bot 24/7 — Render Web Service
- * - Loop contínuo com preços reais (Binance)
- * - Estratégia estilo Holograma (tendência + stop móvel) em paper trading
- * - API HTTP para status / start / stop / logs
- * - Mantém o processo vivo no Render (health check em /)
+ * OctoCookie Bot 24/7 — servidor (Render/VPS).
+ * Abre o octocookie.html num Chromium sem tela e o deixa operando on-chain sozinho, com a carteira dedicada do usuário.
  *
- * NÃO executa swaps on-chain com chave privada (educacional / paper).
- * Para operar de verdade: use a UI octocookie.html com MetaMask.
+ *   POST /247/hello   → chave pública ECDH de uso único (Diffie-Hellman)
+ *   POST /247/pair    → recebe a chave da carteira cifrada, cria o cofre e DEVOLVE a chave AES-256 (K) ao usuário
+ *   POST /247/arm     → recebe K (cifrada), abre o cofre só na memória e liga o bot
+ *   POST /247/disarm  → para o bot e apaga a chave da memória
+ *   POST /247/wipe    → disarm + apaga o cofre
+ *   GET  /247/status  → estado completo (com token)
+ * Todas as rotas /247 exigem  Authorization: Bearer <OWNER_TOKEN>.
  */
-const express = require('express');
-const cors = require('cors');
+import express from 'express';
+import cors from 'cors';
+import crypto from 'node:crypto';
+import path from 'node:path';
+import { fileURLToPath, pathToFileURL } from 'node:url';
+import { newHello, openRequest, normalizePk, Vault } from './vault.js';
+import { Runner } from './runner.js';
 
-const PORT = process.env.PORT || 3000;
-const SYMBOL = process.env.BOT_SYMBOL || 'ETHUSDT';
-const TICK_MS = Number(process.env.BOT_TICK_MS || 10000); // 10s
-const START_BALANCE = Number(process.env.BOT_START_BALANCE || 1000); // USDT paper
+const here = path.dirname(fileURLToPath(import.meta.url));
+const FIELD_IDS = new Set(['networkSelect', 'tradePairSelect', 'stakePct', 'slPct', 'tpPct', 'maxTradesInput', 'securityLevel', 'riskLevel', 'usarLimDia']);
+const HG_KEYS = { barra: 'number', auto: 'boolean', qmax: 'number', modo: 'string', lq: 'number', stopVivo: 'boolean', filtro: 'string', filtroN: 'number', trader: 'string' };
 
-const app = express();
-app.use(cors());
-app.use(express.json());
+const sha = (s) => crypto.createHash('sha256').update(String(s)).digest();
+const sameToken = (a, b) => crypto.timingSafeEqual(sha(a), sha(b));
 
-// ─── Estado do bot ─────────────────────────────────────────
-const state = {
-  running: true,
-  symbol: SYMBOL,
-  price: 0,
-  priceHistory: [],
-  position: 0, // 0 = cash (USDT), 1 = long asset
-  entryPrice: 0,
-  balance: START_BALANCE,
-  equity: START_BALANCE,
-  peakEquity: START_BALANCE,
-  trades: [],
-  wins: 0,
-  losses: 0,
-  signal: 0,
-  lastAction: 'init',
-  lastError: null,
-  startedAt: Date.now(),
-  lastTickAt: null,
-  logs: [],
-};
-
-function log(msg, level = 'info') {
-  const entry = { ts: Date.now(), level, msg };
-  state.logs.unshift(entry);
-  if (state.logs.length > 200) state.logs.pop();
-  const tag = level === 'error' ? '❌' : level === 'warn' ? '⚠️' : 'ℹ️';
-  console.log(`[${new Date().toISOString()}] ${tag} ${msg}`);
-}
-
-// ─── Preço Binance ─────────────────────────────────────────
-async function fetchPrice() {
-  const url = `https://api.binance.com/api/v3/ticker/price?symbol=${state.symbol}`;
-  const res = await fetch(url);
-  if (!res.ok) throw new Error(`Binance HTTP ${res.status}`);
-  const data = await res.json();
-  const p = Number(data.price);
-  if (!(p > 0)) throw new Error('Preço inválido');
-  return p;
-}
-
-async function fetchKlines(limit = 50) {
-  const url = `https://api.binance.com/api/v3/klines?symbol=${state.symbol}&interval=1h&limit=${limit}`;
-  const res = await fetch(url);
-  if (!res.ok) throw new Error(`Klines HTTP ${res.status}`);
-  const data = await res.json();
-  return data.map((k) => Number(k[4])); // close
-}
-
-// ─── Indicadores simples (Holograma-lite) ──────────────────
-function sma(arr, n) {
-  if (arr.length < n) return null;
-  const slice = arr.slice(-n);
-  return slice.reduce((a, b) => a + b, 0) / n;
-}
-
-function rsi(arr, n = 14) {
-  if (arr.length < n + 1) return 50;
-  let gains = 0, losses = 0;
-  for (let i = arr.length - n; i < arr.length; i++) {
-    const d = arr[i] - arr[i - 1];
-    if (d >= 0) gains += d;
-    else losses -= d;
+function cleanFields(f) {
+  const out = {};
+  for (const [k, v] of Object.entries(f && typeof f === 'object' ? f : {})) {
+    if (!FIELD_IDS.has(k)) continue;
+    if (typeof v === 'boolean' || typeof v === 'number') out[k] = v; else if (typeof v === 'string' && v.length <= 40) out[k] = v;
   }
-  if (losses === 0) return 100;
-  const rs = gains / losses;
-  return 100 - 100 / (1 + rs);
+  return out;
+}
+function cleanHg(h) {
+  if (!h || typeof h !== 'object') return null;
+  const out = {};
+  for (const [k, t] of Object.entries(HG_KEYS)) if (typeof h[k] === t) out[k] = h[k];
+  return Object.keys(out).length ? out : null;
 }
 
-function trendSignal(closes, price) {
-  const s20 = sma(closes, 20);
-  const s50 = sma(closes, Math.min(50, closes.length));
-  const r = rsi(closes, 14);
-  let score = 0;
-  if (s20 && price > s20) score += 0.35;
-  if (s50 && price > s50) score += 0.25;
-  if (r < 30) score += 0.25;
-  else if (r > 70) score -= 0.25;
-  else if (r < 50) score += 0.1;
-  // momentum curto
-  if (closes.length >= 5) {
-    const mom = (price - closes[closes.length - 5]) / closes[closes.length - 5];
-    score += Math.max(-0.2, Math.min(0.2, mom * 5));
-  }
-  return { score, rsi: r, sma20: s20, sma50: s50 };
-}
+export function createApp({ vault, runner, ownerToken, masterKey, origins = '*', logs = [], now = () => Date.now() }) {
+  const app = express();
+  app.disable('x-powered-by');
+  app.use(cors({ origin: origins === '*' ? true : origins.split(',').map((s) => s.trim()), allowedHeaders: ['Content-Type', 'Authorization'] }));
+  app.use(express.json({ limit: '64kb' }));
 
-// ─── Paper trade ───────────────────────────────────────────
-function openLong(price) {
-  if (state.position === 1) return;
-  state.position = 1;
-  state.entryPrice = price;
-  state.lastAction = 'BUY';
-  log(`BUY paper @ ${price.toFixed(4)} | equity $${state.equity.toFixed(2)}`, 'info');
-}
+  const publicStatus = () => ({ ok: true, status: 'ok', running: runner.armed() && !!runner.snap?.running, armed: runner.armed(), symbol: 'ETHUSDT', price: runner.snap?.price || null, lastError: runner.lastError || null });
+  app.get('/', (_q, r) => r.json(publicStatus()));
+  app.get('/health', (_q, r) => r.json({ ok: true }));
+  app.get('/status', (_q, r) => r.json(publicStatus()));
 
-function closeLong(price, reason) {
-  if (state.position === 0) return;
-  const pnlPct = ((price - state.entryPrice) / state.entryPrice) * 100;
-  const pnlUsd = state.balance * (pnlPct / 100);
-  state.balance += pnlUsd;
-  state.equity = state.balance;
-  if (state.equity > state.peakEquity) state.peakEquity = state.equity;
-  const trade = {
-    ts: Date.now(),
-    side: 'SELL',
-    entry: state.entryPrice,
-    exit: price,
-    pnlPct: Number(pnlPct.toFixed(3)),
-    pnlUsd: Number(pnlUsd.toFixed(4)),
-    reason,
-  };
-  state.trades.unshift(trade);
-  if (state.trades.length > 100) state.trades.pop();
-  if (pnlPct >= 0) state.wins++;
-  else state.losses++;
-  state.position = 0;
-  state.entryPrice = 0;
-  state.lastAction = `SELL (${reason})`;
-  log(`SELL paper @ ${price.toFixed(4)} | PnL ${pnlPct.toFixed(2)}% ($${pnlUsd.toFixed(2)}) · ${reason}`, pnlPct >= 0 ? 'info' : 'warn');
-}
-
-// ─── Tick principal ────────────────────────────────────────
-let closesCache = [];
-
-async function tick() {
-  if (!state.running) return;
-  try {
-    const price = await fetchPrice();
-    state.price = price;
-    state.priceHistory.push(price);
-    if (state.priceHistory.length > 120) state.priceHistory.shift();
-
-    // atualiza velas a cada ~6 ticks
-    if (closesCache.length < 20 || Math.random() < 0.2) {
-      closesCache = await fetchKlines(60);
-    }
-    const closes = closesCache.concat([price]);
-    const { score, rsi: r } = trendSignal(closes, price);
-    state.signal = Number(score.toFixed(4));
-
-    // Stop móvel: -3% do pico da posição
-    if (state.position === 1) {
-      const drop = ((price - state.entryPrice) / state.entryPrice) * 100;
-      if (drop <= -3) {
-        closeLong(price, 'stop-loss -3%');
-      } else if (drop >= 8) {
-        closeLong(price, 'take-profit +8%');
-      } else if (score < -0.15) {
-        closeLong(price, 'sinal baixista');
-      }
-    } else {
-      // Entrada
-      if (score >= 0.35 && r < 65) {
-        openLong(price);
-      }
-    }
-
-    // marca equity
-    if (state.position === 1) {
-      const unreal = ((price - state.entryPrice) / state.entryPrice) * state.balance;
-      state.equity = state.balance + unreal;
-    } else {
-      state.equity = state.balance;
-    }
-
-    state.lastTickAt = Date.now();
-    state.lastError = null;
-  } catch (e) {
-    state.lastError = e.message || String(e);
-    log(`Tick error: ${state.lastError}`, 'error');
-  }
-}
-
-// ─── Rotas ─────────────────────────────────────────────────
-app.get('/', (req, res) => {
-  res.json({
-    service: 'octocookie-bot-24x7',
-    status: state.running ? 'online' : 'paused',
-    symbol: state.symbol,
-    price: state.price,
-    position: state.position === 1 ? 'LONG' : 'CASH',
-    equity: Number(state.equity.toFixed(4)),
-    signal: state.signal,
-    lastAction: state.lastAction,
-    lastTickAt: state.lastTickAt,
-    uptimeSec: Math.floor((Date.now() - state.startedAt) / 1000),
-    wins: state.wins,
-    losses: state.losses,
-    lastError: state.lastError,
+  // ---- /247: token do dono + limite de tentativas por IP ----
+  const hits = new Map();
+  app.use('/247', (req, res, next) => {
+    if (!ownerToken || ownerToken.length < 24) return res.status(503).json({ erro: 'Servidor sem OWNER_TOKEN (mín. 24 caracteres): modo 24/7 desativado.' });
+    const ip = req.ip, t = now(), arr = (hits.get(ip) || []).filter((x) => t - x < 60_000);
+    arr.push(t); hits.set(ip, arr);
+    if (arr.length > 60) return res.status(429).json({ erro: 'Muitas requisições. Aguarde um minuto.' });
+    const h = req.headers.authorization || '';
+    if (!h.startsWith('Bearer ') || !sameToken(h.slice(7), ownerToken)) return res.status(401).json({ erro: 'Token inválido.' });
+    res.set('Cache-Control', 'no-store');
+    next();
   });
-});
 
-app.get('/health', (req, res) => {
-  res.status(200).json({ ok: true, running: state.running });
-});
+  const wrap = (fn) => async (req, res) => { try { await fn(req, res); } catch (e) { res.status(400).json({ erro: e.message || 'erro' }); } };
 
-app.get('/status', (req, res) => {
-  res.json({
-    ...state,
-    logs: state.logs.slice(0, 50),
-    trades: state.trades.slice(0, 30),
-  });
-});
+  app.post('/247/hello', wrap(async (_q, res) => res.json(await newHello())));
 
-app.post('/start', (req, res) => {
-  state.running = true;
-  log('Bot START via API');
-  res.json({ ok: true, running: true });
-});
+  app.post('/247/pair', wrap(async (req, res) => {
+    if (runner.armed()) throw new Error('Bot ligado: pare o 24/7 antes de trocar a carteira.');
+    const { payload, reply } = await openRequest(req.body);
+    const { pk, addr } = normalizePk(payload.pk);
+    const k = await vault.create(pk, addr); // K aleatória; o servidor NÃO a guarda
+    res.json(await reply({ addr, k }));
+  }));
 
-app.post('/stop', (req, res) => {
-  state.running = false;
-  log('Bot STOP via API', 'warn');
-  res.json({ ok: true, running: false });
-});
+  app.post('/247/arm', wrap(async (req, res) => {
+    const { payload, reply } = await openRequest(req.body);
+    const { pk, addr } = await vault.open(payload.k);
+    const cfg = { fields: cleanFields(payload.fields), hg: cleanHg(payload.hg), fee: payload.fee === true };
+    if (payload.autoRearm === true) {
+      if (!masterKey) throw new Error('Este servidor não tem SERVER_MASTER_KEY: "reiniciar sozinho" indisponível.');
+      await vault.saveRearm(payload.k, masterKey);
+    } else vault.clearRearm();
+    vault.saveConfig(cfg);
+    await runner.start(pk, cfg);
+    res.json(await reply({ addr, armado: true }));
+  }));
 
-app.post('/reset', (req, res) => {
-  state.balance = START_BALANCE;
-  state.equity = START_BALANCE;
-  state.peakEquity = START_BALANCE;
-  state.position = 0;
-  state.entryPrice = 0;
-  state.trades = [];
-  state.wins = 0;
-  state.losses = 0;
-  log('Bot RESET paper balance');
-  res.json({ ok: true, balance: state.balance });
-});
+  app.post('/247/disarm', wrap(async (_q, res) => { await runner.stop(); vault.clearRearm(); res.json({ ok: true }); }));
+  app.post('/247/wipe', wrap(async (_q, res) => { await runner.stop(); vault.wipe(); res.json({ ok: true }); }));
 
-// ─── Loop 24/7 ─────────────────────────────────────────────
-log(`Iniciando bot 24/7 · ${SYMBOL} · tick ${TICK_MS}ms · paper $${START_BALANCE}`);
-tick();
-setInterval(tick, TICK_MS);
+  app.get('/247/status', wrap(async (_q, res) => {
+    const s = runner.snap || {};
+    res.json({ pareado: vault.paired(), endereco: vault.address(), armado: runner.armed(), rodando: !!s.running, preco: s.price || null, saldo: s.balance ?? null,
+      ordensHoje: s.trades ?? 0, pnlDia: s.pnlDia ?? 0, ultimoErro: runner.lastError || null, reiniciaSozinho: !!vault.read(vault.rearmFile), logs: logs.slice(0, 40) });
+  }));
 
-app.listen(PORT, '0.0.0.0', () => {
-  log(`HTTP listening on :${PORT}`);
-});
+  return app;
+}
+
+async function main() {
+  const dataDir = process.env.DATA_DIR || path.join(here, 'data');
+  const appDir = process.env.APP_DIR || path.join(here, '../public/octocookie-app');
+  const logs = [];
+  const log = (m) => { const l = `${new Date().toISOString()} ${m}`; logs.unshift(l); if (logs.length > 200) logs.pop(); console.log(l); };
+  const rpc = {}; if (process.env.RPC_URL_ETHEREUM) rpc.ethereum = process.env.RPC_URL_ETHEREUM;
+  const vault = new Vault(dataDir);
+  const runner = new Runner({ appDir, dataDir, rpc, log });
+  const masterKey = process.env.SERVER_MASTER_KEY || '';
+  const app = createApp({ vault, runner, ownerToken: process.env.OWNER_TOKEN || '', masterKey, origins: process.env.ALLOWED_ORIGINS || '*', logs });
+  const port = process.env.PORT || 3000;
+  app.listen(port, () => log(`Servidor 24/7 na porta ${port}. Carteira pareada: ${vault.address() || 'nenhuma'}.`));
+  if (!process.env.OWNER_TOKEN) log('⚠️ OWNER_TOKEN ausente: rotas /247 desativadas.');
+
+  // reinício sozinho (só se o usuário optou por isso e o servidor tem SERVER_MASTER_KEY)
+  const k = await vault.loadRearm(masterKey);
+  if (k && vault.paired()) {
+    try { const { pk } = await vault.open(k); await runner.start(pk, vault.loadConfig() || {}); log('🔓 Bot religado automaticamente após reinício.'); }
+    catch (e) { log('Falha ao religar sozinho: ' + e.message); }
+  } else if (vault.paired()) log('🔒 Carteira pareada, bot TRANCADO: aguardando a chave K (abra o site e a página reenvia).');
+
+  const bye = async (s) => { log(s + ': parando o bot...'); try { await runner.stop(); } catch {} process.exit(0); };
+  process.on('SIGINT', () => bye('SIGINT')); process.on('SIGTERM', () => bye('SIGTERM'));
+}
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) main().catch((e) => { console.error(e); process.exit(1); });

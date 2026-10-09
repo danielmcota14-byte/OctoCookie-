@@ -12,12 +12,16 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ThreadIdRouteImport } from './routes/$threadId'
 import { Route as AnalyzerRouteImport } from './routes/analyzer'
+import { Route as Bot24x7RouteImport } from './routes/bot-24x7'
 import { Route as IdeRouteImport } from './routes/ide'
 import { Route as LaunchRouteImport } from './routes/launch'
 import { Route as OctoAppRouteImport } from './routes/octo-app'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as SimulatorRouteImport } from './routes/simulator'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
+import { Route as CommunityIndexRouteImport } from './routes/community/index'
+import { Route as CommunityCommunityIdRouteImport } from './routes/community/$communityId'
+import { Route as PostPostIdRouteImport } from './routes/post/$postId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -32,6 +36,11 @@ const ThreadIdRoute = ThreadIdRouteImport.update({
 const AnalyzerRoute = AnalyzerRouteImport.update({
   id: '/analyzer',
   path: '/analyzer',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const Bot24x7Route = Bot24x7RouteImport.update({
+  id: '/bot-24x7',
+  path: '/bot-24x7',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IdeRoute = IdeRouteImport.update({
@@ -64,40 +73,67 @@ const ApiChatRoute = ApiChatRouteImport.update({
   path: '/api/chat',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CommunityIndexRoute = CommunityIndexRouteImport.update({
+  id: '/community/',
+  path: '/community/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CommunityCommunityIdRoute = CommunityCommunityIdRouteImport.update({
+  id: '/community/$communityId',
+  path: '/community/$communityId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PostPostIdRoute = PostPostIdRouteImport.update({
+  id: '/post/$postId',
+  path: '/post/$postId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/$threadId': typeof ThreadIdRoute
   '/analyzer': typeof AnalyzerRoute
+  '/bot-24x7': typeof Bot24x7Route
   '/ide': typeof IdeRoute
   '/launch': typeof LaunchRoute
   '/octo-app': typeof OctoAppRoute
   '/settings': typeof SettingsRoute
   '/simulator': typeof SimulatorRoute
   '/api/chat': typeof ApiChatRoute
+  '/community/$communityId': typeof CommunityCommunityIdRoute
+  '/post/$postId': typeof PostPostIdRoute
+  '/community/': typeof CommunityIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/$threadId': typeof ThreadIdRoute
   '/analyzer': typeof AnalyzerRoute
+  '/bot-24x7': typeof Bot24x7Route
   '/ide': typeof IdeRoute
   '/launch': typeof LaunchRoute
   '/octo-app': typeof OctoAppRoute
   '/settings': typeof SettingsRoute
   '/simulator': typeof SimulatorRoute
   '/api/chat': typeof ApiChatRoute
+  '/community/$communityId': typeof CommunityCommunityIdRoute
+  '/post/$postId': typeof PostPostIdRoute
+  '/community': typeof CommunityIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/$threadId': typeof ThreadIdRoute
   '/analyzer': typeof AnalyzerRoute
+  '/bot-24x7': typeof Bot24x7Route
   '/ide': typeof IdeRoute
   '/launch': typeof LaunchRoute
   '/octo-app': typeof OctoAppRoute
   '/settings': typeof SettingsRoute
   '/simulator': typeof SimulatorRoute
   '/api/chat': typeof ApiChatRoute
+  '/community/$communityId': typeof CommunityCommunityIdRoute
+  '/post/$postId': typeof PostPostIdRoute
+  '/community/': typeof CommunityIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -105,46 +141,62 @@ export interface FileRouteTypes {
     | '/'
     | '/$threadId'
     | '/analyzer'
+    | '/bot-24x7'
     | '/ide'
     | '/launch'
     | '/octo-app'
     | '/settings'
     | '/simulator'
     | '/api/chat'
+    | '/community/$communityId'
+    | '/post/$postId'
+    | '/community/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/$threadId'
     | '/analyzer'
+    | '/bot-24x7'
     | '/ide'
     | '/launch'
     | '/octo-app'
     | '/settings'
     | '/simulator'
     | '/api/chat'
+    | '/community/$communityId'
+    | '/post/$postId'
+    | '/community'
   id:
     | '__root__'
     | '/'
     | '/$threadId'
     | '/analyzer'
+    | '/bot-24x7'
     | '/ide'
     | '/launch'
     | '/octo-app'
     | '/settings'
     | '/simulator'
     | '/api/chat'
+    | '/community/$communityId'
+    | '/post/$postId'
+    | '/community/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ThreadIdRoute: typeof ThreadIdRoute
   AnalyzerRoute: typeof AnalyzerRoute
+  Bot24x7Route: typeof Bot24x7Route
   IdeRoute: typeof IdeRoute
   LaunchRoute: typeof LaunchRoute
   OctoAppRoute: typeof OctoAppRoute
   SettingsRoute: typeof SettingsRoute
   SimulatorRoute: typeof SimulatorRoute
   ApiChatRoute: typeof ApiChatRoute
+  CommunityCommunityIdRoute: typeof CommunityCommunityIdRoute
+  PostPostIdRoute: typeof PostPostIdRoute
+  CommunityIndexRoute: typeof CommunityIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -168,6 +220,13 @@ declare module '@tanstack/react-router' {
       path: '/analyzer'
       fullPath: '/analyzer'
       preLoaderRoute: typeof AnalyzerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/bot-24x7': {
+      id: '/bot-24x7'
+      path: '/bot-24x7'
+      fullPath: '/bot-24x7'
+      preLoaderRoute: typeof Bot24x7RouteImport
       parentRoute: typeof rootRouteImport
     }
     '/ide': {
@@ -212,6 +271,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiChatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/community/': {
+      id: '/community/'
+      path: '/community'
+      fullPath: '/community/'
+      preLoaderRoute: typeof CommunityIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/community/$communityId': {
+      id: '/community/$communityId'
+      path: '/community/$communityId'
+      fullPath: '/community/$communityId'
+      preLoaderRoute: typeof CommunityCommunityIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/post/$postId': {
+      id: '/post/$postId'
+      path: '/post/$postId'
+      fullPath: '/post/$postId'
+      preLoaderRoute: typeof PostPostIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -219,12 +299,16 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ThreadIdRoute: ThreadIdRoute,
   AnalyzerRoute: AnalyzerRoute,
+  Bot24x7Route: Bot24x7Route,
   IdeRoute: IdeRoute,
   LaunchRoute: LaunchRoute,
   OctoAppRoute: OctoAppRoute,
   SettingsRoute: SettingsRoute,
   SimulatorRoute: SimulatorRoute,
   ApiChatRoute: ApiChatRoute,
+  CommunityCommunityIdRoute: CommunityCommunityIdRoute,
+  PostPostIdRoute: PostPostIdRoute,
+  CommunityIndexRoute: CommunityIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

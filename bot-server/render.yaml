@@ -1,22 +1,24 @@
-# Blueprint Render — Bot OctoCookie 24/7
-# No dashboard Render: New → Blueprint → conecte o repo e selecione esta pasta
-# OU crie um Web Service manual apontando Root Directory = bot-server
-
+# Blueprint Render — Bot OctoCookie 24/7 (octocookie.html rodando sozinho num Chromium sem tela)
+# No Render: New → Blueprint → conecte o repositório (o render.yaml deve ficar na RAIZ: copie este arquivo para ../render.yaml)
+# Segredos (OWNER_TOKEN, SERVER_MASTER_KEY, RPC_URL_ETHEREUM) são pedidos no painel: sync: false.
 services:
   - type: web
     name: octocookie-bot-24x7
-    runtime: node
-    plan: free
-    rootDir: bot-server
-    buildCommand: npm install
-    startCommand: npm start
+    runtime: docker
+    dockerfilePath: ./bot-server/Dockerfile
+    dockerContext: .
+    plan: standard        # Chromium + página do bot precisam de RAM; no plano de 512 MB costuma estourar
     healthCheckPath: /health
+    disk:
+      name: octo-data
+      mountPath: /data    # guarda o cofre cifrado; sem disco o cofre some a cada deploy
+      sizeGB: 1
     envVars:
-      - key: BOT_SYMBOL
-        value: ETHUSDT
-      - key: BOT_TICK_MS
-        value: "10000"
-      - key: BOT_START_BALANCE
-        value: "1000"
-      - key: NODE_VERSION
-        value: "20"
+      - key: OWNER_TOKEN
+        sync: false       # mín. 24 caracteres; é o "login" do seu site no servidor
+      - key: SERVER_MASTER_KEY
+        sync: false       # opcional (openssl rand -base64 32): só para "reiniciar sozinho"
+      - key: RPC_URL_ETHEREUM
+        sync: false       # seu RPC (Alchemy/Infura) https://...
+      - key: ALLOWED_ORIGINS
+        value: "*"        # troque pelo domínio do seu site

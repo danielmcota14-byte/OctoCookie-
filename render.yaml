@@ -1,38 +1,24 @@
-# Blueprint Render — https://render.com/docs/blueprint-spec
-# 1) Conecte o repo no Render
-# 2) New → Blueprint → selecione este render.yaml
-# 3) Preencha as env vars se quiser
-
+# Blueprint Render — Bot OctoCookie 24/7 (octocookie.html rodando sozinho num Chromium sem tela)
+# No Render: New → Blueprint → conecte o repositório (o render.yaml deve ficar na RAIZ: copie este arquivo para ../render.yaml)
+# Segredos (OWNER_TOKEN, SERVER_MASTER_KEY, RPC_URL_ETHEREUM) são pedidos no painel: sync: false.
 services:
-  # App web (TanStack / Vite)
   - type: web
-    name: octocookie-web
-    runtime: node
-    plan: free
-    buildCommand: npm ci && npm run build
-    startCommand: npm run preview -- --host 0.0.0.0 --port $PORT
+    name: octocookie-bot-24x7
+    runtime: docker
+    dockerfilePath: ./bot-server/Dockerfile
+    dockerContext: .
+    plan: standard        # Chromium + página do bot precisam de RAM; no plano de 512 MB costuma estourar
+    healthCheckPath: /health
+    disk:
+      name: octo-data
+      mountPath: /data    # guarda o cofre cifrado; sem disco o cofre some a cada deploy
+      sizeGB: 1
     envVars:
-      - key: NODE_VERSION
-        value: "22"
-      - key: GROQ_API_KEY
-        sync: false
-
-  # Bot 24/7 (Background Worker — não dorme no plano starter+)
-  # No plano free use type: web com o mesmo startCommand do worker
-  - type: worker
-    name: octocookie-bot
-    runtime: node
-    plan: starter
-    buildCommand: "echo bot-ready"
-    startCommand: node bot/worker.mjs
-    envVars:
-      - key: NODE_VERSION
-        value: "22"
-      - key: BOT_SYMBOL
-        value: BTCUSDT
-      - key: BOT_MODE
-        value: paper
-      - key: BOT_INTERVAL_MS
-        value: "8000"
-      - key: BOT_STOP_PCT
-        value: "2"
+      - key: OWNER_TOKEN
+        sync: false       # mín. 24 caracteres; é o "login" do seu site no servidor
+      - key: SERVER_MASTER_KEY
+        sync: false       # opcional (openssl rand -base64 32): só para "reiniciar sozinho"
+      - key: RPC_URL_ETHEREUM
+        sync: false       # seu RPC (Alchemy/Infura) https://...
+      - key: ALLOWED_ORIGINS
+        value: "*"        # troque pelo domínio do seu site

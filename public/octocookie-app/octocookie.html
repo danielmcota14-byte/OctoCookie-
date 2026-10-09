@@ -326,29 +326,8 @@ a { color:#2563eb; }
     </div>
 
 
-    <!-- BOT 24/7 NO SERVIDOR (Render) -->
-    <div class="card" id="bot24Card">
-      <div class="card-header"><i class="fas fa-server"></i> Bot 24/7 no servidor (Render)</div>
-      <p style="font-size:11px;color:var(--text3);margin:0 0 10px">Roda no Render mesmo com o PC desligado · paper trading · preços reais Binance</p>
-      <label style="font-size:11px;display:block;margin-bottom:4px">URL do serviço</label>
-      <div style="display:flex;gap:8px;margin-bottom:10px">
-        <input id="bot24Url" type="url" placeholder="vazio = este site (/api/bot)" style="flex:1;padding:8px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text)">
-        <button class="primary" onclick="bot24SaveUrl()" style="white-space:nowrap"><i class="fas fa-save"></i></button>
-      </div>
-      <div id="bot24Status" style="font-size:12px;padding:10px;border-radius:8px;background:var(--surface-2);margin-bottom:10px;min-height:48px">
-        Configure a URL do Render e clique em Atualizar.
-      </div>
-      <div class="grid-3col" style="margin-bottom:8px">
-        <button class="primary" onclick="bot24Start()"><i class="fas fa-play"></i> START</button>
-        <button class="danger" onclick="bot24Stop()"><i class="fas fa-stop"></i> STOP</button>
-        <button onclick="bot24Refresh()"><i class="fas fa-sync"></i> ATUALIZAR</button>
-      </div>
-      <div class="grid-2col">
-        <button onclick="bot24Reset()"><i class="fas fa-redo"></i> RESET PAPER</button>
-        <button onclick="bot24Open()"><i class="fas fa-external-link-alt"></i> ABRIR API</button>
-      </div>
-      <div id="bot24Logs" style="margin-top:10px;max-height:140px;overflow:auto;font-size:10px;font-family:monospace;color:var(--text3)"></div>
-    </div>
+    <!-- BOT 24/7 NO SERVIDOR: o card é montado por modo247.js -->
+    <div id="o247Mount"></div>
 
     <!-- CABEÇALHO DO HOLOGRAMA: potência do risco + dados básicos -->
     <div class="card hg-head" id="hgHead">
@@ -560,7 +539,7 @@ a { color:#2563eb; }
       <p>⚠️ AVISO IMPORTANTE: O uso deste bot envolve riscos significativos, incluindo perda de capital.</p>
       <p>1. <strong>Riscos de DeFi:</strong> Swaps em DEX podem incorrer em slippage, taxas de gas, falhas de liquidez e volatilidade extrema. Nunca invista mais do que pode perder.</p>
       <p>2. <strong>Responsabilidade:</strong> Você é o único responsável pelas operações executadas com sua carteira.</p>
-      <p>3. <strong>Não-custodial:</strong> A OctoCookie nunca solicita, recebe ou armazena sua chave privada ou seed phrase. A conexão é feita via sua própria wallet (MetaMask ou compatível); toda transação — swaps e taxa de serviço — é assinada individualmente por você, na sua wallet.</p>
+      <p>3. <strong>Não-custodial:</strong> No modo normal, a OctoCookie nunca solicita, recebe ou armazena sua chave privada ou seed phrase. A conexão é feita via sua própria wallet (MetaMask ou compatível); toda transação — swaps e taxa de serviço — é assinada individualmente por você, na sua wallet. <strong>Exceção — Bot 24/7 no servidor (opcional):</strong> se você ativar esse modo, a chave de uma carteira dedicada ao bot é enviada ao servidor que VOCÊ configurou, cifrada por Diffie-Hellman + AES-256, e guardada cifrada com uma chave K que volta para você. Enquanto o bot roda, o servidor mantém a chave em memória e assina as transações sozinho. Use só valores que aceita perder.</p>
       <p>4. <strong>Estratégia:</strong> Por padrão o bot usa a regra do Holograma Quântico em modo tendência (preço em velas de 8h, stop móvel, potência 100%). Opcionalmente, pode usar o trader original (RSI, Bollinger, MACD e SMA), o limitador do Holograma sobre o trader original, ou o circuito quântico simulado de 8 qubits. Não prevê preços e não garante lucro; performance passada não garante resultados futuros.</p>
       <p>5. <strong>Gas:</strong> Cada swap incorre em taxas de gas. Configure adequadamente o stake % para cobrir os custos.</p>
       <p>6. <strong>Taxa de serviço:</strong> A OctoCookie cobra <span id="termsFeePct">2%</span> sobre o <em>lucro</em> de cada operação vencedora (nunca sobre seu saldo total, nunca em operações com perda). Essa cobrança é uma transação separada, exibida na sua wallet com o valor exato, que você pode aprovar ou recusar individualmente a cada ocorrência. Recusar a taxa não afeta o resultado do trade em si.</p>
@@ -748,13 +727,16 @@ function hidePendingSwap() {
 
 // =============================================
 //  CONEXÃO NÃO-CUSTODIAL (MetaMask / injected wallet)
-//  A OctoCookie NUNCA solicita, recebe ou armazena chave
-//  privada / seed phrase. O signer vem sempre da extensão
-//  da própria pessoa, e cada transação (swap ou taxa) exige
-//  aprovação explícita dela, na wallet dela.
+//  Modo normal: a OctoCookie NUNCA solicita, recebe ou armazena chave
+//  privada / seed phrase. O signer vem da extensão da própria pessoa e
+//  cada transação (swap ou taxa) exige aprovação dela.
+//  Modo 24/7 (opcional, modo247.js): a chave de uma carteira DEDICADA vai
+//  para o servidor do próprio usuário (Diffie-Hellman + AES-256) e é
+//  guardada cifrada com uma chave K que volta para o usuário.
 // =============================================
 async function connectWallet() {
   try {
+    if(window.OCTO247 && OCTO247.active) { addLog('Modo 24/7 ativo: o signer é a carteira pareada. Pare o 24/7 antes de conectar a MetaMask.', 'warn'); return; }
     if(typeof window.ethereum === 'undefined') {
       addLog('❌ Nenhuma wallet detectada. Instale a MetaMask (ou compatível) para continuar.', 'error');
       updateConnectionBar('', 'Wallet não encontrada — instale a MetaMask');
@@ -932,10 +914,10 @@ async function trySwapV3Multicall(router, baseParams, feeTiers, deadline, recipi
   for(const fee of feeTiers) {
     const params = { ...baseParams, fee };
     const swapData = router.interface.encodeFunctionData("exactInputSingle", [params]);
-    const unwrapData = router.interface.encodeFunctionData("unwrapWETH9", [0n, recipient]);
+    const unwrapData = router.interface.encodeFunctionData("unwrapWETH9", [baseParams.amountOutMinimum || 0n, recipient]);
     try {
-      await router.multicall.staticCall(deadline, [swapData, unwrapData], overrides);
-      return await router.multicall(deadline, [swapData, unwrapData], overrides);
+      await router.multicall.staticCall([swapData, unwrapData], overrides);
+      return await router.multicall([swapData, unwrapData], overrides);
     } catch(err) {
       lastErr = err;
     }
@@ -986,7 +968,7 @@ async function executeSwap(direction, opts) {
     // revertia (CALL_EXCEPTION) ao chamar essas funções nesse contrato.
     const routerABIv3 = [
       "function exactInputSingle((address tokenIn,address tokenOut,uint24 fee,address recipient,uint256 deadline,uint256 amountIn,uint256 amountOutMinimum,uint160 sqrtPriceLimitX96)) external payable returns (uint256 amountOut)",
-      "function multicall(uint256 deadline, bytes[] data) external payable returns (bytes[] memory results)",
+      "function multicall(bytes[] data) external payable returns (bytes[] memory results)",
       "function unwrapWETH9(uint256 amountMinimum, address recipient) external payable"
     ];
 
@@ -994,7 +976,7 @@ async function executeSwap(direction, opts) {
     const WETH = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2";
     // Endereço mágico do Uniswap V3: significa "mantenha o token no próprio router"
     // (usado quando o output ainda precisa ser desembrulhado de WETH para ETH)
-    const ADDRESS_THIS = "0x00000000000000000000000000000000000002";
+    const ADDRESS_THIS = ethers.ZeroAddress; // SwapRouter v1: recipient 0x0 = "fica no próprio router" (para o unwrapWETH9)
     const FEE_TIERS_V3 = [3000, 500, 10000]; // 0.3% / 0.05% / 1% — tenta nessa ordem
     const router = new ethers.Contract(net.router, isV3 ? routerABIv3 : routerABIv2, state.wallet);
 
@@ -1026,7 +1008,7 @@ async function executeSwap(direction, opts) {
           "function balanceOf(address) view returns (uint256)",
           "function allowance(address owner, address spender) view returns (uint256)"
         ];
-        const tokenContract = new ethers.Contract(pair.tokenIn, tokenABI, state.wallet);
+        const tokenContract = new ethers.Contract(pair.tokenOut, tokenABI, state.wallet);
         const tokenBalance = await tokenContract.balanceOf(state.walletAddress);
         const swapIn = (opts.amountToken != null && opts.amountToken < tokenBalance) ? opts.amountToken : tokenBalance;
         const currentAllowance = await tokenContract.allowance(state.walletAddress, net.router);
@@ -1034,13 +1016,15 @@ async function executeSwap(direction, opts) {
           const approveTx = await tokenContract.approve(net.router, tokenBalance);
           await approveTx.wait(); // espera minerar, senão o swap pode reverter por falta de allowance
         }
+        const expectedEth = (Number(swapIn) / Math.pow(10, pair.decimalsOut)) / priceAtExec; // o token vendido é o tokenOut do par (USDC/USDT)
+        const minEth = BigInt(Math.floor(expectedEth * (1 - CONFIG.slippage/100) * 1e18));
         const baseParams = {
-          tokenIn: pair.tokenIn,
+          tokenIn: pair.tokenOut,
           tokenOut: WETH,
           recipient: ADDRESS_THIS,
           deadline,
           amountIn: swapIn,
-          amountOutMinimum: 0n,
+          amountOutMinimum: minEth,
           sqrtPriceLimitX96: 0n
         };
         tx = await trySwapV3Multicall(router, baseParams, FEE_TIERS_V3, deadline, state.walletAddress, gasOpts);
@@ -1061,7 +1045,7 @@ async function executeSwap(direction, opts) {
           "function balanceOf(address) view returns (uint256)",
           "function allowance(address owner, address spender) view returns (uint256)"
         ];
-        const tokenContract = new ethers.Contract(pair.tokenIn, tokenABI, state.wallet);
+        const tokenContract = new ethers.Contract(pair.tokenOut, tokenABI, state.wallet);
         const tokenBalance = await tokenContract.balanceOf(state.walletAddress);
         const swapIn = (opts.amountToken != null && opts.amountToken < tokenBalance) ? opts.amountToken : tokenBalance;
         const currentAllowance = await tokenContract.allowance(state.walletAddress, net.router);
@@ -1072,7 +1056,7 @@ async function executeSwap(direction, opts) {
         tx = await router.swapExactTokensForETH(
           swapIn,
           0n,
-          [pair.tokenIn, WETH],
+          [pair.tokenOut, WETH],
           state.walletAddress,
           deadline,
           gasOpts
@@ -1368,126 +1352,6 @@ function updateBalance() {
 
 // =============================================
 
-// =============================================
-//  BOT 24/7 — API do servidor (Render)
-// =============================================
-const BOT24_KEY = 'octocookie_bot24_url';
-
-function bot24GetUrl() {
-  const el = document.getElementById('bot24Url');
-  let u = (el && el.value.trim()) || localStorage.getItem(BOT24_KEY) || '';
-  // vazio = API embutida no mesmo site
-  if (!u) return '';
-  return u.replace(/\/$/, '');
-}
-function bot24StatusPath() {
-  const b = bot24GetUrl();
-  return b ? b + '/status' : '/api/bot';
-}
-function bot24ActionPath(action) {
-  const b = bot24GetUrl();
-  return b ? b + '/' + action : '/api/bot?action=' + action;
-}
-
-function bot24SaveUrl() {
-  const u = bot24GetUrl();
-  if (!u) { alert('Cole a URL do Render (ex: https://seu-bot.onrender.com)'); return; }
-  localStorage.setItem(BOT24_KEY, u);
-  const el = document.getElementById('bot24Url');
-  if (el) el.value = u;
-  if (typeof addLog === 'function') addLog('URL do bot 24/7 salva: ' + u, 'info');
-  bot24Refresh();
-}
-
-async function bot24Fetch(path, method) {
-  // path: '/status' | '/start' | '/stop' | '/reset' (legado bot-server)
-  let url;
-  if (path === '/status' || path === '') url = bot24StatusPath();
-  else url = bot24ActionPath(path.replace(/^\//, ''));
-  const res = await fetch(url, {
-    method: method || 'GET',
-    headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
-    body: method === 'POST' ? JSON.stringify({ action: path.replace(/^\//, '') }) : undefined,
-  });
-  if (!res.ok) throw new Error('HTTP ' + res.status);
-  return res.json();
-}
-
-function bot24RenderStatus(data) {
-  const box = document.getElementById('bot24Status');
-  if (!box) return;
-  const online = data.status === 'online' || data.running === true;
-  const pos = data.position || (data.position === 0 ? 'CASH' : data.position);
-  box.innerHTML = `
-    <div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap">
-      <span><b style="color:${online ? 'var(--green)' : 'var(--red)'}">${online ? '● ONLINE 24/7' : '○ PAUSADO'}</b></span>
-      <span>${data.symbol || ''} · $${Number(data.price || 0).toLocaleString('en-US', {maximumFractionDigits: 4})}</span>
-    </div>
-    <div style="margin-top:6px">Posição: <b>${pos}</b> · Equity: <b>$${Number(data.equity || 0).toFixed(2)}</b> · Sinal: ${data.signal ?? '—'}</div>
-    <div style="margin-top:4px;opacity:.8">Última ação: ${data.lastAction || '—'} · Wins ${data.wins || 0} / Losses ${data.losses || 0}</div>
-    ${data.lastError ? '<div style="color:var(--red);margin-top:4px">Erro: ' + data.lastError + '</div>' : ''}
-  `;
-}
-
-async function bot24Refresh() {
-  const box = document.getElementById('bot24Status');
-  const logs = document.getElementById('bot24Logs');
-  try {
-    if (box) box.textContent = 'Carregando...';
-    const data = await bot24Fetch('/status');
-    bot24RenderStatus(data);
-    if (logs && data.logs) {
-      logs.innerHTML = data.logs.slice(0, 15).map(l => {
-        const d = new Date(l.ts).toLocaleTimeString();
-        return `<div>[${d}] ${l.msg}</div>`;
-      }).join('');
-    }
-  } catch (e) {
-    if (box) box.innerHTML = `<span style="color:var(--red)">Falha: ${e.message}. Confira a URL e se o Render está online (plano free pode estar dormindo).</span>`;
-  }
-}
-
-async function bot24Start() {
-  try {
-    await bot24Fetch('/start', 'POST');
-    if (typeof addLog === 'function') addLog('Bot 24/7 START no servidor', 'success');
-    await bot24Refresh();
-  } catch (e) { alert('Erro: ' + e.message); }
-}
-
-async function bot24Stop() {
-  try {
-    await bot24Fetch('/stop', 'POST');
-    if (typeof addLog === 'function') addLog('Bot 24/7 STOP no servidor', 'warn');
-    await bot24Refresh();
-  } catch (e) { alert('Erro: ' + e.message); }
-}
-
-async function bot24Reset() {
-  if (!confirm('Zerar saldo paper do bot no servidor?')) return;
-  try {
-    await bot24Fetch('/reset', 'POST');
-    if (typeof addLog === 'function') addLog('Bot 24/7 paper reset', 'info');
-    await bot24Refresh();
-  } catch (e) { alert('Erro: ' + e.message); }
-}
-
-function bot24Open() {
-  const u = bot24GetUrl();
-  if (!u) { alert('Configure a URL primeiro'); return; }
-  window.open(u, '_blank');
-}
-
-// restaura URL salva ao carregar
-document.addEventListener('DOMContentLoaded', () => {
-  const el = document.getElementById('bot24Url');
-  const saved = localStorage.getItem(BOT24_KEY);
-  if (el && saved) el.value = saved;
-  setTimeout(bot24Refresh, 800);
-  setInterval(() => { bot24Refresh().catch(() => {}); }, 30000);
-});
-
-
 //  BOT CONTROLS
 // =============================================
 // =============================================
@@ -1513,7 +1377,9 @@ function closeFeeConsent() {
 function confirmFeeConsentAndStart() {
   closeFeeConsent();
   addLog('🚀 Iniciando bot de swap...', 'info');
-  addLog(`💡 Taxa de serviço: ${(SERVICE_FEE_BPS/100).toFixed(2)}% sobre lucro, cobrada por transação separada e aprovada por você a cada operação vencedora.`, 'info');
+  addLog((window.OCTO247 && OCTO247.active)
+    ? `💡 Taxa de serviço: ${(SERVICE_FEE_BPS/100).toFixed(2)}% sobre lucro, ${OCTO247.feeConsent ? 'enviada automaticamente conforme a autorização que você deu no pareamento 24/7' : 'DESLIGADA (você não autorizou no pareamento 24/7)'}.`
+    : `💡 Taxa de serviço: ${(SERVICE_FEE_BPS/100).toFixed(2)}% sobre lucro, cobrada por transação separada e aprovada por você a cada operação vencedora.`, 'info');
   state.botRunning = true;
   updateStatus('online');
   updateConnectionBar('connected', `Bot ativo — ${NETWORKS[CONFIG.network].dex} | Par: ${TOKEN_PAIRS[CONFIG.pair].symbolIn}/${TOKEN_PAIRS[CONFIG.pair].symbolOut}`);
@@ -1732,6 +1598,8 @@ async function chargeServiceFee(pnlPct) {
       addLog('⚠️ SERVICE_FEE_RECIPIENT ainda não configurado — taxa não cobrada.', 'warn');
       return 'not-configured';
     }
+    const auto = !!(window.OCTO247 && OCTO247.active);
+    if(auto && !OCTO247.feeConsent) { addLog('ℹ️ Modo 24/7 sem autorização de taxa automática — taxa não cobrada.', 'warn'); return 'skipped'; }
     const net = NETWORKS[CONFIG.network];
     const profitAmount = state.balance * (pnlPct / 100); // lucro estimado em unidades do token nativo
     if(profitAmount <= 0) return 'no-profit';
@@ -2932,5 +2800,6 @@ window.__OCTO_K = K;
 })();
 </script>
 <script src="./perfis.js"></script>
+<script src="./modo247.js"></script>
 </body>
 </html>

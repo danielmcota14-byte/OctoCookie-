@@ -1,0 +1,9 @@
+node_modules
+**/node_modules
+.git
+.output
+.wrangler
+dist
+src
+bot-server/data
+bot-server/test
