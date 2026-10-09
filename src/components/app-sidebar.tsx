@@ -12,6 +12,7 @@ import {
   Wallet,
   X,
   Users,
+  Server,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import mascot from "@/assets/octocookie-mascot.png";
@@ -156,6 +157,13 @@ export function AppSidebar({ threads, onThreadsChange }: Props) {
           >
             <LayoutDashboard className="h-4 w-4 shrink-0" />
             {!collapsed && <span>Bot Trading</span>}
+          </Link>
+          <Link
+            to="/bot-24x7"
+            className="flex items-center gap-3 rounded-md px-2.5 py-2 text-sm hover:bg-sidebar-accent"
+          >
+            <Server className="h-4 w-4 shrink-0" />
+            {!collapsed && <span>Bot 24/7</span>}
           </Link>
           <Link
             to="/community"

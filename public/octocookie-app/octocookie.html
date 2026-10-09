@@ -325,6 +325,31 @@ a { color:#2563eb; }
       </div>
     </div>
 
+
+    <!-- BOT 24/7 NO SERVIDOR (Render) -->
+    <div class="card" id="bot24Card">
+      <div class="card-header"><i class="fas fa-server"></i> Bot 24/7 no servidor (Render)</div>
+      <p style="font-size:11px;color:var(--text3);margin:0 0 10px">Roda no Render mesmo com o PC desligado · paper trading · preços reais Binance</p>
+      <label style="font-size:11px;display:block;margin-bottom:4px">URL do serviço</label>
+      <div style="display:flex;gap:8px;margin-bottom:10px">
+        <input id="bot24Url" type="url" placeholder="https://octocookie-bot-24x7.onrender.com" style="flex:1;padding:8px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text)">
+        <button class="primary" onclick="bot24SaveUrl()" style="white-space:nowrap"><i class="fas fa-save"></i></button>
+      </div>
+      <div id="bot24Status" style="font-size:12px;padding:10px;border-radius:8px;background:var(--surface-2);margin-bottom:10px;min-height:48px">
+        Configure a URL do Render e clique em Atualizar.
+      </div>
+      <div class="grid-3col" style="margin-bottom:8px">
+        <button class="primary" onclick="bot24Start()"><i class="fas fa-play"></i> START</button>
+        <button class="danger" onclick="bot24Stop()"><i class="fas fa-stop"></i> STOP</button>
+        <button onclick="bot24Refresh()"><i class="fas fa-sync"></i> ATUALIZAR</button>
+      </div>
+      <div class="grid-2col">
+        <button onclick="bot24Reset()"><i class="fas fa-redo"></i> RESET PAPER</button>
+        <button onclick="bot24Open()"><i class="fas fa-external-link-alt"></i> ABRIR API</button>
+      </div>
+      <div id="bot24Logs" style="margin-top:10px;max-height:140px;overflow:auto;font-size:10px;font-family:monospace;color:var(--text3)"></div>
+    </div>
+
     <!-- CABEÇALHO DO HOLOGRAMA: potência do risco + dados básicos -->
     <div class="card hg-head" id="hgHead">
       <div class="hg-left">
@@ -1342,6 +1367,117 @@ function updateBalance() {
 }
 
 // =============================================
+
+// =============================================
+//  BOT 24/7 — API do servidor (Render)
+// =============================================
+const BOT24_KEY = 'octocookie_bot24_url';
+
+function bot24GetUrl() {
+  const el = document.getElementById('bot24Url');
+  let u = (el && el.value.trim()) || localStorage.getItem(BOT24_KEY) || '';
+  return u.replace(/\/$/, '');
+}
+
+function bot24SaveUrl() {
+  const u = bot24GetUrl();
+  if (!u) { alert('Cole a URL do Render (ex: https://seu-bot.onrender.com)'); return; }
+  localStorage.setItem(BOT24_KEY, u);
+  const el = document.getElementById('bot24Url');
+  if (el) el.value = u;
+  if (typeof addLog === 'function') addLog('URL do bot 24/7 salva: ' + u, 'info');
+  bot24Refresh();
+}
+
+async function bot24Fetch(path, method) {
+  const base = bot24GetUrl();
+  if (!base) throw new Error('URL do bot 24/7 não configurada');
+  const res = await fetch(base + path, {
+    method: method || 'GET',
+    headers: { 'Accept': 'application/json' },
+  });
+  if (!res.ok) throw new Error('HTTP ' + res.status);
+  return res.json();
+}
+
+function bot24RenderStatus(data) {
+  const box = document.getElementById('bot24Status');
+  if (!box) return;
+  const online = data.status === 'online' || data.running === true;
+  const pos = data.position || (data.position === 0 ? 'CASH' : data.position);
+  box.innerHTML = `
+    <div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap">
+      <span><b style="color:${online ? 'var(--green)' : 'var(--red)'}">${online ? '● ONLINE 24/7' : '○ PAUSADO'}</b></span>
+      <span>${data.symbol || ''} · $${Number(data.price || 0).toLocaleString('en-US', {maximumFractionDigits: 4})}</span>
+    </div>
+    <div style="margin-top:6px">Posição: <b>${pos}</b> · Equity: <b>$${Number(data.equity || 0).toFixed(2)}</b> · Sinal: ${data.signal ?? '—'}</div>
+    <div style="margin-top:4px;opacity:.8">Última ação: ${data.lastAction || '—'} · Wins ${data.wins || 0} / Losses ${data.losses || 0}</div>
+    ${data.lastError ? '<div style="color:var(--red);margin-top:4px">Erro: ' + data.lastError + '</div>' : ''}
+  `;
+}
+
+async function bot24Refresh() {
+  const box = document.getElementById('bot24Status');
+  const logs = document.getElementById('bot24Logs');
+  try {
+    if (box) box.textContent = 'Carregando...';
+    const data = await bot24Fetch('/status');
+    bot24RenderStatus(data);
+    if (logs && data.logs) {
+      logs.innerHTML = data.logs.slice(0, 15).map(l => {
+        const d = new Date(l.ts).toLocaleTimeString();
+        return `<div>[${d}] ${l.msg}</div>`;
+      }).join('');
+    }
+  } catch (e) {
+    if (box) box.innerHTML = `<span style="color:var(--red)">Falha: ${e.message}. Confira a URL e se o Render está online (plano free pode estar dormindo).</span>`;
+  }
+}
+
+async function bot24Start() {
+  try {
+    await bot24Fetch('/start', 'POST');
+    if (typeof addLog === 'function') addLog('Bot 24/7 START no servidor', 'success');
+    await bot24Refresh();
+  } catch (e) { alert('Erro: ' + e.message); }
+}
+
+async function bot24Stop() {
+  try {
+    await bot24Fetch('/stop', 'POST');
+    if (typeof addLog === 'function') addLog('Bot 24/7 STOP no servidor', 'warn');
+    await bot24Refresh();
+  } catch (e) { alert('Erro: ' + e.message); }
+}
+
+async function bot24Reset() {
+  if (!confirm('Zerar saldo paper do bot no servidor?')) return;
+  try {
+    await bot24Fetch('/reset', 'POST');
+    if (typeof addLog === 'function') addLog('Bot 24/7 paper reset', 'info');
+    await bot24Refresh();
+  } catch (e) { alert('Erro: ' + e.message); }
+}
+
+function bot24Open() {
+  const u = bot24GetUrl();
+  if (!u) { alert('Configure a URL primeiro'); return; }
+  window.open(u, '_blank');
+}
+
+// restaura URL salva ao carregar
+document.addEventListener('DOMContentLoaded', () => {
+  const el = document.getElementById('bot24Url');
+  const saved = localStorage.getItem(BOT24_KEY);
+  if (el && saved) el.value = saved;
+  if (saved) setTimeout(bot24Refresh, 800);
+  // auto-refresh a cada 30s se URL configurada
+  setInterval(() => {
+    if (bot24GetUrl()) bot24Refresh().catch(() => {});
+  }, 30000);
+});
+
+
 //  BOT CONTROLS
 // =============================================
 // =============================================
