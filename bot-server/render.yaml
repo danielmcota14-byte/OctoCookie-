@@ -1,0 +1,22 @@
+# Blueprint Render — Bot OctoCookie 24/7
+# No dashboard Render: New → Blueprint → conecte o repo e selecione esta pasta
+# OU crie um Web Service manual apontando Root Directory = bot-server
+
+services:
+  - type: web
+    name: octocookie-bot-24x7
+    runtime: node
+    plan: free
+    rootDir: bot-server
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: BOT_SYMBOL
+        value: ETHUSDT
+      - key: BOT_TICK_MS
+        value: "10000"
+      - key: BOT_START_BALANCE
+        value: "1000"
+      - key: NODE_VERSION
+        value: "20"
