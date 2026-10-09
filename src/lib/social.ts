@@ -39,6 +39,13 @@ function toMillis(v: unknown): number {
   return Date.now();
 }
 
+/** Remove campos undefined — Firestore rejeita undefined em setDoc/updateDoc */
+function stripUndefined<T extends Record<string, unknown>>(obj: T): T {
+  return Object.fromEntries(
+    Object.entries(obj).filter(([, v]) => v !== undefined)
+  ) as T;
+}
+
 // ─── Users ─────────────────────────────────────────────────
 export async function getOrCreateUserProfile(
   uid: string,
@@ -61,7 +68,7 @@ export async function getOrCreateUserProfile(
     uid,
     displayName: data.displayName || "Octonauta",
     username,
-    photoURL: data.photoURL || undefined,
+    ...(data.photoURL ? { photoURL: data.photoURL } : {}),
     bio: "",
     karma: 0,
     createdAt: now(),
@@ -178,7 +185,7 @@ export async function createPost(input: {
     createdAt: now(),
     flair: input.flair,
   };
-  await setDoc(ref, post);
+  await setDoc(ref, stripUndefined(post as unknown as Record<string, unknown>));
   return post;
 }
 
@@ -315,7 +322,7 @@ export async function createComment(input: {
     createdAt: now(),
     depth: input.depth ?? 0,
   };
-  await setDoc(ref, comment);
+  await setDoc(ref, stripUndefined(comment as unknown as Record<string, unknown>));
   await updateDoc(doc(db, "posts", input.postId), {
     commentCount: increment(1),
   });
