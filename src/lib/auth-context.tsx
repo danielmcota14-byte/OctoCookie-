@@ -49,16 +49,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           });
           setProfile(p);
         } catch (e: unknown) {
-          // Permissões/regras não publicadas ou índice faltando — não quebra a UI
           const msg = e instanceof Error ? e.message : String(e);
-          if (msg.includes("permission") || msg.includes("insufficient")) {
-            console.warn(
-              "[perfil] Firestore negou acesso. Publique firestore.rules no projeto Firebase e confira Authentication."
-            );
-          } else {
-            console.warn("[perfil] Falha ao carregar:", msg);
-          }
-          setProfile(null);
+          console.error("Erro ao carregar perfil:", msg);
+          // Perfil mínimo local se Firestore negar (regras não publicadas)
+          setProfile({
+            uid: u.uid,
+            displayName: u.displayName || "Octonauta",
+            username: (u.email?.split("@")[0] || "user").toLowerCase().replace(/[^a-z0-9_]/g, "").slice(0, 20),
+            photoURL: u.photoURL || undefined,
+            bio: "",
+            karma: 0,
+            createdAt: Date.now(),
+            badges: [],
+          });
         }
       } else {
         setProfile(null);
@@ -78,7 +81,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await getOrCreateUserProfile(cred.user.uid, {
       displayName,
       email,
-      // photoURL omitido — evita undefined/null no Firestore
+      photoURL: null,
     });
   }
 

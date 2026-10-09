@@ -2,112 +2,60 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // ── Helpers ──────────────────────────────────────────
     function isSignedIn() {
       return request.auth != null;
     }
     function isOwner(uid) {
       return isSignedIn() && request.auth.uid == uid;
     }
-    function isValidUsername(name) {
-      return name is string
-        && name.size() >= 3
-        && name.size() <= 24
-        && name.matches('^[a-z0-9_]+$');
-    }
 
-    // ── Users ────────────────────────────────────────────
     match /users/{userId} {
-      allow read: if true; // perfis públicos
-      allow create: if isOwner(userId)
-        && request.resource.data.uid == userId
-        && isValidUsername(request.resource.data.username)
-        && request.resource.data.karma == 0;
-      allow update: if isOwner(userId)
-        && request.resource.data.uid == userId
-        // não permite alterar karma manualmente (só via Cloud Functions no futuro)
-        && request.resource.data.karma == resource.data.karma;
+      allow read: if true;
+      allow create: if isOwner(userId);
+      allow update: if isOwner(userId);
       allow delete: if false;
     }
 
-    // ── Communities ──────────────────────────────────────
     match /communities/{communityId} {
       allow read: if true;
-      allow create: if isSignedIn()
-        && request.resource.data.createdBy == request.auth.uid
-        && request.resource.data.id == communityId
-        && request.resource.data.memberCount == 1
-        && communityId.matches('^[a-z0-9_-]{2,30}$');
-      allow update: if isSignedIn(); // memberCount via increment; mods no futuro
+      allow create: if isSignedIn();
+      allow update: if isSignedIn();
       allow delete: if false;
     }
 
-    // ── Memberships ──────────────────────────────────────
     match /memberships/{membershipId} {
       allow read: if true;
       allow create: if isSignedIn()
-        && request.resource.data.userId == request.auth.uid
-        && membershipId == request.auth.uid + '_' + request.resource.data.communityId;
+        && request.resource.data.userId == request.auth.uid;
       allow delete: if isSignedIn()
         && resource.data.userId == request.auth.uid;
       allow update: if false;
     }
 
-    // ── Posts ────────────────────────────────────────────
     match /posts/{postId} {
       allow read: if true;
       allow create: if isSignedIn()
-        && request.resource.data.authorId == request.auth.uid
-        && request.resource.data.title is string
-        && request.resource.data.title.size() > 0
-        && request.resource.data.title.size() <= 300
-        && request.resource.data.score == 0
-        && request.resource.data.commentCount == 0;
-      allow update: if isSignedIn() && (
-        // autor edita conteúdo
-        (resource.data.authorId == request.auth.uid
-          && request.resource.data.authorId == resource.data.authorId
-          && request.resource.data.score == resource.data.score)
-        // ou qualquer um atualiza score/commentCount (votos/comentários)
-        || (request.resource.data.authorId == resource.data.authorId
-            && request.resource.data.title == resource.data.title)
-      );
+        && request.resource.data.authorId == request.auth.uid;
+      allow update: if isSignedIn();
       allow delete: if isSignedIn()
         && resource.data.authorId == request.auth.uid;
     }
 
-    // ── Comments ─────────────────────────────────────────
     match /comments/{commentId} {
       allow read: if true;
       allow create: if isSignedIn()
-        && request.resource.data.authorId == request.auth.uid
-        && request.resource.data.body is string
-        && request.resource.data.body.size() > 0
-        && request.resource.data.body.size() <= 10000
-        && request.resource.data.score == 0;
-      allow update: if isSignedIn() && (
-        (resource.data.authorId == request.auth.uid
-          && request.resource.data.authorId == resource.data.authorId
-          && request.resource.data.score == resource.data.score)
-        || (request.resource.data.authorId == resource.data.authorId
-            && request.resource.data.body == resource.data.body)
-      );
+        && request.resource.data.authorId == request.auth.uid;
+      allow update: if isSignedIn();
       allow delete: if isSignedIn()
         && resource.data.authorId == request.auth.uid;
     }
 
-    // ── Votes ────────────────────────────────────────────
     match /votes/{voteId} {
-      allow read: if isSignedIn()
-        && resource.data.userId == request.auth.uid;
+      allow read: if isSignedIn();
       allow create: if isSignedIn()
-        && request.resource.data.userId == request.auth.uid
-        && voteId == request.auth.uid + '_' + request.resource.data.targetId
-        && (request.resource.data.value == 1 || request.resource.data.value == -1);
+        && request.resource.data.userId == request.auth.uid;
       allow update: if isSignedIn()
-        && resource.data.userId == request.auth.uid
-        && request.resource.data.userId == request.auth.uid
-        && (request.resource.data.value == 1 || request.resource.data.value == -1);
+        && resource.data.userId == request.auth.uid;
       allow delete: if isSignedIn()
         && resource.data.userId == request.auth.uid;
     }

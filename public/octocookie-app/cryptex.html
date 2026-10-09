@@ -496,7 +496,7 @@
           await loadDemoPortfolio();
           requestNotificationPermission();
           // use global loader to ensure inline handlers and UI bindings match
-          /* social removido */
+          try { window.loadSocialFeed && window.loadSocialFeed(); } catch (e) { console.warn('loadSocialFeed failed', e); }
           setInterval(() => { getGasPrice(); checkPriceAlerts(); }, 30000);
         } catch (e) {
           console.error('Erro ao carregar dados do usuário:', e);
@@ -525,7 +525,7 @@
       await loadNews();
       await loadGas();
       if (window.populateSwapTokens) window.populateSwapTokens();
-      /* social removido */
+      if (window.loadSocialFeed) await window.loadSocialFeed();
     }
 
     async function updateDashboard() {
@@ -1042,7 +1042,6 @@
         const settingsAddr = $('settings-addr');
         if (settingsAddr) settingsAddr.textContent = walletAddress ? `${walletAddress.slice(0, 10)}...${walletAddress.slice(-6)}` : '—';
       }
-      /* social removido */
       if (page === 'swap') {
         if (window.populateSwapTokens) window.populateSwapTokens();
         if (window.updateSwapNetworkBadge) window.updateSwapNetworkBadge();
@@ -3335,7 +3334,6 @@ body{padding:24px 16px;}
               </div>
             </div>
           </div>
-
 
           <!-- ===================== SETTINGS INNER PAGE ===================== -->
           <div class="inner-page" id="inner-settings">
