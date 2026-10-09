@@ -1,0 +1,16 @@
+{
+  "running": true,
+  "symbol": "BTCUSDT",
+  "mode": "paper",
+  "position": null,
+  "prices": [
+    82504,
+    82504
+  ],
+  "trades": [],
+  "lastPrice": 82504,
+  "lastSignal": "wait",
+  "startedAt": 1791581803326,
+  "ticks": 2,
+  "errors": 2
+}

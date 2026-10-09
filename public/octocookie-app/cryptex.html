@@ -496,7 +496,7 @@
           await loadDemoPortfolio();
           requestNotificationPermission();
           // use global loader to ensure inline handlers and UI bindings match
-          try { window.loadSocialFeed && window.loadSocialFeed(); } catch (e) { console.warn('loadSocialFeed failed', e); }
+          /* social removido */
           setInterval(() => { getGasPrice(); checkPriceAlerts(); }, 30000);
         } catch (e) {
           console.error('Erro ao carregar dados do usuário:', e);
@@ -525,7 +525,7 @@
       await loadNews();
       await loadGas();
       if (window.populateSwapTokens) window.populateSwapTokens();
-      if (window.loadSocialFeed) await window.loadSocialFeed();
+      /* social removido */
     }
 
     async function updateDashboard() {
@@ -1042,9 +1042,7 @@
         const settingsAddr = $('settings-addr');
         if (settingsAddr) settingsAddr.textContent = walletAddress ? `${walletAddress.slice(0, 10)}...${walletAddress.slice(-6)}` : '—';
       }
-      if (page === 'social') {
-        if (window.loadSocialFeed) window.loadSocialFeed();
-      }
+      /* social removido */
       if (page === 'swap') {
         if (window.populateSwapTokens) window.populateSwapTokens();
         if (window.updateSwapNetworkBadge) window.updateSwapNetworkBadge();
@@ -3082,9 +3080,6 @@ body{padding:24px 16px;}
     <div class="nav-item" data-page="market" onclick="switchInnerPage('market')">
       <span class="nav-icon"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" width="20" height="20"><polyline points="3,14 7,9 11,12 17,5"/></svg></span><span class="nav-label">MERCADO</span>
     </div>
-    <div class="nav-item" data-page="social" onclick="switchInnerPage('social');window.loadSocialFeed&&window.loadSocialFeed()">
-      <span class="nav-icon"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" width="20" height="20"><path d="M18 10c0 3.87-3.58 7-8 7a9.1 9.1 0 0 1-3-.5L2 18l1.5-4A6.5 6.5 0 0 1 2 10c0-3.87 3.58-7 8-7s8 3.13 8 7z"/></svg></span><span class="nav-label">SOCIAL</span>
-    </div>
     <div class="nav-item" data-page="settings" onclick="switchInnerPage('settings')">
       <span class="nav-icon"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" width="20" height="20"><circle cx="10" cy="10" r="3"/><path d="M10 1v2M10 17v2M1 10h2M17 10h2M3.22 3.22l1.42 1.42M15.36 15.36l1.42 1.42M3.22 16.78l1.42-1.42M15.36 4.64l1.42-1.42"/></svg></span><span class="nav-label">CONTA</span>
     </div>
@@ -3341,76 +3336,6 @@ body{padding:24px 16px;}
             </div>
           </div>
 
-          <!-- ===================== SOCIAL INNER PAGE ===================== -->
-          <div class="inner-page" id="inner-social">
-            <div class="tab-row">
-              <button class="tab-btn active" onclick="switchTab(this,'social-community')">Comunidade</button>
-              <button class="tab-btn" onclick="switchTab(this,'social-news');loadNews()">Notícias</button>
-              <button class="tab-btn" onclick="switchTab(this,'social-profile');loadProfile()">Perfil</button>
-            </div>
-
-            <!-- COMMUNITY TAB -->
-            <div class="tab-content active" id="social-community">
-              <div class="social-box">
-                <!-- Trending topics -->
-                <div class="trending-topics">
-                  <div class="trending-topics-title">Tópicos em alta</div>
-                  <div class="topic-chips">
-                    <span class="topic-chip" onclick="insertTopic('#Bitcoin')">#Bitcoin</span>
-                    <span class="topic-chip" onclick="insertTopic('#Ethereum')">#Ethereum</span>
-                    <span class="topic-chip" onclick="insertTopic('#DeFi')">#DeFi</span>
-                    <span class="topic-chip" onclick="insertTopic('#NFT')">#NFT</span>
-                    <span class="topic-chip" onclick="insertTopic('#Altseason')">#Altseason</span>
-                    <span class="topic-chip" onclick="insertTopic('#Web3')">#Web3</span>
-                  </div>
-                </div>
-
-                <!-- Compose box -->
-                <div class="compose-box">
-                  <div class="compose-header">
-                    <div class="compose-avatar user-avatar-letter">U</div>
-                    <div class="compose-input-wrap">
-                      <textarea class="compose-textarea" id="post-input" placeholder="O que está acontecendo no crypto?" maxlength="500" rows="3" oninput="updateCharCount(this)"></textarea>
-                    </div>
-                  </div>
-                  <div class="compose-footer">
-                    <div class="compose-actions-left">
-                      <button class="compose-tag-btn" onclick="insertTopic('#Bitcoin')">₿</button>
-                      <button class="compose-tag-btn" onclick="insertTopic('#ETH')">Ξ</button>
-                      <button class="compose-tag-btn" onclick="insertEmoji('🚀')" title="Rocket">&#x1F680;</button>
-                      <button class="compose-tag-btn" onclick="insertEmoji('📈')">📈</button>
-                      <button class="compose-tag-btn" onclick="insertEmoji('💎')">💎</button>
-                    </div>
-                    <div>
-                      <span class="compose-char" id="char-count">0/500</span>
-                      <button class="post-btn-pub" onclick="window.submitPost()">PUBLICAR</button>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Feed -->
-                <div id="social-feed">
-                  <p class="loading-msg">Carregando feed...</p>
-                </div>
-              </div>
-            </div>
-
-            <!-- NEWS TAB -->
-            <div class="tab-content" id="social-news">
-              <div class="news-box">
-                <div id="news-feed"><p class="loading-msg">Carregando notícias...</p></div>
-              </div>
-            </div>
-
-            <!-- PROFILE TAB -->
-            <div class="tab-content" id="social-profile">
-              <div id="profile-content">
-                <div>
-                  <p class="loading-msg">Carregando perfil...</p>
-                </div>
-              </div>
-            </div>
-          </div>
 
           <!-- ===================== SETTINGS INNER PAGE ===================== -->
           <div class="inner-page" id="inner-settings">

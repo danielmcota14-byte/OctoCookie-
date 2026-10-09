@@ -48,8 +48,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             photoURL: u.photoURL,
           });
           setProfile(p);
-        } catch (e) {
-          console.error("Erro ao carregar perfil:", e);
+        } catch (e: unknown) {
+          // Permissões/regras não publicadas ou índice faltando — não quebra a UI
+          const msg = e instanceof Error ? e.message : String(e);
+          if (msg.includes("permission") || msg.includes("insufficient")) {
+            console.warn(
+              "[perfil] Firestore negou acesso. Publique firestore.rules no projeto Firebase e confira Authentication."
+            );
+          } else {
+            console.warn("[perfil] Falha ao carregar:", msg);
+          }
           setProfile(null);
         }
       } else {

@@ -56,13 +56,13 @@ export async function getOrCreateUserProfile(
   if (snap.exists()) {
     return snap.data() as UserProfile;
   }
-  const username =
+  let base =
     (data.displayName || data.email?.split("@")[0] || "user")
       .toLowerCase()
       .replace(/[^a-z0-9_]/g, "")
-      .slice(0, 20) +
-    "_" +
-    uid.slice(0, 4);
+      .slice(0, 16);
+  if (base.length < 3) base = "user";
+  const username = (base + "_" + uid.slice(0, 4)).slice(0, 24);
 
   const profile: UserProfile = {
     uid,

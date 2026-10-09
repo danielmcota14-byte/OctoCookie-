@@ -1,0 +1,38 @@
+# Blueprint Render — https://render.com/docs/blueprint-spec
+# 1) Conecte o repo no Render
+# 2) New → Blueprint → selecione este render.yaml
+# 3) Preencha as env vars se quiser
+
+services:
+  # App web (TanStack / Vite)
+  - type: web
+    name: octocookie-web
+    runtime: node
+    plan: free
+    buildCommand: npm ci && npm run build
+    startCommand: npm run preview -- --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: GROQ_API_KEY
+        sync: false
+
+  # Bot 24/7 (Background Worker — não dorme no plano starter+)
+  # No plano free use type: web com o mesmo startCommand do worker
+  - type: worker
+    name: octocookie-bot
+    runtime: node
+    plan: starter
+    buildCommand: "echo bot-ready"
+    startCommand: node bot/worker.mjs
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: BOT_SYMBOL
+        value: BTCUSDT
+      - key: BOT_MODE
+        value: paper
+      - key: BOT_INTERVAL_MS
+        value: "8000"
+      - key: BOT_STOP_PCT
+        value: "2"
