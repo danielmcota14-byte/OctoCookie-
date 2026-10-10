@@ -164,8 +164,15 @@
   const save = (o) => { try { localStorage.setItem(LS, JSON.stringify(o)); } catch (e) {} };
   const say = (t, c) => { const e = $('o247Status'); if (e) { e.textContent = t; e.style.color = c || 'var(--text2)'; } };
 
+  function defaultBotUrl() {
+    try {
+      const cfg = globalThis.OCTO_BOT_CONFIG || {};
+      if (typeof cfg.url === 'string' && cfg.url.trim()) return cfg.url.trim().replace(/\/+$/, '');
+    } catch (e) {}
+    return '';
+  }
   function serverUrl() {
-    const u = ($('o247Url').value || '').trim().replace(/\/+$/, '');
+    const u = ($('o247Url').value || defaultBotUrl() || '').trim().replace(/\/+$/, '');
     if (!/^https:\/\/[^\s]+$/.test(u) && !/^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(u)) throw new Error('URL do servidor inválida (use https://).');
     // Evita confusão com rotas do site React (…/octo-app)
     if (/\/octo-app\/?$/i.test(u) || /\/bot-24x7\/?$/i.test(u)) {
@@ -274,7 +281,7 @@
       <p style="font-size:11px;color:var(--text3);margin:0 0 10px;line-height:1.5">O servidor abre este mesmo bot sozinho e opera <b>on-chain</b> com uma carteira dedicada, mesmo com o site fechado.
       A chave viaja por <b>Diffie-Hellman + AES-256</b> e a chave K que abre a carteira volta para <b>você</b>.</p>
       <label style="font-size:11px">URL do servidor</label>
-      <input id="o247Url" type="url" placeholder="https://seu-bot.onrender.com" value="${(c.url || '').replace(/"/g, '')}">
+      <input id="o247Url" type="url" placeholder="https://seu-bot.onrender.com" value="${(c.url || defaultBotUrl() || '').replace(/"/g, '')}">
       <label style="font-size:11px;margin-top:6px;display:block">Token do dono (OWNER_TOKEN do servidor)</label>
       <input id="o247Token" type="password" autocomplete="off" placeholder="••••••••" value="${(c.token || '').replace(/"/g, '')}">
       <label style="font-size:11px;margin-top:6px;display:block">Seed (12/24 palavras) ou chave privada da carteira DEDICADA ao bot</label>

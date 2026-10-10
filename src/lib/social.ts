@@ -66,7 +66,7 @@ export async function getOrCreateUserProfile(
     "_" +
     uid.slice(0, 4);
 
-  // photoURL: só inclui se for string não-vazia (Firestore rejeita undefined)
+  // photoURL: só inclui se for string (Firestore rejeita undefined)
   const profile = stripUndefined({
     uid,
     displayName: data.displayName || "Octonauta",

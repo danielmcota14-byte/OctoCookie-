@@ -31,13 +31,23 @@ type BotStatus = {
   lastError?: string | null;
 };
 
-function savedUrl(): string {
+function envBotUrl(): string {
   try {
-    const c = JSON.parse(localStorage.getItem(CARD_KEY) || "{}");
-    return typeof c.url === "string" ? c.url : "";
+    const v = (import.meta as ImportMeta & { env?: Record<string, string> }).env?.VITE_BOT_24X7_URL;
+    return typeof v === "string" ? v.trim().replace(/\/+$/, "") : "";
   } catch {
     return "";
   }
+}
+
+function savedUrl(): string {
+  try {
+    const c = JSON.parse(localStorage.getItem(CARD_KEY) || "{}");
+    if (typeof c.url === "string" && c.url.trim()) return c.url.trim().replace(/\/+$/, "");
+  } catch {
+    /* ignore */
+  }
+  return envBotUrl();
 }
 
 function Bot24Page() {
@@ -56,10 +66,9 @@ function Bot24Page() {
 
   const refresh = useCallback(async () => {
     if (!base) {
-      setError("Informe a URL do seu servidor 24/7.");
+      setError("Informe a URL do seu servidor 24/7 (ou defina VITE_BOT_24X7_URL no deploy).");
       return;
     }
-    // Rejeita URL relativa ou path do site React (ex.: /octo-app) — o bot é um serviço separado
     if (!/^https:\/\/[^\s/]+/i.test(base) && !/^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/i.test(base)) {
       setError("URL inválida. Use a URL do serviço bot-server (ex.: https://seu-bot.onrender.com), não a rota /octo-app do site.");
       setStatus(null);

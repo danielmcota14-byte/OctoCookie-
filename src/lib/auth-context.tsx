@@ -81,7 +81,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await getOrCreateUserProfile(cred.user.uid, {
       displayName,
       email,
-      // photoURL omitido — Firestore não aceita undefined/null desnecessário
     });
   }
 
