@@ -19,3 +19,14 @@
 ## Importante
 - `https://octocookie.onrender.com` é só o site React — **não** tem `/247` nem `/status` JSON.
 - O bot precisa do serviço Docker separado (Chromium + RAM).
+
+## Binance HTTP 451 (Render / cloud)
+
+`api.binance.com` bloqueia muitos IPs de datacenter (HTTP 451).  
+No `octocookie.html` o feed de preço agora tenta, nesta ordem:
+
+1. `https://data-api.binance.vision/api/v3`  ← funciona no Render
+2. `https://api1.binance.com/api/v3`
+3. `https://api.binance.com/api/v3`
+
+Se o log do servidor ainda mostrar `[bot24] Tick error: Binance HTTP 451`, o loop 24/7 do **servidor** também precisa usar `data-api.binance.vision` (esse loop não estava neste zip — confira o código deployado no Render).

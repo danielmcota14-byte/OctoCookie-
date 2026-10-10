@@ -854,11 +854,25 @@ async function fetchPrice() {
   const t0 = performance.now();
   try {
     if(!symbol) throw new Error('Sem símbolo Binance mapeado para ' + cgId);
-    const res = await fetch(`https://api.binance.com/api/v3/ticker/price?symbol=${symbol}`, { cache:'no-store' });
-    if(!res.ok) throw new Error('Binance HTTP ' + res.status);
-    const data = await res.json();
-    const price = data?.price;
-    if(!price) throw new Error('Preço não retornado');
+    // api.binance.com devolve 451 em muitos IPs de cloud (Render/AWS). data-api.binance.vision é o espelho público.
+    const bases = [
+      'https://data-api.binance.vision/api/v3',
+      'https://api1.binance.com/api/v3',
+      'https://api.binance.com/api/v3',
+    ];
+    let data = null, lastErr = 'falha de rede';
+    for (const base of bases) {
+      try {
+        const res = await fetch(`${base}/ticker/price?symbol=${symbol}`, { cache:'no-store' });
+        if (!res.ok) { lastErr = 'Binance HTTP ' + res.status; continue; }
+        data = await res.json();
+        if (data?.price) break;
+        lastErr = 'Preço não retornado';
+        data = null;
+      } catch (e) { lastErr = e.message || lastErr; }
+    }
+    if (!data?.price) throw new Error(lastErr);
+    const price = data.price;
     state.apiStatus.coingecko = true;
     updateAPIStatus();
     state.cgFailCount = 0;
@@ -2464,7 +2478,7 @@ const pct = (v, d = 1) => (v >= 0 ? '+' : '') + v.toFixed(d) + '%';
 const usd = (v) => (v < 0 ? '-$' : '$') + Math.abs(v).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 const box = (t, v) => `<div class="lim-box"><span>${t}</span><b>${v}</b></div>`;
 const LS = 'octo_hg_v3';
-const BASES = ['https://api.binance.com/api/v3', 'https://fapi.binance.com/fapi/v1'];
+const BASES = ['https://data-api.binance.vision/api/v3', 'https://api1.binance.com/api/v3', 'https://api.binance.com/api/v3', 'https://fapi.binance.com/fapi/v1'];
 const GAS_RESERVA = 0.01; // ETH que o motor nunca negocia (para pagar gás)
 
 const ENG = {

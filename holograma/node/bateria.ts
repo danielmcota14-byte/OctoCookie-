@@ -6,7 +6,7 @@ async function baixar(dias: number): Promise<number[]> {
   const out: number[] = [];
   let fim = Date.now();
   while (out.length < dias * 3) {
-    const r = await fetch(`https://fapi.binance.com/fapi/v1/klines?symbol=ETHUSDT&interval=8h&limit=1000&endTime=${fim}`);
+    const r = await fetch(`https://data-api.binance.vision/api/v3/klines?symbol=ETHUSDT&interval=8h&limit=1000&endTime=${fim}`);
     if (!r.ok) throw new Error(`Binance HTTP ${r.status}`);
     const j = (await r.json()) as [number, string, string, string, string, string, number][];
     if (!j.length) break;
