@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 const AD_KEY = "5eff732876fbe681c4bcf4138968a691";
 const AD_W = 468;
 const AD_H = 60;
+// VITE_ADS_SANDBOX=0 desliga o isolamento (alguns anunciantes não renderizam em iframe com sandbox). Menos seguro: o script do anúncio passa a enxergar o site.
+const SANDBOX = import.meta.env.VITE_ADS_SANDBOX !== "0";
 
 // Cada banner roda no PRÓPRIO iframe isolado (sandbox SEM allow-same-origin): o script do anunciante não enxerga
 // o DOM, o localStorage nem os campos do site (seed, token do bot, etc.) e não consegue redirecionar a página.
@@ -14,36 +16,53 @@ const AD_SRC_DOC =
   `ipt><script src="https://www.highrevenueformat.com/${AD_KEY}/invoke.js"></scr` +
   `ipt></body></html>`;
 
-export function AdBar({ position }: { position: "top" | "bottom" }) {
+// Dois anúncios por página, um em cada canto inferior (esquerdo e direito), ocupando a largura toda.
+// Em telas estreitas (que não comportam dois de 468px lado a lado) os dois ficam empilhados, reduzidos para caber.
+function useScale(count: 1 | 2) {
   const [scale, setScale] = useState(1);
-
-  // No celular a largura da tela é menor que 468px: reduz o banner para caber (no topo sobra espaço para o botão de menu).
   useEffect(() => {
-    const reserve = position === "top" ? 64 : 16;
-    const fit = () => setScale(Math.max(0.5, Math.min(1, (window.innerWidth - reserve) / AD_W)));
+    const fit = () => {
+      const w = window.innerWidth - 16;
+      const lado = w >= AD_W * 2 + 16; // cabem lado a lado
+      setScale(lado ? 1 : Math.max(0.5, Math.min(1, w / AD_W)));
+    };
     fit();
     window.addEventListener("resize", fit);
     return () => window.removeEventListener("resize", fit);
-  }, [position]);
+  }, [count]);
+  return scale;
+}
 
+function AdFrame({ title, scale }: { title: string; scale: number }) {
   return (
-    <div
-      className={`flex shrink-0 justify-center overflow-hidden bg-background ${
-        position === "top" ? "border-b pl-12 md:pl-0" : "border-t"
-      }`}
-      style={{ height: Math.round(AD_H * scale) + 8 }}
-      aria-label="Publicidade"
-    >
+    <div style={{ width: Math.round(AD_W * scale), height: Math.round(AD_H * scale), overflow: "hidden", flexShrink: 0 }}>
       <iframe
-        title={position === "top" ? "Publicidade (topo)" : "Publicidade (rodapé)"}
+        title={title}
         srcDoc={AD_SRC_DOC}
         width={AD_W}
         height={AD_H}
         scrolling="no"
-        sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox"
+        sandbox={SANDBOX ? "allow-scripts allow-popups allow-popups-to-escape-sandbox" : undefined}
         referrerPolicy="no-referrer-when-downgrade"
-        style={{ border: 0, marginTop: 4, transform: `scale(${scale})`, transformOrigin: "top center", flexShrink: 0 }}
+        style={{ border: 0, transform: `scale(${scale})`, transformOrigin: "top left", display: "block" }}
       />
+    </div>
+  );
+}
+
+export function AdCorners() {
+  const scale = useScale(2);
+  return (
+    <div
+      className="flex shrink-0 flex-col items-stretch gap-1 border-t bg-background px-2 py-1 min-[1000px]:flex-row min-[1000px]:justify-between"
+      aria-label="Publicidade"
+    >
+      <div className="flex justify-start">
+        <AdFrame title="Publicidade (canto esquerdo)" scale={scale} />
+      </div>
+      <div className="flex justify-end">
+        <AdFrame title="Publicidade (canto direito)" scale={scale} />
+      </div>
     </div>
   );
 }

@@ -12,7 +12,7 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { AuthProvider } from "../lib/auth-context";
-import { AdBar } from "../components/ad-bar";
+import { AdCorners } from "../components/ad-bar";
 
 function NotFoundComponent() {
   return (
@@ -122,14 +122,13 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        {/* Dois banners por página: topo e rodapé. As páginas usam h-full (altura do miolo), não h-screen. */}
+        {/* Dois banners por página, nos cantos inferiores esquerdo e direito. As páginas usam h-full (altura do miolo), não h-screen. */}
         <div className="flex w-full flex-col" style={{ height: "100dvh" }}>
-          <AdBar position="top" />
           <div className="relative min-h-0 flex-1 overflow-auto">
             {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
             <Outlet />
           </div>
-          <AdBar position="bottom" />
+          <AdCorners />
         </div>
       </AuthProvider>
     </QueryClientProvider>

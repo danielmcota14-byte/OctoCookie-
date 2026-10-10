@@ -13,6 +13,7 @@ import {
   X,
   Users,
   Server,
+  ShieldCheck,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import mascot from "@/assets/octocookie-mascot.png";
@@ -172,6 +173,13 @@ export function AppSidebar({ threads, onThreadsChange }: Props) {
             <Users className="h-4 w-4 shrink-0" />
             {!collapsed && <span>Comunidade</span>}
           </Link>
+          <a
+            href="/adm.html"
+            className="flex items-center gap-3 rounded-md px-2.5 py-2 text-sm hover:bg-sidebar-accent"
+          >
+            <ShieldCheck className="h-4 w-4 shrink-0" />
+            {!collapsed && <span>Adm</span>}
+          </a>
           <Link
             to="/settings"
             className="flex items-center gap-3 rounded-md px-2.5 py-2 text-sm hover:bg-sidebar-accent"
