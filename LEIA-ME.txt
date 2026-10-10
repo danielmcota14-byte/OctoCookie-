@@ -1,0 +1,14 @@
+# Correções OctoCookie — 2026-10-09
+
+## Arquivos neste zip (substitua no projeto):
+
+- src/lib/social.ts          → stripUndefined + setDoc sem undefined
+- src/lib/auth-context.tsx   → photoURL só se existir
+- src/routes/bot-24x7.tsx    → validação URL bot-server
+- public/octocookie-app/modo247.js → mesma validação + erro 404 claro
+
+## Como aplicar
+1. Extraia mantendo as pastas sobre o repositório OctoCookie.
+2. Deploy do site.
+3. No card Bot 24/7: URL do serviço bot-server (ex. https://seu-bot.onrender.com), SEM /octo-app.
+

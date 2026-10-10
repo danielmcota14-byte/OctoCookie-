@@ -56,7 +56,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             uid: u.uid,
             displayName: u.displayName || "Octonauta",
             username: (u.email?.split("@")[0] || "user").toLowerCase().replace(/[^a-z0-9_]/g, "").slice(0, 20),
-            photoURL: u.photoURL || undefined,
+            ...(u.photoURL ? { photoURL: u.photoURL } : {}),
             bio: "",
             karma: 0,
             createdAt: Date.now(),
@@ -81,7 +81,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await getOrCreateUserProfile(cred.user.uid, {
       displayName,
       email,
-      photoURL: null,
+      // photoURL omitido — Firestore não aceita undefined/null desnecessário
     });
   }
 

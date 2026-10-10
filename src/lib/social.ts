@@ -39,6 +39,15 @@ function toMillis(v: unknown): number {
   return Date.now();
 }
 
+/** Firestore rejects `undefined` field values. Strip them before setDoc/updateDoc. */
+function stripUndefined<T extends Record<string, unknown>>(obj: T): T {
+  const out = {} as T;
+  for (const [k, v] of Object.entries(obj)) {
+    if (v !== undefined) (out as Record<string, unknown>)[k] = v;
+  }
+  return out;
+}
+
 // ─── Users ─────────────────────────────────────────────────
 export async function getOrCreateUserProfile(
   uid: string,
@@ -57,7 +66,8 @@ export async function getOrCreateUserProfile(
     "_" +
     uid.slice(0, 4);
 
-  const profile: UserProfile = {
+  // photoURL: só inclui se for string não-vazia (Firestore rejeita undefined)
+  const profile = stripUndefined({
     uid,
     displayName: data.displayName || "Octonauta",
     username,
@@ -66,7 +76,7 @@ export async function getOrCreateUserProfile(
     karma: 0,
     createdAt: now(),
     badges: ["early"],
-  };
+  }) as UserProfile;
   await setDoc(ref, profile);
   return profile;
 }
@@ -77,18 +87,18 @@ export async function getUserProfile(uid: string): Promise<UserProfile | null> {
 }
 
 export async function updateUserProfile(uid: string, partial: Partial<UserProfile>) {
-  await updateDoc(doc(db, "users", uid), partial);
+  await updateDoc(doc(db, "users", uid), stripUndefined(partial as Record<string, unknown>));
 }
 
 // ─── Communities ───────────────────────────────────────────
 export async function createCommunity(
   data: Omit<Community, "id" | "memberCount" | "createdAt"> & { id: string }
 ): Promise<Community> {
-  const community: Community = {
+  const community: Community = stripUndefined({
     ...data,
     memberCount: 1,
     createdAt: now(),
-  };
+  }) as Community;
   await setDoc(doc(db, "communities", data.id), community);
   // auto-join creator as admin
   await setDoc(doc(db, "memberships", `${data.createdBy}_${data.id}`), {
@@ -158,7 +168,7 @@ export async function createPost(input: {
   flair?: string;
 }): Promise<Post> {
   const ref = doc(collection(db, "posts"));
-  const post: Post = {
+  const post: Post = stripUndefined({
     id: ref.id,
     communityId: input.communityId,
     authorId: input.authorId,
@@ -177,7 +187,7 @@ export async function createPost(input: {
     commentCount: 0,
     createdAt: now(),
     flair: input.flair,
-  };
+  }) as Post;
   await setDoc(ref, post);
   return post;
 }
@@ -300,7 +310,7 @@ export async function createComment(input: {
   depth?: number;
 }): Promise<Comment> {
   const ref = doc(collection(db, "comments"));
-  const comment: Comment = {
+  const comment: Comment = stripUndefined({
     id: ref.id,
     postId: input.postId,
     authorId: input.authorId,
@@ -314,7 +324,7 @@ export async function createComment(input: {
     downvoteCount: 0,
     createdAt: now(),
     depth: input.depth ?? 0,
-  };
+  }) as Comment;
   await setDoc(ref, comment);
   await updateDoc(doc(db, "posts", input.postId), {
     commentCount: increment(1),

@@ -52,18 +52,34 @@ function Bot24Page() {
     setUrl(savedUrl());
   }, []);
 
-  const base = url.trim().replace(/\/$/, "");
+  const base = url.trim().replace(/\/+$/, "");
 
   const refresh = useCallback(async () => {
     if (!base) {
       setError("Informe a URL do seu servidor 24/7.");
       return;
     }
+    // Rejeita URL relativa ou path do site React (ex.: /octo-app) — o bot é um serviço separado
+    if (!/^https:\/\/[^\s/]+/i.test(base) && !/^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/i.test(base)) {
+      setError("URL inválida. Use a URL do serviço bot-server (ex.: https://seu-bot.onrender.com), não a rota /octo-app do site.");
+      setStatus(null);
+      return;
+    }
+    if (/\/octo-app\/?$/i.test(base) || /\/bot-24x7\/?$/i.test(base)) {
+      setError("Essa URL é do site React, não do bot-server. Deploy o bot-server à parte e use a URL dele (sem /octo-app).");
+      setStatus(null);
+      return;
+    }
     setLoading(true);
     setError("");
     try {
       const res = await fetch(`${base}/status`);
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      if (!res.ok) {
+        if (res.status === 404) {
+          throw new Error("HTTP 404 — endpoint /status não existe nessa URL. Confira se é o serviço bot-server (não o site principal).");
+        }
+        throw new Error(`HTTP ${res.status}`);
+      }
       setStatus((await res.json()) as BotStatus);
     } catch (e: unknown) {
       setStatus(null);

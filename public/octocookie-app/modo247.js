@@ -167,12 +167,22 @@
   function serverUrl() {
     const u = ($('o247Url').value || '').trim().replace(/\/+$/, '');
     if (!/^https:\/\/[^\s]+$/.test(u) && !/^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(u)) throw new Error('URL do servidor inválida (use https://).');
+    // Evita confusão com rotas do site React (…/octo-app)
+    if (/\/octo-app\/?$/i.test(u) || /\/bot-24x7\/?$/i.test(u)) {
+      throw new Error('Essa URL é do site React, não do bot-server. Deploy o bot-server à parte e use a URL dele (ex.: https://seu-bot.onrender.com).');
+    }
     return u;
   }
   async function http(url, token, path, method, body) {
+    if (!url || typeof url !== 'string' || !/^https?:\/\//i.test(url)) {
+      throw new Error('URL do servidor inválida ou vazia. Configure no card "Bot 24/7 no servidor".');
+    }
     const r = await fetch(url + path, { method, headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token }, body: body ? JSON.stringify(body) : undefined });
     const j = await r.json().catch(() => ({}));
-    if (!r.ok) throw new Error(j.erro || ('HTTP ' + r.status));
+    if (!r.ok) {
+      if (r.status === 404) throw new Error('HTTP 404 em ' + path + ' — essa URL não é o bot-server (falta /247/* e /status). Use a URL do serviço separado.');
+      throw new Error(j.erro || ('HTTP ' + r.status));
+    }
     return j;
   }
   // um pedido protegido: hello → Diffie-Hellman → AES-256-GCM → resposta cifrada
