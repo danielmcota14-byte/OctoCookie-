@@ -169,15 +169,12 @@
       const cfg = globalThis.OCTO_BOT_CONFIG || {};
       if (typeof cfg.url === 'string' && cfg.url.trim()) return cfg.url.trim().replace(/\/+$/, '');
     } catch (e) {}
-    return '';
+    return 'https://octocookie-bot-24x7.onrender.com';
   }
   function serverUrl() {
-    const u = ($('o247Url').value || defaultBotUrl() || '').trim().replace(/\/+$/, '');
+    // URL fixa — sem campo no card
+    const u = (defaultBotUrl() || '').trim().replace(/\/+$/, '');
     if (!/^https:\/\/[^\s]+$/.test(u) && !/^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(u)) throw new Error('URL do servidor inválida (use https://).');
-    // Evita confusão com rotas do site React (…/octo-app)
-    if (/\/octo-app\/?$/i.test(u) || /\/bot-24x7\/?$/i.test(u)) {
-      throw new Error('Essa URL é do site React, não do bot-server. Deploy o bot-server à parte e use a URL dele (ex.: https://seu-bot.onrender.com).');
-    }
     return u;
   }
   async function http(url, token, path, method, body) {
@@ -209,9 +206,10 @@
 
   async function armNow(silent) {
     const c = load();
-    if (!c.url || !c.token || !c.k) throw new Error('Falta URL, token ou chave K deste navegador.');
+    const url = serverUrl();
+    if (!c.token || !c.k) throw new Error('Falta token ou chave K deste navegador.');
     const cfg = collectConfig();
-    const r = await secure(c.url, c.token, '/247/arm', { k: c.k, ...cfg, fee: !!c.fee, autoRearm: !!c.autoRearm });
+    const r = await secure(url, c.token, '/247/arm', { k: c.k, ...cfg, fee: !!c.fee, autoRearm: !!c.autoRearm });
     if (!silent) say('✅ Bot rodando no servidor na carteira ' + r.addr + '. Pode fechar o site.', 'var(--green)');
     return r;
   }
@@ -226,7 +224,7 @@
       say('Pareando (Diffie-Hellman + AES-256)...');
       const r = await secure(url, token, '/247/pair', { pk });
       if (String(r.addr).toLowerCase() !== addr.toLowerCase()) throw new Error('O servidor devolveu outro endereço. Abortado.');
-      save({ url, token, addr, k: r.k, fee: $('o247Fee').checked, autoRearm: $('o247Auto').checked });
+      save({ url: serverUrl(), token, addr, k: r.k, fee: $('o247Fee').checked, autoRearm: $('o247Auto').checked });
       $('o247Secret').value = '';
       say('Chave K recebida e guardada neste navegador. Ligando o bot...');
       await armNow();
@@ -235,18 +233,18 @@
     } catch (e) { say('Erro: ' + e.message, 'var(--red)'); }
   }
   async function desativar() {
-    try { const c = load(); await http(c.url, c.token, '/247/disarm', 'POST'); say('Bot parado e chave apagada da memória do servidor.', 'var(--green)'); atualizar(); }
+    try { const c = load(); await http(serverUrl(), c.token, '/247/disarm', 'POST'); say('Bot parado e chave apagada da memória do servidor.', 'var(--green)'); atualizar(); }
     catch (e) { say('Erro: ' + e.message, 'var(--red)'); }
   }
   async function apagar() {
     if (!confirm('Parar o bot, apagar a carteira cifrada do servidor e esta chave K do navegador?')) return;
-    try { const c = load(); await http(c.url, c.token, '/247/wipe', 'POST'); save({ url: c.url, token: c.token }); say('Tudo apagado.', 'var(--green)'); renderKeyBox(); atualizar(); }
+    try { const c = load(); await http(serverUrl(), c.token, '/247/wipe', 'POST'); save({ url: serverUrl(), token: c.token }); say('Tudo apagado.', 'var(--green)'); renderKeyBox(); atualizar(); }
     catch (e) { say('Erro: ' + e.message, 'var(--red)'); }
   }
   async function atualizar() {
-    const c = load(); if (!c.url || !c.token) return null;
+    const c = load(); if (!c.token) return null;
     try {
-      const s = await http(c.url, c.token, '/247/status', 'GET');
+      const s = await http(serverUrl(), c.token, '/247/status', 'GET');
       const lines = [s.pareado ? 'Carteira: ' + s.endereco : 'Sem carteira pareada', s.armado ? (s.rodando ? '🟢 rodando 24/7' : '🟡 armado, aguardando a página iniciar') : '🔒 trancado (precisa da chave K)',
         s.preco ? 'Preço ' + Number(s.preco).toFixed(2) + ' · saldo ' + Number(s.saldo || 0).toFixed(5) + ' · ordens hoje ' + (s.ordensHoje || 0) + ' · P&L dia ' + Number(s.pnlDia || 0).toFixed(2) + '%' : ''].filter(Boolean);
       say(lines.join('\n'));
@@ -256,13 +254,13 @@
   }
   // Se o servidor reiniciou (trancado) e esta página está aberta, ela reenvia K sozinha.
   async function vigia() {
-    const c = load(); if (!c.k || !c.url || !c.token) return;
+    const c = load(); if (!c.k || !c.token) return;
     const s = await atualizar();
     if (s && s.pareado && !s.armado && c.armarSempre !== false) { try { await armNow(true); log('🔓 Servidor tinha reiniciado: bot 24/7 religado com a sua chave K.', 'info'); atualizar(); } catch (e) {} }
   }
   function exportarK() {
     const c = load(); if (!c.k) return say('Ainda não há chave K neste navegador.', 'var(--red)');
-    const txt = 'OctoCookie 24/7 — chave K (AES-256) da carteira ' + c.addr + '\nServidor: ' + c.url + '\nK=' + c.k + '\n\nGuarde em local seguro. Sem ela o servidor não consegue abrir a carteira cifrada.\n';
+    const txt = 'OctoCookie 24/7 — chave K (AES-256) da carteira ' + c.addr + '\nServidor: ' + serverUrl() + '\nK=' + c.k + '\n\nGuarde em local seguro. Sem ela o servidor não consegue abrir a carteira cifrada.\n';
     const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([txt], { type: 'text/plain' })); a.download = 'octocookie-247-chave-K.txt'; a.click();
   }
   function importarK() {
@@ -280,8 +278,6 @@
       <div class="card-header"><i class="fas fa-server"></i> Bot 24/7 no servidor</div>
       <p style="font-size:11px;color:var(--text3);margin:0 0 10px;line-height:1.5">O servidor abre este mesmo bot sozinho e opera <b>on-chain</b> com uma carteira dedicada, mesmo com o site fechado.
       A chave viaja por <b>Diffie-Hellman + AES-256</b> e a chave K que abre a carteira volta para <b>você</b>.</p>
-      <label style="font-size:11px">URL do servidor</label>
-      <input id="o247Url" type="url" placeholder="https://seu-bot.onrender.com" value="${(c.url || defaultBotUrl() || '').replace(/"/g, '')}">
       <label style="font-size:11px;margin-top:6px;display:block">Token do dono (OWNER_TOKEN do servidor)</label>
       <input id="o247Token" type="password" autocomplete="off" placeholder="••••••••" value="${(c.token || '').replace(/"/g, '')}">
       <label style="font-size:11px;margin-top:6px;display:block">Seed (12/24 palavras) ou chave privada da carteira DEDICADA ao bot</label>
@@ -307,7 +303,7 @@
       <div style="font-size:10px;color:var(--text3);line-height:1.6;margin-top:8px">Quem invadir o servidor enquanto o bot está ligado consegue gastar o saldo da carteira dedicada: use pouco dinheiro. A seed da sua carteira principal nunca deve ser usada aqui.</div>
     </div>`;
     renderKeyBox();
-    if (c.url && c.token) { atualizar(); setInterval(vigia, 5 * 60 * 1000); setTimeout(vigia, 4000); }
+    if (c.token) { atualizar(); setInterval(vigia, 5 * 60 * 1000); setTimeout(vigia, 4000); }
   }
 
   Object.assign(api, { ativar, desativar, atualizar, apagar, exportarK, importarK });
