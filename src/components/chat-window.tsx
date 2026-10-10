@@ -94,7 +94,7 @@ export function ChatWindow({ thread, onUpdate }: Props) {
   ];
 
   return (
-    <div className="relative flex h-screen flex-1 flex-col">
+    <div className="relative flex h-full flex-1 flex-col">
       <div ref={scrollRef} className="flex-1 overflow-y-auto">
         {isEmpty ? (
           <div className="flex h-full flex-col items-center justify-center gap-6 px-4">

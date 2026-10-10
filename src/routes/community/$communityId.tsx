@@ -1,6 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import {
+  DEFAULT_COMMUNITIES,
+  createCommunity,
   getCommunity,
   listPosts,
   joinCommunity,
@@ -41,14 +43,30 @@ function CommunityPage() {
     async function load() {
       setLoading(true);
       try {
-        const c = await getCommunity(communityId);
+        let c: Community | null = null;
+        try {
+          c = await getCommunity(communityId);
+        } catch (e) {
+          console.error("getCommunity", e);
+        }
+        const def = DEFAULT_COMMUNITIES.find((d) => d.id === communityId);
+        if (!c && def && user) {
+          try {
+            c = await createCommunity({ ...def, createdBy: user.uid, id: def.id });
+          } catch (e) {
+            console.error("seed community", e);
+          }
+        }
+        if (!c && def) {
+          c = { ...def, memberCount: 0, createdAt: 0, createdBy: "" };
+        }
         setCommunity(c);
-        const { posts: p } = await listPosts({
-          communityId,
-          sort,
-          max: 40,
-        });
-        setPosts(p);
+        try {
+          const { posts: p } = await listPosts({ communityId, sort, max: 40 });
+          setPosts(p);
+        } catch (e) {
+          console.error("listPosts", e);
+        }
         if (user) {
           setMember(await isMember(user.uid, communityId));
         }

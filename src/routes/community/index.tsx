@@ -6,7 +6,8 @@ import { PostCard } from "@/components/social/post-card";
 import { AuthModal } from "@/components/social/auth-modal";
 import { useAuth } from "@/lib/auth-context";
 import { Button } from "@/components/ui/button";
-import { Users, Flame, Clock, Trophy } from "lucide-react";
+import { CreatePostForm } from "@/components/social/create-post-form";
+import { Users, Flame, Clock, Trophy, Plus } from "lucide-react";
 import { CryptoTicker } from "@/components/crypto-ticker";
 
 export const Route = createFileRoute("/community/")({
@@ -30,31 +31,50 @@ function CommunityHome() {
   const [sort, setSort] = useState<"hot" | "new" | "top">("hot");
   const [authOpen, setAuthOpen] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [showCreate, setShowCreate] = useState(false);
+  const [targetCommunity, setTargetCommunity] = useState<string>("octocookie");
+
+  // Comunidades padrão sempre visíveis (mesmo sem Firestore populado / sem login)
+  const fallbackCommunities: Community[] = DEFAULT_COMMUNITIES.map((c) => ({
+    ...c,
+    memberCount: 0,
+    createdAt: 0,
+    createdBy: "",
+  }));
+  const shownCommunities: Community[] = (() => {
+    const map = new Map<string, Community>();
+    fallbackCommunities.forEach((c) => map.set(c.id, c));
+    communities.forEach((c) => map.set(c.id, c));
+    return Array.from(map.values());
+  })();
 
   useEffect(() => {
     async function load() {
       setLoading(true);
       try {
-        let list = await listCommunities();
-        if (list.length === 0 && user) {
-          for (const c of DEFAULT_COMMUNITIES) {
-            try {
-              await createCommunity({
-                ...c,
-                createdBy: user.uid,
-                id: c.id,
-              });
-            } catch {
-              /* já existe */
-            }
-          }
+        let list: Community[] = [];
+        try {
           list = await listCommunities();
+          if (list.length === 0 && user) {
+            for (const c of DEFAULT_COMMUNITIES) {
+              try {
+                await createCommunity({ ...c, createdBy: user.uid, id: c.id });
+              } catch {
+                /* já existe */
+              }
+            }
+            list = await listCommunities();
+          }
+        } catch (e) {
+          console.error("listCommunities", e);
         }
         setCommunities(list);
-        const { posts: p } = await listPosts({ sort, max: 30 });
-        setPosts(p);
-      } catch (e) {
-        console.error(e);
+        try {
+          const { posts: p } = await listPosts({ sort, max: 30 });
+          setPosts(p);
+        } catch (e) {
+          console.error("listPosts", e);
+        }
       } finally {
         setLoading(false);
       }
@@ -120,11 +140,62 @@ function CommunityHome() {
             </Button>
           </div>
 
+          {/* Comunidades (visível no celular) */}
+          <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 lg:hidden">
+            {shownCommunities.map((c) => (
+              <Link
+                key={c.id}
+                to="/community/$communityId"
+                params={{ communityId: c.id }}
+                className="shrink-0 rounded-full border bg-card px-3 py-1.5 text-sm font-medium hover:bg-muted"
+              >
+                c/{c.id}
+              </Link>
+            ))}
+          </div>
+
+          {/* Criar post direto da home */}
+          <div className="space-y-3">
+            <Button
+              className="w-full sm:w-auto"
+              onClick={() => {
+                if (!user) setAuthOpen(true);
+                else setShowCreate((v) => !v);
+              }}
+            >
+              <Plus className="mr-1 h-4 w-4" /> Criar post
+            </Button>
+            {showCreate && user && (
+              <div className="space-y-2">
+                <select
+                  value={targetCommunity}
+                  onChange={(e) => setTargetCommunity(e.target.value)}
+                  className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm"
+                >
+                  {shownCommunities.map((c) => (
+                    <option key={c.id} value={c.id}>
+                      c/{c.id}
+                    </option>
+                  ))}
+                </select>
+                <CreatePostForm
+                  key={targetCommunity}
+                  communityId={targetCommunity}
+                  onCreated={(p) => {
+                    setPosts((prev) => [p, ...prev]);
+                    setShowCreate(false);
+                  }}
+                  onNeedAuth={() => setAuthOpen(true)}
+                />
+              </div>
+            )}
+          </div>
+
           {loading ? (
             <p className="text-sm text-muted-foreground">Carregando feed...</p>
           ) : posts.length === 0 ? (
             <div className="rounded-lg border border-dashed p-8 text-center text-sm text-muted-foreground">
-              Nenhum post ainda. Entre em uma comunidade e publique o primeiro!
+              Nenhum post ainda. Toque em "Criar post" e publique o primeiro!
             </div>
           ) : (
             posts.map((p) => (
@@ -139,7 +210,7 @@ function CommunityHome() {
               <Users className="h-4 w-4" /> Comunidades
             </h3>
             <ul className="space-y-1">
-              {communities.map((c) => (
+              {shownCommunities.map((c) => (
                 <li key={c.id}>
                   <Link
                     to="/community/$communityId"
@@ -151,11 +222,6 @@ function CommunityHome() {
                   </Link>
                 </li>
               ))}
-              {communities.length === 0 && (
-                <li className="text-xs text-muted-foreground">
-                  Faça login para inicializar as comunidades padrão.
-                </li>
-              )}
             </ul>
           </div>
           <div className="rounded-lg border bg-card p-3 text-xs text-muted-foreground">

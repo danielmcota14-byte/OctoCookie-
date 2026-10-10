@@ -18,6 +18,7 @@ import { Route as LaunchRouteImport } from './routes/launch'
 import { Route as OctoAppRouteImport } from './routes/octo-app'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as SimulatorRouteImport } from './routes/simulator'
+import { Route as ApiBotRouteImport } from './routes/api/bot'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as CommunityIndexRouteImport } from './routes/community/index'
 import { Route as CommunityCommunityIdRouteImport } from './routes/community/$communityId'
@@ -68,6 +69,11 @@ const SimulatorRoute = SimulatorRouteImport.update({
   path: '/simulator',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiBotRoute = ApiBotRouteImport.update({
+  id: '/api/bot',
+  path: '/api/bot',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiChatRoute = ApiChatRouteImport.update({
   id: '/api/chat',
   path: '/api/chat',
@@ -99,6 +105,7 @@ export interface FileRoutesByFullPath {
   '/octo-app': typeof OctoAppRoute
   '/settings': typeof SettingsRoute
   '/simulator': typeof SimulatorRoute
+  '/api/bot': typeof ApiBotRoute
   '/api/chat': typeof ApiChatRoute
   '/community/$communityId': typeof CommunityCommunityIdRoute
   '/post/$postId': typeof PostPostIdRoute
@@ -114,6 +121,7 @@ export interface FileRoutesByTo {
   '/octo-app': typeof OctoAppRoute
   '/settings': typeof SettingsRoute
   '/simulator': typeof SimulatorRoute
+  '/api/bot': typeof ApiBotRoute
   '/api/chat': typeof ApiChatRoute
   '/community/$communityId': typeof CommunityCommunityIdRoute
   '/post/$postId': typeof PostPostIdRoute
@@ -130,6 +138,7 @@ export interface FileRoutesById {
   '/octo-app': typeof OctoAppRoute
   '/settings': typeof SettingsRoute
   '/simulator': typeof SimulatorRoute
+  '/api/bot': typeof ApiBotRoute
   '/api/chat': typeof ApiChatRoute
   '/community/$communityId': typeof CommunityCommunityIdRoute
   '/post/$postId': typeof PostPostIdRoute
@@ -147,6 +156,7 @@ export interface FileRouteTypes {
     | '/octo-app'
     | '/settings'
     | '/simulator'
+    | '/api/bot'
     | '/api/chat'
     | '/community/$communityId'
     | '/post/$postId'
@@ -162,6 +172,7 @@ export interface FileRouteTypes {
     | '/octo-app'
     | '/settings'
     | '/simulator'
+    | '/api/bot'
     | '/api/chat'
     | '/community/$communityId'
     | '/post/$postId'
@@ -177,6 +188,7 @@ export interface FileRouteTypes {
     | '/octo-app'
     | '/settings'
     | '/simulator'
+    | '/api/bot'
     | '/api/chat'
     | '/community/$communityId'
     | '/post/$postId'
@@ -193,6 +205,7 @@ export interface RootRouteChildren {
   OctoAppRoute: typeof OctoAppRoute
   SettingsRoute: typeof SettingsRoute
   SimulatorRoute: typeof SimulatorRoute
+  ApiBotRoute: typeof ApiBotRoute
   ApiChatRoute: typeof ApiChatRoute
   CommunityCommunityIdRoute: typeof CommunityCommunityIdRoute
   PostPostIdRoute: typeof PostPostIdRoute
@@ -264,6 +277,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SimulatorRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/bot': {
+      id: '/api/bot'
+      path: '/api/bot'
+      fullPath: '/api/bot'
+      preLoaderRoute: typeof ApiBotRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/chat': {
       id: '/api/chat'
       path: '/api/chat'
@@ -305,6 +325,7 @@ const rootRouteChildren: RootRouteChildren = {
   OctoAppRoute: OctoAppRoute,
   SettingsRoute: SettingsRoute,
   SimulatorRoute: SimulatorRoute,
+  ApiBotRoute: ApiBotRoute,
   ApiChatRoute: ApiChatRoute,
   CommunityCommunityIdRoute: CommunityCommunityIdRoute,
   PostPostIdRoute: PostPostIdRoute,

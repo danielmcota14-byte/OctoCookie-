@@ -76,7 +76,7 @@ export function AppSidebar({ threads, onThreadsChange }: Props) {
 
       <aside
         className={cn(
-          "flex h-screen shrink-0 flex-col border-r bg-sidebar text-sidebar-foreground transition-[width,transform] duration-200",
+          "flex h-full shrink-0 flex-col border-r bg-sidebar text-sidebar-foreground transition-[width,transform] duration-200",
           // Mobile: drawer fixo, fora da tela quando fechado
           "fixed inset-y-0 left-0 z-50 w-72 -translate-x-full",
           mobileOpen && "translate-x-0",

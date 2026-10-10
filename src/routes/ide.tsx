@@ -61,7 +61,7 @@ function IdePage() {
   }
 
   return (
-    <div className="flex h-screen w-full">
+    <div className="flex h-full w-full">
       <AppSidebar threads={threads} onThreadsChange={setThreads} />
       <main className="flex-1 overflow-y-auto">
         <div className="mx-auto max-w-6xl px-6 pb-10 pt-16 md:pt-10">
