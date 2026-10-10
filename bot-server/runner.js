@@ -10,8 +10,8 @@ const MIME = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; cha
 const ALLOWED_HOSTS = ['api.binance.com', 'data-api.binance.vision', 'fapi.binance.com', 'mainnet.infura.io', 'arb1.arbitrum.io', 'bsc-dataseed.binance.org', 'polygon-rpc.com'];
 
 export class Runner {
-  constructor({ appDir, dataDir, appPort = 8788, rpc = {}, log = () => {}, launcher = chromium, pollMs = 30000 }) {
-    Object.assign(this, { appDir: path.resolve(appDir), dataDir, appPort, rpc, log, launcher, pollMs });
+  constructor({ appDir, dataDir, appPort = 8788, rpc = {}, log = () => {}, launcher = chromium, pollMs = 30000, feeSource = () => null }) {
+    Object.assign(this, { appDir: path.resolve(appDir), dataDir, appPort, rpc, log, launcher, pollMs, feeSource });
     this.pk = null; this.cfg = null; this.stopping = true; this.snap = null; this.current = null; this.loopId = 0; this.lastError = null; this.startedAt = null;
     this.ethersFile = path.join(pkgRoot('ethers'), 'dist/ethers.umd.min.js');
     this.chartFile = path.join(pkgRoot('chart.js'), 'dist/chart.umd.js');
@@ -87,10 +87,10 @@ export class Runner {
     await page.goto(`http://127.0.0.1:${this.appPort}/octocookie.html?headless=1`, { waitUntil: 'load', timeout: 90000 });
     await page.waitForFunction(() => window.OCTO247 && OCTO247.headless && typeof ethers !== 'undefined' && typeof state !== 'undefined', null, { timeout: 90000 });
     await page.evaluate(() => { const o = window.addLog; window.addLog = function (m, t) { try { console.log('[bot][' + (t || 'info') + '] ' + m); } catch (e) {} return o.apply(this, arguments); }; });
-    const r = await page.evaluate(([k, o]) => OCTO247.headless(k, o), [this.pk, { fields: this.cfg.fields || {}, fee: !!this.cfg.fee, rpc: this.rpc }]);
+    const r = await page.evaluate(([k, o]) => OCTO247.headless(k, o), [this.pk, { fields: this.cfg.fields || {}, fee: !!this.cfg.fee, rpc: this.rpc, feeRecipient: this.feeSource() }]);
     this.log(`Executor ativo: ${r.address} | rodando: ${r.running} | taxa automática: ${this.cfg.fee ? 'sim' : 'não'}`);
 
-    let lastPrice = null, lastChange = Date.now(), lastBeat = 0, fails = 0;
+    let lastPrice = null, lastChange = Date.now(), lastBeat = 0, fails = 0, feeAtual = this.feeSource();
     while (!this.stopping && id === this.loopId) {
       await new Promise((r2) => setTimeout(r2, this.pollMs));
       if (this.stopping || id !== this.loopId) break;
@@ -98,6 +98,8 @@ export class Runner {
       let h;
       try { h = await page.evaluate(() => OCTO247.snapshot()); } catch (e) { if (++fails >= 3) throw new Error('página não responde'); continue; }
       fails = 0; this.snap = { ...h, at: Date.now() };
+      const novoDestino = this.feeSource(); // o admin trocou a carteira de recebimento: a página passa a usar a nova
+      if (novoDestino && novoDestino !== feeAtual) { try { await page.evaluate((a) => window.setFeeRecipient && window.setFeeRecipient(a), novoDestino); feeAtual = novoDestino; this.log('Destino da taxa atualizado: ' + novoDestino); } catch {} }
       if (!h.active) throw new Error('executor desativou sozinho');
       if (h.price !== lastPrice) { lastPrice = h.price; lastChange = Date.now(); }
       if (h.running && Date.now() - lastChange > 10 * 60 * 1000) throw new Error('preço parado há 10 min (feed travado)');

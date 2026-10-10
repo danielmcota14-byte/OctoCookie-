@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ThreadIdRouteImport } from './routes/$threadId'
+import { Route as AdmRouteImport } from './routes/adm'
 import { Route as AnalyzerRouteImport } from './routes/analyzer'
 import { Route as Bot24x7RouteImport } from './routes/bot-24x7'
 import { Route as IdeRouteImport } from './routes/ide'
@@ -32,6 +33,11 @@ const IndexRoute = IndexRouteImport.update({
 const ThreadIdRoute = ThreadIdRouteImport.update({
   id: '/$threadId',
   path: '/$threadId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdmRoute = AdmRouteImport.update({
+  id: '/adm',
+  path: '/adm',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AnalyzerRoute = AnalyzerRouteImport.update({
@@ -98,6 +104,7 @@ const PostPostIdRoute = PostPostIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/$threadId': typeof ThreadIdRoute
+  '/adm': typeof AdmRoute
   '/analyzer': typeof AnalyzerRoute
   '/bot-24x7': typeof Bot24x7Route
   '/ide': typeof IdeRoute
@@ -114,6 +121,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/$threadId': typeof ThreadIdRoute
+  '/adm': typeof AdmRoute
   '/analyzer': typeof AnalyzerRoute
   '/bot-24x7': typeof Bot24x7Route
   '/ide': typeof IdeRoute
@@ -131,6 +139,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/$threadId': typeof ThreadIdRoute
+  '/adm': typeof AdmRoute
   '/analyzer': typeof AnalyzerRoute
   '/bot-24x7': typeof Bot24x7Route
   '/ide': typeof IdeRoute
@@ -149,6 +158,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/$threadId'
+    | '/adm'
     | '/analyzer'
     | '/bot-24x7'
     | '/ide'
@@ -165,6 +175,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/$threadId'
+    | '/adm'
     | '/analyzer'
     | '/bot-24x7'
     | '/ide'
@@ -181,6 +192,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/$threadId'
+    | '/adm'
     | '/analyzer'
     | '/bot-24x7'
     | '/ide'
@@ -198,6 +210,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ThreadIdRoute: typeof ThreadIdRoute
+  AdmRoute: typeof AdmRoute
   AnalyzerRoute: typeof AnalyzerRoute
   Bot24x7Route: typeof Bot24x7Route
   IdeRoute: typeof IdeRoute
@@ -226,6 +239,13 @@ declare module '@tanstack/react-router' {
       path: '/$threadId'
       fullPath: '/$threadId'
       preLoaderRoute: typeof ThreadIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/adm': {
+      id: '/adm'
+      path: '/adm'
+      fullPath: '/adm'
+      preLoaderRoute: typeof AdmRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/analyzer': {
@@ -318,6 +338,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ThreadIdRoute: ThreadIdRoute,
+  AdmRoute: AdmRoute,
   AnalyzerRoute: AnalyzerRoute,
   Bot24x7Route: Bot24x7Route,
   IdeRoute: IdeRoute,

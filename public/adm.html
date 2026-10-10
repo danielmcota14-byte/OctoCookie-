@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'unsafe-inline'; connect-src https: http://localhost:* http://127.0.0.1:*; img-src data:; base-uri 'none'; form-action 'none'">
+<title>OctoCookie · Adm</title>
+<style>
+:root{--bg:#f6f7f9;--card:#fff;--fg:#14171f;--mut:#667085;--line:#e3e6ec;--acc:#0e7490;--ok:#157f3b;--bad:#b42318;--warn:#b7791f}
+@media(prefers-color-scheme:dark){:root{--bg:#0b0f17;--card:#121826;--fg:#e8edf6;--mut:#93a0b5;--line:#243247;--acc:#38bdf8;--ok:#4ade80;--bad:#f87171;--warn:#fbbf24}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+header{padding:14px 18px;border-bottom:1px solid var(--line);background:var(--card);display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+header h1{font-size:15px;margin:0}header span{color:var(--mut);font-size:12px}
+main{max-width:980px;margin:0 auto;padding:16px;display:grid;gap:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px}
+.card h2{font-size:14px;margin:0 0 4px}.sub{color:var(--mut);font-size:12px;margin:0 0 12px}
+label{display:block;font-size:12px;color:var(--mut);margin:10px 0 4px}
+input,select,button{font:inherit;color:inherit}
+input,select{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:8px;background:transparent}
+.row{display:flex;gap:10px;flex-wrap:wrap}.row>*{flex:1 1 160px}
+button{padding:9px 14px;border-radius:8px;border:1px solid var(--line);background:transparent;cursor:pointer}
+button.p{background:var(--acc);border-color:var(--acc);color:#fff}button:disabled{opacity:.5;cursor:default}
+.mono{font-family:ui-monospace,Menlo,Consolas,monospace;word-break:break-all;font-size:12px}
+.badge{display:inline-block;padding:2px 8px;border-radius:99px;font-size:11px;border:1px solid var(--line)}
+.ok{color:var(--ok)}.bad{color:var(--bad)}.warn{color:var(--warn)}
+#msg{min-height:20px;font-size:12px;margin-top:10px;white-space:pre-line}
+table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:7px 8px;border-bottom:1px solid var(--line);text-align:right}
+th:first-child,td:first-child{text-align:left}tfoot td{font-weight:600}
+.scroll{overflow-x:auto}.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin:12px 0}
+.kpi{border:1px solid var(--line);border-radius:10px;padding:10px}.kpi b{display:block;font-size:18px}.kpi small{color:var(--mut)}
+details{margin-top:10px}summary{cursor:pointer;color:var(--mut);font-size:12px}pre{overflow:auto;max-height:220px;font-size:11px}
+</style>
+</head>
+<body>
+<header><h1>🐙 OctoCookie · Adm</h1><span>Carteira dos 2% e receita do Adsterra</span></header>
+<main>
+
+<section class="card">
+  <h2>1 · Servidor</h2>
+  <p class="sub">O token de admin fica só no seu navegador e é diferente do OWNER_TOKEN (que o site publica). Defina <code>ADMIN_TOKEN</code> no servidor.</p>
+  <div class="row">
+    <div><label for="url">URL do servidor (Render)</label><input id="url" type="url" placeholder="https://seu-bot.onrender.com" autocomplete="off"></div>
+    <div><label for="tok">Token de admin (ADMIN_TOKEN)</label><input id="tok" type="password" autocomplete="off" placeholder="••••••••"></div>
+  </div>
+  <label style="display:flex;gap:6px;align-items:center;margin-top:8px"><input id="lembrar" type="checkbox" style="width:auto"> lembrar neste navegador (senão vale só até fechar a aba)</label>
+  <div class="row" style="margin-top:10px"><button class="p" id="btnPing" style="flex:0 0 auto">Testar conexão</button></div>
+  <div id="ping" class="sub" style="margin:10px 0 0"></div>
+</section>
+
+<section class="card">
+  <h2>2 · Carteira que recebe os 2%</h2>
+  <p class="sub">A taxa de serviço (2% do lucro de cada operação vencedora) passa a ir para a carteira conectada aqui, para todos os usuários, sem novo deploy. Você assina uma mensagem para provar que controla o endereço.</p>
+  <div class="row"><button class="p" id="btnConn" style="flex:0 0 auto">Conectar carteira</button><button id="btnSet" style="flex:0 0 auto" disabled>Definir como destino dos 2%</button></div>
+  <label>Carteira conectada</label><div id="conn" class="mono">— não conectada —</div>
+  <div id="bal" class="sub" style="margin:4px 0 0"></div>
+  <label>Destino atual dos 2% no servidor</label><div id="atual" class="mono">—</div>
+  <div id="cmp" style="margin-top:6px"></div>
+  <div id="msg"></div>
+</section>
+
+<section class="card">
+  <h2>3 · Receita do Adsterra</h2>
+  <p class="sub">Dados da Publisher API do Adsterra. O token fica em <code>ADSTERRA_TOKEN</code> no servidor (recomendado) — nunca coloque o token num arquivo público.</p>
+  <div class="row">
+    <div><label for="per">Período</label><select id="per"><option value="0">Hoje</option><option value="1">Ontem</option><option value="7" selected>Últimos 7 dias</option><option value="30">Últimos 30 dias</option><option value="x">Personalizado</option></select></div>
+    <div><label for="grp">Agrupar por</label><select id="grp"><option value="date">Dia</option><option value="placement">Banner</option><option value="country">País</option></select></div>
+    <div id="cust" style="display:none"><label for="d1">De</label><input id="d1" type="date"><label for="d2">Até</label><input id="d2" type="date"></div>
+  </div>
+  <div class="row" style="margin-top:10px"><button class="p" id="btnAds" style="flex:0 0 auto">Buscar estatísticas</button></div>
+  <details><summary>Avançado: usar o token direto no navegador</summary>
+    <label for="atok">Token do Adsterra (fica só nesta aba; o navegador pode bloquear a chamada por CORS)</label>
+    <input id="atok" type="password" autocomplete="off" placeholder="cole aqui só se não usar o servidor">
+  </details>
+  <div id="adsMsg" class="sub" style="margin:10px 0 0"></div>
+  <div class="kpis" id="kpis" style="display:none"></div>
+  <div class="scroll"><table id="tbl" style="display:none"><thead><tr><th id="th0">Dia</th><th>Impressões</th><th>Cliques</th><th>CTR</th><th>CPM</th><th>Receita (US$)</th></tr></thead><tbody></tbody><tfoot></tfoot></table></div>
+  <details id="rawBox" style="display:none"><summary>Resposta bruta da API</summary><pre id="raw"></pre></details>
+</section>
+
+</main>
+<script src="./octocookie-app/bot-config.js"></script>
+<script>
+(function () {
+  'use strict';
+  var $ = function (id) { return document.getElementById(id); };
+  var HEAD = 'OctoCookie — destino da taxa de serviço (2%)';
+  var LS = 'octocookie.adm.v1';
+  var account = null;
+
+  // ---------- configuração (token de admin: só neste navegador) ----------
+  function store(remember) { return remember ? localStorage : sessionStorage; }
+  function loadCfg() {
+    var c = {};
+    try { c = JSON.parse(localStorage.getItem(LS) || '{}'); } catch (e) {}
+    var st = ''; try { st = sessionStorage.getItem(LS + '.tok') || ''; } catch (e) {}
+    var cfgBot = (window.OCTO_BOT_CONFIG && window.OCTO_BOT_CONFIG.url) || ''; // só a URL; o token do site NUNCA é usado aqui
+    $('url').value = c.url || cfgBot || '';
+    $('tok').value = c.tok || st || '';
+    $('lembrar').checked = !!c.tok;
+  }
+  function saveCfg() {
+    var rem = $('lembrar').checked, url = $('url').value.trim(), tok = $('tok').value.trim();
+    try {
+      localStorage.setItem(LS, JSON.stringify({ url: url, tok: rem ? tok : '' }));
+      if (rem) sessionStorage.removeItem(LS + '.tok'); else sessionStorage.setItem(LS + '.tok', tok);
+    } catch (e) {}
+  }
+  function base() {
+    var u = $('url').value.trim().replace(/\/+$/, '');
+    if (!/^https:\/\/[^\s]+$/.test(u) && !/^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(u)) throw new Error('Informe a URL https:// do servidor.');
+    return u;
+  }
+  function admin() { var t = $('tok').value.trim(); if (t.length < 24) throw new Error('Informe o token de admin (mín. 24 caracteres).'); return t; }
+  function api(path, opt) {
+    opt = opt || {};
+    var h = { Accept: 'application/json', Authorization: 'Bearer ' + admin() };
+    if (opt.body) h['Content-Type'] = 'application/json';
+    return fetch(base() + path, { method: opt.method || 'GET', headers: h, body: opt.body ? JSON.stringify(opt.body) : undefined }).then(function (r) {
+      return r.json().catch(function () { return {}; }).then(function (j) {
+        if (!r.ok) { var e = new Error(j.erro || ('HTTP ' + r.status)); e.status = r.status; e.body = j; throw e; }
+        return j;
+      });
+    });
+  }
+  function setText(el, txt, cls) { el.textContent = txt; el.className = (el.className || '').replace(/\b(ok|bad|warn)\b/g, '').trim() + (cls ? ' ' + cls : ''); }
+
+  // ---------- 1 · conexão ----------
+  function ping() {
+    saveCfg(); setText($('ping'), 'Testando...');
+    return api('/adm/ping').then(function (j) {
+      setText($('ping'), 'Conectado. Adsterra no servidor: ' + (j.adsterra ? 'configurado' : 'NÃO configurado (defina ADSTERRA_TOKEN)') + '.', 'ok');
+      return carregarDestino();
+    }).catch(function (e) { setText($('ping'), e.status === 401 ? 'Token de admin inválido.' : ('Falha: ' + e.message), 'bad'); });
+  }
+
+  // ---------- 2 · carteira dos 2% ----------
+  function weiToEth(hex) { var w = BigInt(hex), s = (w / 10n ** 14n).toString().padStart(5, '0'); return s.slice(0, -4) + '.' + s.slice(-4); }
+  function norm(a) { return String(a || '').toLowerCase(); }
+  function carregarDestino() {
+    var u; try { u = base(); } catch (e) { return Promise.resolve(); }
+    return fetch(u + '/fee-recipient', { cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (j) {
+      $('atual').textContent = j.recipient || 'nenhum definido (vale o padrão do código)';
+      atualizarComparacao(j.recipient);
+    }).catch(function () { $('atual').textContent = 'não foi possível ler o servidor'; });
+  }
+  function atualizarComparacao(dest) {
+    var el = $('cmp');
+    if (!account || !dest) { el.textContent = ''; return; }
+    if (norm(account) === norm(dest)) setText(el, '✅ A carteira conectada já é o destino dos 2%.', 'ok');
+    else setText(el, '⚠️ A carteira conectada é diferente do destino atual.', 'warn');
+  }
+  function conectar() {
+    if (!window.ethereum) { setText($('msg'), 'Nenhuma carteira encontrada. Instale a MetaMask (ou abra no navegador da sua carteira).', 'bad'); return; }
+    window.ethereum.request({ method: 'eth_requestAccounts' }).then(function (accs) {
+      account = accs && accs[0]; if (!account) throw new Error('Nenhuma conta liberada.');
+      $('conn').textContent = account; $('btnSet').disabled = false; setText($('msg'), '');
+      return window.ethereum.request({ method: 'eth_getBalance', params: [account, 'latest'] }).then(function (b) {
+        $('bal').textContent = 'Saldo (rede selecionada na carteira): ' + weiToEth(b) + ' ETH';
+      }).catch(function () {});
+    }).then(function () { return fetch(base() + '/fee-recipient', { cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (j) { atualizarComparacao(j.recipient); }); })
+      .catch(function (e) { setText($('msg'), 'Não conectou: ' + (e && e.message || e), 'bad'); });
+  }
+  function toHex(str) { var b = new TextEncoder().encode(str), h = '0x'; for (var i = 0; i < b.length; i++) h += b[i].toString(16).padStart(2, '0'); return h; }
+  function definir() {
+    if (!account) return;
+    var addr = account, msg = HEAD + '\nCarteira: ' + addr + '\nEmitido em: ' + new Date().toISOString();
+    if (!confirm('Enviar os 2% de TODOS os usuários para esta carteira?\n\n' + addr)) return;
+    setText($('msg'), 'Assine a mensagem na carteira (não gasta gás)...');
+    window.ethereum.request({ method: 'personal_sign', params: [toHex(msg), addr] }).then(function (sig) {
+      return api('/adm/fee-recipient', { method: 'POST', body: { recipient: addr, message: msg, signature: sig } });
+    }).then(function (j) {
+      setText($('msg'), '✅ Pronto: os 2% agora vão para ' + j.recipient + '. Quem já está com o site aberto recebe o novo destino no próximo carregamento; bots 24/7 atualizam em até 30 s.', 'ok');
+      return carregarDestino();
+    }).catch(function (e) { setText($('msg'), 'Não foi possível definir: ' + (e && e.message || e), 'bad'); });
+  }
+
+  // ---------- 3 · Adsterra ----------
+  var iso = function (d) { return d.toISOString().slice(0, 10); };
+  function periodo() {
+    var v = $('per').value, hoje = new Date();
+    if (v === 'x') { if (!$('d1').value || !$('d2').value) throw new Error('Escolha as duas datas.'); return [$('d1').value, $('d2').value]; }
+    var n = Number(v); var fim = new Date(hoje), ini = new Date(hoje);
+    if (v === '1') { ini.setUTCDate(ini.getUTCDate() - 1); fim = new Date(ini); }
+    else if (n > 1) ini.setUTCDate(ini.getUTCDate() - (n - 1));
+    return [iso(ini), iso(fim)];
+  }
+  var num = function (v) { var n = parseFloat(String(v === undefined || v === null ? '' : v).replace('%', '').replace(',', '.')); return isFinite(n) ? n : 0; };
+  function linhas(j) { return Array.isArray(j) ? j : (j && (j.items || j.data || j.rows)) || []; }
+  function rotulo(r, g) { var v = r[g] !== undefined ? r[g] : (r.date || r.placement || r.country || r.domain || r.name || r.title || '-'); return String(v); }
+  function cel(tr, txt, tag) { var td = document.createElement(tag || 'td'); td.textContent = txt; tr.appendChild(td); return td; }
+  function render(j, g) {
+    var rows = linhas(j), tb = $('tbl').tBodies[0], tf = $('tbl').tFoot;
+    tb.textContent = ''; tf.textContent = '';
+    var I = 0, C = 0, R = 0;
+    rows.forEach(function (r) {
+      var imp = num(r.impression !== undefined ? r.impression : r.impressions), cl = num(r.clicks), rev = num(r.revenue);
+      I += imp; C += cl; R += rev;
+      var tr = document.createElement('tr');
+      cel(tr, rotulo(r, g)); cel(tr, imp.toLocaleString('pt-BR')); cel(tr, cl.toLocaleString('pt-BR'));
+      cel(tr, (r.ctr !== undefined ? num(r.ctr) : (imp ? cl / imp * 100 : 0)).toFixed(2) + '%');
+      cel(tr, (r.cpm !== undefined ? num(r.cpm) : (imp ? rev / imp * 1000 : 0)).toFixed(3));
+      cel(tr, rev.toFixed(4)); tb.appendChild(tr);
+    });
+    var ft = document.createElement('tr'); cel(ft, 'Total'); cel(ft, I.toLocaleString('pt-BR')); cel(ft, C.toLocaleString('pt-BR'));
+    cel(ft, (I ? C / I * 100 : 0).toFixed(2) + '%'); cel(ft, (I ? R / I * 1000 : 0).toFixed(3)); cel(ft, R.toFixed(4)); tf.appendChild(ft);
+    $('th0').textContent = g === 'date' ? 'Dia' : g === 'placement' ? 'Banner' : 'País';
+    $('tbl').style.display = rows.length ? '' : 'none';
+    var k = $('kpis'); k.textContent = ''; k.style.display = rows.length ? '' : 'none';
+    [['Receita', 'US$ ' + R.toFixed(2)], ['Impressões', I.toLocaleString('pt-BR')], ['Cliques', C.toLocaleString('pt-BR')], ['CPM médio', 'US$ ' + (I ? R / I * 1000 : 0).toFixed(3)]].forEach(function (p) {
+      var d = document.createElement('div'); d.className = 'kpi'; var b = document.createElement('b'); b.textContent = p[1]; var s = document.createElement('small'); s.textContent = p[0]; d.appendChild(b); d.appendChild(s); k.appendChild(d);
+    });
+    $('raw').textContent = JSON.stringify(j, null, 1).slice(0, 20000); $('rawBox').style.display = '';
+    setText($('adsMsg'), rows.length ? rows.length + ' linha(s).' : 'Nenhum dado no período.', rows.length ? 'ok' : 'warn');
+  }
+  function buscarAds() {
+    var g = $('grp').value, p;
+    try { p = periodo(); } catch (e) { return setText($('adsMsg'), e.message, 'bad'); }
+    setText($('adsMsg'), 'Buscando...'); saveCfg();
+    var direto = $('atok').value.trim(), req;
+    if (direto) {
+      var q = 'start_date=' + p[0] + '&finish_date=' + p[1] + '&group_by%5B%5D=' + g;
+      req = fetch('https://api3.adsterratools.com/publisher/stats.json?' + q, { headers: { Accept: 'application/json', 'X-API-Key': direto } })
+        .then(function (r) { return r.json().then(function (j) { if (!r.ok) throw new Error('Adsterra respondeu HTTP ' + r.status); return j; }); })
+        .catch(function (e) { throw new Error(e instanceof TypeError ? 'O navegador bloqueou a chamada direta (CORS). Defina ADSTERRA_TOKEN no servidor e deixe este campo vazio.' : e.message); });
+    } else {
+      req = api('/adm/adsterra?endpoint=stats&start_date=' + p[0] + '&finish_date=' + p[1] + '&group_by=' + g);
+    }
+    req.then(function (j) { render(j, g); }).catch(function (e) { setText($('adsMsg'), 'Falha: ' + e.message + (e.body && e.body.detalhe ? ' — ' + JSON.stringify(e.body.detalhe).slice(0, 200) : ''), 'bad'); });
+  }
+
+  $('btnPing').addEventListener('click', ping);
+  $('btnConn').addEventListener('click', conectar);
+  $('btnSet').addEventListener('click', definir);
+  $('btnAds').addEventListener('click', buscarAds);
+  $('per').addEventListener('change', function () { $('cust').style.display = $('per').value === 'x' ? '' : 'none'; });
+  if (window.ethereum && window.ethereum.on) window.ethereum.on('accountsChanged', function (a) { account = a && a[0] || null; $('conn').textContent = account || '— não conectada —'; $('btnSet').disabled = !account; carregarDestino(); });
+  loadCfg();
+  if ($('url').value) carregarDestino();
+})();
+</script>
+</body>
+</html>

@@ -621,7 +621,26 @@ const INFURA_KEY = "1f56a4faa8e2403da1ed011dc2895a2f";
 //    (botão "Termos de Uso" na tela) e na tela de conexão da carteira.
 // =============================================
 const SERVICE_FEE_BPS = 200; // 200 basis points = 2% do LUCRO (não do saldo) de cada operação vencedora
-const SERVICE_FEE_RECIPIENT = "0x25d04A08266aeCf5EfC7653f1fb61098D926AACf"; // endereço de recebimento da taxa de serviço
+let SERVICE_FEE_RECIPIENT = "0x25d04A08266aeCf5EfC7653f1fb61098D926AACf"; // padrão; o admin troca em /adm.html (carteira que recebe os 2%)
+
+// Carteira de recebimento definida no painel /adm.html: o site pergunta ao servidor ao abrir; se não responder, vale o padrão acima.
+function setFeeRecipient(a) {
+  if (!/^0x[0-9a-fA-F]{40}$/.test(a || '')) return false;
+  SERVICE_FEE_RECIPIENT = a;
+  document.querySelectorAll('.fee-recipient').forEach((el) => { el.textContent = a; });
+  return true;
+}
+window.setFeeRecipient = setFeeRecipient;
+window.addEventListener('load', async () => {
+  try {
+    if (/[?&]headless=1/.test(location.search)) return; // no servidor, quem informa o destino é o próprio servidor
+    const u = String((window.OCTO_BOT_CONFIG && window.OCTO_BOT_CONFIG.url) || '').replace(/\/+$/, '');
+    if (!/^https:\/\//.test(u)) return;
+    const r = await fetch(u + '/fee-recipient', { cache: 'no-store', signal: AbortSignal.timeout(6000) });
+    const j = await r.json();
+    if (j && j.recipient && setFeeRecipient(j.recipient)) { try { addLog('💳 Destino da taxa de serviço: ' + j.recipient.slice(0, 8) + '…' + j.recipient.slice(-4), 'info'); } catch (e) {} }
+  } catch (e) { /* servidor fora do ar: mantém o destino padrão */ }
+});
 
 const CONFIG = {
   network: 'ethereum',
