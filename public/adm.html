@@ -33,21 +33,22 @@ details{margin-top:10px}summary{cursor:pointer;color:var(--mut);font-size:12px}p
 </style>
 </head>
 <body>
-<header><h1>🐙 OctoCookie · Adm</h1><span>Carteira dos 2% e receita do Adsterra</span></header>
+<header><h1>🐙 OctoCookie · Adm</h1><span>Área restrita</span></header>
 <main>
 
 <section class="card">
-  <h2>1 · Servidor</h2>
-  <p class="sub">O token de admin fica só no seu navegador e é diferente do OWNER_TOKEN (que o site publica). Defina <code>ADMIN_TOKEN</code> no servidor.</p>
+  <h2>Acesso restrito</h2>
+  <p class="sub">Informe a URL do servidor e o token de admin (<code>ADMIN_TOKEN</code>). Sem o token correto, nada abaixo é liberado: o servidor recusa qualquer consulta e limita tentativas.</p>
   <div class="row">
     <div><label for="url">URL do servidor (Render)</label><input id="url" type="url" placeholder="https://seu-bot.onrender.com" autocomplete="off"></div>
     <div><label for="tok">Token de admin (ADMIN_TOKEN)</label><input id="tok" type="password" autocomplete="off" placeholder="••••••••"></div>
   </div>
   <label style="display:flex;gap:6px;align-items:center;margin-top:8px"><input id="lembrar" type="checkbox" style="width:auto"> lembrar neste navegador (senão vale só até fechar a aba)</label>
-  <div class="row" style="margin-top:10px"><button class="p" id="btnPing" style="flex:0 0 auto">Testar conexão</button></div>
+  <div class="row" style="margin-top:10px"><button class="p" id="btnPing" style="flex:0 0 auto">Entrar</button><button id="btnSair" style="flex:0 0 auto;display:none">Sair</button></div>
   <div id="ping" class="sub" style="margin:10px 0 0"></div>
 </section>
 
+<div id="area" style="display:none;gap:14px">
 <section class="card">
   <h2>2 · Carteira que recebe os 2%</h2>
   <p class="sub">A taxa de serviço (2% do lucro de cada operação vencedora) passa a ir para a carteira conectada aqui, para todos os usuários, sem novo deploy. Você assina uma mensagem para provar que controla o endereço.</p>
@@ -78,6 +79,7 @@ details{margin-top:10px}summary{cursor:pointer;color:var(--mut);font-size:12px}p
   <details id="rawBox" style="display:none"><summary>Resposta bruta da API</summary><pre id="raw"></pre></details>
 </section>
 
+</div>
 </main>
 <script src="./octocookie-app/bot-config.js"></script>
 <script>
@@ -129,9 +131,21 @@ details{margin-top:10px}summary{cursor:pointer;color:var(--mut);font-size:12px}p
   function ping() {
     saveCfg(); setText($('ping'), 'Testando...');
     return api('/adm/ping').then(function (j) {
-      setText($('ping'), 'Conectado. Adsterra no servidor: ' + (j.adsterra ? 'configurado' : 'NÃO configurado (defina ADSTERRA_TOKEN)') + '.', 'ok');
+      mostrar(true);
+      setText($('ping'), 'Acesso liberado. Adsterra no servidor: ' + (j.adsterra ? 'configurado' : 'NÃO configurado (defina ADSTERRA_TOKEN)') + '.', 'ok');
       return carregarDestino();
-    }).catch(function (e) { setText($('ping'), e.status === 401 ? 'Token de admin inválido.' : ('Falha: ' + e.message), 'bad'); });
+    }).catch(function (e) { mostrar(false); setText($('ping'), e.status === 401 ? 'Token de admin inválido.' : e.status === 429 ? 'Muitas tentativas. Aguarde 1 minuto.' : ('Falha: ' + e.message), 'bad'); });
+  }
+  var FLAG = 'octocookie.adm.ok';
+  function mostrar(ok) {
+    $('area').style.display = ok ? 'grid' : 'none';
+    $('btnSair').style.display = ok ? '' : 'none';
+    try { if (ok) localStorage.setItem(FLAG, '1'); else localStorage.removeItem(FLAG); } catch (e) {}
+  }
+  function sair() {
+    $('tok').value = ''; mostrar(false);
+    try { localStorage.setItem(LS, JSON.stringify({ url: $('url').value.trim(), tok: '' })); sessionStorage.removeItem(LS + '.tok'); } catch (e) {}
+    setText($('ping'), 'Você saiu.');
   }
 
   // ---------- 2 · carteira dos 2% ----------
@@ -230,13 +244,15 @@ details{margin-top:10px}summary{cursor:pointer;color:var(--mut);font-size:12px}p
   }
 
   $('btnPing').addEventListener('click', ping);
+  $('btnSair').addEventListener('click', sair);
+  $('tok').addEventListener('keydown', function (e) { if (e.key === 'Enter') ping(); });
   $('btnConn').addEventListener('click', conectar);
   $('btnSet').addEventListener('click', definir);
   $('btnAds').addEventListener('click', buscarAds);
   $('per').addEventListener('change', function () { $('cust').style.display = $('per').value === 'x' ? '' : 'none'; });
   if (window.ethereum && window.ethereum.on) window.ethereum.on('accountsChanged', function (a) { account = a && a[0] || null; $('conn').textContent = account || '— não conectada —'; $('btnSet').disabled = !account; carregarDestino(); });
   loadCfg();
-  if ($('url').value) carregarDestino();
+  if ($('url').value && $('tok').value.trim().length >= 24) ping();
 })();
 </script>
 </body>

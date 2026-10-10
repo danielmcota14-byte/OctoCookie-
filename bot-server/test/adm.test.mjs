@@ -19,7 +19,7 @@ function abrir({ adsItems, ethereum = true } = {}) {
         rec.fetches.push({ u: String(u), o });
         const json = (b, status = 200) => ({ ok: status < 400, status, json: async () => b });
         if (String(u).endsWith('/fee-recipient') && !o.method) return json({ recipient: rec.destino || null });
-        if (String(u).endsWith('/adm/ping')) return json({ ok: true, adsterra: true });
+        if (String(u).endsWith('/adm/ping')) return o.headers.Authorization === 'Bearer ' + ADMIN ? json({ ok: true, adsterra: true }) : json({ erro: 'Token de admin inválido.' }, 401); // como o servidor real
         if (String(u).endsWith('/adm/fee-recipient')) { const b = JSON.parse(o.body); rec.destino = b.recipient; return json({ ok: true, recipient: b.recipient }); }
         if (String(u).includes('/adm/adsterra')) return json({ items: adsItems || [] });
         return json({}, 404);
@@ -37,13 +37,21 @@ function abrir({ adsItems, ethereum = true } = {}) {
 
 await t('usa o token de ADMIN digitado (nunca o token público do bot-config.js) e a URL do site', async () => {
   const { $, rec, click } = abrir(); await esp(50);
+  assert.equal($('area').style.display, 'none', 'carteira e receita ficam ocultas antes do login');
   assert.equal($('url').value, 'https://bot.test');
   assert.equal($('tok').value, '', 'o token público do site não pré-preenche o admin');
   $('tok').value = ADMIN; click('btnPing'); await esp(50);
   const ping = rec.fetches.find((f) => f.u.endsWith('/adm/ping'));
   assert.equal(ping.o.headers.Authorization, 'Bearer ' + ADMIN);
   assert.ok(!rec.fetches.some((f) => JSON.stringify(f.o.headers || {}).includes('TOKEN-PUBLICO')));
-  assert.match($('ping').textContent, /Conectado/);
+  assert.match($('ping').textContent, /Acesso liberado/);
+  assert.equal($('area').style.display, 'grid', 'libera as seções depois do login');
+});
+
+await t('token errado: continua bloqueado', async () => {
+  const { $, click } = abrir(); await esp(50);
+  $('tok').value = 'x'.repeat(30); click('btnPing'); await esp(50);
+  assert.equal($('area').style.display, 'none');
 });
 
 await t('conecta a carteira, mostra saldo e envia a assinatura certa para definir os 2%', async () => {

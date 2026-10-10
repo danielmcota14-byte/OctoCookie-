@@ -11,10 +11,11 @@ async function run(url, embedded) {
 }
 let ok = 0; const t = async (n, f) => { await f(); ok++; console.log('✓', n); };
 (async () => {
-await t('página solta: 2 banners (topo primeiro, rodapé último), isolados e com a chave certa', async () => {
+await t('página solta: 2 banners nos cantos inferiores (esquerdo e direito), isolados e com a chave certa', async () => {
   const w = await run('http://x.test/octocookie.html');
-  const bars = w.document.querySelectorAll('.octo-ad'); assert.equal(bars.length, 2);
-  assert.equal(w.document.body.firstElementChild, bars[0]); assert.equal(w.document.body.lastElementChild, bars[1]);
+  const bars = w.document.querySelectorAll('.octo-ad'); assert.equal(bars.length, 1);
+  assert.equal(w.document.body.lastElementChild, bars[0]); assert.notEqual(w.document.body.firstElementChild, bars[0]);
+  assert.equal(bars[0].querySelectorAll('iframe').length, 2);
   for (const f of w.document.querySelectorAll('.octo-ad iframe')) {
     const sb = f.getAttribute('sandbox'); assert.ok(sb.includes('allow-scripts') && !sb.includes('allow-same-origin') && !sb.includes('allow-top-navigation'), sb);
     const d = f.srcdoc; assert.ok(d.includes("'key':'" + KEY + "'") && d.includes('highrevenueformat.com/' + KEY + '/invoke.js') && d.includes("'height':60") && d.includes("'width':468"));
@@ -23,7 +24,7 @@ await t('página solta: 2 banners (topo primeiro, rodapé último), isolados e c
 });
 await t('dentro do site (iframe) não coloca banner (a moldura do site já mostra os dois)', async () => assert.equal((await run('http://x.test/a.html', true)).document.querySelectorAll('.octo-ad').length, 0));
 await t('executor do servidor (?headless=1) nunca carrega anúncio', async () => assert.equal((await run('http://x.test/octocookie.html?headless=1')).document.querySelectorAll('.octo-ad').length, 0));
-await t('chamar duas vezes não duplica', async () => { const w = await run('http://x.test/'); w.eval(ads); await new Promise((r) => setTimeout(r, 50)); assert.equal(w.document.querySelectorAll('.octo-ad').length, 2); });
+await t('chamar duas vezes não duplica', async () => { const w = await run('http://x.test/'); w.eval(ads); await new Promise((r) => setTimeout(r, 50)); assert.equal(w.document.querySelectorAll('.octo-ad').length, 1); assert.equal(w.document.querySelectorAll('.octo-ad iframe').length, 2); });
 await t('as 4 páginas estáticas incluem ads.js uma vez, sem snippet cru do anunciante', () => {
   for (const f of ['index.html', 'octocookie.html', 'cryptex.html', 'dashboard_analisador.html']) {
     const s = fs.readFileSync(dir + f, 'utf8'); assert.equal((s.match(/src="\.\/ads\.js"/g) || []).length, 1, f); assert.ok(!s.includes('highrevenueformat'), f);

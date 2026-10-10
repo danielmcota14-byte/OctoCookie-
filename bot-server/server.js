@@ -47,6 +47,8 @@ const ADSTERRA_BASE = 'https://api3.adsterratools.com/publisher';
 export function createApp({ vault, runner, ownerToken, masterKey, adminToken = '', adsterraToken = '', fetchFn = fetch, origins = '*', logs = [], now = () => Date.now() }) {
   const app = express();
   app.disable('x-powered-by');
+  // Atrás do proxy do Render: sem isto req.ip é sempre o IP do proxy e o limite de tentativas valeria para TODOS juntos (um estranho travaria o admin).
+  app.set('trust proxy', 1);
   app.use(cors({ origin: origins === '*' ? true : origins.split(',').map((s) => s.trim()), allowedHeaders: ['Content-Type', 'Authorization'] }));
   app.use(express.json({ limit: '64kb' }));
 
