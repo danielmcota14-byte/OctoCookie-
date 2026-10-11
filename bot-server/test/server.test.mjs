@@ -6,8 +6,10 @@ import path from 'node:path';
 import vm from 'node:vm';
 import { createRequire } from 'node:module';
 import { ethers } from 'ethers';
-import { createApp, FEE_MSG_HEAD } from '../server.js';
+import { createApp, FEE_MSG_HEAD, DEFAULT_ADMIN_EMAIL } from '../server.js';
 import { Vault } from '../vault.js';
+import crypto from 'node:crypto';
+import { createFirebaseVerifier } from '../firebase-auth.js';
 
 // ---- carrega o modo247.js do navegador (sem DOM) e pega as funções de criptografia ----
 const src = fs.readFileSync(new URL('../../public/octocookie-app/modo247.js', import.meta.url), 'utf8');
@@ -27,10 +29,10 @@ class FakeRunner {
   armed() { return !!this.pk; }
 }
 const ADMIN = 'admin-token-de-teste-123456789';
-async function boot({ token = TOKEN, master = MASTER, admin = ADMIN, adsterra = 'tok-adsterra', fetchFn } = {}) {
+async function boot({ token = TOKEN, master = MASTER, admin = ADMIN, adsterra = 'tok-adsterra', fetchFn, fb = null } = {}) {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'octo247-'));
   const vault = new Vault(dir), runner = new FakeRunner(), logs = [];
-  const app = createApp({ vault, runner, ownerToken: token, masterKey: master, adminToken: admin, adsterraToken: adsterra, fetchFn, logs });
+  const app = createApp({ vault, runner, ownerToken: token, masterKey: master, adminToken: admin, adminUids: fb?.uids || [], adminEmails: fb?.emails || [], verifyIdToken: fb ? verifier : null, adsterraToken: adsterra, fetchFn, logs });
   const srv = await new Promise((r) => { const s = app.listen(0, '127.0.0.1', () => r(s)); });
   const url = 'http://127.0.0.1:' + srv.address().port;
   const call = async (p, method = 'POST', body, tk) => {
@@ -48,6 +50,19 @@ async function boot({ token = TOKEN, master = MASTER, admin = ADMIN, adsterra = 
   return { dir, vault, runner, srv, call, secure, close: () => srv.close() };
 }
 const wallet = ethers.Wallet.createRandom();
+
+// ---- login do Firebase: tokens assinados por uma chave RSA de teste, "chaves do Google" simuladas ----
+const PROJ = 'octo-teste', rsa = crypto.generateKeyPairSync('rsa', { modulusLength: 2048 });
+const jwk = { ...rsa.publicKey.export({ format: 'jwk' }), kid: 'k1', alg: 'RS256', use: 'sig' };
+const jwksFetch = async () => ({ ok: true, status: 200, headers: { get: () => 'max-age=3600' }, json: async () => ({ keys: [jwk] }) });
+const verifier = createFirebaseVerifier({ projectId: PROJ, fetchFn: jwksFetch });
+const u64 = (o) => Buffer.from(typeof o === 'string' ? o : JSON.stringify(o)).toString('base64url');
+function idToken(over = {}, { kid = 'k1', alg = 'RS256', key = rsa.privateKey } = {}) {
+  const t = Math.floor(Date.now() / 1000);
+  const body = { aud: PROJ, iss: 'https://securetoken.google.com/' + PROJ, sub: 'uid-admin-1', iat: t - 5, exp: t + 3600, auth_time: t - 5, email: 'dono@exemplo.com', email_verified: true, ...over };
+  const data = u64({ alg, kid, typ: 'JWT' }) + '.' + u64(body);
+  return data + '.' + crypto.sign('RSA-SHA256', Buffer.from(data), key).toString('base64url');
+}
 
 await t('sem token ou com token errado: 401; sem OWNER_TOKEN no servidor: 503', async () => {
   const s = await boot();
@@ -191,6 +206,51 @@ await t('adsterra: proxy usa o token só no servidor, valida parâmetros e repas
   const s2 = await boot({ adsterra: '', fetchFn }); assert.equal((await s2.call('/adm/adsterra?endpoint=domains', 'GET')).status, 400); s2.close();
   const s3 = await boot({ fetchFn: async () => ({ ok: false, status: 401, text: async () => '{"message":"Unauthorized"}' }) });
   assert.equal((await s3.call('/adm/adsterra?endpoint=domains', 'GET')).status, 502); s3.close();
+});
+
+await t('login Firebase: só admin da lista entra (UID ou e-mail verificado); conta comum recebe 403 com o próprio UID', async () => {
+  const s = await boot({ admin: '', fb: { uids: ['uid-admin-1'], emails: ['outro@exemplo.com'] } });
+  const ok1 = await s.call('/adm/ping', 'GET', null, idToken()); assert.equal(ok1.status, 200); assert.equal(ok1.json.admin.uid, 'uid-admin-1');
+  const comum = await s.call('/adm/ping', 'GET', null, idToken({ sub: 'uid-qualquer', email: 'x@y.com' }));
+  assert.equal(comum.status, 403); assert.equal(comum.json.uid, 'uid-qualquer');
+  assert.equal((await s.call('/adm/ping', 'GET', null, idToken({ sub: 'u2', email: 'outro@exemplo.com', email_verified: true }))).status, 200, 'e-mail verificado da lista');
+  assert.equal((await s.call('/adm/ping', 'GET', null, idToken({ sub: 'u3', email: 'outro@exemplo.com', email_verified: false }))).status, 403, 'e-mail NÃO verificado não vale');
+  s.close();
+});
+
+await t('login único: só danimcota@gmail.com (verificado) entra; qualquer outro Google/e-mail é barrado', async () => {
+  assert.equal(DEFAULT_ADMIN_EMAIL, 'danimcota@gmail.com');
+  const s = await boot({ admin: '', fb: { uids: [], emails: [DEFAULT_ADMIN_EMAIL] } });
+  const dono = await s.call('/adm/ping', 'GET', null, idToken({ sub: 'u-dono', email: 'DaniMCota@Gmail.com', email_verified: true })); assert.equal(dono.status, 200, JSON.stringify(dono.json));
+  assert.equal((await s.call('/adm/ping', 'GET', null, idToken({ sub: 'u-x', email: 'outro@gmail.com', email_verified: true }))).status, 403);
+  assert.equal((await s.call('/adm/ping', 'GET', null, idToken({ sub: 'u-x', email: 'danimcota@gmail.com.evil.com', email_verified: true }))).status, 403);
+  const naoVerif = await s.call('/adm/ping', 'GET', null, idToken({ sub: 'u-fake', email: 'danimcota@gmail.com', email_verified: false }));
+  assert.equal(naoVerif.status, 403); assert.match(naoVerif.json.erro, /não foi verificado/);
+  s.close();
+});
+
+await t('login Firebase: token falso, vencido, de outro projeto ou com algoritmo trocado é recusado', async () => {
+  const s = await boot({ admin: '', fb: { uids: ['uid-admin-1'] } }), t = Math.floor(Date.now() / 1000);
+  const outraChave = crypto.generateKeyPairSync('rsa', { modulusLength: 2048 }).privateKey;
+  const ruins = { 'assinado por outra chave': idToken({}, { key: outraChave }), 'vencido': idToken({ exp: t - 600 }), 'outro projeto': idToken({ aud: 'outro', iss: 'https://securetoken.google.com/outro' }),
+    'kid desconhecido': idToken({}, { kid: 'zzz' }), 'sem usuário': idToken({ sub: '' }), 'alg none': u64({ alg: 'none', kid: 'k1' }) + '.' + u64({ aud: PROJ, sub: 'uid-admin-1', exp: t + 99 }) + '.',
+    'adulterado': idToken().replace(/.$/, (c) => (c === 'A' ? 'B' : 'A')) };
+  for (const [nome, tk] of Object.entries(ruins)) assert.equal((await s.call('/adm/ping', 'GET', null, tk)).status, 401, nome);
+  assert.equal((await s.call('/adm/ping', 'GET', null, null)).status, 401);
+  assert.equal((await s.call('/adm/ping', 'GET', null, TOKEN)).status, 401, 'OWNER_TOKEN público não abre o adm');
+  s.close();
+});
+
+await t('login Firebase: fee-recipient e Adsterra funcionam com o ID token; sem listas nem token o painel fica desativado', async () => {
+  const fetchFn = async () => ({ ok: true, status: 200, text: async () => JSON.stringify({ items: [] }) });
+  const s = await boot({ admin: '', fb: { uids: ['uid-admin-1'] }, fetchFn }); const adm = ethers.Wallet.createRandom();
+  const tk = idToken();
+  const m = msgFee(adm); const r = await s.call('/adm/fee-recipient', 'POST', { recipient: adm.address, message: m, signature: await adm.signMessage(m) }, tk);
+  assert.equal(r.status, 200, JSON.stringify(r.json)); assert.equal((await s.call('/fee-recipient', 'GET', null, null)).json.recipient, adm.address);
+  assert.equal((await s.call('/adm/adsterra?endpoint=domains', 'GET', null, tk)).status, 200);
+  assert.equal((await s.call('/adm/fee-recipient', 'POST', { recipient: adm.address, message: m, signature: await adm.signMessage(m) }, idToken({ sub: 'intruso' }))).status, 403);
+  s.close();
+  const s2 = await boot({ admin: '' }); assert.equal((await s2.call('/adm/ping', 'GET', null, idToken())).status, 503); s2.close();
 });
 
 console.log(`\n${ok} testes de servidor ok`);

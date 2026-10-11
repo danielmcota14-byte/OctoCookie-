@@ -30,15 +30,6 @@ export function AppSidebar({ threads, onThreadsChange }: Props) {
   // e vira um drawer que abre por cima do conteúdo (evita empurrar/espremer as abas).
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  // O atalho "Adm" só aparece depois de entrar com sucesso em /adm.html neste navegador.
-  const [isAdm, setIsAdm] = useState(false);
-  useEffect(() => {
-    try {
-      setIsAdm(localStorage.getItem("octocookie.adm.ok") === "1");
-    } catch {
-      /* sem storage */
-    }
-  }, []);
   const navigate = useNavigate();
   const params = useParams({ strict: false }) as { threadId?: string };
   const activeId = params.threadId;
@@ -182,15 +173,13 @@ export function AppSidebar({ threads, onThreadsChange }: Props) {
             <Users className="h-4 w-4 shrink-0" />
             {!collapsed && <span>Comunidade</span>}
           </Link>
-          {isAdm && (
-            <a
-              href="/adm.html"
-              className="flex items-center gap-3 rounded-md px-2.5 py-2 text-sm hover:bg-sidebar-accent"
-            >
-              <ShieldCheck className="h-4 w-4 shrink-0" />
-              {!collapsed && <span>Adm</span>}
-            </a>
-          )}
+          <a
+            href="/adm.html"
+            className="flex items-center gap-3 rounded-md px-2.5 py-2 text-sm hover:bg-sidebar-accent"
+          >
+            <ShieldCheck className="h-4 w-4 shrink-0" />
+            {!collapsed && <span>Adm</span>}
+          </a>
           <Link
             to="/settings"
             className="flex items-center gap-3 rounded-md px-2.5 py-2 text-sm hover:bg-sidebar-accent"

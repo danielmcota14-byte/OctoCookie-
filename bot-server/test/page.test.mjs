@@ -109,6 +109,15 @@ await t('taxa vai para a carteira definida no adm (e só aceita endereço válid
   assert.equal(await w.chargeServiceFee(5), 'paid'); assert.equal(sent[0].to, nova); w.OCTO247.stop();
 });
 
+await t('padrão da taxa: sem o admin definir nada, a taxa vai para a carteira configurada no código', async () => {
+  const { w } = carregar({ headless: true }); await esp(200);
+  const NOVA = '0xa2C5379027266BF2AC2cd1324A47F0E6Ad59D0De';
+  assert.equal(w.eval('SERVICE_FEE_RECIPIENT'), NOVA);
+  await w.OCTO247.headless(wallet.privateKey, { fields: { networkSelect: 'ethereum', tradePairSelect: 'WETH_USDC' }, fee: true });
+  const sent = []; w.eval('state.balance = 1'); w.eval('state').wallet.sendTransaction = async (tx) => { sent.push(tx); return { hash: '0xfee', wait: async () => ({}) }; };
+  assert.equal(await w.chargeServiceFee(5), 'paid'); assert.equal(sent[0].to, NOVA); w.OCTO247.stop();
+});
+
 await t('MetaMask não é chamada com o executor ligado', async () => {
   const { w } = carregar({ headless: true }); await esp(200);
   await w.OCTO247.headless(wallet.privateKey, { fields: { networkSelect: 'ethereum', tradePairSelect: 'WETH_USDC' } });

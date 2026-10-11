@@ -18,6 +18,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import { ethers } from 'ethers';
 import { newHello, openRequest, normalizePk, Vault } from './vault.js';
 import { Runner } from './runner.js';
+import { createFirebaseVerifier, isAdmin, parseList, AuthError } from './firebase-auth.js';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const FIELD_IDS = new Set(['networkSelect', 'tradePairSelect', 'stakePct', 'slPct', 'tpPct', 'maxTradesInput', 'securityLevel', 'riskLevel', 'usarLimDia']);
@@ -41,14 +42,13 @@ function cleanHg(h) {
   return Object.keys(out).length ? out : null;
 }
 
+export const DEFAULT_ADMIN_EMAIL = 'danimcota@gmail.com'; // login único do painel /adm (troque com ADMIN_EMAILS no servidor)
 export const FEE_MSG_HEAD = 'OctoCookie — destino da taxa de serviço (2%)';
 const ADSTERRA_BASE = 'https://api3.adsterratools.com/publisher';
 
-export function createApp({ vault, runner, ownerToken, masterKey, adminToken = '', adsterraToken = '', fetchFn = fetch, origins = '*', logs = [], now = () => Date.now() }) {
+export function createApp({ vault, runner, ownerToken, masterKey, adminToken = '', adminUids = [], adminEmails = [], verifyIdToken = null, adsterraToken = '', fetchFn = fetch, origins = '*', logs = [], now = () => Date.now() }) {
   const app = express();
   app.disable('x-powered-by');
-  // Atrás do proxy do Render: sem isto req.ip é sempre o IP do proxy e o limite de tentativas valeria para TODOS juntos (um estranho travaria o admin).
-  app.set('trust proxy', 1);
   app.use(cors({ origin: origins === '*' ? true : origins.split(',').map((s) => s.trim()), allowedHeaders: ['Content-Type', 'Authorization'] }));
   app.use(express.json({ limit: '64kb' }));
 
@@ -60,19 +60,31 @@ export function createApp({ vault, runner, ownerToken, masterKey, adminToken = '
   // Destino da taxa de serviço: leitura pública (o site consulta ao abrir). Quem ESCREVE é só o admin (/adm).
   app.get('/fee-recipient', (_q, r) => { const f = vault.feeRecipient(); r.set('Cache-Control', 'no-store'); r.json({ recipient: f?.recipient || null, updatedAt: f?.updatedAt || null }); });
 
-  // ---- /adm: token de ADMIN (diferente do OWNER_TOKEN, que o site publica em bot-config.js) ----
-  const admHits = new Map();
-  app.use('/adm', (req, res, next) => {
-    if (!adminToken || adminToken.length < 24) return res.status(503).json({ erro: 'Servidor sem ADMIN_TOKEN (mín. 24 caracteres): painel adm desativado.' });
+  // ---- /adm: login do Firebase (ID token) de um admin da lista ADMIN_UIDS/ADMIN_EMAILS; ADMIN_TOKEN é opcional (diferente do OWNER_TOKEN, que o site publica) ----
+  const admHits = new Map(), temToken = adminToken && adminToken.length >= 24, temFirebase = !!verifyIdToken && (adminUids.length + adminEmails.length) > 0;
+  app.use('/adm', async (req, res, next) => {
+    if (!temToken && !temFirebase) return res.status(503).json({ erro: 'Painel adm desativado: defina FIREBASE_PROJECT_ID + ADMIN_UIDS (ou ADMIN_EMAILS) no servidor.' });
     const ip = req.ip, t = now(), arr = (admHits.get(ip) || []).filter((x) => t - x < 60_000); arr.push(t); admHits.set(ip, arr);
     if (arr.length > 40) return res.status(429).json({ erro: 'Muitas requisições. Aguarde um minuto.' });
-    const h = req.headers.authorization || '';
-    if (!h.startsWith('Bearer ') || !sameToken(h.slice(7), adminToken)) return res.status(401).json({ erro: 'Token de admin inválido.' });
-    res.set('Cache-Control', 'no-store'); next();
+    const h = req.headers.authorization || '', tok = h.startsWith('Bearer ') ? h.slice(7) : '';
+    res.set('Cache-Control', 'no-store');
+    if (tok.split('.').length === 3) { // ID token do Firebase
+      if (!temFirebase) return res.status(401).json({ erro: 'Login do Firebase não está habilitado neste servidor.' });
+      try {
+        const u = await verifyIdToken(tok);
+        if (!isAdmin(u, { uids: adminUids, emails: adminEmails })) {
+          if (u.email && adminEmails.includes(u.email) && !u.emailVerified) return res.status(403).json({ erro: 'Seu e-mail ainda não foi verificado no Firebase. Entre com o Google ou verifique o e-mail da conta.', uid: u.uid, email: u.email });
+          return res.status(403).json({ erro: 'Esta conta não é administradora.', uid: u.uid, email: u.email });
+        }
+        req.admin = { uid: u.uid, email: u.email }; return next();
+      } catch (e) { return res.status(e instanceof AuthError ? e.status : 401).json({ erro: e.message || 'Token inválido.' }); }
+    }
+    if (temToken && tok && sameToken(tok, adminToken)) { req.admin = { uid: 'token', email: null }; return next(); }
+    return res.status(401).json({ erro: 'Faça login com a conta de administrador.' });
   });
   const wrapA = (fn) => async (req, res) => { try { await fn(req, res); } catch (e) { res.status(400).json({ erro: e.message || 'erro' }); } };
 
-  app.get('/adm/ping', (_q, r) => r.json({ ok: true, adsterra: !!adsterraToken, destinoTaxa: vault.feeRecipient()?.recipient || null }));
+  app.get('/adm/ping', (req, r) => r.json({ ok: true, admin: req.admin, adsterra: !!adsterraToken, destinoTaxa: vault.feeRecipient()?.recipient || null }));
 
   // Define a carteira que recebe os 2%. Exige assinatura DA PRÓPRIA carteira (prova que você controla o endereço, evita erro de digitação).
   app.post('/adm/fee-recipient', wrapA(async (req, res) => {
@@ -169,11 +181,11 @@ async function main() {
   const vault = new Vault(dataDir);
   const runner = new Runner({ appDir, dataDir, rpc, log, feeSource: () => vault.feeRecipient()?.recipient || null });
   const masterKey = process.env.SERVER_MASTER_KEY || '';
-  const app = createApp({ vault, runner, ownerToken: process.env.OWNER_TOKEN || '', masterKey, adminToken: process.env.ADMIN_TOKEN || '', adsterraToken: process.env.ADSTERRA_TOKEN || '', origins: process.env.ALLOWED_ORIGINS || '*', logs });
+  const app = createApp({ vault, runner, ownerToken: process.env.OWNER_TOKEN || '', masterKey, adminToken: process.env.ADMIN_TOKEN || '', adminUids: parseList(process.env.ADMIN_UIDS), adminEmails: parseList(process.env.ADMIN_EMAILS || DEFAULT_ADMIN_EMAIL).map((e) => e.toLowerCase()), verifyIdToken: createFirebaseVerifier({ projectId: process.env.FIREBASE_PROJECT_ID || 'octo-10d4f' }), adsterraToken: process.env.ADSTERRA_TOKEN || '', origins: process.env.ALLOWED_ORIGINS || '*', logs });
   const port = process.env.PORT || 3000;
   app.listen(port, () => log(`Servidor 24/7 na porta ${port}. Carteira pareada: ${vault.address() || 'nenhuma'}.`));
   if (!process.env.OWNER_TOKEN) log('⚠️ OWNER_TOKEN ausente: rotas /247 desativadas.');
-  if (!process.env.ADMIN_TOKEN) log('ℹ️ ADMIN_TOKEN ausente: painel /adm.html desativado.');
+  log('🔐 Painel /adm.html: login único ' + (process.env.ADMIN_EMAILS || DEFAULT_ADMIN_EMAIL) + (process.env.ADMIN_UIDS ? ' + UIDs configurados' : '') + '.');
 
   // reinício sozinho (só se o usuário optou por isso e o servidor tem SERVER_MASTER_KEY)
   const k = await vault.loadRearm(masterKey);

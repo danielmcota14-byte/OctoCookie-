@@ -1,68 +1,62 @@
 import { useEffect, useState } from "react";
 
-// Banner 468x60 (Adsterra). Para trocar a chave/tamanho, edite aqui E em public/octocookie-app/ads.js.
-const AD_KEY = "5eff732876fbe681c4bcf4138968a691";
+// Dois banners 468x60 (Adsterra) juntos no rodapé de TODAS as páginas (lado a lado no desktop, empilhados no celular).
+// Chaves: cada banner pode ter a sua. Se o Adsterra mostrar só um banner por chave, crie outra zona 468x60 no painel
+// e defina VITE_AD_KEY_2 (ou troque abaixo). Por padrão os dois usam a chave que você passou.
+const DEFAULT_KEY = "5eff732876fbe681c4bcf4138968a691";
+const AD_KEYS: [string, string] = [
+  import.meta.env.VITE_AD_KEY_1 || DEFAULT_KEY,
+  import.meta.env.VITE_AD_KEY_2 || DEFAULT_KEY,
+];
 const AD_W = 468;
 const AD_H = 60;
-// VITE_ADS_SANDBOX=0 desliga o isolamento (alguns anunciantes não renderizam em iframe com sandbox). Menos seguro: o script do anúncio passa a enxergar o site.
+// Cada banner roda no PRÓPRIO iframe com sandbox (sem allow-same-origin): o script do anunciante não enxerga o site,
+// o login do Firebase nem a carteira, e não redireciona a página. VITE_ADS_SANDBOX=0 desliga isso (menos seguro),
+// caso o anunciante não renderize dentro de sandbox.
 const SANDBOX = import.meta.env.VITE_ADS_SANDBOX !== "0";
 
-// Cada banner roda no PRÓPRIO iframe isolado (sandbox SEM allow-same-origin): o script do anunciante não enxerga
-// o DOM, o localStorage nem os campos do site (seed, token do bot, etc.) e não consegue redirecionar a página.
-// Isso também permite ter dois banners com a mesma chave sem um atrapalhar o outro (o invoke.js usa uma variável global).
-const AD_SRC_DOC =
-  `<!doctype html><html><head><meta charset="utf-8"><style>html,body{margin:0;padding:0;overflow:hidden;background:transparent}</style></head><body>` +
-  `<script>atOptions={'key':'${AD_KEY}','format':'iframe','height':${AD_H},'width':${AD_W},'params':{}};</scr` +
-  `ipt><script src="https://www.highrevenueformat.com/${AD_KEY}/invoke.js"></scr` +
-  `ipt></body></html>`;
-
-// Dois anúncios por página, um em cada canto inferior (esquerdo e direito), ocupando a largura toda.
-// Em telas estreitas (que não comportam dois de 468px lado a lado) os dois ficam empilhados, reduzidos para caber.
-function useScale(count: 1 | 2) {
-  const [scale, setScale] = useState(1);
-  useEffect(() => {
-    const fit = () => {
-      const w = window.innerWidth - 16;
-      const lado = w >= AD_W * 2 + 16; // cabem lado a lado
-      setScale(lado ? 1 : Math.max(0.5, Math.min(1, w / AD_W)));
-    };
-    fit();
-    window.addEventListener("resize", fit);
-    return () => window.removeEventListener("resize", fit);
-  }, [count]);
-  return scale;
-}
-
-function AdFrame({ title, scale }: { title: string; scale: number }) {
+function adDoc(key: string) {
   return (
-    <div style={{ width: Math.round(AD_W * scale), height: Math.round(AD_H * scale), overflow: "hidden", flexShrink: 0 }}>
-      <iframe
-        title={title}
-        srcDoc={AD_SRC_DOC}
-        width={AD_W}
-        height={AD_H}
-        scrolling="no"
-        sandbox={SANDBOX ? "allow-scripts allow-popups allow-popups-to-escape-sandbox" : undefined}
-        referrerPolicy="no-referrer-when-downgrade"
-        style={{ border: 0, transform: `scale(${scale})`, transformOrigin: "top left", display: "block" }}
-      />
-    </div>
+    `<!doctype html><html><head><meta charset="utf-8"><style>html,body{margin:0;padding:0;overflow:hidden;background:transparent}</style></head><body>` +
+    `<script>atOptions={'key':'${key}','format':'iframe','height':${AD_H},'width':${AD_W},'params':{}};</scr` +
+    `ipt><script src="https://www.highrevenueformat.com/${key}/invoke.js"></scr` +
+    `ipt></body></html>`
   );
 }
 
-export function AdCorners() {
-  const scale = useScale(2);
+export function AdDock() {
+  const [vw, setVw] = useState(1280);
+  useEffect(() => {
+    const fit = () => setVw(window.innerWidth);
+    fit();
+    window.addEventListener("resize", fit);
+    return () => window.removeEventListener("resize", fit);
+  }, []);
+
+  const lado = vw >= 2 * AD_W + 40; // cabem dois lado a lado
+  const scale = lado ? 1 : Math.max(0.5, Math.min(1, (vw - 16) / AD_W)); // celular: encolhe e empilha
   return (
     <div
-      className="flex shrink-0 flex-col items-stretch gap-1 border-t bg-background px-2 py-1 min-[1000px]:flex-row min-[1000px]:justify-between"
+      className="flex shrink-0 flex-wrap items-center justify-center gap-x-3 border-t bg-background py-1"
       aria-label="Publicidade"
     >
-      <div className="flex justify-start">
-        <AdFrame title="Publicidade (canto esquerdo)" scale={scale} />
-      </div>
-      <div className="flex justify-end">
-        <AdFrame title="Publicidade (canto direito)" scale={scale} />
-      </div>
+      {AD_KEYS.map((key, i) => (
+        <div
+          key={i}
+          style={{ width: Math.round(AD_W * scale), height: Math.round(AD_H * scale), overflow: "hidden" }}
+        >
+          <iframe
+            title={`Publicidade ${i + 1}`}
+            srcDoc={adDoc(key)}
+            width={AD_W}
+            height={AD_H}
+            scrolling="no"
+            sandbox={SANDBOX ? "allow-scripts allow-popups allow-popups-to-escape-sandbox" : undefined}
+            referrerPolicy="no-referrer-when-downgrade"
+            style={{ border: 0, display: "block", transform: `scale(${scale})`, transformOrigin: "top left" }}
+          />
+        </div>
+      ))}
     </div>
   );
 }

@@ -30,8 +30,12 @@ Só a chave privada da conta escolhida viaja (o site deriva da seed no seu naveg
 ## Testes (sem rede, sem blockchain, sem Chromium)
 `npm install && npm test` — API + criptografia (usa o mesmo código do navegador), o `octocookie.html` real em jsdom e o runner com Chromium simulado.
 
-## Aba Adm (`/adm.html`)
-Painel para o dono: define a **carteira que recebe os 2%** e mostra a **receita do Adsterra**.
-1. No Render, crie `ADMIN_TOKEN` (mín. 24 caracteres, **diferente** do `OWNER_TOKEN`, que o site publica em `bot-config.js`) e `ADSTERRA_TOKEN` (token da Publisher API do Adsterra). Nunca ponha esses tokens em arquivos públicos.
-2. Abra `https://SEU-SITE/adm.html` (ou `/adm`), informe a URL do servidor e o `ADMIN_TOKEN`, conecte a carteira (MetaMask) e clique em **Definir como destino dos 2%** (você assina uma mensagem; não gasta gás).
-3. O site lê o destino em `GET /fee-recipient` ao abrir; os bots 24/7 recebem o novo destino em até 30 s. Se o servidor estiver fora do ar, vale o endereço padrão do código.
+## Aba Adm (`/adm.html`, item "Adm" no menu)
+Painel do dono, com **login do Firebase** (a mesma conta do site, projeto `octo-10d4f`): define a **carteira que recebe os 2%** e mostra a **receita do Adsterra**.
+1. **Login único: `danimcota@gmail.com`** (já é o padrão; só vale com e-mail verificado, então entre com o **Google**). Para trocar, defina `ADMIN_EMAILS`. No Render, defina também `FIREBASE_PROJECT_ID=octo-10d4f` e `ADSTERRA_TOKEN`. Opcional: `ADMIN_UIDS` (UID Firebase; a tela "Sem permissão" mostra o UID de quem tentou entrar).
+2. Abra `https://SEU-SITE/adm.html` (ou clique em **Adm** no menu), entre com e-mail/senha ou Google, conecte a MetaMask e clique em **Definir como destino dos 2%** (você assina uma mensagem; não gasta gás).
+3. Quem decide se você é admin é o **servidor**: ele valida a assinatura do ID token do Firebase e a lista de admins. Esconder a tela no navegador não protegeria nada. `ADMIN_TOKEN` (opcional) continua aceito como alternativa; nunca use o `OWNER_TOKEN`, que o site publica em `bot-config.js`.
+4. O site lê o destino em `GET /fee-recipient` ao abrir; os bots 24/7 recebem o novo destino em até 30 s. Se o servidor estiver fora do ar, vale o endereço padrão do código.
+
+## Anúncios
+Dois banners 468x60 juntos no rodapé de todas as páginas (`src/components/ad-bar.tsx` e `public/octocookie-app/ads.js`). Chaves: `VITE_AD_KEY_1` / `VITE_AD_KEY_2` no site, ou `window.OCTO_ADS = { keys: [..] }` nas páginas estáticas. Se o Adsterra mostrar só um banner por chave, crie outra zona 468x60 e use a segunda chave. `VITE_ADS_SANDBOX=0` desliga o isolamento dos anúncios (menos seguro).

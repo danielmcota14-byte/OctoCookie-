@@ -20,8 +20,12 @@ services:
         sync: false       # opcional (openssl rand -base64 32): só para "reiniciar sozinho"
       - key: RPC_URL_ETHEREUM
         sync: false       # seu RPC (Alchemy/Infura) https://...
-      - key: ADMIN_TOKEN
-        sync: false       # painel /adm.html (carteira dos 2% + Adsterra). Mín. 24 caracteres, DIFERENTE do OWNER_TOKEN
+      - key: ADMIN_UIDS
+        sync: false       # UID(s) Firebase dos administradores, separados por vírgula (o /adm.html mostra o seu UID ao entrar)
+      - key: ADMIN_EMAILS
+        value: danimcota@gmail.com   # login único do painel /adm.html (e-mail VERIFICADO: entre com o Google)
+      - key: FIREBASE_PROJECT_ID
+        value: octo-10d4f
       - key: ADSTERRA_TOKEN
         sync: false       # token da Publisher API do Adsterra (fica só no servidor)
       - key: ALLOWED_ORIGINS
