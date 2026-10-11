@@ -15,14 +15,8 @@ const AD_H = 60;
 // caso o anunciante não renderize dentro de sandbox.
 const SANDBOX = import.meta.env.VITE_ADS_SANDBOX !== "0";
 
-function adDoc(key: string) {
-  return (
-    `<!doctype html><html><head><meta charset="utf-8"><style>html,body{margin:0;padding:0;overflow:hidden;background:transparent}</style></head><body>` +
-    `<script>atOptions={'key':'${key}','format':'iframe','height':${AD_H},'width':${AD_W},'params':{}};</scr` +
-    `ipt><script src="https://www.highrevenueformat.com/${key}/invoke.js"></scr` +
-    `ipt></body></html>`
-  );
-}
+// Cada banner é uma página real do próprio site (/ad.html?k=CHAVE), não um srcdoc: assim o Adsterra enxerga o domínio.
+const adSrc = (key: string) => `/ad.html?k=${encodeURIComponent(key)}`;
 
 export function AdDock() {
   const [vw, setVw] = useState(1280);
@@ -47,7 +41,7 @@ export function AdDock() {
         >
           <iframe
             title={`Publicidade ${i + 1}`}
-            srcDoc={adDoc(key)}
+            src={adSrc(key)}
             width={AD_W}
             height={AD_H}
             scrolling="no"

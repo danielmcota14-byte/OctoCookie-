@@ -19,8 +19,8 @@ function abrir({ modo = 'admin', logado = false, adsItems = [], ethereum = true 
       let cb = null, user = null;
       const mkUser = (email) => ({ uid: 'uid-123', email, getIdToken: async () => ID_TOKEN });
       const authObj = { get currentUser() { return user; }, onAuthStateChanged(f) { cb = f; setTimeout(() => f(user), 0); },
-        async signInWithEmailAndPassword(e, p) { if (p !== 'senha-certa') { const x = new Error('x'); x.code = 'auth/invalid-credential'; throw x; } user = mkUser(e); cb(user); },
-        async signInWithPopup() { user = mkUser('google@exemplo.com'); cb(user); }, async signOut() { rec.signedOut++; user = null; cb(null); } };
+        async signInWithEmailAndPassword(e, p) { if (p !== 'senha-certa') { const x = new Error('x'); x.code = 'auth/invalid-credential'; throw x; } user = mkUser(e); cb(user); return { user }; },
+        async signInWithPopup() { user = mkUser('google@exemplo.com'); cb(user); return { user }; }, async getRedirectResult() { return null; }, async signOut() { rec.signedOut++; user = null; cb(null); } };
       if (logado) user = mkUser('dono@exemplo.com');
       w.firebase = { initializeApp() {}, auth: Object.assign(() => authObj, { GoogleAuthProvider: class {} }) };
       w.fetch = async (u, o = {}) => {

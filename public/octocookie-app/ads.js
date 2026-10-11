@@ -17,11 +17,7 @@
   var keys = [ok(cfg.keys && cfg.keys[0]) ? cfg.keys[0] : DEFAULT_KEY, ok(cfg.keys && cfg.keys[1]) ? cfg.keys[1] : DEFAULT_KEY];
   var isolar = cfg.sandbox !== false || /octocookie\.html$/.test(location.pathname);
 
-  function doc(key) {
-    return '<!doctype html><html><head><meta charset="utf-8"><style>html,body{margin:0;padding:0;overflow:hidden;background:transparent}</style></head><body>' +
-      "<script>atOptions={'key':'" + key + "','format':'iframe','height':" + H + ",'width':" + W + ",'params':{}};<\/script>" +
-      '<script src="https://www.highrevenueformat.com/' + key + '/invoke.js"><\/script></body></html>';
-  }
+  function src(key) { return '/ad.html?k=' + key; } // página real do site (não srcdoc): o Adsterra enxerga o domínio
   function init() {
     if (document.getElementById('octo-ads')) return;
     var dock = document.createElement('div'); dock.id = 'octo-ads'; dock.className = 'octo-ad'; dock.setAttribute('aria-label', 'Publicidade');
@@ -30,7 +26,7 @@
       var w = document.createElement('div'); w.style.cssText = 'overflow:hidden;';
       var f = document.createElement('iframe'); f.title = 'Publicidade ' + (i + 1); f.width = W; f.height = H; f.scrolling = 'no';
       if (isolar) f.setAttribute('sandbox', 'allow-scripts allow-popups allow-popups-to-escape-sandbox');
-      f.setAttribute('referrerpolicy', 'no-referrer-when-downgrade'); f.style.cssText = 'border:0;display:block;transform-origin:top left;'; f.srcdoc = doc(k);
+      f.setAttribute('referrerpolicy', 'no-referrer-when-downgrade'); f.style.cssText = 'border:0;display:block;transform-origin:top left;'; f.src = src(k);
       w.appendChild(f); dock.appendChild(w); return { w: w, f: f };
     });
     document.body.appendChild(dock);

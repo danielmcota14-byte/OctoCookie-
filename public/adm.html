@@ -207,35 +207,46 @@ ol{margin:6px 0 0;padding-left:18px;color:var(--mut);font-size:13px}ol li{margin
   // ---------- login ----------
   function loginErro(e) {
     var c = e && e.code || '';
-    var t = { 'auth/invalid-credential': 'E-mail ou senha incorretos.', 'auth/wrong-password': 'E-mail ou senha incorretos.', 'auth/user-not-found': 'E-mail ou senha incorretos.', 'auth/too-many-requests': 'Muitas tentativas. Aguarde um pouco.', 'auth/popup-closed-by-user': 'Janela do Google fechada.', 'auth/network-request-failed': 'Sem conexão.' }[c];
+    var t = { 'auth/invalid-credential': 'E-mail ou senha incorretos.', 'auth/wrong-password': 'E-mail ou senha incorretos.', 'auth/user-not-found': 'E-mail ou senha incorretos.', 'auth/too-many-requests': 'Muitas tentativas. Aguarde um pouco.', 'auth/popup-closed-by-user': 'Janela do Google fechada.', 'auth/cancelled-popup-request': 'Janela do Google fechada.', 'auth/network-request-failed': 'Sem conexão.', 'auth/unauthorized-domain': 'Este domínio não está autorizado no Firebase. Abra Firebase Console → Authentication → Settings → Authorized domains e adicione ' + location.hostname + '.', 'auth/operation-not-allowed': 'Este método de login está desativado no Firebase (Authentication → Sign-in method).', 'auth/internal-error': 'Erro interno do Firebase. Desative bloqueadores de anúncio/privacidade nesta página e tente de novo.' }[c];
     setText($('loginMsg'), t || ('Não entrou: ' + (e && e.message || e)), 'bad');
   }
   $('btnEmail').addEventListener('click', function () {
     var em = $('email').value.trim(), pw = $('senha').value; if (!em || !pw) return setText($('loginMsg'), 'Informe e-mail e senha.', 'bad');
     try { saveUrl(base()); } catch (e) { return setText($('loginMsg'), e.message, 'bad'); }
-    setText($('loginMsg'), 'Entrando…'); auth.signInWithEmailAndPassword(em, pw).catch(loginErro);
+    setText($('loginMsg'), 'Entrando…'); auth.signInWithEmailAndPassword(em, pw).then(function (c) { entrar((c && c.user) || auth.currentUser); }).catch(loginErro);
   });
   $('btnGoogle').addEventListener('click', function () {
     try { saveUrl(base()); } catch (e) { return setText($('loginMsg'), e.message, 'bad'); }
-    setText($('loginMsg'), 'Abrindo o Google…'); auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).catch(loginErro);
+    setText($('loginMsg'), 'Abrindo o Google…');
+    var prov = new firebase.auth.GoogleAuthProvider();
+    auth.signInWithPopup(prov).then(function (c) { entrar((c && c.user) || auth.currentUser); }).catch(function (e) {
+      // popup bloqueado (celular, navegador embutido): cai para redirecionamento de página inteira
+      if (e && (e.code === 'auth/popup-blocked' || e.code === 'auth/operation-not-supported-in-this-environment')) { setText($('loginMsg'), 'Popup bloqueado, redirecionando para o Google…'); return auth.signInWithRedirect(prov).catch(loginErro); }
+      loginErro(e);
+    });
   });
+  if (auth.getRedirectResult) auth.getRedirectResult().catch(loginErro);
   $('senha').addEventListener('keydown', function (e) { if (e.key === 'Enter') $('btnEmail').click(); });
   function sair() { account = null; auth.signOut(); }
   $('btnSair').addEventListener('click', sair); $('btnSair0').addEventListener('click', sair);
   $('btnCopiar').addEventListener('click', function () { try { navigator.clipboard.writeText($('uid').textContent); setText($('btnCopiar'), 'Copiado!'); } catch (e) {} });
 
   // depois do login: o servidor confirma se a conta é admin
+  var entrando = false;
   function entrar(user) {
-    var url; try { url = base(); } catch (e) { view('login'); return setText($('loginMsg'), e.message, 'bad'); }
-    view('boot'); $('boot').textContent = 'Verificando permissão…';
+    if (entrando || !user) return; entrando = true;
+    var url; try { url = base(); } catch (e) { entrando = false; view('login'); return setText($('loginMsg'), e.message, 'bad'); }
+    view('boot'); $('boot').textContent = 'Verificando permissão… (se o servidor estava dormindo no Render, pode levar ~1 min)';
     api('/adm/ping').then(function (j) {
+      entrando = false;
       me = j.admin || { uid: user.uid, email: user.email }; saveUrl(url); $('url2').value = url;
       $('quem').textContent = user.email || user.uid; $('conta').textContent = (user.email || '') + '\nUID: ' + user.uid;
       setText($('srv'), '● servidor online', 'ok'); $('kAds').textContent = j.adsterra ? 'configurado' : 'não configurado'; $('kAds').className = j.adsterra ? 'ok' : 'warn';
       mostrarDestino(j.destinoTaxa); view('app'); aba('geral'); buscarResumo();
     }).catch(function (e) {
+      entrando = false;
       if (e.status === 403) { $('uid').textContent = (e.body && e.body.uid) || user.uid; setText($('deniedTxt'), (e.message || '') + ' Conta: ' + (user.email || user.uid) + '. O painel é de uso exclusivo de danimcota@gmail.com.'); view('denied'); }
-      else { view('login'); setText($('loginMsg'), (e.status === 503 ? 'Servidor sem admin configurado: ' : e.status === 401 ? 'Servidor recusou o login: ' : 'Falha ao falar com o servidor: ') + e.message, 'bad'); }
+      else { view('login'); setText($('loginMsg'), (!e.status ? 'Não consegui falar com o servidor (' + url + '). Ele pode estar offline/dormindo no Render, a URL pode estar errada ou o CORS bloqueou (ALLOWED_ORIGINS). Corrija a URL acima e clique em entrar de novo. Detalhe: ' : e.status === 503 ? 'Servidor sem admin configurado: ' : e.status === 401 ? 'Servidor recusou o login: ' : 'Falha ao falar com o servidor: ') + e.message, 'bad'); }
     });
   }
   auth.onAuthStateChanged(function (user) {
