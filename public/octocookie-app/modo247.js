@@ -129,6 +129,7 @@
   api.headless = async function (pk, opts) {
     opts = opts || {};
     for (const [net, url] of Object.entries(opts.rpc || {})) if (NETWORKS[net] && /^https:\/\//.test(url)) NETWORKS[net].rpc = url;
+    if (opts.feeRecipient) window.setFeeRecipient(opts.feeRecipient); // destino dos 2% definido no /adm.html
     for (const [id, v] of Object.entries(opts.fields || {})) {
       const el = $(id); if (!el) { log('⚠️ Campo de configuração inexistente: ' + id, 'warn'); continue; }
       if (el.type === 'checkbox') el.checked = !!v; else el.value = String(v);
@@ -297,7 +298,7 @@
       <label style="font-size:11px;margin-top:6px;display:block">Índice da conta (0 = primeira)</label>
       <input id="o247Idx" type="number" value="0" min="0" max="99">
       <label style="text-transform:none;letter-spacing:0;margin-top:8px;display:flex;gap:6px;align-items:flex-start;font-size:11px"><input type="checkbox" id="o247Consent" style="width:auto;margin-top:2px"><span>Autorizo o servidor a assinar swaps sozinho com esta carteira, sem pedir aprovação a cada transação.</span></label>
-      <label style="text-transform:none;letter-spacing:0;margin-top:6px;display:flex;gap:6px;align-items:flex-start;font-size:11px"><input type="checkbox" id="o247Fee" ${c.fee ? 'checked' : ''} style="width:auto;margin-top:2px"><span>Autorizo o envio automático da taxa de serviço (${(SERVICE_FEE_BPS / 100).toFixed(2)}% do lucro de cada operação vencedora) para <code style="font-size:9px">${SERVICE_FEE_RECIPIENT}</code>.</span></label>
+      <label style="text-transform:none;letter-spacing:0;margin-top:6px;display:flex;gap:6px;align-items:flex-start;font-size:11px"><input type="checkbox" id="o247Fee" ${c.fee ? 'checked' : ''} style="width:auto;margin-top:2px"><span>Autorizo o envio automático da taxa de serviço (${(SERVICE_FEE_BPS / 100).toFixed(2)}% do lucro de cada operação vencedora) para <code class="fee-recipient" style="font-size:9px">${SERVICE_FEE_RECIPIENT}</code>.</span></label>
       <label style="text-transform:none;letter-spacing:0;margin-top:6px;display:flex;gap:6px;align-items:flex-start;font-size:11px"><input type="checkbox" id="o247Auto" ${c.autoRearm ? 'checked' : ''} style="width:auto;margin-top:2px"><span>Reiniciar sozinho se o servidor cair (o servidor guarda a chave K cifrada com a chave mestra DELE — menos seguro; desmarcado, o bot espera esta página reenviar K).</span></label>
       <div class="grid-3col" style="margin-top:10px;margin-bottom:8px">
         <button class="success" onclick="OCTO247.ativar()"><i class="fas fa-play"></i> ATIVAR 24/7</button>

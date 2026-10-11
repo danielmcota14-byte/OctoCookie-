@@ -118,7 +118,7 @@ function Bot24Page() {
         : "○ Sem resposta";
 
   return (
-    <div className="flex h-screen w-full">
+    <div className="flex h-full w-full">
       <AppSidebar threads={threads} onThreadsChange={setThreads} />
       <main className="flex flex-1 flex-col overflow-auto">
         <div className="flex flex-wrap items-center justify-between gap-2 border-b py-3 pl-14 pr-4 md:px-6">

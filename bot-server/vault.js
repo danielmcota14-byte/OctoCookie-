@@ -57,7 +57,7 @@ export function normalizePk(pk) {
 const aes = (raw, usage) => S.importKey('raw', raw, 'AES-GCM', false, [usage]);
 
 export class Vault {
-  constructor(dir) { this.dir = dir; this.vaultFile = path.join(dir, 'vault.json'); this.rearmFile = path.join(dir, 'rearm.json'); this.cfgFile = path.join(dir, 'config.json'); fs.mkdirSync(dir, { recursive: true, mode: 0o700 }); }
+  constructor(dir) { this.dir = dir; this.vaultFile = path.join(dir, 'vault.json'); this.rearmFile = path.join(dir, 'rearm.json'); this.cfgFile = path.join(dir, 'config.json'); this.feeFile = path.join(dir, 'fee.json'); fs.mkdirSync(dir, { recursive: true, mode: 0o700 }); }
   write(file, obj) { fs.writeFileSync(file, JSON.stringify(obj), { mode: 0o600 }); }
   read(file) { try { return JSON.parse(fs.readFileSync(file, 'utf8')); } catch { return null; } }
   address() { return this.read(this.vaultFile)?.addr || null; }
@@ -93,5 +93,7 @@ export class Vault {
   }
   clearRearm() { try { fs.unlinkSync(this.rearmFile); } catch {} }
   saveConfig(cfg) { this.write(this.cfgFile, cfg); }
+  feeRecipient() { return this.read(this.feeFile); }
+  setFeeRecipient(obj) { this.write(this.feeFile, obj); }
   loadConfig() { return this.read(this.cfgFile); }
 }

@@ -95,5 +95,16 @@ await t('se a página trava/cai, reinicia sozinha com a mesma chave (backoff) e 
   await r.stop(); assert.equal(r.pk, null);
 });
 
+await t('destino da taxa do admin é entregue à página e atualizado em execução', async () => {
+  let dest = '0x' + '11'.repeat(20); const L = fakeLauncher(), { r } = mk(L, { feeSource: () => dest });
+  const seen = []; const orig = L.launchPersistentContext.bind(L);
+  L.launchPersistentContext = async (d) => { const c = await orig(d); const pg = c.pages()[0]; const ev = pg.evaluate.bind(pg); pg.evaluate = async (fn, arg) => { if (fn.toString().includes('setFeeRecipient')) { seen.push(arg); return; } return ev(fn, arg); }; return c; };
+  await r.start(PK, {}); await esp(60);
+  assert.equal(L.sessions[0].headlessArgs[1].feeRecipient, dest);
+  dest = '0x' + '22'.repeat(20); await esp(80);
+  assert.deepEqual(seen, [dest]);
+  await r.stop();
+});
+
 console.log(`\n${ok} testes do runner ok`);
 process.exit(0);

@@ -40,7 +40,7 @@ function ThreadPage() {
   }
 
   return (
-    <div className="flex h-screen w-full">
+    <div className="flex h-full w-full">
       <AppSidebar threads={threads} onThreadsChange={setThreads} />
       <ChatWindow
         key={active.id}

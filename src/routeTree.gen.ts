@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ThreadIdRouteImport } from './routes/$threadId'
+import { Route as AdmRouteImport } from './routes/adm'
 import { Route as AnalyzerRouteImport } from './routes/analyzer'
 import { Route as Bot24x7RouteImport } from './routes/bot-24x7'
 import { Route as IdeRouteImport } from './routes/ide'
@@ -18,6 +19,7 @@ import { Route as LaunchRouteImport } from './routes/launch'
 import { Route as OctoAppRouteImport } from './routes/octo-app'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as SimulatorRouteImport } from './routes/simulator'
+import { Route as ApiBotRouteImport } from './routes/api/bot'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as CommunityIndexRouteImport } from './routes/community/index'
 import { Route as CommunityCommunityIdRouteImport } from './routes/community/$communityId'
@@ -31,6 +33,11 @@ const IndexRoute = IndexRouteImport.update({
 const ThreadIdRoute = ThreadIdRouteImport.update({
   id: '/$threadId',
   path: '/$threadId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdmRoute = AdmRouteImport.update({
+  id: '/adm',
+  path: '/adm',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AnalyzerRoute = AnalyzerRouteImport.update({
@@ -68,6 +75,11 @@ const SimulatorRoute = SimulatorRouteImport.update({
   path: '/simulator',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiBotRoute = ApiBotRouteImport.update({
+  id: '/api/bot',
+  path: '/api/bot',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiChatRoute = ApiChatRouteImport.update({
   id: '/api/chat',
   path: '/api/chat',
@@ -92,6 +104,7 @@ const PostPostIdRoute = PostPostIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/$threadId': typeof ThreadIdRoute
+  '/adm': typeof AdmRoute
   '/analyzer': typeof AnalyzerRoute
   '/bot-24x7': typeof Bot24x7Route
   '/ide': typeof IdeRoute
@@ -99,6 +112,7 @@ export interface FileRoutesByFullPath {
   '/octo-app': typeof OctoAppRoute
   '/settings': typeof SettingsRoute
   '/simulator': typeof SimulatorRoute
+  '/api/bot': typeof ApiBotRoute
   '/api/chat': typeof ApiChatRoute
   '/community/$communityId': typeof CommunityCommunityIdRoute
   '/post/$postId': typeof PostPostIdRoute
@@ -107,6 +121,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/$threadId': typeof ThreadIdRoute
+  '/adm': typeof AdmRoute
   '/analyzer': typeof AnalyzerRoute
   '/bot-24x7': typeof Bot24x7Route
   '/ide': typeof IdeRoute
@@ -114,6 +129,7 @@ export interface FileRoutesByTo {
   '/octo-app': typeof OctoAppRoute
   '/settings': typeof SettingsRoute
   '/simulator': typeof SimulatorRoute
+  '/api/bot': typeof ApiBotRoute
   '/api/chat': typeof ApiChatRoute
   '/community/$communityId': typeof CommunityCommunityIdRoute
   '/post/$postId': typeof PostPostIdRoute
@@ -123,6 +139,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/$threadId': typeof ThreadIdRoute
+  '/adm': typeof AdmRoute
   '/analyzer': typeof AnalyzerRoute
   '/bot-24x7': typeof Bot24x7Route
   '/ide': typeof IdeRoute
@@ -130,6 +147,7 @@ export interface FileRoutesById {
   '/octo-app': typeof OctoAppRoute
   '/settings': typeof SettingsRoute
   '/simulator': typeof SimulatorRoute
+  '/api/bot': typeof ApiBotRoute
   '/api/chat': typeof ApiChatRoute
   '/community/$communityId': typeof CommunityCommunityIdRoute
   '/post/$postId': typeof PostPostIdRoute
@@ -140,6 +158,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/$threadId'
+    | '/adm'
     | '/analyzer'
     | '/bot-24x7'
     | '/ide'
@@ -147,6 +166,7 @@ export interface FileRouteTypes {
     | '/octo-app'
     | '/settings'
     | '/simulator'
+    | '/api/bot'
     | '/api/chat'
     | '/community/$communityId'
     | '/post/$postId'
@@ -155,6 +175,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/$threadId'
+    | '/adm'
     | '/analyzer'
     | '/bot-24x7'
     | '/ide'
@@ -162,6 +183,7 @@ export interface FileRouteTypes {
     | '/octo-app'
     | '/settings'
     | '/simulator'
+    | '/api/bot'
     | '/api/chat'
     | '/community/$communityId'
     | '/post/$postId'
@@ -170,6 +192,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/$threadId'
+    | '/adm'
     | '/analyzer'
     | '/bot-24x7'
     | '/ide'
@@ -177,6 +200,7 @@ export interface FileRouteTypes {
     | '/octo-app'
     | '/settings'
     | '/simulator'
+    | '/api/bot'
     | '/api/chat'
     | '/community/$communityId'
     | '/post/$postId'
@@ -186,6 +210,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ThreadIdRoute: typeof ThreadIdRoute
+  AdmRoute: typeof AdmRoute
   AnalyzerRoute: typeof AnalyzerRoute
   Bot24x7Route: typeof Bot24x7Route
   IdeRoute: typeof IdeRoute
@@ -193,6 +218,7 @@ export interface RootRouteChildren {
   OctoAppRoute: typeof OctoAppRoute
   SettingsRoute: typeof SettingsRoute
   SimulatorRoute: typeof SimulatorRoute
+  ApiBotRoute: typeof ApiBotRoute
   ApiChatRoute: typeof ApiChatRoute
   CommunityCommunityIdRoute: typeof CommunityCommunityIdRoute
   PostPostIdRoute: typeof PostPostIdRoute
@@ -213,6 +239,13 @@ declare module '@tanstack/react-router' {
       path: '/$threadId'
       fullPath: '/$threadId'
       preLoaderRoute: typeof ThreadIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/adm': {
+      id: '/adm'
+      path: '/adm'
+      fullPath: '/adm'
+      preLoaderRoute: typeof AdmRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/analyzer': {
@@ -264,6 +297,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SimulatorRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/bot': {
+      id: '/api/bot'
+      path: '/api/bot'
+      fullPath: '/api/bot'
+      preLoaderRoute: typeof ApiBotRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/chat': {
       id: '/api/chat'
       path: '/api/chat'
@@ -298,6 +338,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ThreadIdRoute: ThreadIdRoute,
+  AdmRoute: AdmRoute,
   AnalyzerRoute: AnalyzerRoute,
   Bot24x7Route: Bot24x7Route,
   IdeRoute: IdeRoute,
@@ -305,6 +346,7 @@ const rootRouteChildren: RootRouteChildren = {
   OctoAppRoute: OctoAppRoute,
   SettingsRoute: SettingsRoute,
   SimulatorRoute: SimulatorRoute,
+  ApiBotRoute: ApiBotRoute,
   ApiChatRoute: ApiChatRoute,
   CommunityCommunityIdRoute: CommunityCommunityIdRoute,
   PostPostIdRoute: PostPostIdRoute,

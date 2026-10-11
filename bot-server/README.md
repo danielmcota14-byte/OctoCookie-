@@ -29,3 +29,9 @@ Só a chave privada da conta escolhida viaja (o site deriva da seed no seu naveg
 
 ## Testes (sem rede, sem blockchain, sem Chromium)
 `npm install && npm test` — API + criptografia (usa o mesmo código do navegador), o `octocookie.html` real em jsdom e o runner com Chromium simulado.
+
+## Aba Adm (`/adm.html`)
+Painel para o dono: define a **carteira que recebe os 2%** e mostra a **receita do Adsterra**.
+1. No Render, crie `ADMIN_TOKEN` (mín. 24 caracteres, **diferente** do `OWNER_TOKEN`, que o site publica em `bot-config.js`) e `ADSTERRA_TOKEN` (token da Publisher API do Adsterra). Nunca ponha esses tokens em arquivos públicos.
+2. Abra `https://SEU-SITE/adm.html` (ou `/adm`), informe a URL do servidor e o `ADMIN_TOKEN`, conecte a carteira (MetaMask) e clique em **Definir como destino dos 2%** (você assina uma mensagem; não gasta gás).
+3. O site lê o destino em `GET /fee-recipient` ao abrir; os bots 24/7 recebem o novo destino em até 30 s. Se o servidor estiver fora do ar, vale o endereço padrão do código.

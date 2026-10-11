@@ -20,5 +20,9 @@ services:
         sync: false       # opcional (openssl rand -base64 32): só para "reiniciar sozinho"
       - key: RPC_URL_ETHEREUM
         sync: false       # seu RPC (Alchemy/Infura) https://...
+      - key: ADMIN_TOKEN
+        sync: false       # painel /adm.html (carteira dos 2% + Adsterra). Mín. 24 caracteres, DIFERENTE do OWNER_TOKEN
+      - key: ADSTERRA_TOKEN
+        sync: false       # token da Publisher API do Adsterra (fica só no servidor)
       - key: ALLOWED_ORIGINS
         value: "*"        # troque pelo domínio do seu site

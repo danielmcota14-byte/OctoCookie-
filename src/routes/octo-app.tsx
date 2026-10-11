@@ -27,7 +27,7 @@ function BotTrading() {
   useEffect(() => setThreads(loadThreads()), []);
 
   return (
-    <div className="flex h-screen w-full">
+    <div className="flex h-full w-full">
       <AppSidebar threads={threads} onThreadsChange={setThreads} />
       <main className="flex flex-1 flex-col">
         <div className="flex flex-wrap items-center justify-between gap-x-2 gap-y-1 border-b py-3 pl-14 pr-4 md:px-6">

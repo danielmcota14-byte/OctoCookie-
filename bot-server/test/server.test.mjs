@@ -6,7 +6,7 @@ import path from 'node:path';
 import vm from 'node:vm';
 import { createRequire } from 'node:module';
 import { ethers } from 'ethers';
-import { createApp } from '../server.js';
+import { createApp, FEE_MSG_HEAD } from '../server.js';
 import { Vault } from '../vault.js';
 
 // ---- carrega o modo247.js do navegador (sem DOM) e pega as funções de criptografia ----
@@ -26,13 +26,15 @@ class FakeRunner {
   async stop() { this.pk = null; this.snap = null; }
   armed() { return !!this.pk; }
 }
-async function boot({ token = TOKEN, master = MASTER } = {}) {
+const ADMIN = 'admin-token-de-teste-123456789';
+async function boot({ token = TOKEN, master = MASTER, admin = ADMIN, adsterra = 'tok-adsterra', fetchFn } = {}) {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'octo247-'));
   const vault = new Vault(dir), runner = new FakeRunner(), logs = [];
-  const app = createApp({ vault, runner, ownerToken: token, masterKey: master, logs });
+  const app = createApp({ vault, runner, ownerToken: token, masterKey: master, adminToken: admin, adsterraToken: adsterra, fetchFn, logs });
   const srv = await new Promise((r) => { const s = app.listen(0, '127.0.0.1', () => r(s)); });
   const url = 'http://127.0.0.1:' + srv.address().port;
-  const call = async (p, method = 'POST', body, tk = token) => {
+  const call = async (p, method = 'POST', body, tk) => {
+    if (tk === undefined) tk = p.startsWith('/adm') ? admin : token; // padrão: o token certo da rota
     const r = await fetch(url + p, { method, headers: { 'Content-Type': 'application/json', ...(tk ? { Authorization: 'Bearer ' + tk } : {}) }, body: body ? JSON.stringify(body) : undefined });
     return { status: r.status, json: await r.json().catch(() => ({})) };
   };
@@ -139,6 +141,56 @@ await t('rotas públicas não vazam endereço, saldo nem logs', async () => {
   const txt = JSON.stringify(pub);
   assert.ok(!txt.includes(wallet.address) && !('saldo' in pub) && !('logs' in pub), txt);
   s.close();
+});
+
+const msgFee = (w, quando = new Date()) => `${FEE_MSG_HEAD}\nCarteira: ${w.address}\nEmitido em: ${quando.toISOString()}`;
+
+await t('adm: o OWNER_TOKEN (público no site) NÃO abre o painel; sem ADMIN_TOKEN o painel fica desativado', async () => {
+  const s = await boot();
+  assert.equal((await s.call('/adm/adsterra', 'GET', null, TOKEN)).status, 401);
+  assert.equal((await s.call('/adm/fee-recipient', 'POST', {}, TOKEN)).status, 401);
+  assert.equal((await s.call('/adm/adsterra', 'GET', null, null)).status, 401);
+  s.close();
+  const s2 = await boot({ admin: '' });
+  assert.equal((await s2.call('/adm/adsterra', 'GET', null, 'x')).status, 503);
+  s2.close();
+});
+
+await t('destino da taxa: assinatura da própria carteira define; ninguém mais consegue; leitura é pública', async () => {
+  const s = await boot(); const adm = ethers.Wallet.createRandom(), outro = ethers.Wallet.createRandom();
+  assert.equal((await s.call('/fee-recipient', 'GET', null, null)).json.recipient, null);
+  const ok1 = await s.call('/adm/fee-recipient', 'POST', { recipient: adm.address, message: msgFee(adm), signature: await adm.signMessage(msgFee(adm)) });
+  assert.equal(ok1.status, 200, JSON.stringify(ok1.json));
+  assert.equal((await s.call('/fee-recipient', 'GET', null, null)).json.recipient, adm.address);
+  // assinatura de OUTRA carteira para o endereço do admin
+  const m = msgFee(adm); assert.equal((await s.call('/adm/fee-recipient', 'POST', { recipient: adm.address, message: m, signature: await outro.signMessage(m) })).status, 400);
+  // pedir um endereço diferente do que está na mensagem
+  assert.equal((await s.call('/adm/fee-recipient', 'POST', { recipient: outro.address, message: m, signature: await adm.signMessage(m) })).status, 400);
+  // assinatura velha (replay)
+  const velha = msgFee(adm, new Date(Date.now() - 30 * 60_000));
+  const rv = await s.call('/adm/fee-recipient', 'POST', { recipient: adm.address, message: velha, signature: await adm.signMessage(velha) });
+  assert.equal(rv.status, 400); assert.match(rv.json.erro, /expirada/);
+  // mensagem arbitrária
+  assert.equal((await s.call('/adm/fee-recipient', 'POST', { recipient: adm.address, message: 'oi', signature: await adm.signMessage('oi') })).status, 400);
+  assert.equal((await s.call('/fee-recipient', 'GET', null, null)).json.recipient, adm.address, 'continua o último válido');
+  s.close();
+});
+
+await t('adsterra: proxy usa o token só no servidor, valida parâmetros e repassa erros', async () => {
+  const visto = [];
+  const fetchFn = async (url, o) => { visto.push({ url, key: o.headers['X-API-Key'] }); return { ok: true, status: 200, text: async () => JSON.stringify({ items: [{ date: '2026-10-09', impression: 100, clicks: 2, revenue: 0.31 }] }) }; };
+  const s = await boot({ fetchFn });
+  const r = await s.call('/adm/adsterra?endpoint=stats&start_date=2026-10-01&finish_date=2026-10-09&group_by=date', 'GET');
+  assert.equal(r.status, 200); assert.equal(r.json.items[0].revenue, 0.31);
+  assert.ok(visto[0].url.startsWith('https://api3.adsterratools.com/publisher/stats.json?') && visto[0].url.includes('group_by%5B%5D=date') && visto[0].key === 'tok-adsterra');
+  assert.ok(!JSON.stringify(r.json).includes('tok-adsterra'), 'token não volta ao navegador');
+  for (const q of ['start_date=2026-1-1&finish_date=2026-10-09', 'start_date=2026-10-01&finish_date=2026-10-09&group_by=evil', 'start_date=2026-10-01&finish_date=2026-10-09&domain=1;rm', 'endpoint=outro'])
+    assert.equal((await s.call('/adm/adsterra?endpoint=stats&' + q, 'GET')).status, 400, q);
+  assert.equal((await s.call('/adm/adsterra?endpoint=domains', 'GET')).status, 200);
+  s.close();
+  const s2 = await boot({ adsterra: '', fetchFn }); assert.equal((await s2.call('/adm/adsterra?endpoint=domains', 'GET')).status, 400); s2.close();
+  const s3 = await boot({ fetchFn: async () => ({ ok: false, status: 401, text: async () => '{"message":"Unauthorized"}' }) });
+  assert.equal((await s3.call('/adm/adsterra?endpoint=domains', 'GET')).status, 502); s3.close();
 });
 
 console.log(`\n${ok} testes de servidor ok`);
