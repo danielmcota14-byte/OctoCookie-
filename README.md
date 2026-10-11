@@ -38,4 +38,9 @@ Painel do dono, com **login do Firebase** (a mesma conta do site, projeto `octo-
 4. O site lê o destino em `GET /fee-recipient` ao abrir; os bots 24/7 recebem o novo destino em até 30 s. Se o servidor estiver fora do ar, vale o endereço padrão do código.
 
 ## Anúncios
-Dois banners 468x60 juntos no rodapé de todas as páginas (`src/components/ad-bar.tsx` e `public/octocookie-app/ads.js`). Chaves: `VITE_AD_KEY_1` / `VITE_AD_KEY_2` no site, ou `window.OCTO_ADS = { keys: [..] }` nas páginas estáticas. Se o Adsterra mostrar só um banner por chave, crie outra zona 468x60 e use a segunda chave. `VITE_ADS_SANDBOX=0` desliga o isolamento dos anúncios (menos seguro).
+Dois banners 468x60 (Adsterra) **por página, dentro do conteúdo** (nunca no cabeçalho nem no rodapé), cada um numa moldura discreta com o rótulo "Publicidade".
+- **Site React:** componente `<AdSlot slot={1|2} />` (`src/components/ad-slot.tsx`), colocado entre blocos de cada página. Chave padrão embutida; `VITE_AD_KEY_1` / `VITE_AD_KEY_2` sobrescrevem cada espaço; `VITE_ADS_DISABLED=1` desliga tudo; `VITE_ADS_SANDBOX=0` desliga o isolamento (menos seguro).
+- **Páginas estáticas** (`public/octocookie-app/`: index, octocookie, cryptex, dashboard_analisador): espaços `<div class="octo-ad-slot" data-slot="1|2"></div>` no HTML, preenchidos por `ads.js`. Opções antes do script: `window.OCTO_ADS = { keys: [..], sandbox: true, disabled: false }`. O Cryptex tem 2 espaços por aba interna. Login, frase secreta e importar carteira ficam sem anúncio de propósito.
+- **Carteira e Bot Trading** (`/` e `/octo-app`) são iframes dessas páginas estáticas, que já trazem os seus 2 espaços; a moldura React não adiciona outros.
+- O banner roda em iframe isolado (`/ad.html?k=CHAVE`, sandbox sem `allow-same-origin`) e só é criado quando o espaço aparece na tela. Nunca roda no executor do servidor (`?headless=1`).
+- Se o Adsterra preencher só um banner por chave, crie outra zona 468x60 e use a segunda chave.

@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useMemo, useState } from "react";
 import { AppSidebar } from "@/components/app-sidebar";
+import { AdSlot } from "@/components/ad-slot";
 import { loadThreads, type Thread } from "@/lib/threads";
 import { runSimulation } from "@/lib/simulator.functions";
 import { Play, AlertTriangle } from "lucide-react";
@@ -74,6 +75,8 @@ function SimulatorPage() {
             </p>
           </div>
 
+          <AdSlot slot={1} className="mb-6" />
+
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-5">
             <div className="lg:col-span-3">
               <label className="mb-1 block text-xs font-medium text-muted-foreground">Código</label>
@@ -114,6 +117,8 @@ function SimulatorPage() {
               </p>
             </div>
           </div>
+
+          <AdSlot slot={2} className="mt-6" />
 
           {error && (
             <div className="mt-4 flex items-start gap-2 rounded-md border border-destructive/40 bg-destructive/10 p-3 text-sm text-destructive">

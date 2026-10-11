@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import {
   DEFAULT_COMMUNITIES,
   createCommunity,
@@ -16,6 +16,7 @@ import { AuthModal } from "@/components/social/auth-modal";
 import { useAuth } from "@/lib/auth-context";
 import { Button } from "@/components/ui/button";
 import { CryptoTicker } from "@/components/crypto-ticker";
+import { AdSlot } from "@/components/ad-slot";
 import { Users, Flame, Clock } from "lucide-react";
 
 export const Route = createFileRoute("/community/$communityId")({
@@ -214,6 +215,8 @@ function CommunityPage() {
           </Button>
         </div>
 
+        <AdSlot slot={1} className="mb-3" />
+
         {loading ? (
           <p className="text-sm text-muted-foreground">Carregando...</p>
         ) : posts.length === 0 ? (
@@ -222,11 +225,15 @@ function CommunityPage() {
           </div>
         ) : (
           <div className="space-y-3">
-            {posts.map((p) => (
-              <PostCard key={p.id} post={p} onNeedAuth={() => setAuthOpen(true)} />
+            {posts.map((p, i) => (
+              <Fragment key={p.id}>
+                <PostCard post={p} onNeedAuth={() => setAuthOpen(true)} />
+                {i === Math.min(2, posts.length - 1) && <AdSlot slot={2} className="py-1" />}
+              </Fragment>
             ))}
           </div>
         )}
+        {(loading || posts.length === 0) && <AdSlot slot={2} className="mt-3" />}
       </div>
 
       <AuthModal open={authOpen} onOpenChange={setAuthOpen} />

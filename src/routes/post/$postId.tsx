@@ -1,11 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { getPost, listComments, createComment, vote } from "@/lib/social";
 import type { Post, Comment } from "@/lib/social-types";
 import { AuthModal } from "@/components/social/auth-modal";
 import { useAuth } from "@/lib/auth-context";
 import { Button } from "@/components/ui/button";
 import { CryptoTicker } from "@/components/crypto-ticker";
+import { AdSlot } from "@/components/ad-slot";
 import {
   ArrowBigUp,
   ArrowBigDown,
@@ -204,6 +205,8 @@ function PostPage() {
           </div>
         </article>
 
+        <AdSlot slot={1} className="mt-4" />
+
         {/* Novo comentário */}
         <form onSubmit={handleComment} className="mt-4 space-y-2">
           <textarea
@@ -220,9 +223,9 @@ function PostPage() {
 
         {/* Lista de comentários */}
         <div className="mt-6 space-y-3">
-          {comments.map((c) => (
+          {comments.map((c, i) => (
+            <Fragment key={c.id}>
             <div
-              key={c.id}
               className="rounded-lg border bg-card p-3"
               style={{ marginLeft: Math.min(c.depth, 4) * 16 }}
             >
@@ -235,12 +238,16 @@ function PostPage() {
                 <span className="font-medium">{c.score}</span> pontos
               </div>
             </div>
+            {/* 2º anúncio no meio dos comentários: depois do 2º (ou do último) */}
+            {i === Math.min(1, comments.length - 1) && <AdSlot slot={2} className="py-1" />}
+            </Fragment>
           ))}
           {comments.length === 0 && (
             <p className="text-center text-sm text-muted-foreground">
               Nenhum comentário ainda. Seja o primeiro!
             </p>
           )}
+          {comments.length === 0 && <AdSlot slot={2} className="py-1" />}
         </div>
       </div>
 

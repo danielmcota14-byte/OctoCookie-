@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
 import { AppSidebar } from "@/components/app-sidebar";
+import { AdSlot } from "@/components/ad-slot";
 import { loadThreads, type Thread } from "@/lib/threads";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -151,6 +152,8 @@ function Bot24Page() {
             </div>
           </div>
 
+          <AdSlot slot={1} />
+
           <div className="space-y-2 rounded-lg border bg-card p-4">
             <div
               className={`text-sm font-semibold ${status?.running ? "text-green-500" : "text-muted-foreground"}`}
@@ -174,6 +177,8 @@ function Bot24Page() {
               </div>
             )}
           </div>
+
+          <AdSlot slot={2} />
         </div>
       </main>
     </div>

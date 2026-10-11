@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { listCommunities, listPosts, DEFAULT_COMMUNITIES, createCommunity } from "@/lib/social";
 import type { Community, Post } from "@/lib/social-types";
 import { PostCard } from "@/components/social/post-card";
@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { CreatePostForm } from "@/components/social/create-post-form";
 import { Users, Flame, Clock, Trophy, Plus } from "lucide-react";
 import { CryptoTicker } from "@/components/crypto-ticker";
+import { AdSlot } from "@/components/ad-slot";
 
 export const Route = createFileRoute("/community/")({
   head: () => ({
@@ -191,6 +192,8 @@ function CommunityHome() {
             )}
           </div>
 
+          <AdSlot slot={1} className="py-1" />
+
           {loading ? (
             <p className="text-sm text-muted-foreground">Carregando feed...</p>
           ) : posts.length === 0 ? (
@@ -198,10 +201,15 @@ function CommunityHome() {
               Nenhum post ainda. Toque em "Criar post" e publique o primeiro!
             </div>
           ) : (
-            posts.map((p) => (
-              <PostCard key={p.id} post={p} onNeedAuth={() => setAuthOpen(true)} />
+            posts.map((p, i) => (
+              <Fragment key={p.id}>
+                <PostCard post={p} onNeedAuth={() => setAuthOpen(true)} />
+                {/* 2º anúncio no meio do feed: depois do 3º post (ou do último, se houver menos) */}
+                {i === Math.min(2, posts.length - 1) && <AdSlot slot={2} className="py-1" />}
+              </Fragment>
             ))
           )}
+          {(loading || posts.length === 0) && <AdSlot slot={2} className="py-1" />}
         </main>
 
         <aside className="hidden w-64 shrink-0 space-y-3 lg:block">

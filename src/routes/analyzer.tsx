@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useMemo, useState } from "react";
 import { AppSidebar } from "@/components/app-sidebar";
+import { AdSlot } from "@/components/ad-slot";
 import { loadThreads, type Thread } from "@/lib/threads";
 import { analyzeToken } from "@/lib/analyzer.functions";
 import { Search, AlertTriangle } from "lucide-react";
@@ -55,6 +56,8 @@ function AnalyzerPage() {
             </p>
           </div>
 
+          <AdSlot slot={1} className="mb-6" />
+
           <form
             onSubmit={(e) => {
               e.preventDefault();
@@ -83,6 +86,8 @@ function AnalyzerPage() {
               </button>
             ))}
           </div>
+
+          <AdSlot slot={2} className="mt-6" />
 
           {result?.error && (
             <div className="mt-6 flex items-start gap-2 rounded-md border border-destructive/40 bg-destructive/10 p-3 text-sm text-destructive">

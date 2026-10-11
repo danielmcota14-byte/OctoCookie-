@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { AppSidebar } from "@/components/app-sidebar";
+import { AdSlot } from "@/components/ad-slot";
 import { useEffect, useState } from "react";
 import { loadThreads, saveThreads, type Thread } from "@/lib/threads";
 
@@ -40,6 +41,7 @@ function SettingsPage() {
                 (variáveis de ambiente do Vercel) — nunca no navegador. Se uma esgota o limite, o app troca para a próxima automaticamente.
               </p>
             </section>
+            <AdSlot slot={1} />
             <section className="rounded-xl border p-5">
               <h2 className="text-sm font-medium">Histórico</h2>
               <p className="mt-2 text-sm text-muted-foreground">
@@ -52,6 +54,7 @@ function SettingsPage() {
                 Apagar todo o histórico
               </button>
             </section>
+            <AdSlot slot={2} />
           </div>
         </div>
       </main>

@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState } from "react";
 import { AppSidebar } from "@/components/app-sidebar";
+import { AdSlot } from "@/components/ad-slot";
 import { loadThreads, type Thread } from "@/lib/threads";
 import { runCookieScript } from "@/lib/ide.functions";
 import { Play, AlertTriangle, FileCode } from "lucide-react";
@@ -82,6 +83,8 @@ function IdePage() {
             </button>
           </div>
 
+          <AdSlot slot={1} className="mb-6" />
+
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-4">
             <div className="lg:col-span-3">
               <textarea
@@ -103,6 +106,8 @@ function IdePage() {
               </ul>
             </aside>
           </div>
+
+          <AdSlot slot={2} className="mt-6" />
 
           {result && (
             <div className="mt-6 space-y-4">

@@ -12,7 +12,6 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { AuthProvider } from "../lib/auth-context";
-import { AdDock } from "../components/ad-bar";
 
 function NotFoundComponent() {
   return (
@@ -122,13 +121,12 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        {/* Dois banners por página, juntos no rodapé. As páginas usam h-full (altura do miolo), não h-screen. */}
+        {/* Os banners ficam DENTRO de cada página (<AdSlot />), nunca no topo nem no rodapé. As páginas usam h-full. */}
         <div className="flex w-full flex-col" style={{ height: "100dvh" }}>
           <div className="relative min-h-0 flex-1 overflow-auto">
             {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
             <Outlet />
           </div>
-          <AdDock />
         </div>
       </AuthProvider>
     </QueryClientProvider>

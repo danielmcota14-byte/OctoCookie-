@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { AppSidebar } from "@/components/app-sidebar";
 import { useEffect, useState } from "react";
 import { loadThreads, type Thread } from "@/lib/threads";
+import { AdSlot } from "@/components/ad-slot";
 import { BookOpen, Bot, LineChart, Coins } from "lucide-react";
 
 export const Route = createFileRoute("/launch")({
@@ -34,6 +35,7 @@ function Launch() {
           <p className="mt-2 text-sm text-muted-foreground">
             Trilhas de aprendizado. Escolha um tema e comece uma conversa com o OctoCookie.
           </p>
+          <AdSlot slot={1} className="mt-6" />
           <div className="mt-8 grid grid-cols-1 gap-3 sm:grid-cols-2">
             {topics.map((t) => (
               <div key={t.title} className="rounded-xl border p-5 hover:bg-muted/50">
@@ -44,6 +46,7 @@ function Launch() {
               </div>
             ))}
           </div>
+          <AdSlot slot={2} className="mt-8" />
         </div>
       </main>
     </div>
