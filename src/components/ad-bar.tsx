@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 // Dois banners 468x60 (Adsterra) juntos no rodapé de TODAS as páginas (lado a lado no desktop, empilhados no celular).
 // Chaves: cada banner pode ter a sua. Se o Adsterra mostrar só um banner por chave, crie outra zona 468x60 no painel
 // e defina VITE_AD_KEY_2 (ou troque abaixo). Por padrão os dois usam a chave que você passou.
-const DEFAULT_KEY = "5eff732876fbe681c4bcf4138968a691";
+const DEFAULT_KEY = "53b35e700dd3c5120e2081ce6edf4273";
 const AD_KEYS: [string, string] = [
   import.meta.env.VITE_AD_KEY_1 || DEFAULT_KEY,
   import.meta.env.VITE_AD_KEY_2 || DEFAULT_KEY,

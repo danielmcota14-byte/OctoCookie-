@@ -3,7 +3,7 @@ const fs = require('fs'), path = require('path'), assert = require('assert');
 const root = path.join(__dirname, '../../');
 const dir = root + 'public/octocookie-app/';
 const ads = fs.readFileSync(dir + 'ads.js', 'utf8');
-const KEY = '5eff732876fbe681c4bcf4138968a691', K2 = 'a'.repeat(32);
+const KEY = '53b35e700dd3c5120e2081ce6edf4273', K2 = 'a'.repeat(32);
 // página com 2 espaços DENTRO do conteúdo (como as páginas reais): nada no topo nem no fim do <body>
 const PAGE = '<body><div id="topo">cabeçalho</div><p>a</p><div class="octo-ad-slot" data-slot="1"></div><p>b</p><div class="octo-ad-slot" data-slot="2"></div><p>c</p><div id="rodape">rodapé</div></body>';
 async function run(url, { embedded = false, cfg = null, html = PAGE } = {}) {

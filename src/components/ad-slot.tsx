@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 // Banner 468x60 (Adsterra) DENTRO do conteúdo das páginas (nunca no cabeçalho nem no rodapé).
 // Cada página usa dois: <AdSlot slot={1} /> e <AdSlot slot={2} />, colocados entre blocos de conteúdo.
 // Chave padrão abaixo; VITE_AD_KEY_1 / VITE_AD_KEY_2 (32 hex) sobrescrevem cada espaço, e VITE_ADS_DISABLED=1 desliga tudo.
-const DEFAULT_KEY = "5eff732876fbe681c4bcf4138968a691";
+const DEFAULT_KEY = "53b35e700dd3c5120e2081ce6edf4273";
 const isKey = (k: unknown): k is string => typeof k === "string" && /^[0-9a-f]{32}$/i.test(k);
 const KEYS: string[] = [import.meta.env.VITE_AD_KEY_1, import.meta.env.VITE_AD_KEY_2].map((k) =>
   isKey(k) ? k : DEFAULT_KEY,

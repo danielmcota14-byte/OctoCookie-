@@ -15,7 +15,7 @@
  */
 (function () {
   'use strict';
-  var W = 468, H = 60, DEFAULT_KEY = '5eff732876fbe681c4bcf4138968a691';
+  var W = 468, H = 60, DEFAULT_KEY = '53b35e700dd3c5120e2081ce6edf4273';
   if (/[?&]headless=1/.test(location.search)) return;
 
   var cfg = window.OCTO_ADS || {};

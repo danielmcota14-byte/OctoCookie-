@@ -4,7 +4,7 @@ import { t as cn } from "./utils-C_uf36nf.mjs";
 //#region node_modules/.nitro/vite/services/ssr/assets/ad-slot-DTrVDkyQ.js
 var import_react = /* @__PURE__ */ __toESM(require_react());
 var import_jsx_runtime = require_jsx_runtime();
-var DEFAULT_KEY = "5eff732876fbe681c4bcf4138968a691";
+var DEFAULT_KEY = "53b35e700dd3c5120e2081ce6edf4273";
 var isKey = (k) => typeof k === "string" && /^[0-9a-f]{32}$/i.test(k);
 var KEYS = [void 0, void 0].map((k) => isKey(k) ? k : DEFAULT_KEY);
 var AD_W = 468;
