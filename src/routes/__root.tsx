@@ -80,7 +80,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "OctoCookie — Um universo de possibilidades" },
-      { name: "description", content: "Pesquisa Holograma, carteira, bot, analisador, CookieScript e comunidade: um só ecossistema." },
+      { name: "description", content: "Pesquisa, carteira, bot, analisador, CookieScript e comunidade: um só ecossistema." },
       { name: "author", content: "OctoCookie" },
       { property: "og:title", content: "OctoCookie — Um universo de possibilidades" },
       { property: "og:description", content: "Holograma: limitar perdas não exige prever o mercado." },

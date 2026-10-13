@@ -34,7 +34,7 @@ type NavItem = { to: string; label: string; icon: LucideIcon; exact?: boolean; e
 const NAV_GROUPS: { title: string; items: NavItem[] }[] = [
   { title: "Início", items: [
     { to: "/", label: "Início", icon: Compass, exact: true },
-    { to: "/pesquisa", label: "Pesquisa Holograma", icon: BookOpenText },
+    { to: "/pesquisa", label: "Pesquisa", icon: BookOpenText },
   ] },
   { title: "Ferramentas", items: [
     { to: "/carteira", label: "Carteira", icon: Wallet },
