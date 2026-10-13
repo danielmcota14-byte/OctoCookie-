@@ -1,0 +1,348 @@
+<!doctype html>
+<html lang="pt-BR" data-octo="adm">
+<head>
+<link rel="stylesheet" href="/octo.css"><link rel="stylesheet" href="/octo-legacy.css"><script src="/octo.js"></script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://apis.google.com; style-src 'unsafe-inline'; connect-src https: http://localhost:* http://127.0.0.1:*; frame-src https://*.firebaseapp.com https://accounts.google.com https://apis.google.com; img-src data: https:; base-uri 'none'; form-action 'none'">
+<title>OctoCookie · Adm</title>
+<style>
+:root{--bg:#0a0e17;--bg2:#0f1523;--card:#131b2c;--card2:#182237;--fg:#e9eefb;--mut:#8fa0bd;--line:#23304a;--acc:#38bdf8;--acc2:#818cf8;--ok:#34d399;--bad:#f87171;--warn:#fbbf24;--r:14px}
+@media(prefers-color-scheme:light){:root{--bg:#f3f5fa;--bg2:#e9edf6;--card:#fff;--card2:#f6f8fc;--fg:#101828;--mut:#5b6b86;--line:#dde3ef;--acc:#0284c7;--acc2:#4f46e5;--ok:#059669;--bad:#dc2626;--warn:#b45309}}
+*{box-sizing:border-box}html,body{margin:0}
+body{background:radial-gradient(1200px 500px at 80% -10%,color-mix(in srgb,var(--acc2) 18%,transparent),transparent),var(--bg);color:var(--fg);font:14px/1.5 Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;min-height:100vh}
+.hide{display:none!important}
+button,input,select{font:inherit;color:inherit}
+input,select{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg2);outline:none}
+input:focus,select:focus{border-color:var(--acc)}
+label{display:block;font-size:12px;color:var(--mut);margin:12px 0 5px}
+button{padding:10px 16px;border-radius:10px;border:1px solid var(--line);background:var(--card2);cursor:pointer;transition:.15s}
+button:hover:not(:disabled){border-color:var(--acc)}button:disabled{opacity:.5;cursor:default}
+button.p{background:linear-gradient(135deg,var(--acc),var(--acc2));border:0;color:#fff;font-weight:600}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12px;word-break:break-all}
+.ok{color:var(--ok)}.bad{color:var(--bad)}.warn{color:var(--warn)}.mut{color:var(--mut)}
+.msg{min-height:20px;font-size:13px;margin-top:12px;white-space:pre-line}
+
+/* login */
+#login,#denied,#boot{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+.box{width:100%;max-width:400px;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:28px;box-shadow:0 20px 60px rgba(0,0,0,.35)}
+.logo{width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,var(--acc),var(--acc2));display:grid;place-items:center;font-size:24px;margin-bottom:14px}
+.box h1{font-size:20px;margin:0 0 4px}.box p{margin:0 0 6px;color:var(--mut);font-size:13px}
+.sep{display:flex;align-items:center;gap:10px;color:var(--mut);font-size:12px;margin:14px 0}.sep:before,.sep:after{content:"";flex:1;height:1px;background:var(--line)}
+.row{display:flex;gap:10px;flex-wrap:wrap}.row>*{flex:1 1 150px}
+.full{width:100%}
+
+/* app */
+header{position:sticky;top:0;z-index:5;backdrop-filter:blur(10px);background:color-mix(in srgb,var(--bg) 82%,transparent);border-bottom:1px solid var(--line)}
+.bar{max-width:1040px;margin:0 auto;padding:12px 18px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700}.brand .logo{width:34px;height:34px;font-size:18px;margin:0;border-radius:10px}
+.pill{font-size:11px;padding:3px 10px;border-radius:99px;border:1px solid var(--line);color:var(--mut)}
+.spacer{flex:1}
+.user{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--mut)}.user button{padding:6px 12px;font-size:12px}
+nav{max-width:1040px;margin:0 auto;padding:0 18px 12px;display:flex;gap:6px;overflow-x:auto}
+nav button{background:transparent;border:1px solid transparent;color:var(--mut);border-radius:99px;padding:7px 14px;white-space:nowrap}
+nav button.on{background:var(--card);border-color:var(--line);color:var(--fg)}
+main{max-width:1040px;margin:0 auto;padding:18px;display:grid;gap:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:20px}
+.card h2{font-size:15px;margin:0 0 4px}.sub{color:var(--mut);font-size:12.5px;margin:0 0 14px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.kpi{background:var(--card2);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.kpi small{color:var(--mut);display:block;font-size:12px}.kpi b{display:block;font-size:22px;margin:2px 0;letter-spacing:-.3px}.kpi span{font-size:12px;color:var(--mut)}
+.spark{display:flex;align-items:flex-end;gap:4px;height:80px;margin-top:6px}
+.spark i{flex:1;background:linear-gradient(180deg,var(--acc),var(--acc2));border-radius:4px 4px 0 0;min-height:2px;opacity:.9}
+.scroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:9px 10px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+th{color:var(--mut);font-weight:500;font-size:12px}th:first-child,td:first-child{text-align:left}tfoot td{font-weight:700;border-bottom:0}
+details{margin-top:12px}summary{cursor:pointer;color:var(--mut);font-size:12px}pre{overflow:auto;max-height:220px;font-size:11px;background:var(--bg2);padding:10px;border-radius:8px}
+ol{margin:6px 0 0;padding-left:18px;color:var(--mut);font-size:13px}ol li{margin:4px 0}code{background:var(--bg2);padding:1px 6px;border-radius:6px;font-size:12px}
+</style>
+</head>
+<body>
+
+<div id="boot" class="mut">Carregando…</div>
+
+<!-- ENTRAR -->
+<section id="login" class="hide">
+  <div class="box">
+    <div class="logo">🐙</div>
+    <h1>Admin OctoCookie</h1>
+    <p>Acesso restrito a <b>danimcota@gmail.com</b>. Use a mesma conta do login do site.</p>
+    <label for="email">E-mail</label><input id="email" type="email" autocomplete="username" value="danimcota@gmail.com" readonly>
+    <label for="senha">Senha</label><input id="senha" type="password" autocomplete="current-password" placeholder="••••••••">
+    <label for="url">Servidor (Render)</label><input id="url" type="url" placeholder="https://seu-bot.onrender.com" autocomplete="off">
+    <div class="row" style="margin-top:16px"><button class="p" id="btnGoogle">Entrar com Google</button><button id="btnEmail">Entrar com senha</button></div>
+    <p style="margin-top:10px;font-size:12px">Recomendado: Google (e-mail já verificado). Com senha, o e-mail da conta precisa estar verificado no Firebase.</p>
+    <div id="loginMsg" class="msg"></div>
+  </div>
+</section>
+
+<!-- SEM PERMISSÃO -->
+<section id="denied" class="hide">
+  <div class="box">
+    <div class="logo">🔒</div>
+    <h1>Sem permissão</h1>
+    <p id="deniedTxt">Esta conta não é administradora.</p>
+    <label>Seu UID</label><div id="uid" class="mono"></div>
+    <p style="margin-top:12px">Se você é o dono e usa outra conta, coloque este UID em <code>ADMIN_UIDS</code> no servidor (Render) e reinicie.</p>
+    <div class="row" style="margin-top:14px"><button id="btnCopiar">Copiar UID</button><button id="btnSair0">Sair</button></div>
+  </div>
+</section>
+
+<!-- PAINEL -->
+<div id="app" class="hide">
+<header>
+  <div class="bar">
+    <div class="brand"><div class="logo">🐙</div>OctoCookie <span class="pill">Admin</span></div>
+    <span class="pill" id="srv">servidor…</span>
+    <div class="spacer"></div>
+    <div class="user"><span id="quem"></span><button id="btnSair">Sair</button></div>
+  </div>
+  <nav id="tabs">
+    <button data-t="geral" class="on">Visão geral</button>
+    <button data-t="taxa">Carteira dos 2%</button>
+    <button data-t="ads">Adsterra</button>
+    <button data-t="srv">Servidor</button>
+  </nav>
+</header>
+
+<main>
+  <section data-p="geral">
+    <div class="kpis">
+      <div class="kpi"><small>Receita Adsterra (7 dias)</small><b id="kRev">—</b><span id="kRevSub">carregando…</span></div>
+      <div class="kpi"><small>Impressões (7 dias)</small><b id="kImp">—</b><span id="kCtr"></span></div>
+      <div class="kpi"><small>Destino dos 2%</small><b id="kDest" class="mono" style="font-size:15px">—</b><span id="kDestSub"></span></div>
+      <div class="kpi"><small>Adsterra no servidor</small><b id="kAds">—</b><span>token em ADSTERRA_TOKEN</span></div>
+    </div>
+    <div class="card" style="margin-top:12px"><h2>Receita por dia</h2><p class="sub">Últimos 7 dias (US$).</p><div class="spark" id="spark"></div><div id="sparkL" class="mut" style="display:flex;justify-content:space-between;font-size:11px;margin-top:4px"></div></div>
+  </section>
+
+  <section data-p="taxa" class="hide">
+    <div class="card">
+      <h2>Carteira que recebe os 2%</h2>
+      <p class="sub">A taxa de serviço (2% do lucro de cada operação vencedora) vai para a carteira conectada aqui, para todos os usuários, sem novo deploy. Você assina uma mensagem para provar que controla o endereço (não gasta gás).</p>
+      <div class="row"><button class="p" id="btnConn" style="flex:0 0 auto">Conectar carteira</button><button id="btnSet" style="flex:0 0 auto" disabled>Definir como destino dos 2%</button></div>
+      <label>Carteira conectada</label><div id="conn" class="mono">— não conectada —</div>
+      <div id="bal" class="mut" style="font-size:12px;margin-top:4px"></div>
+      <label>Destino atual dos 2% no servidor</label><div id="atual" class="mono">—</div>
+      <div id="cmp" style="margin-top:6px"></div>
+      <div id="msg" class="msg"></div>
+    </div>
+  </section>
+
+  <section data-p="ads" class="hide">
+    <div class="card">
+      <h2>Receita do Adsterra</h2>
+      <p class="sub">Dados da Publisher API do Adsterra, lidos pelo servidor (o token nunca vai para o navegador).</p>
+      <div class="row">
+        <div><label for="per">Período</label><select id="per"><option value="0">Hoje</option><option value="1">Ontem</option><option value="7" selected>Últimos 7 dias</option><option value="30">Últimos 30 dias</option><option value="x">Personalizado</option></select></div>
+        <div><label for="grp">Agrupar por</label><select id="grp"><option value="date">Dia</option><option value="placement">Banner</option><option value="country">País</option></select></div>
+        <div id="cust" class="hide"><label for="d1">De</label><input id="d1" type="date"><label for="d2">Até</label><input id="d2" type="date"></div>
+      </div>
+      <div style="margin-top:14px"><button class="p" id="btnAds">Buscar estatísticas</button></div>
+      <div id="adsMsg" class="msg"></div>
+      <div class="kpis" id="kpis" style="margin:10px 0"></div>
+      <div class="scroll"><table id="tbl" class="hide"><thead><tr><th id="th0">Dia</th><th>Impressões</th><th>Cliques</th><th>CTR</th><th>CPM</th><th>Receita (US$)</th></tr></thead><tbody></tbody><tfoot></tfoot></table></div>
+      <details id="rawBox" class="hide"><summary>Resposta bruta da API</summary><pre id="raw"></pre></details>
+    </div>
+  </section>
+
+  <section data-p="srv" class="hide">
+    <div class="card">
+      <h2>Servidor</h2>
+      <p class="sub">Variáveis no Render para este painel funcionar:</p>
+      <label for="url2">URL do servidor</label><input id="url2" type="url" autocomplete="off">
+      <div class="row" style="margin-top:12px"><button id="btnPing">Testar conexão</button></div>
+      <div id="ping" class="msg"></div>
+      <ol><li><code>ADMIN_UIDS</code>: UID(s) Firebase dos administradores (o seu UID aparece em “Conta” abaixo).</li>
+        <li><code>FIREBASE_PROJECT_ID</code>: <code>octo-10d4f</code>.</li><li><code>ADSTERRA_TOKEN</code>: token da Publisher API.</li></ol>
+      <label>Conta</label><div id="conta" class="mono"></div>
+    </div>
+  </section>
+</main>
+</div>
+
+<script src="./octocookie-app/bot-config.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script>
+(function () {
+  'use strict';
+  var $ = function (id) { return document.getElementById(id); };
+  var HEAD = 'OctoCookie — destino da taxa de serviço (2%)', LS = 'octocookie.adm.v2';
+  var account = null, me = null;
+
+  // mesma conta do login do site (projeto Firebase octo-10d4f)
+  var cfg = { apiKey: 'AIzaSyDUhsSTKb6MCmSL3xIFD4CTAaMvaWneCfo', authDomain: 'octo-10d4f.firebaseapp.com', projectId: 'octo-10d4f', appId: '1:494062478640:web:8588ee8de55ee9917294f5' };
+  var auth;
+  try { firebase.initializeApp(cfg); auth = firebase.auth(); } catch (e) { $('boot').textContent = 'Não foi possível carregar o login do Firebase (' + (e && e.message || e) + '). Verifique a conexão e bloqueadores.'; return; }
+
+  function view(name) { ['boot', 'login', 'denied', 'app'].forEach(function (v) { $(v).classList.toggle('hide', v !== name); }); }
+  function setText(el, txt, cls) { el.textContent = txt; el.className = (el.className || '').replace(/\b(ok|bad|warn)\b/g, '').trim() + (cls ? ' ' + cls : ''); }
+  function loadUrl() {
+    var u = ''; try { u = JSON.parse(localStorage.getItem(LS) || '{}').url || ''; } catch (e) {}
+    return u || (window.OCTO_BOT_CONFIG && window.OCTO_BOT_CONFIG.url) || ''; // só a URL; o token do site NUNCA é usado aqui
+  }
+  function saveUrl(u) { try { localStorage.setItem(LS, JSON.stringify({ url: u })); } catch (e) {} }
+  function base() {
+    var u = ($('app').classList.contains('hide') ? $('url').value : $('url2').value).trim().replace(/\/+$/, '');
+    if (!/^https:\/\/[^\s]+$/.test(u) && !/^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(u)) throw new Error('Informe a URL https:// do servidor.');
+    return u;
+  }
+  // toda chamada leva o ID token do Firebase (renovado sozinho); quem decide se você é admin é o SERVIDOR
+  function api(path, opt) {
+    opt = opt || {};
+    if (!auth.currentUser) return Promise.reject(new Error('Faça login.'));
+    return auth.currentUser.getIdToken().then(function (tok) {
+      var h = { Accept: 'application/json', Authorization: 'Bearer ' + tok };
+      if (opt.body) h['Content-Type'] = 'application/json';
+      return fetch(base() + path, { method: opt.method || 'GET', headers: h, body: opt.body ? JSON.stringify(opt.body) : undefined });
+    }).then(function (r) {
+      return r.json().catch(function () { return {}; }).then(function (j) {
+        if (!r.ok) { var e = new Error(j.erro || ('HTTP ' + r.status)); e.status = r.status; e.body = j; throw e; }
+        return j;
+      });
+    });
+  }
+
+  // ---------- login ----------
+  function loginErro(e) {
+    var c = e && e.code || '';
+    var t = { 'auth/invalid-credential': 'E-mail ou senha incorretos.', 'auth/wrong-password': 'E-mail ou senha incorretos.', 'auth/user-not-found': 'E-mail ou senha incorretos.', 'auth/too-many-requests': 'Muitas tentativas. Aguarde um pouco.', 'auth/popup-closed-by-user': 'Janela do Google fechada.', 'auth/cancelled-popup-request': 'Janela do Google fechada.', 'auth/network-request-failed': 'Sem conexão.', 'auth/unauthorized-domain': 'Este domínio não está autorizado no Firebase. Abra Firebase Console → Authentication → Settings → Authorized domains e adicione ' + location.hostname + '.', 'auth/operation-not-allowed': 'Este método de login está desativado no Firebase (Authentication → Sign-in method).', 'auth/internal-error': 'Erro interno do Firebase. Desative bloqueadores de anúncio/privacidade nesta página e tente de novo.' }[c];
+    setText($('loginMsg'), t || ('Não entrou: ' + (e && e.message || e)), 'bad');
+  }
+  $('btnEmail').addEventListener('click', function () {
+    var em = $('email').value.trim(), pw = $('senha').value; if (!em || !pw) return setText($('loginMsg'), 'Informe e-mail e senha.', 'bad');
+    try { saveUrl(base()); } catch (e) { return setText($('loginMsg'), e.message, 'bad'); }
+    setText($('loginMsg'), 'Entrando…'); auth.signInWithEmailAndPassword(em, pw).then(function (c) { entrar((c && c.user) || auth.currentUser); }).catch(loginErro);
+  });
+  $('btnGoogle').addEventListener('click', function () {
+    try { saveUrl(base()); } catch (e) { return setText($('loginMsg'), e.message, 'bad'); }
+    setText($('loginMsg'), 'Abrindo o Google…');
+    var prov = new firebase.auth.GoogleAuthProvider();
+    auth.signInWithPopup(prov).then(function (c) { entrar((c && c.user) || auth.currentUser); }).catch(function (e) {
+      // popup bloqueado (celular, navegador embutido): cai para redirecionamento de página inteira
+      if (e && (e.code === 'auth/popup-blocked' || e.code === 'auth/operation-not-supported-in-this-environment')) { setText($('loginMsg'), 'Popup bloqueado, redirecionando para o Google…'); return auth.signInWithRedirect(prov).catch(loginErro); }
+      loginErro(e);
+    });
+  });
+  if (auth.getRedirectResult) auth.getRedirectResult().catch(loginErro);
+  $('senha').addEventListener('keydown', function (e) { if (e.key === 'Enter') $('btnEmail').click(); });
+  function sair() { account = null; auth.signOut(); }
+  $('btnSair').addEventListener('click', sair); $('btnSair0').addEventListener('click', sair);
+  $('btnCopiar').addEventListener('click', function () { try { navigator.clipboard.writeText($('uid').textContent); setText($('btnCopiar'), 'Copiado!'); } catch (e) {} });
+
+  // depois do login: o servidor confirma se a conta é admin
+  var entrando = false;
+  function entrar(user) {
+    if (entrando || !user) return; entrando = true;
+    var url; try { url = base(); } catch (e) { entrando = false; view('login'); return setText($('loginMsg'), e.message, 'bad'); }
+    view('boot'); $('boot').textContent = 'Verificando permissão… (se o servidor estava dormindo no Render, pode levar ~1 min)';
+    api('/adm/ping').then(function (j) {
+      entrando = false;
+      me = j.admin || { uid: user.uid, email: user.email }; saveUrl(url); $('url2').value = url;
+      $('quem').textContent = user.email || user.uid; $('conta').textContent = (user.email || '') + '\nUID: ' + user.uid;
+      setText($('srv'), '● servidor online', 'ok'); $('kAds').textContent = j.adsterra ? 'configurado' : 'não configurado'; $('kAds').className = j.adsterra ? 'ok' : 'warn';
+      mostrarDestino(j.destinoTaxa); view('app'); aba('geral'); buscarResumo();
+    }).catch(function (e) {
+      entrando = false;
+      if (e.status === 403) { $('uid').textContent = (e.body && e.body.uid) || user.uid; setText($('deniedTxt'), (e.message || '') + ' Conta: ' + (user.email || user.uid) + '. O painel é de uso exclusivo de danimcota@gmail.com.'); view('denied'); }
+      else { view('login'); setText($('loginMsg'), (!e.status ? 'Não consegui falar com o servidor (' + url + '). Ele pode estar offline/dormindo no Render, a URL pode estar errada ou o CORS bloqueou (ALLOWED_ORIGINS). Corrija a URL acima e clique em entrar de novo. Detalhe: ' : e.status === 503 ? 'Servidor sem admin configurado: ' : e.status === 401 ? 'Servidor recusou o login: ' : 'Falha ao falar com o servidor: ') + e.message, 'bad'); }
+    });
+  }
+  auth.onAuthStateChanged(function (user) {
+    $('url').value = $('url').value || loginUrlInicial();
+    if (user) entrar(user); else { me = null; view('login'); }
+  });
+  function loginUrlInicial() { return loadUrl(); }
+
+  // ---------- abas ----------
+  function aba(t) {
+    [].forEach.call(document.querySelectorAll('#tabs button'), function (b) { b.classList.toggle('on', b.dataset.t === t); });
+    [].forEach.call(document.querySelectorAll('main > section'), function (s) { s.classList.toggle('hide', s.dataset.p !== t); });
+  }
+  $('tabs').addEventListener('click', function (e) { var t = e.target.dataset && e.target.dataset.t; if (t) aba(t); });
+
+  // ---------- carteira dos 2% ----------
+  var short = function (a) { return a ? a.slice(0, 8) + '…' + a.slice(-6) : '—'; };
+  function mostrarDestino(a) {
+    $('atual').textContent = a || 'nenhum definido (vale o padrão do código)'; $('kDest').textContent = short(a); $('kDestSub').textContent = a ? 'definido no servidor' : 'padrão do código';
+    var el = $('cmp'); if (!account || !a) { el.textContent = ''; return; }
+    if (account.toLowerCase() === a.toLowerCase()) setText(el, '✅ A carteira conectada já é o destino dos 2%.', 'ok'); else setText(el, '⚠️ A carteira conectada é diferente do destino atual.', 'warn');
+  }
+  function carregarDestino() { return fetch(base() + '/fee-recipient', { cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (j) { mostrarDestino(j.recipient); }).catch(function () {}); }
+  function weiToEth(hex) { var w = BigInt(hex), s = (w / 10n ** 14n).toString().padStart(5, '0'); return s.slice(0, -4) + '.' + s.slice(-4); }
+  $('btnConn').addEventListener('click', function () {
+    if (!window.ethereum) return setText($('msg'), 'Nenhuma carteira encontrada. Instale a MetaMask (ou abra no navegador da sua carteira).', 'bad');
+    window.ethereum.request({ method: 'eth_requestAccounts' }).then(function (accs) {
+      account = accs && accs[0]; if (!account) throw new Error('Nenhuma conta liberada.');
+      $('conn').textContent = account; $('btnSet').disabled = false; setText($('msg'), '');
+      return window.ethereum.request({ method: 'eth_getBalance', params: [account, 'latest'] }).then(function (b) { $('bal').textContent = 'Saldo (rede selecionada na carteira): ' + weiToEth(b) + ' ETH'; }).catch(function () {});
+    }).then(carregarDestino).catch(function (e) { setText($('msg'), 'Não conectou: ' + (e && e.message || e), 'bad'); });
+  });
+  function toHex(str) { var b = new TextEncoder().encode(str), h = '0x'; for (var i = 0; i < b.length; i++) h += b[i].toString(16).padStart(2, '0'); return h; }
+  $('btnSet').addEventListener('click', function () {
+    if (!account) return;
+    var addr = account, msg = HEAD + '\nCarteira: ' + addr + '\nEmitido em: ' + new Date().toISOString();
+    if (!confirm('Enviar os 2% de TODOS os usuários para esta carteira?\n\n' + addr)) return;
+    setText($('msg'), 'Assine a mensagem na carteira (não gasta gás)…');
+    window.ethereum.request({ method: 'personal_sign', params: [toHex(msg), addr] }).then(function (sig) {
+      return api('/adm/fee-recipient', { method: 'POST', body: { recipient: addr, message: msg, signature: sig } });
+    }).then(function (j) {
+      setText($('msg'), '✅ Pronto: os 2% agora vão para ' + j.recipient + '. Sites abertos pegam o novo destino no próximo carregamento; bots 24/7 em até 30 s.', 'ok'); return carregarDestino();
+    }).catch(function (e) { setText($('msg'), 'Não foi possível definir: ' + (e && e.message || e), 'bad'); });
+  });
+  if (window.ethereum && window.ethereum.on) window.ethereum.on('accountsChanged', function (a) { account = a && a[0] || null; $('conn').textContent = account || '— não conectada —'; $('btnSet').disabled = !account; });
+
+  // ---------- Adsterra ----------
+  var iso = function (d) { return d.toISOString().slice(0, 10); };
+  function periodoDe(v) {
+    var hoje = new Date(), fim = new Date(hoje), ini = new Date(hoje), n = Number(v);
+    if (v === '1') { ini.setUTCDate(ini.getUTCDate() - 1); fim = new Date(ini); } else if (n > 1) ini.setUTCDate(ini.getUTCDate() - (n - 1));
+    return [iso(ini), iso(fim)];
+  }
+  function periodo() { var v = $('per').value; if (v === 'x') { if (!$('d1').value || !$('d2').value) throw new Error('Escolha as duas datas.'); return [$('d1').value, $('d2').value]; } return periodoDe(v); }
+  var num = function (v) { var n = parseFloat(String(v === undefined || v === null ? '' : v).replace('%', '').replace(',', '.')); return isFinite(n) ? n : 0; };
+  function linhas(j) { return Array.isArray(j) ? j : (j && (j.items || j.data || j.rows)) || []; }
+  function rotulo(r, g) { return String(r[g] !== undefined ? r[g] : (r.date || r.placement || r.country || r.domain || r.name || r.title || '-')); }
+  function cel(tr, txt) { var td = document.createElement('td'); td.textContent = txt; tr.appendChild(td); }
+  function somar(rows) { var I = 0, C = 0, R = 0; rows.forEach(function (r) { I += num(r.impression !== undefined ? r.impression : r.impressions); C += num(r.clicks); R += num(r.revenue); }); return { I: I, C: C, R: R }; }
+  function kpi(box, titulo, valor) { var d = document.createElement('div'); d.className = 'kpi'; var s = document.createElement('small'); s.textContent = titulo; var b = document.createElement('b'); b.textContent = valor; d.appendChild(s); d.appendChild(b); box.appendChild(d); }
+  function render(j, g) {
+    var rows = linhas(j), tb = $('tbl').tBodies[0], tf = $('tbl').tFoot; tb.textContent = ''; tf.textContent = '';
+    rows.forEach(function (r) {
+      var imp = num(r.impression !== undefined ? r.impression : r.impressions), cl = num(r.clicks), rev = num(r.revenue), tr = document.createElement('tr');
+      cel(tr, rotulo(r, g)); cel(tr, imp.toLocaleString('pt-BR')); cel(tr, cl.toLocaleString('pt-BR'));
+      cel(tr, (r.ctr !== undefined ? num(r.ctr) : (imp ? cl / imp * 100 : 0)).toFixed(2) + '%'); cel(tr, (r.cpm !== undefined ? num(r.cpm) : (imp ? rev / imp * 1000 : 0)).toFixed(3)); cel(tr, rev.toFixed(4)); tb.appendChild(tr);
+    });
+    var t = somar(rows), ft = document.createElement('tr'); cel(ft, 'Total'); cel(ft, t.I.toLocaleString('pt-BR')); cel(ft, t.C.toLocaleString('pt-BR')); cel(ft, (t.I ? t.C / t.I * 100 : 0).toFixed(2) + '%'); cel(ft, (t.I ? t.R / t.I * 1000 : 0).toFixed(3)); cel(ft, t.R.toFixed(4)); tf.appendChild(ft);
+    $('th0').textContent = g === 'date' ? 'Dia' : g === 'placement' ? 'Banner' : 'País'; $('tbl').classList.toggle('hide', !rows.length);
+    var k = $('kpis'); k.textContent = ''; if (rows.length) { kpi(k, 'Receita', 'US$ ' + t.R.toFixed(2)); kpi(k, 'Impressões', t.I.toLocaleString('pt-BR')); kpi(k, 'Cliques', t.C.toLocaleString('pt-BR')); kpi(k, 'CPM médio', 'US$ ' + (t.I ? t.R / t.I * 1000 : 0).toFixed(3)); }
+    $('raw').textContent = JSON.stringify(j, null, 1).slice(0, 20000); $('rawBox').classList.remove('hide');
+    setText($('adsMsg'), rows.length ? rows.length + ' linha(s).' : 'Nenhum dado no período.', rows.length ? 'ok' : 'warn');
+  }
+  function qs(p, g) { return '/adm/adsterra?endpoint=stats&start_date=' + p[0] + '&finish_date=' + p[1] + '&group_by=' + g; }
+  $('btnAds').addEventListener('click', function () {
+    var g = $('grp').value, p; try { p = periodo(); } catch (e) { return setText($('adsMsg'), e.message, 'bad'); }
+    setText($('adsMsg'), 'Buscando…');
+    api(qs(p, g)).then(function (j) { render(j, g); }).catch(function (e) { setText($('adsMsg'), 'Falha: ' + e.message + (e.body && e.body.detalhe ? ' — ' + JSON.stringify(e.body.detalhe).slice(0, 200) : ''), 'bad'); });
+  });
+  $('per').addEventListener('change', function () { $('cust').classList.toggle('hide', $('per').value !== 'x'); });
+  function buscarResumo() { // visão geral: últimos 7 dias por dia
+    api(qs(periodoDe('7'), 'date')).then(function (j) {
+      var rows = linhas(j), t = somar(rows);
+      $('kRev').textContent = 'US$ ' + t.R.toFixed(2); $('kRevSub').textContent = 'CPM médio US$ ' + (t.I ? t.R / t.I * 1000 : 0).toFixed(3);
+      $('kImp').textContent = t.I.toLocaleString('pt-BR'); $('kCtr').textContent = 'CTR ' + (t.I ? t.C / t.I * 100 : 0).toFixed(2) + '%';
+      var sp = $('spark'), lb = $('sparkL'); sp.textContent = ''; lb.textContent = ''; var max = Math.max.apply(null, rows.map(function (r) { return num(r.revenue); }).concat([0.0001]));
+      rows.forEach(function (r) { var i = document.createElement('i'); i.style.height = Math.max(2, num(r.revenue) / max * 100) + '%'; i.title = rotulo(r, 'date') + ': US$ ' + num(r.revenue).toFixed(4); sp.appendChild(i); });
+      if (rows.length) { var a = document.createElement('span'), b = document.createElement('span'); a.textContent = rotulo(rows[0], 'date'); b.textContent = rotulo(rows[rows.length - 1], 'date'); lb.appendChild(a); lb.appendChild(b); }
+    }).catch(function (e) { $('kRev').textContent = '—'; $('kRevSub').textContent = e.status === 400 ? 'configure ADSTERRA_TOKEN' : 'indisponível'; });
+  }
+  $('btnPing').addEventListener('click', function () {
+    setText($('ping'), 'Testando…'); try { saveUrl(base()); } catch (e) { return setText($('ping'), e.message, 'bad'); }
+    api('/adm/ping').then(function (j) { setText($('ping'), 'Conectado como ' + (j.admin && (j.admin.email || j.admin.uid)) + '. Adsterra: ' + (j.adsterra ? 'configurado' : 'NÃO configurado') + '.', 'ok'); }).catch(function (e) { setText($('ping'), 'Falha: ' + e.message, 'bad'); });
+  });
+})();
+</script>
+</body>
+</html>

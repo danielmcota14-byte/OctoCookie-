@@ -4,6 +4,6 @@
  * O MESMO OWNER_TOKEN deve estar nas env vars do serviço no Render.
  */
 window.OCTO_BOT_CONFIG = window.OCTO_BOT_CONFIG || {
-  url: "https://octocookie-bot-24x7.onrender.com",
+  url: (typeof location !== "undefined" && /^https?:/.test(location.origin) ? location.origin : "") + "/bot",
   token: "5a7affdc9cdf9d970febaf4819816b53",
 };

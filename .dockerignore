@@ -4,6 +4,8 @@ node_modules
 .output
 .wrangler
 dist
-src
 bot-server/data
 bot-server/test
+**/__pycache__
+.env
+*.log

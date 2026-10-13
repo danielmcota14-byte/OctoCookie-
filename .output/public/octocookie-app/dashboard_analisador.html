@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-octo="analisador">
+<head>
+<link rel="stylesheet" href="/octo.css"><link rel="stylesheet" href="/octo-legacy.css"><script src="/octo.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OCTOCOOKIE · Dashboard Swap Analisador AUTO-HEALING</title>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@700;800&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#060606;--bg2:#0e0e0e;--bg3:#161616;--bg4:#1f1f1f;
+  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.15);
+  --text:#f0f0f0;--text2:#888;--text3:#444;
+  --green:#7fff7f;--red:#ff9090;--yellow:#ffe77f;
+  --blue:#60a5fa;--purple:#c084fc;--orange:#fb923c;
+  --mono:'Space Mono',monospace;--head:'Syne',sans-serif;
+}
+:root.light{
+  --bg:#f8f8f6;--bg2:#ffffff;--bg3:#f0f0ee;--bg4:#e8e8e5;
+  --border:rgba(0,0,0,0.09);--border2:rgba(0,0,0,0.18);
+  --text:#111111;--text2:#555;--text3:#999;
+  --green:#1a8c1a;--red:#c0392b;--yellow:#b8860b;
+  --blue:#1d6fa4;--purple:#7c3aed;--orange:#d97706;
+}
+:root.light html,
+:root.light body{background:var(--bg);color:var(--text)}
+:root.light .topnav{background:var(--bg2)}
+:root.light .card{background:var(--bg2);box-shadow:0 2px 12px rgba(0,0,0,0.07)}
+:root.light .reasons-box{background:rgba(0,0,0,0.04)}
+:root.light .cmd-log{background:rgba(0,0,0,0.04)}
+:root.light .counter-box{background:var(--bg3)}
+:root.light .progress-wrap{background:var(--bg4)}
+:root.light #cooldownBar{background:var(--bg4)}
+:root.light .reconn-box{background:var(--bg2)}
+:root.light .reconn-bar{background:var(--bg4)}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--mono);font-size:13px}
+body{display:flex;flex-direction:column;min-height:100vh}
+
+.topnav{display:flex;align-items:center;justify-content:space-between;padding:14px 24px;
+  border-bottom:1px solid var(--border);background:var(--bg2);position:sticky;top:0;z-index:100}
+.brand{font-family:var(--head);font-size:20px;font-weight:800;letter-spacing:.1em}
+.brand span{color:var(--green)}
+.nav-right{display:flex;align-items:center;gap:16px;font-size:11px;color:var(--text2)}
+#clockEl{font-variant-numeric:tabular-nums}
+
+.main{flex:1;padding:20px 24px;display:grid;
+  grid-template-columns:1fr 1fr 1fr;gap:14px;align-items:start}
+@media(max-width:900px){.main{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.main{grid-template-columns:1fr}}
+
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:18px;
+  transition:border-color .2s}
+.card:hover{border-color:var(--border2)}
+.card-title{font-size:10px;font-weight:700;letter-spacing:.12em;color:var(--text2);
+  text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.card-title::before{content:'';width:3px;height:14px;border-radius:2px;background:currentColor;opacity:.5}
+
+.signal-card{grid-column:1/3}
+.signal-big{font-family:var(--head);font-size:48px;font-weight:800;letter-spacing:.04em;
+  line-height:1;margin-bottom:8px;transition:color .3s,text-shadow .3s}
+.signal-big.flash{text-shadow:0 0 40px currentColor}
+.signal-score{font-size:14px;color:var(--text2);margin-bottom:4px}
+.signal-sub{font-size:11px;color:var(--text3)}
+.reasons-box{margin-top:14px;background:rgba(0,0,0,.35);border:1px solid var(--border);
+  border-radius:10px;padding:10px 12px;max-height:140px;overflow-y:auto;
+  font-size:11px;line-height:1.6;scrollbar-width:thin;scrollbar-color:var(--text3) transparent}
+.r-good{color:var(--green)} .r-warn{color:var(--yellow)} .r-neutral{color:var(--text2)}
+
+.status-card{grid-column:3/4}
+
+.metric-row{display:flex;justify-content:space-between;align-items:center;
+  padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.metric-row:last-child{border-bottom:none}
+.metric-label{color:var(--text2);font-size:11px}
+.metric-val{font-weight:700;font-size:13px}
+
+.counter-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:4px}
+.counter-box{background:var(--bg3);border:1px solid var(--border);border-radius:10px;
+  padding:12px;text-align:center}
+.counter-num{font-family:var(--head);font-size:28px;font-weight:800}
+.counter-label{font-size:10px;color:var(--text2);margin-top:2px;
+  text-transform:uppercase;letter-spacing:.1em}
+
+.ind-table{width:100%;border-collapse:collapse;font-size:12px}
+.ind-table td{padding:7px 6px;border-bottom:1px solid rgba(255,255,255,.04)}
+.ind-table tr:last-child td{border:none}
+.ind-table .lbl{color:var(--text2);width:50%}
+.ind-table .val{font-weight:700;text-align:right}
+
+.lat-bars{display:flex;align-items:flex-end;gap:2px;height:50px;margin-top:8px}
+.lat-bar{flex:1;border-radius:2px 2px 0 0;min-width:3px;transition:height .3s}
+
+.cmd-log{background:rgba(0,0,0,.4);border:1px solid var(--border);border-radius:10px;
+  padding:12px;max-height:200px;overflow-y:auto;font-size:11px;
+  scrollbar-width:thin;scrollbar-color:var(--text3) transparent}
+.log-row{padding:3px 0;border-bottom:1px solid rgba(255,255,255,.03);display:flex;gap:8px}
+.log-row:last-child{border:none}
+.log-ts{color:var(--text3);flex-shrink:0}
+.log-call{color:var(--green)} .log-put{color:var(--red)}
+.log-wait{color:var(--yellow)} .log-info{color:var(--text2)}
+.log-repair{color:var(--purple)} .log-warn{color:var(--orange)}
+.log-swap{color:#c084fc}
+
+.pill{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;
+  border-radius:20px;font-size:11px;font-weight:700;letter-spacing:.06em;border:1px solid}
+.pill.online{background:rgba(127,255,127,.07);border-color:rgba(127,255,127,.25);color:var(--green)}
+.pill.offline{background:rgba(255,144,144,.07);border-color:rgba(255,144,144,.25);color:var(--red)}
+.pill.reconnecting{background:rgba(255,231,127,.07);border-color:rgba(255,231,127,.25);color:var(--yellow)}
+.dot{width:8px;height:8px;border-radius:50%;display:inline-block;flex-shrink:0}
+.dot.green{background:var(--green);box-shadow:0 0 8px rgba(127,255,127,.6);animation:pulse 1.5s infinite}
+.dot.red{background:var(--red)}
+.dot.yellow{background:var(--yellow);animation:pulse 0.8s infinite}
+
+.status-bar{background:var(--bg2);border-top:1px solid var(--border);
+  padding:8px 24px;font-size:11px;color:var(--text2);
+  display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+
+.progress-wrap{background:var(--bg4);border-radius:4px;height:6px;overflow:hidden;margin-top:8px}
+.progress-fill{height:100%;border-radius:4px;transition:width .4s,background .4s}
+
+.wide{grid-column:1/-1}
+.half{grid-column:span 2}
+
+#cooldownBar{height:3px;background:var(--bg4);border-radius:2px;overflow:hidden;margin-top:8px}
+#cooldownFill{height:100%;background:var(--blue);border-radius:2px;transition:width .5s linear;width:0%}
+
+#reconnOverlay{
+  display:none;position:fixed;inset:0;z-index:200;
+  background:rgba(6,6,6,.88);backdrop-filter:blur(8px);
+  align-items:center;justify-content:center;flex-direction:column;gap:16px;
+}
+#reconnOverlay.visible{display:flex;}
+.reconn-box{background:var(--bg2);border:1px solid var(--border2);border-radius:20px;
+  padding:32px 40px;text-align:center;max-width:380px}
+.reconn-title{font-family:var(--head);font-size:22px;font-weight:800;color:var(--yellow);margin-bottom:8px}
+.reconn-sub{color:var(--text2);font-size:12px;line-height:1.6}
+.reconn-count{font-size:28px;font-weight:700;color:var(--blue);margin:12px 0;font-family:var(--head)}
+.reconn-bar{background:var(--bg4);border-radius:4px;height:4px;overflow:hidden;margin-top:12px}
+.reconn-fill{height:100%;background:var(--yellow);border-radius:4px;transition:width .2s linear}
+.btn-repair{background:rgba(192,132,252,.1);border:1px solid rgba(192,132,252,.3);color:var(--purple);
+  border-radius:8px;padding:8px 18px;font-family:var(--mono);font-size:11px;cursor:pointer;
+  margin-top:12px;transition:background .2s}
+.btn-repair:hover{background:rgba(192,132,252,.2)}
+
+.cb-badge{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;
+  border-radius:12px;font-size:10px;font-weight:700;letter-spacing:.08em}
+.cb-closed{background:rgba(127,255,127,.1);color:var(--green)}
+.cb-open{background:rgba(255,144,144,.1);color:var(--red);animation:pulse .8s infinite}
+.cb-half{background:rgba(255,231,127,.1);color:var(--yellow)}
+
+.repair-row{background:rgba(192,132,252,.06);border:1px solid rgba(192,132,252,.15);
+  border-radius:8px;padding:8px 12px;font-size:11px;margin-top:8px;color:var(--purple)}
+
+/* Swap-specific styles */
+.swap-indicator{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;
+  background:rgba(192,132,252,.08);border:1px solid rgba(192,132,252,.2);
+  border-radius:8px;font-size:10px;color:var(--purple);margin-left:8px}
+
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+@keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+.spinning{display:inline-block;animation:spin 1s linear infinite}
+</style>
+</head>
+<body>
+
+<!-- RECONEXÃO OVERLAY -->
+<div id="reconnOverlay">
+  <div class="reconn-box">
+    <div class="reconn-title">⚡ Reconectando...</div>
+    <div class="reconn-sub">API perdida. Protocolo de reconexão automática ativo.</div>
+    <div class="reconn-count"><span id="reconnAttempt">0</span> tentativas</div>
+    <div class="reconn-sub" id="reconnNext">Próxima tentativa em <span id="reconnCountdown">—</span>s</div>
+    <div class="reconn-bar"><div id="reconnFill" class="reconn-fill" style="width:0%"></div></div>
+    <button class="btn-repair" onclick="manualRepair()">♻️ Forçar reparo agora</button>
+    <div style="margin-top:8px;font-size:10px;color:var(--text3)" id="reconnReason"></div>
+  </div>
+</div>
+
+<nav class="topnav">
+  <div class="brand">⬡ OCTO<span>COOKIE</span>
+    <span style="font-size:14px;font-weight:400;color:var(--text2)"> Swap Dashboard + Analisador</span>
+    <span id="cbBadge" class="cb-badge cb-closed" style="margin-left:8px">CB: FECHADO</span>
+  </div>
+  <div class="nav-right">
+    <span id="apiPill" class="pill offline"><span class="dot red"></span> API OFFLINE</span>
+    <span id="clockEl">--:--:--</span>
+    <button onclick="toggleThemeDash()" id="themeToggleDash" style="padding:5px 12px;font-size:10px;font-weight:700;letter-spacing:.08em;font-family:'Space Mono',monospace;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.15);border-radius:20px;color:#888;cursor:pointer;text-transform:uppercase;transition:all .2s;white-space:nowrap">☀️ Claro</button>
+  </div>
+</nav>
+
+<div class="main">
+
+  <!-- SINAL PRINCIPAL -->
+  <div class="card signal-card">
+    <div class="card-title">🎯 Sinal de Swap</div>
+    <div id="signalBig" class="signal-big" style="color:var(--yellow)">AGUARDAR</div>
+    <div id="signalScore" class="signal-score">Score: 0%</div>
+    <div id="signalSub" class="signal-sub">Aguardando dados do bot...</div>
+    <div id="cooldownBar"><div id="cooldownFill"></div></div>
+    <div id="reasonsBox" class="reasons-box"></div>
+  </div>
+
+  <!-- STATUS -->
+  <div class="card status-card">
+    <div class="card-title">📡 Status do Sistema</div>
+    <div class="metric-row">
+      <span class="metric-label">API</span>
+      <span id="statusApi" class="metric-val" style="color:var(--red)">OFFLINE</span>
+    </div>
+    <div class="metric-row">
+      <span class="metric-label">Bot Rodando</span>
+      <span id="statusBot" class="metric-val">—</span>
+    </div>
+    <div class="metric-row">
+      <span class="metric-label">Swap Aberto</span>
+      <span id="statusContract" class="metric-val">—</span>
+    </div>
+    <div class="metric-row">
+      <span class="metric-label">Par Atual</span>
+      <span id="statusPair" class="metric-val" style="color:var(--blue)">—</span>
+    </div>
+    <div class="metric-row">
+      <span class="metric-label">Snapshots</span>
+      <span id="statusSnaps" class="metric-val">—</span>
+    </div>
+    <div class="metric-row">
+      <span class="metric-label">Uptime</span>
+      <span id="statusUptime" class="metric-val" style="font-size:10px">—</span>
+    </div>
+    <div class="metric-row">
+      <span class="metric-label">Reconexões</span>
+      <span id="statusReconn" class="metric-val" style="color:var(--blue)">0</span>
+    </div>
+    <div class="metric-row">
+      <span class="metric-label">Reparos Auto</span>
+      <span id="statusRepairs" class="metric-val" style="color:var(--purple)">0</span>
+    </div>
+  </div>
+
+  <!-- CONTADORES -->
+  <div class="card">
+    <div class="card-title">📊 Operações</div>
+    <div class="counter-grid">
+      <div class="counter-box">
+        <div id="cntBuy" class="counter-num" style="color:var(--green)">0</div>
+        <div class="counter-label">BUY</div>
+      </div>
+      <div class="counter-box">
+        <div id="cntSell" class="counter-num" style="color:var(--red)">0</div>
+        <div class="counter-label">SELL</div>
+      </div>
+      <div class="counter-box">
+        <div id="cntTotal" class="counter-num" style="color:var(--blue)">0</div>
+        <div class="counter-label">TOTAL</div>
+      </div>
+    </div>
+    <div id="retryQueueInfo" style="display:none;margin-top:10px" class="repair-row">
+      ⏳ <span id="retryQueueCount">0</span> cmd(s) na fila de retry
+    </div>
+  </div>
+
+  <div class="octo-ad-slot" data-slot="1"></div>
+
+  <!-- LATÊNCIA -->
+  <div class="card">
+    <div class="card-title">⚡ Latência da API</div>
+    <div class="metric-row">
+      <span class="metric-label">Atual</span>
+      <span id="latCur" class="metric-val" style="color:var(--blue)">—</span>
+    </div>
+    <div class="metric-row">
+      <span class="metric-label">Média (50 req)</span>
+      <span id="latAvg" class="metric-val">—</span>
+    </div>
+    <div class="metric-row">
+      <span class="metric-label">Máximo</span>
+      <span id="latMax" class="metric-val" style="color:var(--orange)">—</span>
+    </div>
+    <div id="latBars" class="lat-bars"></div>
+  </div>
+
+  <!-- INDICADORES TÉCNICOS -->
+  <div class="card">
+    <div class="card-title">📈 Indicadores Técnicos</div>
+    <table class="ind-table">
+      <tr><td class="lbl">Preço Atual</td>  <td id="iPrice" class="val">—</td></tr>
+      <tr><td class="lbl">RSI (14)</td>     <td id="iRsi"  class="val">—</td></tr>
+      <tr><td class="lbl">SMA 9</td>        <td id="iSma9" class="val">—</td></tr>
+      <tr><td class="lbl">SMA 20</td>       <td id="iSma20"class="val">—</td></tr>
+      <tr><td class="lbl">MACD Hist.</td>   <td id="iMacd" class="val">—</td></tr>
+      <tr><td class="lbl">BB Upper</td>     <td id="iBbUp" class="val">—</td></tr>
+      <tr><td class="lbl">BB Lower</td>     <td id="iBbLo" class="val">—</td></tr>
+      <tr><td class="lbl">Volatilidade</td> <td id="iVol"  class="val">—</td></tr>
+    </table>
+  </div>
+
+  <!-- SEGURANÇA / FILTROS -->
+  <div class="card">
+    <div class="card-title">🛡️ Filtros de Segurança</div>
+    <div class="metric-row">
+      <span class="metric-label">Saldo</span>
+      <span id="secBalance" class="metric-val">—</span>
+    </div>
+    <div class="metric-row">
+      <span class="metric-label">Win Rate</span>
+      <span id="secWr" class="metric-val">—</span>
+    </div>
+    <div class="metric-row">
+      <span class="metric-label">Swaps Hoje</span>
+      <span id="secTrades" class="metric-val">—</span>
+    </div>
+    <div class="metric-row">
+      <span class="metric-label">Perdas Consec.</span>
+      <span id="secConsec" class="metric-val">—</span>
+    </div>
+    <div class="metric-row">
+      <span class="metric-label">P&L Diário</span>
+      <span id="secProfit" class="metric-val">—</span>
+    </div>
+    <div class="metric-row">
+      <span class="metric-label">Stop Loss</span>
+      <span id="secSl" class="metric-val" style="color:var(--red)">—</span>
+    </div>
+    <div class="metric-row">
+      <span class="metric-label">Take Profit</span>
+      <span id="secTp" class="metric-val" style="color:var(--green)">—</span>
+    </div>
+    <div class="metric-row">
+      <span class="metric-label">Nível Segurança</span>
+      <span id="secLevel" class="metric-val">—</span>
+    </div>
+    <div class="progress-wrap">
+      <div id="secProgress" class="progress-fill" style="width:0%;background:var(--green)"></div>
+    </div>
+  </div>
+
+  <div class="octo-ad-slot" data-slot="2"></div>
+
+  <!-- LOG DE ATIVIDADE -->
+  <div class="card wide">
+    <div class="card-title">🔧 Log de Atividade + Auto-Reparo</div>
+    <div id="cmdLog" class="cmd-log">
+      <div class="log-row"><span class="log-ts">--:--:--</span><span class="log-info">🔄 Protocolos de auto-healing ativos. Aguardando API...</span></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="status-bar">
+  <span id="statusMsg" style="color:var(--text2)">▶ Iniciando analisador de swap...</span>
+  <span style="color:var(--text3)">OCTOCOOKIE Swap Analisador v4.0 · <span id="statusInterval">1.5s</span> · DEX Bot</span>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════════
+//  OCTOCOOKIE — Swap Dashboard + Analisador v4.0  AUTO-HEALING EDITION
+//
+//  Adaptado para o bot de swap DEX. Lê do endpoint /api/latest que
+//  o octocookie.html publica a cada tick de preço.
+//
+//  Todos os 21 checks do trader original reimplementados aqui:
+//  RSI, Volatility, Bollinger, SMA, MACD, Win Rate, Consecutive losses,
+//  Daily limits, Trading hours, Wallet connection, Open swap, etc.
+// ═══════════════════════════════════════════════════════════════════════
+
+const INTERVAL_MS  = 1500;
+const COOLDOWN_SEC = 15; // Swaps precisam de cooldown maior que trades binários
+const MIN_SCORE    = 40;
+const REQ_TIMEOUT  = 5000;
+
+// ── Firebase (mesmo projeto usado pelo octocookie.html) ────────────────
+let db;
+try {
+  firebase.initializeApp({
+    apiKey:"AIzaSyD7teSvQ2Xmymr7zNhqi1KvY_fyXEtr0hE",
+    authDomain:"cookiescript-bf257.firebaseapp.com",
+    databaseURL:"https://cookiescript-bf257-default-rtdb.firebaseio.com",
+    projectId:"cookiescript-bf257",
+    storageBucket:"cookiescript-bf257.firebasestorage.app",
+    messagingSenderId:"652455430126",
+    appId:"1:652455430126:web:7956298f2cf00bbfb1b0ff"
+  });
+  db = firebase.database();
+} catch(e) { console.warn("Firebase não inicializado:", e); }
+
+async function fetchLiveState() {
+  if(!db) throw new Error('Firebase não inicializado');
+  const snap = await db.ref('live_state').once('value');
+  const data = snap.val();
+  if(!data) throw new Error('Nenhum dado publicado ainda pelo octocookie.html');
+  return data;
+}
+
+let isOnline        = false;
+let wasDataFresh     = true;
+let reconnects      = 0;
+let autoRepairs     = 0;
+let lastSignal      = '';
+let lastCmdTime     = 0;
+let cmdCount        = { BUY: 0, SELL: 0 };
+const logEntries    = [];
+const retryQueue    = [];
+const MAX_RETRY_Q   = 20;
+
+// ── Circuit Breaker ───────────────────────────────────────────────────
+const CB = {
+  failures: 0, threshold: 4, timeout: 20000,
+  state: 'CLOSED', openedAt: 0,
+  record(ok) {
+    if(ok) {
+      if(this.state !== 'CLOSED') { addLog('⚡ Circuit Breaker FECHADO — API recuperada', 'log-repair'); updateCbBadge('CLOSED'); }
+      this.failures = 0; this.state = 'CLOSED';
+    } else {
+      this.failures++;
+      if(this.failures >= this.threshold && this.state === 'CLOSED') {
+        this.state = 'OPEN'; this.openedAt = Date.now();
+        addLog(`⚡ Circuit Breaker ABERTO (${this.failures} falhas)`, 'log-warn');
+        updateCbBadge('OPEN'); scheduleRepair();
+      }
+    }
+  },
+  canRequest() {
+    if(this.state === 'CLOSED') return true;
+    if(this.state === 'OPEN') {
+      if(Date.now() - this.openedAt >= this.timeout) {
+        this.state = 'HALF_OPEN';
+        addLog('⚡ Circuit Breaker HALF-OPEN — testando...', 'log-warn');
+        updateCbBadge('HALF_OPEN'); return true;
+      }
+      return false;
+    }
+    return true;
+  }
+};
+
+// ── Reconexão exponencial ─────────────────────────────────────────────
+const Reconnector = {
+  attempt: 0, timer: null, active: false,
+  delays: [1000,2000,4000,8000,16000,30000],
+  start(reason='') { if(this.active) return; this.active=true; showOverlay(reason); this.schedule(); },
+  stop() { this.active=false; this.attempt=0; clearTimeout(this.timer); hideOverlay(); },
+  schedule() {
+    if(!this.active) return;
+    const base = this.delays[Math.min(this.attempt, this.delays.length-1)];
+    const jitter = Math.floor(Math.random()*500);
+    const totalMs = base + jitter;
+    this.attempt++;
+    el('reconnAttempt').textContent = this.attempt;
+    startCountdownBar(totalMs);
+    addLog(`⏳ Reconexão #${this.attempt} em ${(totalMs/1000).toFixed(1)}s...`, 'log-warn');
+    this.timer = setTimeout(() => this.tryConnect(), totalMs);
+  },
+  async tryConnect() {
+    if(!this.active) return;
+    try {
+      const data = await fetchLiveState();
+      if(data) {
+        addLog(`✅ Firebase reconectado após ${this.attempt} tentativa(s)`, 'log-repair');
+        this.stop(); setOnline(true); CB.record(true); drainRetryQueue(); tick(); return;
+      }
+    } catch(e) {}
+    this.schedule();
+  }
+};
+
+// ── Retry queue ───────────────────────────────────────────────────────
+function enqueueRetry(action, score, reason) {
+  if(retryQueue.length >= MAX_RETRY_Q) retryQueue.shift();
+  retryQueue.push({action,score,reason,ts:new Date().toISOString()});
+  updateRetryQueueUI();
+}
+async function drainRetryQueue() {
+  if(!retryQueue.length) return;
+  addLog(`♻️ Drenando fila de retry (${retryQueue.length} cmd)`, 'log-repair');
+  while(retryQueue.length) { const cmd = retryQueue.shift(); await sendCommand(cmd.action,cmd.score,cmd.reason,false); await sleep(200); }
+  updateRetryQueueUI();
+}
+function updateRetryQueueUI() {
+  const row = el('retryQueueInfo');
+  if(retryQueue.length>0) { row.style.display=''; el('retryQueueCount').textContent=retryQueue.length; }
+  else { row.style.display='none'; }
+}
+
+// ── Auto-repair ───────────────────────────────────────────────────────
+let repairScheduled = false;
+function scheduleRepair() {
+  if(repairScheduled) return;
+  repairScheduled = true;
+  setTimeout(async()=>{ repairScheduled=false; await triggerRepair(); }, 2000);
+}
+async function triggerRepair() {
+  try {
+    addLog('♻️ Reiniciando verificação de conexão com o Firebase...', 'log-repair');
+    await fetchLiveState();
+    autoRepairs++; el('statusRepairs').textContent=autoRepairs;
+    addLog('✅ Auto-reparo executado', 'log-repair');
+    CB.failures=0; CB.state='CLOSED'; updateCbBadge('CLOSED');
+  } catch(e) { addLog(`❌ Reparo falhou: ${e.message}`, 'log-warn'); }
+}
+async function manualRepair() { await triggerRepair(); Reconnector.stop(); setTimeout(()=>Reconnector.start('reparo manual'),1000); }
+window.manualRepair = manualRepair;
+
+async function fetchWithTimeout(url,opts={},ms=REQ_TIMEOUT) {
+  const ctrl = new AbortController();
+  const id = setTimeout(()=>ctrl.abort(),ms);
+  try { const r=await fetch(url,{...opts,signal:ctrl.signal,cache:'no-store'}); clearTimeout(id); return r; }
+  catch(e) { clearTimeout(id); throw e; }
+}
+
+// ── Heartbeat ─────────────────────────────────────────────────────────
+let heartbeatFails = 0;
+async function heartbeat() {
+  if(!isOnline) return;
+  try {
+    await fetchLiveState();
+    heartbeatFails = 0;
+  } catch(e) {
+    heartbeatFails++;
+    if(heartbeatFails>=2) {
+      addLog(`💓 Heartbeat falhou (${heartbeatFails}x) — reconectando`, 'log-warn');
+      setOnline(false);
+      if(!Reconnector.active) Reconnector.start('heartbeat falhou');
+    }
+  }
+}
+
+// ── Indicadores técnicos ──────────────────────────────────────────────
+function calcRSI(prices, period=14) {
+  if(prices.length<period+1) return 50;
+  let gains=0, losses=0;
+  for(let i=prices.length-period;i<prices.length;i++) {
+    const ch=prices[i]-prices[i-1];
+    if(ch>=0) gains+=ch; else losses+=Math.abs(ch);
+  }
+  const ag=gains/period, al=losses/period;
+  if(al===0) return 100;
+  return +(100-100/(1+ag/al)).toFixed(2);
+}
+function calcSMA(prices, p) {
+  if(prices.length<p) return null;
+  return prices.slice(-p).reduce((a,b)=>a+b,0)/p;
+}
+function calcEMA(prices, p) {
+  if(prices.length<p) return null;
+  const mult=2/(p+1);
+  let ema=prices.slice(0,p).reduce((a,b)=>a+b,0)/p;
+  for(let i=p;i<prices.length;i++) ema=(prices[i]-ema)*mult+ema;
+  return ema;
+}
+function calcMACD(prices) {
+  if(prices.length<26) return {macd:0,signal:0,histogram:0};
+  const ema12=calcEMA(prices,12), ema26=calcEMA(prices,26);
+  if(!ema12||!ema26) return {macd:0,signal:0,histogram:0};
+  const macdVal=ema12-ema26;
+  const macdSeries=[];
+  for(let i=26;i<=prices.length;i++) {
+    const s=prices.slice(0,i);
+    const e12=calcEMA(s,12), e26=calcEMA(s,26);
+    if(e12&&e26) macdSeries.push(e12-e26);
+  }
+  if(macdSeries.length<9) return {macd:macdVal,signal:0,histogram:0};
+  const sig=calcEMA(macdSeries,9)||0;
+  return {macd:macdVal,signal:sig,histogram:macdVal-sig};
+}
+function calcBollinger(prices,period=20,mult=2) {
+  if(prices.length<period) return null;
+  const sma=calcSMA(prices,period);
+  const sl=prices.slice(-period);
+  const variance=sl.reduce((a,p)=>a+(p-sma)**2,0)/period;
+  const std=Math.sqrt(variance);
+  return {upper:sma+mult*std,middle:sma,lower:sma-mult*std};
+}
+function calcVolatility(prices) {
+  if(prices.length<2) return 0;
+  const mean=prices.reduce((a,b)=>a+b,0)/prices.length;
+  const variance=prices.reduce((a,p)=>a+(p-mean)**2,0)/prices.length;
+  return mean!==0?Math.sqrt(variance)/mean:0;
+}
+
+// ── Motor de análise (todos os 21 checks) ─────────────────────────────
+function analyze(data) {
+  const prices = data.priceHistory || [];
+  if(!prices.length || prices.length<25) {
+    return { signal:'AGUARDAR', score:0, color:'var(--yellow)',
+             reasons:[{text:`Histórico insuficiente (${prices.length}/25 candles)`, cls:'r-neutral'}],
+             indicators:{}, action:'WAIT' };
+  }
+
+  // Já existe posição aberta no octocookie.html: não faz sentido sugerir
+  // nova compra, e a venda NUNCA deve ser decidida por indicador aqui —
+  // ela é decidida pelo lucro/prejuízo REAL da posição (checkPositionTargets
+  // dentro do próprio octocookie.html), evitando comprar/vender sem critério.
+  if(data.openPosition) {
+    const entry = data.entryPrice;
+    const unreal = data.unrealizedPnlPct;
+    const unrealTxt = unreal!=null ? `${unreal>=0?'+':''}${unreal.toFixed(2)}%` : '—';
+    return {
+      signal: 'POSIÇÃO ABERTA', score: 0, color:'var(--blue)', action:'WAIT',
+      indicators:{},
+      reasons: [
+        {text:`💼 Posição aberta em $${entry!=null?entry.toFixed(2):'—'}`, cls:'r-neutral'},
+        {text:`P&L não realizado: ${unrealTxt}`, cls:(unreal||0)>=0?'r-good':'r-warn'},
+        {text:`Meta +${(data.takeProfit||0)}% · Stop ${data.stopLoss||0}%`, cls:'r-neutral'},
+        {text:'A venda é automática ao bater a meta ou o stop — nenhuma ação necessária aqui.', cls:'r-neutral'}
+      ]
+    };
+  }
+
+  const current = data.currentPrice || prices[prices.length-1];
+  const rsi     = calcRSI(prices);
+  const sma20   = calcSMA(prices,20);
+  const sma9    = calcSMA(prices,9);
+  const macd    = calcMACD(prices);
+  const bb      = calcBollinger(prices);
+  const vol     = calcVolatility(prices.slice(-20));
+  const ind     = {rsi,sma20,sma9,macd,bollinger:bb,volatility:vol,price:current};
+
+  let buyScore=0, sellScore=0;
+  const reasons=[];
+
+  // 1. Segurança / RSI thresholds
+  const rsiLow  = data.rsiLow  || 30;
+  const rsiHigh = data.rsiHigh || 70;
+  // 8. RSI check
+  if(rsi < rsiLow) {
+    buyScore += 2;
+    reasons.push({text:`✅ RSI ${rsi.toFixed(1)} < ${rsiLow} → sobrevenda (BUY)`, cls:'r-good'});
+  } else if(rsi > rsiHigh) {
+    sellScore += 2;
+    reasons.push({text:`⚪ RSI ${rsi.toFixed(1)} > ${rsiHigh} → sobrecompra (sem posição para vender)`, cls:'r-neutral'});
+  } else {
+    reasons.push({text:`⚪ RSI ${rsi.toFixed(1)} neutro (${rsiLow}–${rsiHigh})`, cls:'r-neutral'});
+  }
+
+  // 11. SMA check
+  if(sma20 && sma9) {
+    if(current > sma20 && sma9 > sma20) {
+      buyScore += 1;
+      reasons.push({text:'✅ Preço > SMA20 e SMA9 > SMA20 (tendência alta)', cls:'r-good'});
+    } else if(current < sma20 && sma9 < sma20) {
+      sellScore += 1;
+      reasons.push({text:'⚪ Preço < SMA20 e SMA9 < SMA20 (tendência baixa)', cls:'r-neutral'});
+    } else {
+      reasons.push({text:'⚪ SMA sem tendência clara', cls:'r-neutral'});
+    }
+  }
+
+  // 12. MACD check
+  const hist = macd.histogram;
+  if(hist > 0 && macd.macd > macd.signal) {
+    buyScore += 2;
+    reasons.push({text:`✅ MACD hist positivo (${hist.toFixed(6)}) → momentum alta`, cls:'r-good'});
+  } else if(hist < 0 && macd.macd < macd.signal) {
+    sellScore += 2;
+    reasons.push({text:`⚪ MACD hist negativo (${hist.toFixed(6)}) → momentum baixa`, cls:'r-neutral'});
+  } else {
+    reasons.push({text:'⚪ MACD sem momentum claro', cls:'r-neutral'});
+  }
+
+  // 10. Bollinger Bands
+  if(bb) {
+    if(current < bb.lower) {
+      buyScore += 2;
+      reasons.push({text:`✅ Preço abaixo da banda inferior → reversão alta`, cls:'r-good'});
+    } else if(current > bb.upper) {
+      sellScore += 2;
+      reasons.push({text:`⚪ Preço acima da banda superior → reversão baixa`, cls:'r-neutral'});
+    } else {
+      reasons.push({text:'⚪ Preço dentro das Bandas de Bollinger', cls:'r-neutral'});
+    }
+  }
+
+  // 9. Volatilidade
+  const maxVol = data.maxVolatility || 0.002;
+  if(vol > maxVol) {
+    reasons.push({text:`⚠️ Volatilidade alta (${(vol*10000).toFixed(2)}) — sinal menos confiável`, cls:'r-warn'});
+  }
+
+  // 13. Perdas consecutivas
+  const consec = data.consecutiveLosses || 0;
+  if(consec >= 3) {
+    reasons.push({text:`⚠️ ${consec} perdas consecutivas — stake reduzido`, cls:'r-warn'});
+  }
+  if(consec >= 5) {
+    reasons.push({text:`❌ ${consec} perdas consecutivas — bot pausado`, cls:'r-warn'});
+    return { signal:'AGUARDAR', score:0, color:'var(--yellow)', reasons, indicators:ind, action:'WAIT' };
+  }
+
+  // 14. Win Rate
+  const wins = data.wins||0, losses = data.losses||0;
+  const total = wins+losses;
+  if(total >= 5) {
+    const wr = (wins/total)*100;
+    if(wr < 55) {
+      reasons.push({text:`⚠️ Win Rate ${wr.toFixed(1)}% < 55% — aguardando recuperação`, cls:'r-warn'});
+    } else {
+      reasons.push({text:`✅ Win Rate ${wr.toFixed(1)}% ≥ 55%`, cls:'r-good'});
+    }
+  }
+
+  // 20. Swap em aberto (transação em voo — distinto de posição aberta)
+  if(data.openContract) {
+    reasons.push({text:'⚠️ Transação em andamento — aguardando confirmar', cls:'r-warn'});
+    return { signal:'AGUARDAR', score:0, color:'var(--yellow)', reasons, indicators:ind, action:'WAIT' };
+  }
+
+  // 18. Histórico suficiente
+  reasons.push({text:`✅ ${prices.length} candles carregados (≥25)`, cls:'r-good'});
+
+  // Sem posição aberta: só existe sinal de ENTRADA (BUY). Sinais de queda
+  // não geram ação — não há nada pra vender ainda.
+  const maxScore = 7;
+  let signal, action, color;
+  if(buyScore >= 3 && buyScore > sellScore) {
+    signal='COMPRAR (BUY)'; action='BUY'; color='var(--green)';
+  } else {
+    signal='AGUARDAR'; action='WAIT'; color='var(--yellow)';
+    if(sellScore >= 3 && sellScore > buyScore) {
+      reasons.push({text:'ℹ️ Indicadores de queda, mas sem posição aberta não há o que vender.', cls:'r-neutral'});
+    }
+  }
+
+  const rawScore = action==='BUY' ? buyScore : 0;
+  const score = Math.min(100, (rawScore/maxScore)*100);
+  return {signal, action, score, color, reasons, indicators:ind};
+}
+
+// ── UI helpers ────────────────────────────────────────────────────────
+function el(id) { return document.getElementById(id); }
+function fmt(v) { return v!=null?v.toFixed(5):'—'; }
+function fmtUSD(v) { return v!=null?'$'+v.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:4}):'—'; }
+function ts()   { return new Date().toLocaleTimeString('pt-BR',{hour12:false}); }
+function sleep(ms) { return new Promise(r=>setTimeout(r,ms)); }
+
+function addLog(msg, cls='log-info') {
+  const t=ts();
+  logEntries.unshift({t,msg,cls});
+  if(logEntries.length>150) logEntries.pop();
+  const log=el('cmdLog');
+  log.innerHTML=logEntries.slice(0,100).map(e=>
+    `<div class="log-row"><span class="log-ts">${e.t}</span><span class="${e.cls}">${e.msg}</span></div>`
+  ).join('');
+}
+
+function setOnline(online) {
+  isOnline=online;
+  const pill=el('apiPill');
+  if(online) {
+    pill.className='pill online'; pill.innerHTML='<span class="dot green"></span> API ONLINE';
+    el('statusApi').textContent='ONLINE'; el('statusApi').style.color='var(--green)';
+  } else {
+    pill.className='pill offline'; pill.innerHTML='<span class="dot red"></span> API OFFLINE';
+    el('statusApi').textContent='OFFLINE'; el('statusApi').style.color='var(--red)';
+  }
+  el('statusReconn').textContent=reconnects;
+}
+
+function updateCbBadge(state) {
+  const b=el('cbBadge');
+  const map={'CLOSED':['cb-closed','CB: FECHADO ✅'],'OPEN':['cb-open','CB: ABERTO ⚡'],'HALF_OPEN':['cb-half','CB: TESTANDO 🟡']};
+  const [cls,text]=map[state]||['cb-closed','CB: ?'];
+  b.className=`cb-badge ${cls}`; b.textContent=text;
+}
+
+function updateLatBars(history) {
+  const bars=el('latBars');
+  if(!history||!history.length){bars.innerHTML='';return;}
+  const last50=history.slice(-50);
+  const mx=Math.max(...last50.map(x=>x.ms),1);
+  bars.innerHTML=last50.map(x=>{
+    const h=Math.max(4,(x.ms/mx)*50);
+    const c=x.ms<30?'#7fff7f':x.ms<100?'#ffe77f':'#ff9090';
+    return `<div class="lat-bar" style="height:${h}px;background:${c};opacity:.8"></div>`;
+  }).join('');
+}
+
+function updateCooldownBar() {
+  const elapsed=(Date.now()/1000)-lastCmdTime;
+  el('cooldownFill').style.width=Math.min(100,(elapsed/COOLDOWN_SEC)*100)+'%';
+}
+
+function showOverlay(reason) { el('reconnOverlay').className='visible'; if(reason) el('reconnReason').textContent=reason; }
+function hideOverlay() { el('reconnOverlay').className=''; }
+
+let countdownTimer=null;
+function startCountdownBar(totalMs) {
+  clearInterval(countdownTimer);
+  const start=Date.now();
+  countdownTimer=setInterval(()=>{
+    const elapsed=Date.now()-start;
+    const pct=Math.min(100,(elapsed/totalMs)*100);
+    const rem=Math.max(0,(totalMs-elapsed)/1000);
+    el('reconnFill').style.width=pct+'%';
+    el('reconnCountdown').textContent=rem.toFixed(1);
+    if(elapsed>=totalMs) clearInterval(countdownTimer);
+  },100);
+}
+
+// ── Envio de comando swap (BUY/SELL) ─────────────────────────────────
+// OBS: este analisador não executa swap diretamente. Ele apenas avisa
+// o octocookie.html (via postMessage) para clicar no botão BUY/SELL
+// MANUAL — assim o swap passa pela mesma análise de segurança de um
+// clique manual, e não existe execução paralela/duplicada.
+async function sendCommand(action, score, reason, queIfFail=true) {
+  const insideIframe = window.parent && window.parent !== window;
+  if(insideIframe) {
+    window.parent.postMessage({ type:'octocookie-signal', action, score, reason }, '*');
+    addLog(`🖱️ Sinal ${action} enviado — clicando em ${action} MANUAL no octocookie`, 'log-info');
+  } else {
+    addLog(`ℹ️ Sinal ${action} detectado (score ${score.toFixed(1)}%) — abra este painel pela aba "Dashboard" dentro do octocookie.html para ele clicar automaticamente nos botões`, 'log-info');
+  }
+}
+
+// ── Ciclo principal ───────────────────────────────────────────────────
+async function tick() {
+  if(Reconnector.active) return;
+  if(!CB.canRequest()) { addLog('⚡ Circuit Breaker ABERTO — tick bloqueado', 'log-warn'); return; }
+
+  try {
+    const data = await fetchLiveState();
+    const isFresh = data.updatedAt ? (Date.now() - data.updatedAt) < 30000 : false;
+    const dash = {
+      snapshots: data.snapshots, uptime_since: data.uptime_since,
+      circuit_breaker: data.circuit_breaker, data_fresh: isFresh,
+      latency: data.latency
+    };
+    const latest = data;
+
+    CB.record(true); heartbeatFails=0;
+    if(!isOnline) { reconnects++; addLog(`✅ Firebase reconectado (#${reconnects})`, 'log-repair'); el('statusReconn').textContent=reconnects; drainRetryQueue(); }
+    setOnline(true); Reconnector.stop();
+
+    el('statusSnaps').textContent  = dash.snapshots||0;
+    el('statusUptime').textContent = (dash.uptime_since||'').substring(11,19)||'—';
+
+    if(dash.circuit_breaker&&dash.circuit_breaker!=='CLOSED') { addLog(`⚠️ Backend CB: ${dash.circuit_breaker}`, 'log-warn'); scheduleRepair(); }
+    if(dash.data_fresh===false && wasDataFresh!==false) addLog('⚠️ Dados do bot estão desatualizados — verifique se o octocookie.html está aberto', 'log-warn');
+    if(dash.data_fresh===true && wasDataFresh===false) addLog('✅ Dados do bot voltaram a atualizar normalmente', 'log-repair');
+    wasDataFresh = dash.data_fresh;
+
+    const lat=dash.latency||{};
+    el('latCur').textContent=lat.last_ms!=null?`${lat.last_ms.toFixed(1)} ms`:'—';
+    el('latAvg').textContent=lat.avg_ms!=null?`${lat.avg_ms.toFixed(1)} ms`:'—';
+    el('latMax').textContent=lat.max_ms!=null?`${lat.max_ms.toFixed(1)} ms`:'—';
+    updateLatBars(lat.history);
+
+    if(latest&&!latest.error) {
+      const result  = analyze(latest);
+      const prices  = latest.priceHistory||[];
+      const ind     = result.indicators;
+      const wins    = latest.wins||0;
+      const losses  = latest.losses||0;
+      const total   = wins+losses||1;
+      const wr      = (wins/total)*100;
+      const dp      = latest.dailyProfit||0;
+      const sec     = latest.securityLevel||70;
+      const trades  = latest.tradesToday||0;
+      const maxT    = latest.maxTrades||100;
+      const bal     = latest.balance||0;
+      const bot     = latest.botRunning;
+      const oc      = latest.openContract;
+      const openPos = latest.openPosition;
+      const consec  = latest.consecutiveLosses||0;
+      const pair    = latest.symbol||'—';
+      const sl      = latest.stopLoss||0;
+      const tp      = latest.takeProfit||0;
+      const maxVol  = latest.maxVolatility||0.002;
+
+      // Sinal
+      const sigEl = el('signalBig');
+      sigEl.textContent=result.signal; sigEl.style.color=result.color;
+      el('signalScore').textContent=`Score de confiança: ${result.score.toFixed(1)}%`;
+      el('signalSub').textContent=`Bot ${bot?'rodando':'parado'} · ${trades}/${maxT} swaps · Win ${wr.toFixed(1)}%`;
+
+      if(result.signal!==lastSignal) {
+        const cls=result.signal.includes('BUY')?'log-call':result.signal.includes('SELL')?'log-put':'log-wait';
+        addLog(`Sinal → ${result.signal} | score ${result.score.toFixed(1)}%`, cls);
+        lastSignal=result.signal; sigEl.classList.add('flash'); setTimeout(()=>sigEl.classList.remove('flash'),800);
+      }
+
+      el('reasonsBox').innerHTML=result.reasons.map(r=>`<div class="${r.cls}">${r.text}</div>`).join('');
+
+      // Status bar
+      const cooldownRem=Math.max(0,COOLDOWN_SEC-(Date.now()/1000-lastCmdTime));
+      let statusMsg;
+      if(!bot) statusMsg='⚠️ Bot não está rodando';
+      else if(oc) statusMsg='⏳ Transação em andamento — aguardando confirmar';
+      else if(openPos) {
+        const u = latest.unrealizedPnlPct;
+        statusMsg = `💼 Posição aberta | P&L: ${u!=null?(u>=0?'+':'')+u.toFixed(2)+'%':'—'} | venda automática ao bater meta/stop`;
+      }
+      else if(result.action==='WAIT') statusMsg=`▶ ${result.signal} | score ${result.score.toFixed(1)}%`;
+      else if(cooldownRem>0) statusMsg=`⏳ Cooldown DEX: ${cooldownRem.toFixed(0)}s`;
+      else if(!CB.canRequest()) statusMsg='⚡ Circuit Breaker aberto — aguardando reparo';
+      else statusMsg=`✅ ${result.signal} | score ${result.score.toFixed(1)}% | pronto`;
+      el('statusMsg').textContent=statusMsg; el('statusMsg').style.color=openPos?'var(--blue)':result.color;
+
+      // Auto-envio BUY — só entra se estiver flat (sem posição aberta).
+      // A venda nunca é enviada por aqui: é decidida pelo lucro real da
+      // posição dentro do próprio octocookie.html.
+      const nowSec=Date.now()/1000;
+      const cdOk=(nowSec-lastCmdTime)>=COOLDOWN_SEC;
+      if(result.action==='BUY'&&!openPos&&result.score>=MIN_SCORE&&cdOk&&bot&&!oc&&consec<3) {
+        lastCmdTime=nowSec;
+        sendCommand(result.action, result.score, result.signal);
+      }
+
+      // Indicadores
+      el('iPrice').textContent = fmtUSD(ind.price||latest.currentPrice);
+      const rsiEl=el('iRsi');
+      rsiEl.textContent=ind.rsi!=null?ind.rsi.toFixed(2):'—';
+      rsiEl.style.color=ind.rsi>70?'var(--red)':ind.rsi<30?'var(--green)':'var(--text)';
+      el('iSma9').textContent  = ind.sma9  ? fmt(ind.sma9)  : '—';
+      el('iSma20').textContent = ind.sma20 ? fmt(ind.sma20) : '—';
+      el('iMacd').textContent  = ind.macd  ? ind.macd.histogram.toFixed(6) : '—';
+      if(ind.bollinger) { el('iBbUp').textContent=fmt(ind.bollinger.upper); el('iBbLo').textContent=fmt(ind.bollinger.lower); }
+      el('iVol').textContent = ind.volatility!=null?`${(ind.volatility*10000).toFixed(4)}%`:'—';
+
+      // Segurança
+      el('statusBot').textContent      = bot?'SIM':'NÃO';
+      el('statusBot').style.color      = bot?'var(--green)':'var(--red)';
+      el('statusContract').textContent = oc?'ABERTO':'NENHUM';
+      el('statusContract').style.color = oc?'var(--yellow)':'var(--text2)';
+      el('statusPair').textContent     = pair;
+      el('secBalance').textContent     = `${bal.toFixed(6)}`;
+      el('secBalance').style.color     = bal>=0?'var(--green)':'var(--red)';
+      el('secWr').textContent          = `${wr.toFixed(1)}%`;
+      el('secWr').style.color          = wr>=55?'var(--green)':wr<40?'var(--red)':'var(--yellow)';
+      el('secTrades').textContent      = `${trades}/${maxT}`;
+      el('secConsec').textContent      = consec;
+      el('secConsec').style.color      = consec>=3?'var(--red)':'var(--text)';
+      el('secProfit').textContent      = `${dp>=0?'+':''}${dp.toFixed(3)}%`;
+      el('secProfit').style.color      = dp>=0?'var(--green)':'var(--red)';
+      el('secSl').textContent          = `${sl.toFixed(1)}%`;
+      el('secTp').textContent          = `+${tp.toFixed(1)}%`;
+      el('secLevel').textContent       = `${sec}%`;
+      el('secProgress').style.width    = `${sec}%`;
+      el('secProgress').style.background = sec>=60?'var(--green)':sec>=40?'var(--yellow)':'var(--red)';
+    }
+
+  } catch(e) {
+    CB.record(false);
+    if(isOnline||!Reconnector.active) {
+      setOnline(false);
+      addLog(`❌ Firebase desconectado: ${e.message}`, 'log-warn');
+      el('statusMsg').textContent='⚠️ Firebase offline — reconexão automática ativa';
+      el('statusMsg').style.color='var(--red)';
+    }
+    if(!Reconnector.active) Reconnector.start(e.message);
+  }
+}
+
+// ── Detectores de rede ────────────────────────────────────────────────
+window.addEventListener('offline',()=>{ addLog('🌐 Rede perdida','log-warn'); setOnline(false); if(!Reconnector.active) Reconnector.start('rede desconectada'); });
+window.addEventListener('online',()=>{ addLog('🌐 Rede recuperada — testando Firebase...','log-repair'); if(Reconnector.active){clearTimeout(Reconnector.timer);Reconnector.tryConnect();}else tick(); });
+document.addEventListener('visibilitychange',()=>{ if(!document.hidden){addLog('👁️ Aba ativa — verificando conexão','log-info');if(Reconnector.active){clearTimeout(Reconnector.timer);Reconnector.tryConnect();}else tick();} });
+
+// ── Loops ─────────────────────────────────────────────────────────────
+setInterval(()=>{ el('clockEl').textContent=ts(); updateCooldownBar(); },500);
+setInterval(tick, INTERVAL_MS);
+setInterval(heartbeat, 5000);
+
+addLog('🚀 Swap Analisador v4.0 iniciado. Protocolos: CB + Retry Queue + Reconnector + Heartbeat', 'log-repair');
+tick();
+</script>
+  <script>
+    (function(){var s=localStorage.getItem('octo-theme');if(s==='light'){document.documentElement.classList.add('light');var b=document.getElementById('themeToggleDash');if(b){b.textContent='🌙 Escuro';b.style.background='rgba(0,0,0,0.06)';b.style.borderColor='rgba(0,0,0,0.18)';b.style.color='#555';}}})();
+    function toggleThemeDash(){var l=document.documentElement.classList.toggle('light');var b=document.getElementById('themeToggleDash');if(b){b.textContent=l?'🌙 Escuro':'☀️ Claro';b.style.background=l?'rgba(0,0,0,0.06)':'rgba(255,255,255,0.06)';b.style.borderColor=l?'rgba(0,0,0,0.18)':'rgba(255,255,255,0.15)';b.style.color=l?'#555':'#888';}localStorage.setItem('octo-theme',l?'light':'dark');}
+  </script>
+<script src="./ads.js"></script>
+</body>
+</html>

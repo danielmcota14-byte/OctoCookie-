@@ -1,0 +1,15 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><meta name="robots" content="noindex">
+<style>html,body{margin:0;padding:0;overflow:hidden;background:transparent}</style></head>
+<body>
+<script>
+// Moldura de UM banner Adsterra 468x60. A chave vem em ?k=<32 hex>. Carregada por <iframe src="/ad.html?k=..."> (URL real do seu
+// domínio, em vez de srcdoc/about:srcdoc, que o Adsterra não consegue associar ao site aprovado e por isso não mostrava anúncio).
+(function () {
+  var m = /[?&]k=([0-9a-f]{32})(?:&|$)/i.exec(location.search); if (!m) return;
+  var k = m[1];
+  window.atOptions = { key: k, format: 'iframe', height: 60, width: 468, params: {} };
+  document.write('<scr' + 'ipt src="https://www.highrevenueformat.com/' + k + '/invoke.js"></scr' + 'ipt>');
+})();
+</script>
+</body></html>

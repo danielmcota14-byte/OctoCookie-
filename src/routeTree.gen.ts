@@ -14,13 +14,19 @@ import { Route as ThreadIdRouteImport } from './routes/$threadId'
 import { Route as AdmRouteImport } from './routes/adm'
 import { Route as AnalyzerRouteImport } from './routes/analyzer'
 import { Route as Bot24x7RouteImport } from './routes/bot-24x7'
+import { Route as CarteiraRouteImport } from './routes/carteira'
+import { Route as CookiescriptRouteImport } from './routes/cookiescript'
+import { Route as FinanceRouteImport } from './routes/finance'
 import { Route as IdeRouteImport } from './routes/ide'
 import { Route as LaunchRouteImport } from './routes/launch'
 import { Route as OctoAppRouteImport } from './routes/octo-app'
+import { Route as PesquisaRouteImport } from './routes/pesquisa'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as SimulatorRouteImport } from './routes/simulator'
+import { Route as StartRouteImport } from './routes/start'
 import { Route as ApiBotRouteImport } from './routes/api/bot'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
+import { Route as ApiEduChatRouteImport } from './routes/api/edu-chat'
 import { Route as CommunityIndexRouteImport } from './routes/community/index'
 import { Route as CommunityCommunityIdRouteImport } from './routes/community/$communityId'
 import { Route as PostPostIdRouteImport } from './routes/post/$postId'
@@ -50,6 +56,21 @@ const Bot24x7Route = Bot24x7RouteImport.update({
   path: '/bot-24x7',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CarteiraRoute = CarteiraRouteImport.update({
+  id: '/carteira',
+  path: '/carteira',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CookiescriptRoute = CookiescriptRouteImport.update({
+  id: '/cookiescript',
+  path: '/cookiescript',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FinanceRoute = FinanceRouteImport.update({
+  id: '/finance',
+  path: '/finance',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IdeRoute = IdeRouteImport.update({
   id: '/ide',
   path: '/ide',
@@ -65,6 +86,11 @@ const OctoAppRoute = OctoAppRouteImport.update({
   path: '/octo-app',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PesquisaRoute = PesquisaRouteImport.update({
+  id: '/pesquisa',
+  path: '/pesquisa',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SettingsRoute = SettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
@@ -75,6 +101,11 @@ const SimulatorRoute = SimulatorRouteImport.update({
   path: '/simulator',
   getParentRoute: () => rootRouteImport,
 } as any)
+const StartRoute = StartRouteImport.update({
+  id: '/start',
+  path: '/start',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiBotRoute = ApiBotRouteImport.update({
   id: '/api/bot',
   path: '/api/bot',
@@ -83,6 +114,11 @@ const ApiBotRoute = ApiBotRouteImport.update({
 const ApiChatRoute = ApiChatRouteImport.update({
   id: '/api/chat',
   path: '/api/chat',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiEduChatRoute = ApiEduChatRouteImport.update({
+  id: '/api/edu-chat',
+  path: '/api/edu-chat',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CommunityIndexRoute = CommunityIndexRouteImport.update({
@@ -107,13 +143,19 @@ export interface FileRoutesByFullPath {
   '/adm': typeof AdmRoute
   '/analyzer': typeof AnalyzerRoute
   '/bot-24x7': typeof Bot24x7Route
+  '/carteira': typeof CarteiraRoute
+  '/cookiescript': typeof CookiescriptRoute
+  '/finance': typeof FinanceRoute
   '/ide': typeof IdeRoute
   '/launch': typeof LaunchRoute
   '/octo-app': typeof OctoAppRoute
+  '/pesquisa': typeof PesquisaRoute
   '/settings': typeof SettingsRoute
   '/simulator': typeof SimulatorRoute
+  '/start': typeof StartRoute
   '/api/bot': typeof ApiBotRoute
   '/api/chat': typeof ApiChatRoute
+  '/api/edu-chat': typeof ApiEduChatRoute
   '/community/$communityId': typeof CommunityCommunityIdRoute
   '/post/$postId': typeof PostPostIdRoute
   '/community/': typeof CommunityIndexRoute
@@ -124,13 +166,19 @@ export interface FileRoutesByTo {
   '/adm': typeof AdmRoute
   '/analyzer': typeof AnalyzerRoute
   '/bot-24x7': typeof Bot24x7Route
+  '/carteira': typeof CarteiraRoute
+  '/cookiescript': typeof CookiescriptRoute
+  '/finance': typeof FinanceRoute
   '/ide': typeof IdeRoute
   '/launch': typeof LaunchRoute
   '/octo-app': typeof OctoAppRoute
+  '/pesquisa': typeof PesquisaRoute
   '/settings': typeof SettingsRoute
   '/simulator': typeof SimulatorRoute
+  '/start': typeof StartRoute
   '/api/bot': typeof ApiBotRoute
   '/api/chat': typeof ApiChatRoute
+  '/api/edu-chat': typeof ApiEduChatRoute
   '/community/$communityId': typeof CommunityCommunityIdRoute
   '/post/$postId': typeof PostPostIdRoute
   '/community': typeof CommunityIndexRoute
@@ -142,13 +190,19 @@ export interface FileRoutesById {
   '/adm': typeof AdmRoute
   '/analyzer': typeof AnalyzerRoute
   '/bot-24x7': typeof Bot24x7Route
+  '/carteira': typeof CarteiraRoute
+  '/cookiescript': typeof CookiescriptRoute
+  '/finance': typeof FinanceRoute
   '/ide': typeof IdeRoute
   '/launch': typeof LaunchRoute
   '/octo-app': typeof OctoAppRoute
+  '/pesquisa': typeof PesquisaRoute
   '/settings': typeof SettingsRoute
   '/simulator': typeof SimulatorRoute
+  '/start': typeof StartRoute
   '/api/bot': typeof ApiBotRoute
   '/api/chat': typeof ApiChatRoute
+  '/api/edu-chat': typeof ApiEduChatRoute
   '/community/$communityId': typeof CommunityCommunityIdRoute
   '/post/$postId': typeof PostPostIdRoute
   '/community/': typeof CommunityIndexRoute
@@ -161,13 +215,19 @@ export interface FileRouteTypes {
     | '/adm'
     | '/analyzer'
     | '/bot-24x7'
+    | '/carteira'
+    | '/cookiescript'
+    | '/finance'
     | '/ide'
     | '/launch'
     | '/octo-app'
+    | '/pesquisa'
     | '/settings'
     | '/simulator'
+    | '/start'
     | '/api/bot'
     | '/api/chat'
+    | '/api/edu-chat'
     | '/community/$communityId'
     | '/post/$postId'
     | '/community/'
@@ -178,13 +238,19 @@ export interface FileRouteTypes {
     | '/adm'
     | '/analyzer'
     | '/bot-24x7'
+    | '/carteira'
+    | '/cookiescript'
+    | '/finance'
     | '/ide'
     | '/launch'
     | '/octo-app'
+    | '/pesquisa'
     | '/settings'
     | '/simulator'
+    | '/start'
     | '/api/bot'
     | '/api/chat'
+    | '/api/edu-chat'
     | '/community/$communityId'
     | '/post/$postId'
     | '/community'
@@ -195,13 +261,19 @@ export interface FileRouteTypes {
     | '/adm'
     | '/analyzer'
     | '/bot-24x7'
+    | '/carteira'
+    | '/cookiescript'
+    | '/finance'
     | '/ide'
     | '/launch'
     | '/octo-app'
+    | '/pesquisa'
     | '/settings'
     | '/simulator'
+    | '/start'
     | '/api/bot'
     | '/api/chat'
+    | '/api/edu-chat'
     | '/community/$communityId'
     | '/post/$postId'
     | '/community/'
@@ -213,13 +285,19 @@ export interface RootRouteChildren {
   AdmRoute: typeof AdmRoute
   AnalyzerRoute: typeof AnalyzerRoute
   Bot24x7Route: typeof Bot24x7Route
+  CarteiraRoute: typeof CarteiraRoute
+  CookiescriptRoute: typeof CookiescriptRoute
+  FinanceRoute: typeof FinanceRoute
   IdeRoute: typeof IdeRoute
   LaunchRoute: typeof LaunchRoute
   OctoAppRoute: typeof OctoAppRoute
+  PesquisaRoute: typeof PesquisaRoute
   SettingsRoute: typeof SettingsRoute
   SimulatorRoute: typeof SimulatorRoute
+  StartRoute: typeof StartRoute
   ApiBotRoute: typeof ApiBotRoute
   ApiChatRoute: typeof ApiChatRoute
+  ApiEduChatRoute: typeof ApiEduChatRoute
   CommunityCommunityIdRoute: typeof CommunityCommunityIdRoute
   PostPostIdRoute: typeof PostPostIdRoute
   CommunityIndexRoute: typeof CommunityIndexRoute
@@ -262,6 +340,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Bot24x7RouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/carteira': {
+      id: '/carteira'
+      path: '/carteira'
+      fullPath: '/carteira'
+      preLoaderRoute: typeof CarteiraRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cookiescript': {
+      id: '/cookiescript'
+      path: '/cookiescript'
+      fullPath: '/cookiescript'
+      preLoaderRoute: typeof CookiescriptRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/finance': {
+      id: '/finance'
+      path: '/finance'
+      fullPath: '/finance'
+      preLoaderRoute: typeof FinanceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/ide': {
       id: '/ide'
       path: '/ide'
@@ -283,6 +382,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OctoAppRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/pesquisa': {
+      id: '/pesquisa'
+      path: '/pesquisa'
+      fullPath: '/pesquisa'
+      preLoaderRoute: typeof PesquisaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/settings': {
       id: '/settings'
       path: '/settings'
@@ -297,6 +403,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SimulatorRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/start': {
+      id: '/start'
+      path: '/start'
+      fullPath: '/start'
+      preLoaderRoute: typeof StartRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/bot': {
       id: '/api/bot'
       path: '/api/bot'
@@ -309,6 +422,13 @@ declare module '@tanstack/react-router' {
       path: '/api/chat'
       fullPath: '/api/chat'
       preLoaderRoute: typeof ApiChatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/edu-chat': {
+      id: '/api/edu-chat'
+      path: '/api/edu-chat'
+      fullPath: '/api/edu-chat'
+      preLoaderRoute: typeof ApiEduChatRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/community/': {
@@ -341,13 +461,19 @@ const rootRouteChildren: RootRouteChildren = {
   AdmRoute: AdmRoute,
   AnalyzerRoute: AnalyzerRoute,
   Bot24x7Route: Bot24x7Route,
+  CarteiraRoute: CarteiraRoute,
+  CookiescriptRoute: CookiescriptRoute,
+  FinanceRoute: FinanceRoute,
   IdeRoute: IdeRoute,
   LaunchRoute: LaunchRoute,
   OctoAppRoute: OctoAppRoute,
+  PesquisaRoute: PesquisaRoute,
   SettingsRoute: SettingsRoute,
   SimulatorRoute: SimulatorRoute,
+  StartRoute: StartRoute,
   ApiBotRoute: ApiBotRoute,
   ApiChatRoute: ApiChatRoute,
+  ApiEduChatRoute: ApiEduChatRoute,
   CommunityCommunityIdRoute: CommunityCommunityIdRoute,
   PostPostIdRoute: PostPostIdRoute,
   CommunityIndexRoute: CommunityIndexRoute,

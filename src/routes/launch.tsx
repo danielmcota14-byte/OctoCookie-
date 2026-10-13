@@ -1,9 +1,9 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { Link, createFileRoute } from "@tanstack/react-router";
 import { AppSidebar } from "@/components/app-sidebar";
 import { useEffect, useState } from "react";
 import { loadThreads, type Thread } from "@/lib/threads";
 import { AdSlot } from "@/components/ad-slot";
-import { BookOpen, Bot, LineChart, Coins } from "lucide-react";
+import { BookOpen, Bot, LineChart, Coins, Sprout } from "lucide-react";
 
 export const Route = createFileRoute("/launch")({
   head: () => ({
@@ -15,11 +15,12 @@ export const Route = createFileRoute("/launch")({
   component: Launch,
 });
 
-const topics = [
-  { icon: BookOpen, title: "Educação financeira", desc: "Orçamento, juros compostos, gestão de risco e planejamento." },
+const topics: { icon: typeof BookOpen; title: string; desc: string; to?: "/finance" | "/start" | "/octo-app" }[] = [
+  { icon: BookOpen, title: "Educação financeira", desc: "Orçamento, juros compostos, gestão de risco e planejamento.", to: "/finance" },
+  { icon: Sprout, title: "Empreendedorismo digital", desc: "Primeiros passos, modelos de negócio, validação de ideias e no-code.", to: "/start" },
   { icon: Coins, title: "Fundamentos de cripto", desc: "Blockchain, tokens, wallets, DeFi — sem hype." },
   { icon: LineChart, title: "Análise & indicadores", desc: "RSI, MACD, médias, Bollinger, backtest e leitura do card do Holograma." },
-  { icon: Bot, title: "Swap Trader & Holograma", desc: "Bot DEX, regra de tendência, stop móvel, carteira virtual e modos de operação." },
+  { icon: Bot, title: "Swap Trader & Holograma", desc: "Bot DEX, regra de tendência, stop móvel, carteira virtual e modos de operação.", to: "/octo-app" },
 ];
 
 function Launch() {
@@ -37,14 +38,26 @@ function Launch() {
           </p>
           <AdSlot slot={1} className="mt-6" />
           <div className="mt-8 grid grid-cols-1 gap-3 sm:grid-cols-2">
-            {topics.map((t) => (
-              <div key={t.title} className="rounded-xl border p-5 hover:bg-muted/50">
-                <div className="flex items-center gap-2 text-sm font-medium">
-                  <t.icon className="h-4 w-4" /> {t.title}
+            {topics.map((t) => {
+              const body = (
+                <>
+                  <div className="flex items-center gap-2 text-sm font-medium">
+                    <t.icon className="h-4 w-4" /> {t.title}
+                  </div>
+                  <p className="mt-2 text-sm text-muted-foreground">{t.desc}</p>
+                </>
+              );
+              const cls = "rounded-xl border p-5 hover:bg-muted/50";
+              return t.to ? (
+                <Link key={t.title} to={t.to} className={cls}>
+                  {body}
+                </Link>
+              ) : (
+                <div key={t.title} className={cls}>
+                  {body}
                 </div>
-                <p className="mt-2 text-sm text-muted-foreground">{t.desc}</p>
-              </div>
-            ))}
+              );
+            })}
           </div>
           <AdSlot slot={2} className="mt-8" />
         </div>

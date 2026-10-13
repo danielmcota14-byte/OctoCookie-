@@ -1,6 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Fragment, useEffect, useState } from "react";
-import { listCommunities, listPosts, DEFAULT_COMMUNITIES, createCommunity } from "@/lib/social";
+import {
+  listCommunities,
+  listPosts,
+  DEFAULT_COMMUNITIES,
+  COMMUNITY_GROUPS,
+  createCommunity,
+} from "@/lib/social";
 import type { Community, Post } from "@/lib/social-types";
 import { PostCard } from "@/components/social/post-card";
 import { AuthModal } from "@/components/social/auth-modal";
@@ -45,7 +51,10 @@ function CommunityHome() {
   const shownCommunities: Community[] = (() => {
     const map = new Map<string, Community>();
     fallbackCommunities.forEach((c) => map.set(c.id, c));
-    communities.forEach((c) => map.set(c.id, c));
+    communities.forEach((c) => {
+      const def = DEFAULT_COMMUNITIES.find((d) => d.id === c.id);
+      map.set(c.id, { ...c, group: c.group ?? def?.group });
+    });
     return Array.from(map.values());
   })();
 
@@ -56,15 +65,18 @@ function CommunityHome() {
         let list: Community[] = [];
         try {
           list = await listCommunities();
-          if (list.length === 0 && user) {
-            for (const c of DEFAULT_COMMUNITIES) {
+          if (user) {
+            // Cria só as comunidades padrão que ainda não existem (não sobrescreve contagens)
+            const have = new Set(list.map((c) => c.id));
+            const missing = DEFAULT_COMMUNITIES.filter((c) => !have.has(c.id));
+            for (const c of missing) {
               try {
                 await createCommunity({ ...c, createdBy: user.uid, id: c.id });
               } catch {
                 /* já existe */
               }
             }
-            list = await listCommunities();
+            if (missing.length > 0) list = await listCommunities();
           }
         } catch (e) {
           console.error("listCommunities", e);
@@ -217,26 +229,39 @@ function CommunityHome() {
             <h3 className="mb-2 flex items-center gap-1.5 text-sm font-semibold">
               <Users className="h-4 w-4" /> Comunidades
             </h3>
-            <ul className="space-y-1">
-              {shownCommunities.map((c) => (
-                <li key={c.id}>
-                  <Link
-                    to="/community/$communityId"
-                    params={{ communityId: c.id }}
-                    className="flex items-center justify-between rounded-md px-2 py-1.5 text-sm hover:bg-muted"
-                  >
-                    <span className="font-medium">c/{c.id}</span>
-                    <span className="text-xs text-muted-foreground">{c.memberCount}</span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
+            {[...COMMUNITY_GROUPS, "Outras"].map((g) => {
+              const items = shownCommunities.filter(
+                (c) => ((COMMUNITY_GROUPS as readonly string[]).includes(c.group ?? "") ? c.group : "Outras") === g,
+              );
+              if (items.length === 0) return null;
+              return (
+                <div key={g} className="mb-2">
+                  <p className="px-2 pb-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+                    {g}
+                  </p>
+                  <ul className="space-y-0.5">
+                    {items.map((c) => (
+                      <li key={c.id}>
+                        <Link
+                          to="/community/$communityId"
+                          params={{ communityId: c.id }}
+                          className="flex items-center justify-between rounded-md px-2 py-1.5 text-sm hover:bg-muted"
+                        >
+                          <span className="font-medium">c/{c.id}</span>
+                          <span className="text-xs text-muted-foreground">{c.memberCount}</span>
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              );
+            })}
           </div>
           <div className="rounded-lg border bg-card p-3 text-xs text-muted-foreground">
             <p className="font-medium text-foreground">Sobre o OctoCommunity</p>
             <p className="mt-1">
-              Rede social estilo Reddit focada em Web3. Compartilhe portfolios do Cryptex,
-              análises e discuta cripto com a comunidade.
+              Rede social estilo Reddit focada em Web3. Discuta a pesquisa Holograma, a carteira, os bots,
+              o CookieScript, educação financeira e cripto. Compartilhe dados do app nos posts.
             </p>
           </div>
         </aside>

@@ -24,6 +24,7 @@ export type Community = {
   rules?: string[];
   isNSFW?: boolean;
   topics?: string[]; // tags web3
+  group?: string; // agrupamento na listagem (ex: "Ferramentas")
 };
 
 export type PostType = "text" | "link" | "image" | "share_app_data";
@@ -42,7 +43,7 @@ export type Post = {
   imageUrl?: string;
   /** Dados compartilhados do app (portfolio, análise, etc.) */
   appData?: {
-    source: "cryptex" | "analyzer" | "simulator" | "ide" | "other";
+    source: "cryptex" | "analyzer" | "simulator" | "ide" | "bot" | "cookiescript" | "holograma" | "finance" | "start" | "other";
     label: string;
     payload: Record<string, unknown>;
   };

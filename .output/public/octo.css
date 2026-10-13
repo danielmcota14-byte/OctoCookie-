@@ -1,0 +1,47 @@
+/* ============================================================
+   OCTO — identidade única do OctoCookie  ·  "tinta + selo holográfico"
+   Escuro = "fundo do mar"  ·  Claro = "maré"
+   Todas as páginas (entrada, pesquisa, bot, carteira, analisador,
+   adm, CookieScript) leem os tokens daqui.
+   ============================================================ */
+@font-face{font-family:"Bricolage Grotesque";src:url(/fonts/bricolage.woff2) format("woff2");font-weight:200 800;font-display:swap}
+@font-face{font-family:"Source Serif 4";src:url(/fonts/source-serif.woff2) format("woff2");font-weight:200 900;font-style:normal;font-display:swap}
+@font-face{font-family:"Source Serif 4";src:url(/fonts/source-serif-italic.woff2) format("woff2");font-weight:200 900;font-style:italic;font-display:swap}
+@font-face{font-family:"JetBrains Mono";src:url(/fonts/jetbrains.woff2) format("woff2");font-weight:100 800;font-display:swap}
+
+:root{
+  --octo-sans:"Bricolage Grotesque",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+  --octo-serif:"Source Serif 4",Georgia,"Times New Roman",serif;
+  --octo-mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+
+  /* maré (claro) */
+  --o-bg:#f4f1ea; --o-bg2:#ece8dd; --o-surface:#fffdf8; --o-surface2:#f7f3ea;
+  --o-ink:#1b2230; --o-mut:#5b6577; --o-faint:#8b93a3;
+  --o-line:#d9d3c4; --o-line2:#c4bca8;
+  --o-cyan:#0e7490; --o-cyan-soft:rgba(14,116,144,.10);
+  --o-gold:#b8860b; --o-gold-soft:rgba(184,134,11,.12);
+  --o-ok:#157f3b; --o-bad:#b42318; --o-warn:#a15c07; --o-info:#1d4ed8;
+  --o-on-accent:#ffffff; --o-overlay:rgba(27,34,48,.045); --o-overlay2:rgba(27,34,48,.08); --o-overlay3:rgba(27,34,48,.13);
+  --o-shadow:0 18px 40px -24px rgba(27,34,48,.35);
+  --o-radius:14px;
+  color-scheme:light;
+}
+:root[data-theme="dark"]{
+  /* fundo do mar (escuro) */
+  --o-bg:#07111f; --o-bg2:#0a1626; --o-surface:#0d1b2e; --o-surface2:#122339;
+  --o-ink:#e6ebf3; --o-mut:#93a0b5; --o-faint:#66748b;
+  --o-line:#1d3249; --o-line2:#2a4463;
+  --o-cyan:#38bdf8; --o-cyan-soft:rgba(56,189,248,.12);
+  --o-gold:#e0b24a; --o-gold-soft:rgba(224,178,74,.14);
+  --o-ok:#4ade80; --o-bad:#f87171; --o-warn:#fbbf24; --o-info:#60a5fa;
+  --o-on-accent:#06121f; --o-overlay:rgba(255,255,255,.04); --o-overlay2:rgba(255,255,255,.08); --o-overlay3:rgba(255,255,255,.13);
+  --o-shadow:0 18px 40px -24px rgba(0,0,0,.7);
+  color-scheme:dark;
+}
+
+/* selo holográfico — o único ornamento da marca */
+.o-holo{
+  background:conic-gradient(from var(--holo-a,200deg) at var(--holo-x,50%) var(--holo-y,50%),
+    #38bdf8,#a78bfa,#f0abfc,#e0b24a,#4ade80,#38bdf8);
+}
+.o-grad-text{background:linear-gradient(100deg,var(--o-cyan),var(--o-gold));-webkit-background-clip:text;background-clip:text;color:transparent}

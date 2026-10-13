@@ -1,0 +1,1 @@
+import{a as e,n as t,t as n}from"./jsx-runtime-D3jfb0Ew.js";var r=e(t()),i=n();function a(){return(0,r.useEffect)(()=>{window.location.replace(`/adm.html`)},[]),(0,i.jsxs)(`p`,{className:`p-6 text-sm text-muted-foreground`,children:[`Abrindo o painel… `,(0,i.jsx)(`a`,{href:`/adm.html`,className:`underline`,children:`clique aqui`}),` se não abrir.`]})}export{a as component};

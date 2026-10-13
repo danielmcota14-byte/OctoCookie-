@@ -342,54 +342,134 @@ export async function listComments(postId: string): Promise<Comment[]> {
   return snap.docs.map((d) => d.data() as Comment);
 }
 
-// ─── Seed communities padrão (chamar uma vez) ──────────────
+// ─── Comunidades padrão (cobrem todos os assuntos do site) ──
+export const COMMUNITY_GROUPS = ["Início", "Pesquisa", "Ferramentas", "Aprender", "Cripto"] as const;
+
 export const DEFAULT_COMMUNITIES: Omit<Community, "memberCount" | "createdAt" | "createdBy">[] = [
+  // Início
   {
     id: "octocookie",
     name: "OctoCookie",
+    group: "Início",
     description: "Comunidade oficial do OctoCookie. Anúncios, feedback e compartilhamento de dados do app.",
     topics: ["octocookie", "app", "web3"],
     rules: ["Seja respeitoso", "Sem spam", "Compartilhe dados do app com o botão Share"],
   },
   {
+    id: "ajuda",
+    name: "Ajuda e Suporte",
+    group: "Início",
+    description: "Dúvidas de uso, bugs, sugestões e pedidos de funcionalidades de qualquer parte do OctoCookie.",
+    topics: ["suporte", "bug", "sugestão"],
+  },
+  // Pesquisa
+  {
+    id: "holograma",
+    name: "Holograma (Pesquisa)",
+    group: "Pesquisa",
+    description:
+      "Discussão da pesquisa Holograma: metodologia, backtests, limites de perda, resultados e críticas construtivas.",
+    topics: ["pesquisa", "backtest", "risco", "metodologia"],
+    rules: ["Cite a tabela ou seção ao comentar", "Críticas são bem-vindas, desde que fundamentadas"],
+  },
+  // Ferramentas
+  {
+    id: "carteira",
+    name: "Carteira (Cryptex)",
+    group: "Ferramentas",
+    description: "Carteira Cryptex: portfólios, MetaMask, rebalanceamento, taxas e uso no dia a dia.",
+    topics: ["cryptex", "carteira", "metamask", "portfolio"],
+  },
+  {
+    id: "bot-trading",
+    name: "Bot de Trading",
+    group: "Ferramentas",
+    description: "Configuração, estratégias, perfis de risco e resultados do bot OctoCookie (incluindo o modo 24/7).",
+    topics: ["bot", "24x7", "estratégia", "stop"],
+  },
+  {
+    id: "analisador",
+    name: "Analisador",
+    group: "Ferramentas",
+    description: "Análises geradas pelo Analisador: leitura de mercado, indicadores e interpretação dos resultados.",
+    topics: ["analisador", "indicadores", "análise"],
+  },
+  {
+    id: "simulador",
+    name: "Simulador",
+    group: "Ferramentas",
+    description: "Simulações de trading sem risco real: cenários, candles sintéticos e testes de estratégia.",
+    topics: ["simulador", "paper", "cenários"],
+  },
+  {
+    id: "cookiescript",
+    name: "CookieScript e IDE",
+    group: "Ferramentas",
+    description: "A linguagem CookieScript, a IDE simulada, exemplos de código, wiki e dúvidas de programação.",
+    topics: ["cookiescript", "ide", "código", "linguagem"],
+  },
+  // Aprender
+  {
+    id: "educacao-financeira",
+    name: "Educação Financeira",
+    group: "Aprender",
+    description: "Orçamento, juros compostos, renda fixa, dívidas e gestão de riscos (conteúdo educacional).",
+    topics: ["finance", "orçamento", "juros", "renda-fixa"],
+  },
+  {
+    id: "iniciantes",
+    name: "Primeiros Passos",
+    group: "Aprender",
+    description: "Para quem está começando em cripto e investimentos: perguntas simples são bem-vindas.",
+    topics: ["start", "iniciante", "básico"],
+  },
+  // Cripto
+  {
     id: "bitcoin",
     name: "Bitcoin",
+    group: "Cripto",
     description: "Tudo sobre Bitcoin, BTC, Lightning e o padrão ouro digital.",
     topics: ["btc", "bitcoin", "macro"],
   },
   {
     id: "ethereum",
     name: "Ethereum",
+    group: "Cripto",
     description: "ETH, L2s, smart contracts, DeFi e NFTs no ecossistema Ethereum.",
     topics: ["eth", "defi", "l2"],
   },
   {
     id: "defi",
     name: "DeFi",
+    group: "Cripto",
     description: "Finanças descentralizadas: yield, lending, DEXs, airdrops e estratégias.",
     topics: ["defi", "yield", "dex"],
   },
   {
     id: "solana",
     name: "Solana",
+    group: "Cripto",
     description: "Solana, memecoins, velocidade e o ecossistema SOL.",
     topics: ["sol", "memecoins"],
   },
   {
     id: "web3",
     name: "Web3",
+    group: "Cripto",
     description: "Discussões gerais sobre Web3, wallets, identidade e o futuro da internet.",
     topics: ["web3", "wallets", "identity"],
   },
   {
     id: "trading",
     name: "Trading",
+    group: "Cripto",
     description: "Análises técnicas, setup, risco e discussões de mercado (não é conselho financeiro).",
     topics: ["trading", "ta", "mercado"],
   },
   {
     id: "news",
     name: "Crypto News",
+    group: "Cripto",
     description: "Notícias, regulamentação e acontecimentos do mundo cripto.",
     topics: ["news", "regulação"],
   },

@@ -1,0 +1,52 @@
+/* OCTO — adaptadores das páginas legadas. Cada página declara <html data-octo="...">
+   e herda os tokens de /octo.css (claro "maré" / escuro "fundo do mar").
+   Só variáveis: nenhuma regra nem JavaScript das páginas é tocado. */
+
+/* Bot Trading (octocookie.html) */
+html[data-octo="bot"]{
+  --bg:var(--o-bg);--bg2:var(--o-overlay);--bg3:var(--o-overlay2);--bg4:var(--o-overlay3);
+  --border:var(--o-line);--border2:var(--o-line2);
+  --text:var(--o-ink);--text2:var(--o-mut);--text3:var(--o-faint);
+  --green:var(--o-ok);--red:var(--o-bad);--yellow:var(--o-warn);--blue:var(--o-info);
+  --font-mono:var(--octo-mono);--font-head:var(--octo-sans);
+}
+/* Analisador (dashboard_analisador.html) */
+html[data-octo="analisador"]{
+  --bg:var(--o-bg);--bg2:var(--o-surface);--bg3:var(--o-surface2);--bg4:var(--o-bg2);
+  --border:var(--o-line);--border2:var(--o-line2);
+  --text:var(--o-ink);--text2:var(--o-mut);--text3:var(--o-faint);
+  --green:var(--o-ok);--red:var(--o-bad);--yellow:var(--o-warn);--blue:var(--o-info);
+  --purple:#8b5cf6;--orange:#d97706;
+  --mono:var(--octo-mono);--head:var(--octo-sans);
+}
+/* Carteira (cryptex.html) e app de carteira (index.html) */
+html[data-octo="carteira"]{
+  --bg:var(--o-bg);--surface:var(--o-surface);--surface-2:var(--o-surface2);--sidebar:var(--o-bg2);
+  --border:var(--o-line);--border-strong:var(--o-line2);
+  --fg:var(--o-ink);--fg-muted:var(--o-mut);--fg-subtle:var(--o-faint);
+  --accent:var(--o-ink);--accent-fg:var(--o-bg);--link:var(--o-cyan);
+  --success:var(--o-ok);--danger:var(--o-bad);--warning:var(--o-warn);
+  --shadow-sm:none;--shadow:var(--o-shadow);
+  --font:var(--octo-sans);
+}
+/* Adm */
+html[data-octo="adm"]{
+  --bg:var(--o-bg);--bg2:var(--o-bg2);--card:var(--o-surface);--card2:var(--o-surface2);
+  --fg:var(--o-ink);--mut:var(--o-mut);--line:var(--o-line);
+  --acc:var(--o-cyan);--acc2:var(--o-gold);--ok:var(--o-ok);--bad:var(--o-bad);--warn:var(--o-warn);
+}
+html[data-octo]{color-scheme:light dark}
+html[data-octo][data-theme="light"]{color-scheme:light}
+html[data-octo][data-theme="dark"]{color-scheme:dark}
+html[data-octo] body{background:var(--bg);color:var(--text,var(--fg))}
+
+/* CookieScript (cookiescript/index.html) */
+html[data-octo="cookiescript"]{
+  --primary:var(--o-ink);--primary-light:var(--o-mut);
+  --accent:var(--o-cyan);--accent-dark:var(--o-cyan);
+  --success:var(--o-ok);--warning:var(--o-warn);--danger:var(--o-bad);
+  --gray-50:var(--o-bg2);--gray-100:var(--o-surface2);--gray-200:var(--o-line);--gray-300:var(--o-line);
+  --gray-400:var(--o-faint);--gray-500:var(--o-mut);--gray-700:var(--o-ink);--gray-800:var(--o-ink);
+  --shadow-sm:none;--shadow-md:var(--o-shadow);--shadow-lg:var(--o-shadow);
+}
+html[data-octo="cookiescript"] body{font-family:var(--octo-sans)}

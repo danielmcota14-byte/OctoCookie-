@@ -1,0 +1,662 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Cookie AI - Plataforma de Desenvolvimento com IA</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #111;
+      --primary-light: #333;
+      --accent: #0070f3;
+      --accent-dark: #0051a2;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --gray-50: #fafafa;
+      --gray-100: #f5f5f5;
+      --gray-200: #eeeeee;
+      --gray-300: #e5e5e5;
+      --gray-400: #9ca3af;
+      --gray-500: #6b7280;
+      --gray-700: #374151;
+      --gray-800: #1f2937;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+      --shadow-md: 0 4px 6px rgba(0,0,0,0.07);
+      --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --radius-xl: 24px;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: linear-gradient(135deg, var(--gray-50) 0%, var(--gray-100) 100%);
+      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      color: var(--primary);
+      line-height: 1.6;
+      min-height: 100vh;
+      padding: 2rem 1.5rem;
+    }
+    .global-nav {
+      background: var(--primary);
+      border-bottom: 1px solid var(--gray-700);
+      padding: 0.75rem 2rem;
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      position: sticky;
+      top: 0;
+      z-index: 1100;
+      margin-bottom: 2rem;
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-md);
+    }
+    .global-nav a {
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--gray-300);
+      padding: 0.5rem 1.25rem;
+      border-radius: 9999px;
+      transition: all 0.25s;
+      letter-spacing: 0.025em;
+    }
+    .global-nav a:hover { background: var(--gray-700); color: white; transform: translateY(-1px); }
+    .global-nav a.active { background: white; color: var(--primary); box-shadow: var(--shadow-sm); }
+    .container { max-width: 900px; margin: 0 auto; }
+    .site-header {
+      margin-bottom: 2.5rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid var(--gray-200);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .logo-area h1 { font-size: 1.75rem; font-weight: 600; color: var(--primary); letter-spacing: -0.02em; }
+    .badge-mini {
+      font-size: 0.75rem;
+      background: var(--gray-200);
+      padding: 0.25rem 0.875rem;
+      border-radius: 9999px;
+      color: var(--gray-700);
+      font-weight: 500;
+    }
+    .badge-mini.accent { background: var(--accent); color: white; }
+    .section-card {
+      background: white;
+      border-radius: var(--radius-xl);
+      border: 1px solid var(--gray-200);
+      box-shadow: var(--shadow-md);
+      padding: 2rem;
+      margin-bottom: 2rem;
+      transition: box-shadow 0.3s;
+    }
+    .section-card:hover { box-shadow: var(--shadow-lg); }
+    .form-group { margin-bottom: 1.75rem; }
+    label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--gray-700);
+      margin-bottom: 0.625rem;
+    }
+    select, input, textarea {
+      width: 100%;
+      padding: 0.875rem 1.125rem;
+      background: white;
+      border: 1px solid var(--gray-300);
+      border-radius: var(--radius-md);
+      font-size: 0.95rem;
+      color: var(--primary);
+      outline: none;
+      font-family: inherit;
+      transition: all 0.2s;
+    }
+    select:focus, input:focus, textarea:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(17, 17, 17, 0.1);
+    }
+    textarea { resize: vertical; min-height: 120px; }
+    .double-row { display: flex; flex-wrap: wrap; gap: 1.5rem; margin-bottom: 1.5rem; }
+    .double-row .field { flex: 1; min-width: 200px; }
+    .api-hint {
+      font-size: 0.75rem;
+      color: var(--gray-500);
+      margin-top: 0.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .api-hint a {
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 500;
+      border-bottom: 1px solid var(--gray-300);
+      transition: border-color 0.2s;
+    }
+    .api-hint a:hover { border-color: var(--primary); }
+    .groq-model-wrap, .local-status-wrap, .claude-code-wrap { display: none; }
+    .groq-model-wrap.active, .local-status-wrap.active, .claude-code-wrap.active { display: block; }
+    button {
+      background: var(--primary);
+      border: none;
+      padding: 0.875rem 2rem;
+      border-radius: 9999px;
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: white;
+      cursor: pointer;
+      transition: all 0.25s;
+      font-family: inherit;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      letter-spacing: 0.025em;
+    }
+    button:hover:not(:disabled) { background: var(--primary-light); transform: translateY(-2px); box-shadow: var(--shadow-md); }
+    button:disabled { opacity: 0.6; cursor: not-allowed; }
+    .response-area { margin-top: 1.75rem; border-top: 1px solid var(--gray-200); padding-top: 1.75rem; }
+    .response-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 1rem; }
+    .response-header h3 { font-size: 0.9rem; font-weight: 500; color: var(--gray-600); text-transform: uppercase; letter-spacing: 0.05em; }
+    .copy-btn { background: var(--gray-100); color: var(--gray-700); padding: 0.5rem 1.25rem; font-size: 0.8rem; border-radius: 9999px; border: 1px solid var(--gray-300); }
+    .copy-btn:hover { background: var(--gray-200); transform: translateY(-1px); }
+    .response-content { background: var(--gray-50); padding: 1.25rem; font-size: 0.95rem; white-space: pre-wrap; line-height: 1.7; color: var(--primary); border-radius: var(--radius-md); border: 1px solid var(--gray-200); min-height: 80px; }
+    .loading-state { display: flex; align-items: center; gap: 12px; color: var(--gray-500); padding: 1.5rem 0; }
+    .spinner-mini { width: 24px; height: 24px; border: 2px solid var(--gray-300); border-top: 2px solid var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    .error-block { background: #fef2f2; border-left: 4px solid var(--danger); padding: 1rem; color: #991b1b; border-radius: 0 var(--radius-md) var(--radius-md) 0; font-size: 0.9rem; }
+    .github-link { font-size: 0.75rem; background: #111; color: #fff; padding: 0.25rem 0.875rem; border-radius: 9999px; font-weight: 500; text-decoration: none; }
+    .github-link:hover { background: var(--accent); }
+    .claude-install { background: #eef4ff; border-left: 4px solid #2f6feb; padding: 1rem 1.25rem; border-radius: var(--radius-md); margin-bottom: 1.5rem; font-size: 0.85rem; line-height: 1.55; color: var(--gray-700); }
+    .claude-install code { background: rgba(0,0,0,0.06); padding: 0.1rem 0.35rem; border-radius: 4px; }
+    .footer-note { font-size: 0.75rem; text-align: center; color: var(--gray-500); border-top: 1px solid var(--gray-200); padding-top: 1.75rem; margin-top: 1rem; }
+    .ai-flow-info { background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%); color: white; padding: 1.25rem; border-radius: var(--radius-md); margin-bottom: 1.5rem; font-size: 0.85rem; display: none; }
+    .ai-flow-info.active { display: block; }
+    .ai-flow-steps { display: flex; gap: 1rem; margin-top: 0.75rem; flex-wrap: wrap; }
+    .ai-step { background: rgba(255,255,255,0.15); padding: 0.5rem 0.875rem; border-radius: var(--radius-sm); font-size: 0.75rem; }
+    @media (max-width: 640px) {
+      body { padding: 1rem; }
+      .section-card { padding: 1.5rem; }
+      .site-header { flex-direction: column; text-align: center; }
+      .double-row { flex-direction: column; gap: 1rem; }
+    }
+  
+        /* ===== Responsivo: navbar global (todas as páginas) ===== */
+        @media (max-width: 640px) {
+            .global-nav { position: static; justify-content: flex-start; flex-wrap: nowrap; overflow-x: auto; gap: 4px; padding: 8px 12px; -webkit-overflow-scrolling: touch; }
+            .global-nav a { white-space: nowrap; flex: 0 0 auto; padding: 8px 14px; }
+        }
+        img, video, canvas, svg { max-width: 100%; }
+        pre, table { max-width: 100%; overflow-x: auto; }
+    </style>
+</head>
+<body>
+<div class="global-nav">
+  <a href="cookie_ide.html">CookieScript</a>
+  <a href="index.html">Editor Profissional</a>
+  <a href="index1.html" class="active">AI Assistant</a>
+  <a href="index2.html">Wiki</a>
+</div>
+
+<div class="container">
+  <div class="site-header">
+    <div class="logo-area">
+      <h1>Cookie AI · Plataforma de Desenvolvimento</h1>
+      <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
+        <span class="badge-mini accent">Claude Code Local</span>
+        <span class="badge-mini">Gemini</span>
+        <span class="badge-mini">Groq</span>
+        <span class="badge-mini">IA Local</span>
+        <a class="github-link" href="https://github.com/danielmcota14-byte/cookiescript" target="_blank" rel="noopener">🐙 GitHub</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-card">
+    <div class="claude-install">
+      <strong>🤖 Quer testar a IA do Claude?</strong><br>
+      Basta instalar o projeto no seu computador: <code>git clone https://github.com/danielmcota14-byte/cookiescript.git</code>
+      (<a href="https://github.com/danielmcota14-byte/cookiescript" target="_blank" rel="noopener">repositório no GitHub</a>). Depois rode
+      <code>instalar_claude_code.bat</code> (Windows) ou <code>instalar_claude_code.sh</code> (Linux/Mac), execute <code>claude</code>
+      uma vez para entrar na sua conta e inicie com <code>python cookie_ide_app.py</code>. Escolha o provedor
+      <strong>Claude Code Local</strong> abaixo. Ele usa o CLI do seu computador, então não funciona em versões hospedadas na internet.
+    </div>
+
+    <div class="ai-flow-info" id="aiFlowInfo">
+      <strong>Fluxo de IAs Potencializadas:</strong>
+      <div class="ai-flow-steps">
+        <span class="ai-step">1. Seu prompt</span>
+        <span class="ai-step">2. Groq responde</span>
+        <span class="ai-step">3. IA Local refina</span>
+      </div>
+    </div>
+
+    <div class="double-row">
+      <div class="field">
+        <label for="providerSelect">Provedor de IA</label>
+        <select id="providerSelect">
+          <option value="claude_code" selected>🤖 Claude Code Local (CLI)</option>
+          <option value="local">🧠 DeepSeek Local (sem API)</option>
+          <option value="gemini">Google Gemini (API gratuita)</option>
+          <option value="groq">Groq Cloud (API gratuita)</option>
+          <option value="enhanced">⚡ Cookie Potencializada (DeepSeek + Groq)</option>
+        </select>
+      </div>
+      <div class="field" id="apiKeyField">
+        <label for="apiKeyInput">API Key (Gemini/Groq)</label>
+        <input type="password" id="apiKeyInput" placeholder="sua chave aqui" autocomplete="off">
+        <div class="api-hint">
+          <span id="keyHint">necessária apenas para Gemini/Groq</span>
+          <a href="#" id="getKeyLink" target="_blank">obter chave →</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="claude-code-wrap" id="claudeCodeStatusDiv">
+      <div class="field">
+        <label>Status do Claude Code CLI</label>
+        <div id="claudeCodeStatusMsg" style="font-size:0.9rem; padding:0.5rem 0; color:var(--gray-600);">⏳ Verificando instalação local...</div>
+      </div>
+    </div>
+
+    <div class="groq-model-wrap" id="groqModelDiv">
+      <div class="field">
+        <label for="groqModelSelect">Modelo Groq</label>
+        <select id="groqModelSelect">
+          <option value="openai/gpt-oss-120b">GPT-OSS 120B (recomendado)</option>
+          <option value="openai/gpt-oss-20b">GPT-OSS 20B (rápido)</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="local-status-wrap" id="localStatusDiv">
+      <div class="field">
+        <label>Status do Servidor</label>
+        <div id="localStatusMsg" style="font-size:0.9rem; padding:0.5rem 0; color:var(--gray-600);">⏳ Verificando conexão...</div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="promptInput">Pergunta / Prompt</label>
+      <textarea id="promptInput" placeholder="Ex: Explique transformers em IA. || Qual a capital do Brasil? || Escreva uma função Python que calcule fatorial."></textarea>
+    </div>
+
+    <div style="display: flex; justify-content: flex-end;">
+      <button id="sendBtn">→ Perguntar à IA</button>
+    </div>
+
+    <div class="response-area">
+      <div class="response-header">
+        <h3>Resposta da IA</h3>
+        <button id="copyResponseBtn" class="copy-btn">Copiar texto</button>
+      </div>
+      <div id="responseContainer">
+        <div style="color: var(--gray-500); padding: 1rem 0;">Escolha um provedor, insira a chave (se necessário) e envie sua pergunta.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-note">
+    <strong>Claude Code Local</strong> usa o CLI <code>claude</code> já instalado/autenticado no seu computador (sem chave de API extra).<br>
+    <strong>DeepSeek Local</strong> usa torch + transformers direto no servidor (sem internet, sem API).<br>
+    <strong>Gemini</strong> e <strong>Groq</strong> requerem chave API gratuita (opcional).<br>
+    Código-fonte: <a href="https://github.com/danielmcota14-byte/cookiescript" target="_blank" rel="noopener">github.com/danielmcota14-byte/cookiescript</a>
+  </div>
+</div>
+
+<script>
+  const providerSelect    = document.getElementById('providerSelect');
+  const apiKeyField       = document.getElementById('apiKeyField');
+  const apiKeyInput       = document.getElementById('apiKeyInput');
+  const groqModelDiv      = document.getElementById('groqModelDiv');
+  const localStatusDiv    = document.getElementById('localStatusDiv');
+  const localStatusMsg    = document.getElementById('localStatusMsg');
+  const claudeCodeStatusDiv = document.getElementById('claudeCodeStatusDiv');
+  const claudeCodeStatusMsg = document.getElementById('claudeCodeStatusMsg');
+  const groqModelSelect   = document.getElementById('groqModelSelect');
+  const promptTextarea    = document.getElementById('promptInput');
+  const sendBtn           = document.getElementById('sendBtn');
+  const responseContainer = document.getElementById('responseContainer');
+  const copyBtn           = document.getElementById('copyResponseBtn');
+  const getKeyLink        = document.getElementById('getKeyLink');
+  const aiFlowInfo        = document.getElementById('aiFlowInfo');
+
+  const GEMINI_BASE            = 'https://generativelanguage.googleapis.com/v1beta/models/';
+  // Modelos atuais do Gemini (a série 2.5 e o antigo gemini-pro foram/serão desativados)
+  const GEMINI_MODELS          = ['gemini-3.5-flash', 'gemini-3.1-pro-preview', 'gemini-3.1-flash-lite'];
+  const GROQ_ENDPOINT          = 'https://api.groq.com/openai/v1/chat/completions';
+  const DEFAULT_GROQ_KEY = '';
+  const LOCAL_ASK_ENDPOINT     = 'api/ask';
+  const LOCAL_ENHANCED_ENDPOINT= 'api/ask_enhanced';
+
+  let isLoading = false;
+
+  // ── helpers ────────────────────────────────────────────────────────────────
+
+  function errText(e) {
+    if (e == null) return 'Erro desconhecido.';
+    if (typeof e === 'string') return e;
+    if (e.message && typeof e.message === 'string') return e.message;
+    if (e.error) return errText(e.error);
+    try { return JSON.stringify(e); } catch (_) { return String(e); }
+  }
+
+  function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]));
+  }
+
+  function setResponse(content, isError = false, rawText = '') {
+    if (isError) {
+      responseContainer.innerHTML = `<div class="error-block">${escapeHtml(content)}</div>`;
+      return;
+    }
+    responseContainer.innerHTML = `<div class="response-content">${escapeHtml(content).replace(/\n/g,'<br>')}</div>`;
+    responseContainer.dataset.rawText = rawText || content;
+  }
+
+  function setLoading(loading) {
+    isLoading = loading;
+    if (loading) {
+      responseContainer.innerHTML = `<div class="loading-state"><div class="spinner-mini"></div><span>Processando requisição...</span></div>`;
+      sendBtn.disabled = true;
+      sendBtn.style.opacity = '0.6';
+      sendBtn.innerText = 'Enviando...';
+    } else {
+      sendBtn.disabled = false;
+      sendBtn.style.opacity = '1';
+      sendBtn.innerText = '→ Perguntar à IA';
+    }
+  }
+
+  // ── fetch seguro: nunca deixa .json() explodir ──────────────────────────
+
+  async function safeJsonFetch(url, options) {
+    let resp;
+    try {
+      resp = await fetch(url, options);
+    } catch (networkErr) {
+      throw new Error('Sem conexão com o servidor. Verifique se o backend está rodando.');
+    }
+
+    let text;
+    try {
+      text = await resp.text();
+    } catch (e) {
+      throw new Error('Não foi possível ler a resposta do servidor.');
+    }
+
+    // Corpo vazio
+    if (!text || !text.trim()) {
+      throw new Error(`Servidor retornou resposta vazia (HTTP ${resp.status}). O backend pode estar reiniciando — tente novamente.`);
+    }
+
+    // Fly.io / proxy retornando página HTML de erro
+    if (text.trimStart().startsWith('<')) {
+      if (resp.status === 503 || resp.status === 502) {
+        throw new Error('Servidor indisponível (503). O Fly.io ainda está iniciando a máquina — aguarde alguns segundos e tente de novo.');
+      }
+      throw new Error(`Servidor retornou HTML em vez de JSON (HTTP ${resp.status}). O backend pode estar offline.`);
+    }
+
+    let data;
+    try {
+      data = JSON.parse(text);
+    } catch (e) {
+      throw new Error(`Resposta inesperada do servidor: ${text.slice(0, 100)}`);
+    }
+
+    if (!resp.ok) {
+      throw new Error(data.error ? errText(data.error) : `Erro HTTP ${resp.status}`);
+    }
+    return data;
+  }
+
+  // ── provedores ─────────────────────────────────────────────────────────────
+
+  async function callGemini(apiKey, prompt) {
+    let ultimoErro = 'Resposta inválida do Gemini.';
+    for (const modelo of GEMINI_MODELS) {
+      let data;
+      try {
+        const resp = await fetch(`${GEMINI_BASE}${modelo}:generateContent`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey },
+          body: JSON.stringify({ contents:[{parts:[{text:prompt}]}], generationConfig:{temperature:0.7,maxOutputTokens:4096} })
+        });
+        data = await resp.json();
+      } catch (e) {
+        throw new Error('Não foi possível falar com o Gemini. Verifique sua internet.');
+      }
+      const partes = data.candidates && data.candidates[0]?.content?.parts;
+      const texto = partes && partes.map(p => p.text || '').join('');
+      if (texto) return texto;
+      ultimoErro = errText(data.error) || ultimoErro;
+      const baixo = String(ultimoErro).toLowerCase();
+      const indisponivel = ['not found', 'no longer available', 'is not supported', 'deprecated'].some(t => baixo.includes(t));
+      if (!indisponivel) break;   // chave inválida, limite etc.: trocar de modelo não ajuda
+    }
+    throw new Error(`Gemini: ${ultimoErro}`);
+  }
+
+  const GROQ_FALLBACK_MODELS = ['openai/gpt-oss-120b', 'openai/gpt-oss-20b'];
+
+  async function callGroq(apiKey, modelId, prompt) {
+    // Se o modelo escolhido foi aposentado pela Groq, tenta os modelos atuais.
+    const candidatos = [modelId, ...GROQ_FALLBACK_MODELS].filter((m, i, a) => m && a.indexOf(m) === i);
+    let ultimoErro = 'Resposta inesperada da Groq.';
+    for (const modelo of candidatos) {
+      const corpo = { model: modelo, messages: [{role:'user',content:prompt}], temperature: 0.7, max_tokens: 4096 };
+      if (modelo.startsWith('openai/gpt-oss')) corpo.reasoning_effort = 'low';
+      let resp, data;
+      try {
+        resp = await fetch(GROQ_ENDPOINT, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+          body: JSON.stringify(corpo)
+        });
+        data = await resp.json();
+      } catch (e) {
+        throw new Error('Não foi possível falar com a Groq. Verifique sua internet.');
+      }
+      const texto = data.choices && data.choices[0]?.message?.content;
+      if (texto) return texto;
+      ultimoErro = errText(data.error) || ultimoErro;
+      const baixo = String(ultimoErro).toLowerCase();
+      const modeloIndisponivel = ['decommission', 'does not exist', 'not found', 'no longer supported', 'access to it'].some(t => baixo.includes(t));
+      if (!modeloIndisponivel) break;   // outro erro (chave inválida, limite...) - não adianta trocar de modelo
+    }
+    throw new Error(`Groq: ${ultimoErro}`);
+  }
+
+  async function callLocalAI(prompt) {
+    const data = await safeJsonFetch(LOCAL_ASK_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ pergunta: prompt })
+    });
+    if (data.error) throw new Error(errText(data.error));
+    if (data.resposta) return data.resposta;
+    throw new Error('Resposta vazia da Cookie AI.');
+  }
+
+  async function callClaudeCodeAI(prompt) {
+    const data = await safeJsonFetch(LOCAL_ASK_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ pergunta: prompt, provider: 'claude_code' })
+    });
+    if (data.error) throw new Error(errText(data.error));
+    if (data.resposta) return data.resposta;
+    throw new Error('Resposta vazia do Claude Code.');
+  }
+
+  async function callEnhancedAI(prompt, groqModel) {
+    const data = await safeJsonFetch(LOCAL_ENHANCED_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ pergunta: prompt, groq_model: groqModel })
+    });
+    if (data.error) throw new Error(errText(data.error));
+    if (data.resposta) return data.resposta;
+    throw new Error('Resposta vazia da IA potencializada.');
+  }
+
+  // ── health check ───────────────────────────────────────────────────────────
+
+  async function checkServerHealth() {
+    try {
+      const resp = await fetch('health');
+      if (resp.ok) {
+        localStatusMsg.innerHTML = '✅ Servidor online e funcionando';
+        localStatusMsg.style.color = 'var(--success)';
+      } else {
+        throw new Error(`HTTP ${resp.status}`);
+      }
+    } catch(e) {
+      localStatusMsg.innerHTML = '❌ Servidor não responde. Verifique se cookie_ide_app.py está rodando.';
+      localStatusMsg.style.color = 'var(--danger)';
+    }
+  }
+
+  async function checkClaudeCodeStatus() {
+    try {
+      const data = await safeJsonFetch('api/claude_code_status', { method: 'POST', headers: {'Content-Type':'application/json'}, body: '{}' });
+      if (data.online) {
+        claudeCodeStatusMsg.innerHTML = `✅ Claude Code CLI detectado${data.version ? ' — ' + escapeHtml(data.version) : ''}`;
+        claudeCodeStatusMsg.style.color = 'var(--success)';
+      } else {
+        claudeCodeStatusMsg.innerHTML = `⚠️ ${escapeHtml(data.error || 'Claude Code CLI não encontrado nesta máquina.')}`;
+        claudeCodeStatusMsg.style.color = 'var(--danger)';
+      }
+    } catch (e) {
+      claudeCodeStatusMsg.innerHTML = '❌ Não foi possível verificar o Claude Code. O backend (cookie_ide_app.py) está rodando?';
+      claudeCodeStatusMsg.style.color = 'var(--danger)';
+    }
+  }
+
+  // ── UI ─────────────────────────────────────────────────────────────────────
+
+  function updateUIForProvider() {
+    const provider = providerSelect.value;
+    claudeCodeStatusDiv.classList.remove('active');
+    if (provider === 'claude_code') {
+      apiKeyField.style.display = 'none';
+      groqModelDiv.classList.remove('active');
+      localStatusDiv.classList.remove('active');
+      aiFlowInfo.classList.remove('active');
+      claudeCodeStatusDiv.classList.add('active');
+      checkClaudeCodeStatus();
+    } else if (provider === 'gemini') {
+      apiKeyField.style.display = 'block';
+      groqModelDiv.classList.remove('active');
+      localStatusDiv.classList.remove('active');
+      aiFlowInfo.classList.remove('active');
+      getKeyLink.href = 'https://aistudio.google.com/app/apikey';
+      getKeyLink.textContent = 'obter chave Gemini →';
+      apiKeyInput.placeholder = 'ex: AIzaSy...';
+    } else if (provider === 'groq') {
+      apiKeyField.style.display = 'block';
+      groqModelDiv.classList.add('active');
+      localStatusDiv.classList.remove('active');
+      aiFlowInfo.classList.remove('active');
+      getKeyLink.href = 'https://console.groq.com/keys';
+      getKeyLink.textContent = 'obter chave Groq →';
+      apiKeyInput.placeholder = 'gsk_...';
+    } else if (provider === 'enhanced') {
+      apiKeyField.style.display = 'none';
+      groqModelDiv.classList.remove('active');
+      localStatusDiv.classList.add('active');
+      aiFlowInfo.classList.add('active');
+      checkServerHealth();
+    } else { // local
+      apiKeyField.style.display = 'none';
+      groqModelDiv.classList.remove('active');
+      localStatusDiv.classList.add('active');
+      aiFlowInfo.classList.remove('active');
+      checkServerHealth();
+    }
+    responseContainer.innerHTML = `<div style="color:var(--gray-500);">Provedor alterado. Digite sua pergunta.</div>`;
+    delete responseContainer.dataset.rawText;
+  }
+
+  // ── envio ──────────────────────────────────────────────────────────────────
+
+  async function handleSend() {
+    if (isLoading) return;
+    const provider = providerSelect.value;
+    const prompt = promptTextarea.value.trim();
+    if (!prompt) { setResponse('Digite uma pergunta antes de enviar.', true); return; }
+
+    let apiKey = '';
+    if (provider === 'gemini' || provider === 'groq') {
+      apiKey = apiKeyInput.value.trim() || (provider === 'groq' ? DEFAULT_GROQ_KEY : '');
+      if (!apiKey) { setResponse(`É necessária uma API Key para ${provider === 'gemini' ? 'Gemini' : 'Groq'}.`, true); return; }
+    }
+
+    setLoading(true);
+    try {
+      let result = '';
+      if (provider === 'claude_code') {
+        result = await callClaudeCodeAI(prompt);
+      } else if (provider === 'gemini') {
+        result = await callGemini(apiKey, prompt);
+      } else if (provider === 'groq') {
+        result = await callGroq(apiKey, groqModelSelect.value, prompt);
+      } else if (provider === 'enhanced') {
+        result = await callEnhancedAI(prompt, groqModelSelect.value);
+      } else {
+        result = await callLocalAI(prompt);
+      }
+      setResponse(result, false, result);
+    } catch (err) {
+      let msg = errText(err);
+      setResponse(`Erro: ${msg}`, true);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  function copyResponse() {
+    let raw = responseContainer.dataset.rawText;
+    if (!raw) {
+      const el = responseContainer.querySelector('.response-content') || responseContainer.querySelector('.error-block');
+      if (el) raw = el.innerText;
+    }
+    if (!raw) { alert('Nenhuma resposta para copiar.'); return; }
+    navigator.clipboard.writeText(raw).then(() => {
+      const orig = copyBtn.innerText;
+      copyBtn.innerText = 'Copiado!';
+      setTimeout(() => { copyBtn.innerText = orig; }, 1200);
+    }).catch(() => alert('Não foi possível copiar.'));
+  }
+
+  // ── eventos ────────────────────────────────────────────────────────────────
+
+  providerSelect.addEventListener('change', updateUIForProvider);
+  sendBtn.addEventListener('click', handleSend);
+  copyBtn.addEventListener('click', copyResponse);
+  promptTextarea.addEventListener('keydown', e => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') { e.preventDefault(); handleSend(); }
+  });
+
+  // Init
+  updateUIForProvider();
+  setInterval(() => {
+    if (providerSelect.value === 'local' || providerSelect.value === 'enhanced') {
+      checkServerHealth();
+    } else if (providerSelect.value === 'claude_code') {
+      checkClaudeCodeStatus();
+    }
+  }, 15000);
+</script>
+</body>
+</html>

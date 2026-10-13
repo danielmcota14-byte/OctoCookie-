@@ -17,7 +17,7 @@ import type { Post } from "./social-types";
 
 export type SharePayload = {
   communityId?: string;
-  source: "cryptex" | "analyzer" | "simulator" | "ide" | "other";
+  source: "cryptex" | "analyzer" | "simulator" | "ide" | "bot" | "cookiescript" | "holograma" | "finance" | "start" | "other";
   label: string;
   payload: Record<string, unknown>;
   title: string;

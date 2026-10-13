@@ -14,11 +14,49 @@ import {
   Users,
   Server,
   ShieldCheck,
+  PiggyBank,
+  Sprout,
+  Compass,
+  Cookie,
+  Sun,
+  Moon,
+  BookOpenText,
+  MessageCircle,
+  type LucideIcon,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import mascot from "@/assets/octocookie-mascot.png";
 import { loadThreads, newThread, saveThreads, type Thread } from "@/lib/threads";
 import { cn } from "@/lib/utils";
+import { toggleTheme, effectiveTheme } from "@/lib/theme";
+
+type NavItem = { to: string; label: string; icon: LucideIcon; exact?: boolean; external?: boolean };
+const NAV_GROUPS: { title: string; items: NavItem[] }[] = [
+  { title: "Início", items: [
+    { to: "/", label: "Início", icon: Compass, exact: true },
+    { to: "/pesquisa", label: "Pesquisa Holograma", icon: BookOpenText },
+  ] },
+  { title: "Ferramentas", items: [
+    { to: "/carteira", label: "Carteira", icon: Wallet },
+    { to: "/octo-app", label: "Bot Trading", icon: LayoutDashboard },
+    { to: "/bot-24x7", label: "Bot 24/7", icon: Server },
+    { to: "/analyzer", label: "Analisador", icon: LineChart },
+    { to: "/simulator", label: "Simulador", icon: TerminalSquare },
+  ] },
+  { title: "Programar", items: [
+    { to: "/cookiescript", label: "CookieScript", icon: Cookie },
+    { to: "/ide", label: "IDE simulada", icon: Code2 },
+  ] },
+  { title: "Aprender", items: [
+    { to: "/finance", label: "Finance", icon: PiggyBank },
+    { to: "/start", label: "Start", icon: Sprout },
+    { to: "/launch", label: "Explorar", icon: Rocket },
+  ] },
+  { title: "Comunidade", items: [
+    { to: "/community", label: "Comunidade", icon: Users },
+    { to: "/adm.html", label: "Adm", icon: ShieldCheck, external: true },
+  ] },
+];
 
 type Props = {
   threads: Thread[];
@@ -30,6 +68,14 @@ export function AppSidebar({ threads, onThreadsChange }: Props) {
   // e vira um drawer que abre por cima do conteúdo (evita empurrar/espremer as abas).
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [themeTick, setThemeTick] = useState(0);
+  const [isDark, setIsDark] = useState(false);
+  useEffect(() => {
+    setIsDark(effectiveTheme() === "dark");
+    const on = () => setIsDark(effectiveTheme() === "dark");
+    window.addEventListener("storage", on);
+    return () => window.removeEventListener("storage", on);
+  }, [themeTick]);
   const navigate = useNavigate();
   const params = useParams({ strict: false }) as { threadId?: string };
   const activeId = params.threadId;
@@ -103,90 +149,55 @@ export function AppSidebar({ threads, onThreadsChange }: Props) {
           </button>
           {!collapsed && (
             <div className="flex items-center gap-2 text-sm font-medium">
-              <img src={mascot} alt="" width={20} height={20} className="h-5 w-5" />
+              <img src={mascot} alt="" width={20} height={20} className="h-5 w-5 dark:invert" />
               <span>OctoCookie</span>
             </div>
           )}
         </div>
 
-        <nav className="flex flex-col gap-0.5 px-2">
-          <Link
-            to="/"
-            className="flex items-center gap-3 rounded-md px-2.5 py-2 text-sm hover:bg-sidebar-accent"
-          >
-            <Wallet className="h-4 w-4 shrink-0" />
-            {!collapsed && <span>Carteira</span>}
-          </Link>
+        <nav className="flex min-h-0 flex-col gap-0.5 overflow-y-auto px-2 pb-2">
           <button
             onClick={handleNew}
-            className="flex items-center gap-3 rounded-md px-2.5 py-2 text-sm hover:bg-sidebar-accent"
+            className="mb-1 flex items-center gap-3 rounded-md border border-sidebar-border px-2.5 py-2 text-sm font-medium hover:bg-sidebar-accent"
           >
             <SquarePen className="h-4 w-4 shrink-0" />
             {!collapsed && <span>Novo chat</span>}
           </button>
-          <Link
-            to="/launch"
-            className="flex items-center gap-3 rounded-md px-2.5 py-2 text-sm hover:bg-sidebar-accent"
-          >
-            <Rocket className="h-4 w-4 shrink-0" />
-            {!collapsed && <span>Explorar</span>}
-          </Link>
-          <Link
-            to="/simulator"
-            className="flex items-center gap-3 rounded-md px-2.5 py-2 text-sm hover:bg-sidebar-accent"
-          >
-            <TerminalSquare className="h-4 w-4 shrink-0" />
-            {!collapsed && <span>Simulador</span>}
-          </Link>
-          <Link
-            to="/ide"
-            className="flex items-center gap-3 rounded-md px-2.5 py-2 text-sm hover:bg-sidebar-accent"
-          >
-            <Code2 className="h-4 w-4 shrink-0" />
-            {!collapsed && <span>CookieScript IDE</span>}
-          </Link>
-          <Link
-            to="/analyzer"
-            className="flex items-center gap-3 rounded-md px-2.5 py-2 text-sm hover:bg-sidebar-accent"
-          >
-            <LineChart className="h-4 w-4 shrink-0" />
-            {!collapsed && <span>Analisador</span>}
-          </Link>
-          <Link
-            to="/octo-app"
-            className="flex items-center gap-3 rounded-md px-2.5 py-2 text-sm hover:bg-sidebar-accent"
-          >
-            <LayoutDashboard className="h-4 w-4 shrink-0" />
-            {!collapsed && <span>Bot Trading</span>}
-          </Link>
-          <Link
-            to="/bot-24x7"
-            className="flex items-center gap-3 rounded-md px-2.5 py-2 text-sm hover:bg-sidebar-accent"
-          >
-            <Server className="h-4 w-4 shrink-0" />
-            {!collapsed && <span>Bot 24/7</span>}
-          </Link>
-          <Link
-            to="/community"
-            className="flex items-center gap-3 rounded-md px-2.5 py-2 text-sm hover:bg-sidebar-accent"
-          >
-            <Users className="h-4 w-4 shrink-0" />
-            {!collapsed && <span>Comunidade</span>}
-          </Link>
-          <a
-            href="/adm.html"
-            className="flex items-center gap-3 rounded-md px-2.5 py-2 text-sm hover:bg-sidebar-accent"
-          >
-            <ShieldCheck className="h-4 w-4 shrink-0" />
-            {!collapsed && <span>Adm</span>}
-          </a>
-          <Link
-            to="/settings"
-            className="flex items-center gap-3 rounded-md px-2.5 py-2 text-sm hover:bg-sidebar-accent"
-          >
-            <SettingsIcon className="h-4 w-4 shrink-0" />
-            {!collapsed && <span>Configurações</span>}
-          </Link>
+          {NAV_GROUPS.map((g) => (
+            <div key={g.title} className="mt-2 flex flex-col gap-0.5">
+              {!collapsed && (
+                <div className="px-2.5 pb-0.5 font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                  {g.title}
+                </div>
+              )}
+              {g.items.map((it) => {
+                const Icon = it.icon;
+                const cls = "flex items-center gap-3 rounded-md px-2.5 py-2 text-sm hover:bg-sidebar-accent";
+                const inner = (
+                  <>
+                    <Icon className="h-4 w-4 shrink-0" />
+                    {!collapsed && <span>{it.label}</span>}
+                  </>
+                );
+                return it.external ? (
+                  <a key={it.to} href={it.to} className={cls} title={collapsed ? it.label : undefined}>
+                    {inner}
+                  </a>
+                ) : (
+                  <Link
+                    key={it.to}
+                    to={it.to}
+                    activeOptions={{ exact: !!it.exact }}
+                    className={cls}
+                    activeProps={{ className: "bg-sidebar-accent font-semibold text-sidebar-primary" }}
+                    title={collapsed ? it.label : undefined}
+                  >
+                    {inner}
+                  </Link>
+                );
+              })}
+            </div>
+          ))}
         </nav>
 
         {!collapsed && threads.length > 0 && (
@@ -230,6 +241,31 @@ export function AppSidebar({ threads, onThreadsChange }: Props) {
             </div>
           </div>
         )}
+        <div className="mt-auto flex items-center gap-1 border-t border-sidebar-border p-2">
+          <Link
+            to="/settings"
+            className="flex min-w-0 flex-1 items-center gap-3 rounded-md px-2.5 py-2 text-sm hover:bg-sidebar-accent"
+            title="Configurações"
+          >
+            <SettingsIcon className="h-4 w-4 shrink-0" />
+            {!collapsed && <span>Configurações</span>}
+          </Link>
+          <button
+            onClick={() => {
+              toggleTheme();
+              setThemeTick((n) => n + 1);
+            }}
+            className="grid h-9 w-9 shrink-0 place-items-center rounded-md hover:bg-sidebar-accent"
+            aria-label="Alternar tema claro/escuro"
+            title="Alternar tema"
+          >
+            {isDark ? (
+              <Sun className="h-4 w-4" />
+            ) : (
+              <Moon className="h-4 w-4" />
+            )}
+          </button>
+        </div>
       </aside>
     </>
   );

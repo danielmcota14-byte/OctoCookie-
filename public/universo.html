@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>OctoCookie — Limitar perdas não exige prever o mercado</title>
+<meta name="description" content="Holograma: pesquisa de três anos sobre limitação de perdas em ETH/USDC, e o ecossistema OctoCookie construído em volta dela." />
+<link rel="stylesheet" href="/octo.css" />
+<script src="/octo.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--o-bg);color:var(--o-ink);font-family:var(--octo-sans);line-height:1.55;-webkit-font-smoothing:antialiased;
+  padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+a{color:inherit;text-decoration:none}
+:focus-visible{outline:2px solid var(--o-cyan);outline-offset:3px;border-radius:6px}
+.wrap{max-width:70rem;margin:0 auto;padding:0 1.25rem}
+.kicker{font:600 .72rem/1 var(--octo-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--o-cyan)}
+h1,h2,h3{font-weight:700;letter-spacing:-.025em;line-height:1.08}
+.serif{font-family:var(--octo-serif)}
+.mono{font-family:var(--octo-mono)}
+
+/* topo */
+.top{display:flex;align-items:center;justify-content:space-between;padding:1.1rem 0}
+.brand{display:flex;align-items:center;gap:.6rem;font-weight:700;letter-spacing:-.01em}
+.brand img{width:30px;height:30px;border-radius:8px;background:var(--o-surface);border:1px solid var(--o-line);padding:2px}
+.top nav{display:flex;gap:.4rem;align-items:center}
+.pill{display:inline-flex;align-items:center;gap:.45rem;border:1px solid var(--o-line2);border-radius:999px;padding:.5rem .95rem;font-size:.82rem;font-weight:600;color:var(--o-ink);background:transparent;cursor:pointer;font-family:inherit}
+.pill:hover{background:var(--o-overlay2)}
+.pill.solid{background:var(--o-ink);color:var(--o-bg);border-color:var(--o-ink)}
+.pill.solid:hover{opacity:.9}
+
+/* hero */
+.hero{display:grid;grid-template-columns:1.15fr .85fr;gap:2.5rem;align-items:center;padding:3rem 0 4rem}
+.hero h1{font-size:clamp(2.2rem,5.2vw,4rem);margin:1rem 0 1.2rem}
+.hero p.lead{font-family:var(--octo-serif);font-size:clamp(1.05rem,1.6vw,1.28rem);color:var(--o-mut);max-width:34rem}
+.cta{display:flex;flex-wrap:wrap;gap:.7rem;margin-top:1.8rem}
+.meta{display:flex;flex-wrap:wrap;gap:.4rem 1.2rem;margin-top:1.6rem;font:500 .74rem var(--octo-mono);color:var(--o-faint)}
+
+/* selo */
+.seal-wrap{display:grid;place-items:center;perspective:900px}
+.seal{position:relative;width:min(100%,25rem);aspect-ratio:1;border-radius:50%;transform-style:preserve-3d;transition:transform .12s ease-out;
+  box-shadow:var(--o-shadow)}
+.seal .ring{position:absolute;inset:0;border-radius:50%;padding:7px;
+  background:conic-gradient(from var(--holo-a,200deg) at var(--holo-x,50%) var(--holo-y,50%),#38bdf8,#a78bfa,#f0abfc,#e0b24a,#4ade80,#38bdf8);
+  -webkit-mask:linear-gradient(#000 0 0) content-box exclude,linear-gradient(#000 0 0);mask:linear-gradient(#000 0 0) content-box exclude,linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;mask-composite:exclude;filter:saturate(1.1)}
+.seal .face{position:absolute;inset:7px;border-radius:50%;background:radial-gradient(circle at 35% 30%,var(--o-surface2),var(--o-surface) 70%);border:1px solid var(--o-line)}
+.seal .glare{position:absolute;inset:7px;border-radius:50%;pointer-events:none;mix-blend-mode:soft-light;opacity:.55;
+  background:radial-gradient(circle at var(--holo-x,50%) var(--holo-y,50%),#fff,transparent 55%)}
+.seal svg.txt{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.seal svg.txt text{font:600 10.6px var(--octo-mono);letter-spacing:.2em;fill:var(--o-ink);text-transform:uppercase}
+.seal .core{position:absolute;inset:25%;display:grid;place-items:center;text-align:center}
+.seal .core img{width:46%;margin:0 auto .3rem;filter:drop-shadow(0 6px 10px rgba(0,0,0,.2))}
+.seal .core b{display:block;font-size:clamp(1.5rem,4vw,2.4rem);letter-spacing:-.04em;line-height:1}
+.seal .core small{font:500 .62rem var(--octo-mono);color:var(--o-mut);letter-spacing:.08em;text-transform:uppercase}
+:root[data-theme="dark"] .brand img{filter:invert(1)}
+:root[data-theme="dark"] .seal .core img{filter:invert(1) drop-shadow(0 6px 10px rgba(0,0,0,.4))}
+
+/* seções */
+section{padding:4.2rem 0;border-top:1px solid var(--o-line)}
+.sec-h{max-width:40rem;margin-bottom:2.2rem}
+.sec-h h2{font-size:clamp(1.6rem,3.2vw,2.4rem);margin:.8rem 0 .7rem}
+.sec-h p{font-family:var(--octo-serif);color:var(--o-mut);font-size:1.08rem}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem}
+.card{background:var(--o-surface);border:1px solid var(--o-line);border-radius:var(--o-radius);padding:1.4rem;box-shadow:var(--o-shadow)}
+.card h3{font-size:1.05rem;margin-bottom:.25rem}
+.card .sub{font-size:.82rem;color:var(--o-mut);margin-bottom:1rem}
+.legend{display:flex;gap:1rem;font:500 .72rem var(--octo-mono);color:var(--o-mut);margin-top:.9rem;flex-wrap:wrap}
+.legend i{display:inline-block;width:.7rem;height:.7rem;border-radius:3px;margin-right:.4rem;vertical-align:-1px}
+.src{font:500 .7rem var(--octo-mono);color:var(--o-faint);margin-top:.8rem}
+svg.chart{width:100%;height:auto;overflow:visible}
+svg.chart text{font:500 11px var(--octo-mono);fill:var(--o-mut)}
+svg.chart .lbl{fill:var(--o-ink);font-weight:600}
+svg.chart line.grid{stroke:var(--o-line);stroke-dasharray:3 4}
+svg.chart line.zero{stroke:var(--o-line2)}
+
+/* não promete */
+.nope{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
+.nope div{border:1px dashed var(--o-line2);border-radius:var(--o-radius);padding:1.2rem 1.3rem;background:var(--o-gold-soft)}
+.nope b{display:block;font-size:1rem;margin-bottom:.35rem}
+.nope p{font-family:var(--octo-serif);font-size:.98rem;color:var(--o-mut)}
+
+/* índice do ecossistema */
+.toc{display:grid;grid-template-columns:repeat(2,1fr);gap:1.2rem 2.5rem}
+.grp h3{font:600 .72rem var(--octo-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--o-gold);padding-bottom:.6rem;border-bottom:1px solid var(--o-line)}
+.row{display:flex;align-items:baseline;gap:.9rem;padding:.85rem .2rem;border-bottom:1px solid var(--o-line);transition:padding .15s,background .15s}
+.row:hover{background:var(--o-overlay);padding-left:.7rem}
+.row .n{font:500 .7rem var(--octo-mono);color:var(--o-faint);min-width:1.6rem}
+.row b{font-weight:650;white-space:nowrap}
+.row span.d{font-size:.88rem;color:var(--o-mut);flex:1}
+.row .arr{color:var(--o-cyan);font-family:var(--octo-mono)}
+
+footer{padding:3rem 0 4rem;border-top:1px solid var(--o-line);font-size:.85rem;color:var(--o-mut)}
+footer .wrap{display:flex;flex-wrap:wrap;gap:1rem 2rem;justify-content:space-between}
+footer p{max-width:36rem;font-family:var(--octo-serif)}
+
+@media(max-width:860px){
+  .hero{grid-template-columns:1fr;padding-top:1.5rem}
+  .seal-wrap{order:-1}.seal{width:min(78%,19rem)}
+  .grid2,.nope,.toc{grid-template-columns:1fr}
+  .row span.d{display:none}
+}
+@media(prefers-reduced-motion:reduce){.seal{transition:none}html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <a class="brand" href="/" target="_top"><img src="/octocookie-app/mascot.png" alt="" /><span>OctoCookie</span></a>
+    <nav>
+      <a class="pill" href="/pesquisa" target="_top">Pesquisa</a>
+      <button class="pill" id="tbtn" type="button" aria-label="Alternar tema claro/escuro">◐ Tema</button>
+    </nav>
+  </header>
+
+  <div class="hero">
+    <div>
+      <span class="kicker">Holograma · pesquisa de 3 anos</span>
+      <h1>Limitar perdas <span class="o-grad-text">não exige prever</span> o mercado.</h1>
+      <p class="lead">Um limitador de perdas por tendência e stop móvel para ETH/USDC, testado com dados reais, com os erros registrados e as ressalvas à vista. Em volta dele nasceu um ecossistema inteiro: carteira, bot, analisador, linguagem e comunidade.</p>
+      <div class="cta">
+        <a class="pill solid" href="/pesquisa" target="_top">Ler a pesquisa →</a>
+        <a class="pill" href="#ecossistema">Explorar o ecossistema</a>
+      </div>
+      <div class="meta"><span>ETH/USDC</span><span>velas de 8h</span><span>validação fora da amostra</span><span>walk-forward</span></div>
+    </div>
+    <div class="seal-wrap">
+      <div class="seal" id="seal" role="img" aria-label="Selo Holograma: 49 de 50 variantes reduziram a queda máxima; 5 de 5 rodadas à frente de comprar e segurar">
+        <div class="ring"></div><div class="face"></div><div class="glare"></div>
+        <svg class="txt" viewBox="0 0 400 400" aria-hidden="true">
+          <defs><path id="circ" d="M200,200 m-176,0 a176,176 0 1,1 352,0 a176,176 0 1,1 -352,0"/></defs>
+          <text><textPath href="#circ" startOffset="0" textLength="1090" lengthAdjust="spacing">HOLOGRAMA QUÂNTICO · 49 DE 50 VARIANTES COM MENOR QUEDA · 5 DE 5 RODADAS À FRENTE · NÃO PREVÊ, LIMITA ·</textPath></text>
+        </svg>
+        <div class="core"><div><img src="/octocookie-app/mascot.png" alt="" /><b>49/50</b><small>queda máx. menor</small></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<section id="resultados"><div class="wrap">
+  <div class="sec-h"><span class="kicker">Resultados</span>
+    <h2>O que os dados mostram, sem enfeite.</h2>
+    <p>Dois recortes das tabelas da pesquisa. O limitador corta a queda; o retorno extra depende do stop de 5%, escolhido depois de olhar os dados.</p></div>
+  <div class="grid2">
+    <div class="card"><h3>Retorno por rodada</h3><p class="sub">Sistema com stop de 5% vs. comprar e segurar</p>
+      <div id="c1"></div>
+      <div class="legend"><span><i style="background:var(--o-faint)"></i>Comprar e segurar</span><span><i style="background:var(--o-cyan)"></i>Sistema (stop 5%)</span></div>
+      <p class="src">Pesquisa · Tabela 3</p></div>
+    <div class="card"><h3>Queda máxima</h3><p class="sub">Tendência pura (30/3%) vs. comprar e segurar</p>
+      <div id="c2"></div>
+      <div class="legend"><span><i style="background:var(--o-faint)"></i>Comprar e segurar</span><span><i style="background:var(--o-gold)"></i>Tendência</span></div>
+      <p class="src">Pesquisa · Tabela 4</p></div>
+  </div>
+</div></section>
+
+<section><div class="wrap">
+  <div class="sec-h"><span class="kicker">Honestidade</span><h2>O que a pesquisa não promete.</h2>
+    <p>Estas ressalvas são do próprio trabalho. Ficam na frente porque são parte do resultado.</p></div>
+  <div class="nope">
+    <div><b>Não prevê preços</b><p>A correlação do sinal com o retorno futuro ficou perto de zero em todas as janelas testadas.</p></div>
+    <div><b>Não elimina perdas</b><p>Reduz a queda máxima, mas ainda há perdas, e em contas pequenas o gás fixo pesa muito.</p></div>
+    <div><b>Não é recomendação</b><p>O stop de 5% foi escolhido após observar os dados. É ordem de grandeza, não promessa.</p></div>
+  </div>
+</div></section>
+
+<section id="ecossistema"><div class="wrap">
+  <div class="sec-h"><span class="kicker">Ecossistema</span><h2>Tudo que nasceu em volta do Holograma.</h2>
+    <p>Cinco grupos, um só sistema. Cada item abre dentro do OctoCookie.</p></div>
+  <div class="toc" id="toc"></div>
+</div></section>
+
+<footer><div class="wrap">
+  <p>OctoCookie é conteúdo educacional e experimental. Nada aqui é recomendação de investimento; criptoativos podem causar perda total do capital.</p>
+  <a class="pill" href="/community" target="_top">Conversar na comunidade →</a>
+</div></footer>
+
+<script>
+/* tema */
+document.getElementById("tbtn").onclick=function(){OctoTheme.toggle()};
+
+/* ecossistema */
+var G=[
+ ["Pesquisa",[["Holograma (pesquisa)","O trabalho completo, com tabelas, erros e referências","/pesquisa"]]],
+ ["Ferramentas",[["Carteira","Cryptex: portfólio e MetaMask","/carteira"],["Bot Trading","Swap trader com stop móvel","/octo-app"],["Bot 24/7","O mesmo bot, rodando sem parar","/bot-24x7"],["Analisador","Leitura de mercado e indicadores","/analyzer"],["Simulador","Teste sem risco real","/simulator"]]],
+ ["Programar",[["CookieScript","A linguagem do ecossistema","/cookiescript"],["IDE simulada","Escreva e rode código","/ide"]]],
+ ["Aprender",[["Finance","Educação financeira com IA","/finance"],["Start","Empreender no digital","/start"],["Explorar","Conversa livre com o assistente","/launch"]]],
+ ["Comunidade",[["Comunidade","Posts, votos e dados do app","/community"]]]
+];
+var toc=document.getElementById("toc"),k=0;
+toc.innerHTML=G.map(function(g){return '<div class="grp"><h3>'+g[0]+'</h3>'+g[1].map(function(i){k++;
+  return '<a class="row" target="_top" href="'+i[2]+'"><span class="n">'+String(k).padStart(2,"0")+'</span><b>'+i[0]+'</b><span class="d">'+i[1]+'</span><span class="arr">→</span></a>'}).join("")+'</div>'}).join("");
+
+/* gráficos (SVG) */
+function bars(id,rows,min,max,c2,unit){
+  var W=520,rowH=46,L=118,H=rows.length*rowH+34,R=14,pw=W-L-R;
+  function x(v){return L+(v-min)/(max-min)*pw}
+  var s='<svg class="chart" viewBox="0 0 '+W+' '+H+'" role="img">';
+  for(var t=Math.ceil(min/50)*50;t<=max;t+=50){s+='<line class="grid" x1="'+x(t)+'" x2="'+x(t)+'" y1="0" y2="'+(H-22)+'"/><text x="'+x(t)+'" y="'+(H-6)+'" text-anchor="middle">'+t+'%</text>'}
+  s+='<line class="zero" x1="'+x(0)+'" x2="'+x(0)+'" y1="0" y2="'+(H-22)+'"/>';
+  rows.forEach(function(r,i){var y=i*rowH+6;
+    s+='<text class="lbl" x="0" y="'+(y+20)+'">'+r[0]+'</text>';
+    [[r[1],"var(--o-faint)"],[r[2],c2]].forEach(function(b,j){var v=b[0],x0=x(Math.min(0,v)),w=Math.abs(x(v)-x(0));
+      s+='<rect x="'+x0+'" y="'+(y+j*16)+'" width="'+Math.max(w,2)+'" height="13" rx="3" fill="'+b[1]+'"/>';
+      var lx=v>=0?x(v)+5:x(v)-5;
+      s+='<text x="'+lx+'" y="'+(y+j*16+11)+'" text-anchor="'+(v>=0?"start":"end")+'">'+(v>0?"+":"")+v.toString().replace(".",",")+'%</text>'});
+  });
+  document.getElementById(id).innerHTML=s+'</svg>';
+}
+bars("c1",[["Últimos 360d",-27.9,-3.4],["360d anteriores",46.6,129.7],["540 dias",65.8,93.8],["Janela 20",-27.9,12.3],["Janela 40",-27.9,-10.0]],-90,170,"var(--o-cyan)");
+bars("c2",[["2024-10→2025-10",-63.6,-33.8],["2025-10→2026-10",-63.2,-36.6],["540 dias",-67.7,-55.4]],-100,10,"var(--o-gold)");
+
+/* holograma reage ao mouse/toque */
+(function(){var s=document.getElementById("seal");if(!s||matchMedia("(prefers-reduced-motion: reduce)").matches)return;
+  function mv(cx,cy){var r=s.getBoundingClientRect(),px=(cx-r.left)/r.width,py=(cy-r.top)/r.height;
+    s.style.setProperty("--holo-x",(px*100)+"%");s.style.setProperty("--holo-y",(py*100)+"%");
+    s.style.setProperty("--holo-a",(180+(px-.5)*220)+"deg");
+    s.style.transform="rotateY("+((px-.5)*14)+"deg) rotateX("+((.5-py)*14)+"deg)"}
+  window.addEventListener("pointermove",function(e){mv(e.clientX,e.clientY)});
+  window.addEventListener("pointerleave",function(){s.style.transform=""});
+})();
+</script>
+</body>
+</html>

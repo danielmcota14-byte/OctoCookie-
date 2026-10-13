@@ -70,7 +70,11 @@ function Bot24Page() {
       setError("Informe a URL do seu servidor 24/7 (ou defina VITE_BOT_24X7_URL no deploy).");
       return;
     }
-    if (!/^https:\/\/[^\s/]+/i.test(base) && !/^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/i.test(base)) {
+    if (
+      !/^https:\/\/[^\s/]+/i.test(base) &&
+      !/^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?(\/bot)?$/i.test(base) &&
+      !/^\/bot$/.test(base)
+    ) {
       setError("URL inválida. Use a URL do serviço bot-server (ex.: https://seu-bot.onrender.com), não a rota /octo-app do site.");
       setStatus(null);
       return;
