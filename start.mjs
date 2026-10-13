@@ -27,7 +27,7 @@ const sh = (cmd, args, opts = {}) =>
 // ---------- preparo (só roda se faltar; no Docker já vem pronto) ----------
 const BUILD_ENV = {
   ...process.env,
-  VITE_COOKIESCRIPT_URL: process.env.VITE_COOKIESCRIPT_URL || "/cookiescript-app",
+  VITE_COOKIESCRIPT_URL: process.env.VITE_COOKIESCRIPT_URL || "https://cookiescript-jgvh.onrender.com",
   VITE_BOT_24X7_URL: process.env.VITE_BOT_24X7_URL || "/bot",
 };
 if (!fs.existsSync(path.join(ROOT, "node_modules"))) {

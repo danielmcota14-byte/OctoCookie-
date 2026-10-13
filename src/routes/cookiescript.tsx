@@ -13,12 +13,16 @@ export const Route = createFileRoute("/cookiescript")({
   component: CookieScriptPage,
 });
 
+const DEFAULT_COOKIESCRIPT_URL = "https://cookiescript-jgvh.onrender.com";
+
 function serviceUrl(): string {
   try {
     const v = (import.meta as ImportMeta & { env?: Record<string, string> }).env?.VITE_COOKIESCRIPT_URL;
-    return typeof v === "string" ? v.trim().replace(/\/+$/, "") : "";
+    const url = typeof v === "string" ? v.trim().replace(/\/+$/, "") : "";
+    // Só usa a variável se for um endereço completo; caso contrário usa o serviço padrão.
+    return /^https?:\/\//i.test(url) ? url : DEFAULT_COOKIESCRIPT_URL;
   } catch {
-    return "";
+    return DEFAULT_COOKIESCRIPT_URL;
   }
 }
 

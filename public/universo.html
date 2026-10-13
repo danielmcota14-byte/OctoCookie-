@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>OctoCookie — Limitar perdas não exige prever o mercado</title>
-<meta name="description" content="Holograma: pesquisa de três anos sobre limitação de perdas em ETH/USDC, e o ecossistema OctoCookie construído em volta dela." />
+<title>OctoCookie — Um universo de possibilidades te espera</title>
+<meta name="description" content="Carteira, bot de trading, analisador, CookieScript, educação financeira e comunidade no mesmo sistema." />
 <link rel="stylesheet" href="/octo.css" />
 <script src="/octo.js"></script>
 <style>
@@ -54,7 +54,7 @@ h1,h2,h3{font-weight:700;letter-spacing:-.025em;line-height:1.08}
 .seal .core img{width:46%;margin:0 auto .3rem;filter:drop-shadow(0 6px 10px rgba(0,0,0,.2))}
 .seal .core b{display:block;font-size:clamp(1.5rem,4vw,2.4rem);letter-spacing:-.04em;line-height:1}
 .seal .core small{font:500 .62rem var(--octo-mono);color:var(--o-mut);letter-spacing:.08em;text-transform:uppercase}
-:root[data-theme="dark"] .brand img{filter:invert(1)}
+:root[data-theme="dark"] .brand img{filter:invert(1);background:transparent;border-color:transparent}
 :root[data-theme="dark"] .seal .core img{filter:invert(1) drop-shadow(0 6px 10px rgba(0,0,0,.4))}
 
 /* seções */
@@ -101,7 +101,29 @@ footer p{max-width:36rem;font-family:var(--octo-serif)}
   .grid2,.nope,.toc{grid-template-columns:1fr}
   .row span.d{display:none}
 }
-@media(prefers-reduced-motion:reduce){.seal{transition:none}html{scroll-behavior:auto}}
+/*x*/@media(prefers-reduced-motion:reduce){.seal{transition:none}html{scroll-behavior:auto}}
+
+.feat{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem}
+.fc{display:flex;flex-direction:column;gap:.55rem;background:var(--o-surface);border:1px solid var(--o-line);border-radius:var(--o-radius);padding:1.3rem;box-shadow:var(--o-shadow);transition:transform .15s,border-color .15s}
+.fc:hover{transform:translateY(-3px);border-color:var(--o-cyan)}
+.fc .ic{width:2.4rem;height:2.4rem;border-radius:10px;display:grid;place-items:center;background:var(--o-overlay);border:1px solid var(--o-line);color:var(--o-cyan)}
+.fc .ic svg{width:1.25rem;height:1.25rem;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.fc h3{font-size:1.05rem;margin-top:.3rem}
+.fc .hl{font:600 .76rem var(--octo-mono);color:var(--o-gold)}
+.fc p{font-family:var(--octo-serif);font-size:.96rem;color:var(--o-mut);flex:1}
+.fc .go{font:600 .8rem var(--octo-mono);color:var(--o-cyan);margin-top:.3rem}
+.fc.base{border-style:dashed;background:transparent;box-shadow:none}
+.paths{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem}
+.paths div{border-top:2px solid var(--o-cyan);padding:1rem .2rem 0}
+.paths b{display:block;margin-bottom:.3rem}
+.paths p{font-family:var(--octo-serif);color:var(--o-mut);font-size:.98rem}
+.purpose{max-width:46rem}
+.purpose p{font-family:var(--octo-serif);font-size:clamp(1.1rem,2vw,1.4rem);color:var(--o-ink);line-height:1.5}
+.final{text-align:center}
+.final h2{font-size:clamp(1.8rem,4vw,2.8rem);margin:.8rem 0 1.4rem}
+.final .cta{justify-content:center}
+@media(max-width:1000px){.feat,.paths{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.feat,.paths{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -109,108 +131,64 @@ footer p{max-width:36rem;font-family:var(--octo-serif)}
   <header class="top">
     <a class="brand" href="/" target="_top"><img src="/octocookie-app/mascot.png" alt="" /><span>OctoCookie</span></a>
     <nav>
-      <a class="pill" href="/pesquisa" target="_top">Pesquisa</a>
+      <a class="pill" href="/community" target="_top">Comunidade</a>
       <button class="pill" id="tbtn" type="button" aria-label="Alternar tema claro/escuro">◐ Tema</button>
     </nav>
   </header>
-
   <div class="hero">
     <div>
-      <span class="kicker">Holograma · pesquisa de 3 anos</span>
-      <h1>Limitar perdas <span class="o-grad-text">não exige prever</span> o mercado.</h1>
-      <p class="lead">Um limitador de perdas por tendência e stop móvel para ETH/USDC, testado com dados reais, com os erros registrados e as ressalvas à vista. Em volta dele nasceu um ecossistema inteiro: carteira, bot, analisador, linguagem e comunidade.</p>
+      <span class="kicker">Web3 · Finanças · IA</span>
+      <h1>Um universo de <span class="o-grad-text">possibilidades</span> te espera.</h1>
+      <p class="lead">Carteira, bot de trading, analisador, uma linguagem própria, educação financeira e comunidade. Tudo conectado no mesmo lugar, para você aprender, testar e construir.</p>
       <div class="cta">
-        <a class="pill solid" href="/pesquisa" target="_top">Ler a pesquisa →</a>
-        <a class="pill" href="#ecossistema">Explorar o ecossistema</a>
+        <a class="pill solid" href="/carteira" target="_top">Começar pela carteira →</a>
+        <a class="pill" href="#funcionalidades">Ver funcionalidades</a>
       </div>
-      <div class="meta"><span>ETH/USDC</span><span>velas de 8h</span><span>validação fora da amostra</span><span>walk-forward</span></div>
+      <div class="meta"><span>carteira</span><span>bot 24/7</span><span>CookieScript</span><span>comunidade</span></div>
     </div>
     <div class="seal-wrap">
-      <div class="seal" id="seal" role="img" aria-label="Selo Holograma: 49 de 50 variantes reduziram a queda máxima; 5 de 5 rodadas à frente de comprar e segurar">
+      <div class="seal" id="seal" role="img" aria-label="Selo OctoCookie">
         <div class="ring"></div><div class="face"></div><div class="glare"></div>
         <svg class="txt" viewBox="0 0 400 400" aria-hidden="true">
           <defs><path id="circ" d="M200,200 m-176,0 a176,176 0 1,1 352,0 a176,176 0 1,1 -352,0"/></defs>
-          <text><textPath href="#circ" startOffset="0" textLength="1090" lengthAdjust="spacing">HOLOGRAMA QUÂNTICO · 49 DE 50 VARIANTES COM MENOR QUEDA · 5 DE 5 RODADAS À FRENTE · NÃO PREVÊ, LIMITA ·</textPath></text>
+          <text><textPath href="#circ" startOffset="0" textLength="1090" lengthAdjust="spacing">CARTEIRA · BOT 24/7 · ANALISADOR · COOKIESCRIPT · EDUCAÇÃO FINANCEIRA · COMUNIDADE ·</textPath></text>
         </svg>
-        <div class="core"><div><img src="/octocookie-app/mascot.png" alt="" /><b>49/50</b><small>queda máx. menor</small></div></div>
+        <div class="core"><div><img src="/octocookie-app/mascot.png" alt="" /><b>OctoCookie</b><small>um só sistema</small></div></div>
       </div>
     </div>
   </div>
 </div>
 
-<section id="resultados"><div class="wrap">
-  <div class="sec-h"><span class="kicker">Resultados</span>
-    <h2>O que os dados mostram, sem enfeite.</h2>
-    <p>Dois recortes das tabelas da pesquisa. O limitador corta a queda; o retorno extra depende do stop de 5%, escolhido depois de olhar os dados.</p></div>
-  <div class="grid2">
-    <div class="card"><h3>Retorno por rodada</h3><p class="sub">Sistema com stop de 5% vs. comprar e segurar</p>
-      <div id="c1"></div>
-      <div class="legend"><span><i style="background:var(--o-faint)"></i>Comprar e segurar</span><span><i style="background:var(--o-cyan)"></i>Sistema (stop 5%)</span></div>
-      <p class="src">Pesquisa · Tabela 3</p></div>
-    <div class="card"><h3>Queda máxima</h3><p class="sub">Tendência pura (30/3%) vs. comprar e segurar</p>
-      <div id="c2"></div>
-      <div class="legend"><span><i style="background:var(--o-faint)"></i>Comprar e segurar</span><span><i style="background:var(--o-gold)"></i>Tendência</span></div>
-      <p class="src">Pesquisa · Tabela 4</p></div>
-  </div>
+<section id="funcionalidades"><div class="wrap">
+  <div class="sec-h"><span class="kicker">Funcionalidades</span><h2>Tudo o que você pode fazer aqui.</h2>
+    <p>Cada cartão abre a ferramenta dentro do OctoCookie.</p></div>
+  <div class="feat"><a class="fc" target="_top" href="/carteira"><span class="ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h13v4"/><path d="M3 7v11a2 2 0 0 0 2 2h15V9H5a2 2 0 0 1-2-2z"/><circle cx="16.5" cy="14.5" r="1"/></svg></span><h3>Carteira</h3><span class="hl">Seus ativos num só lugar</span><p>Portfólio estilo Cryptex com conexão MetaMask: acompanhe saldos e movimentações sem sair do OctoCookie.</p><span class="go">Abrir carteira →</span></a><a class="fc" target="_top" href="/octo-app"><span class="ic"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="8" width="16" height="11" rx="3"/><path d="M12 4v4M9 13h.01M15 13h.01M9 16.5h6"/></svg></span><h3>Bot de trading</h3><span class="hl">Rodando mesmo com você offline</span><p>Swap trader com stop móvel para limitar perdas, e o modo 24/7 que segue operando no servidor.</p><span class="go">Abrir o bot →</span></a><a class="fc" target="_top" href="/analyzer"><span class="ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V5M4 19h16"/><path d="M8 15l3-4 3 2 4-6"/></svg></span><h3>Analisador e simulador</h3><span class="hl">Entenda antes de arriscar</span><p>Indicadores e leitura de mercado, e um simulador para testar estratégias sem risco real.</p><span class="go">Abrir analisador →</span></a><a class="fc" target="_top" href="/cookiescript"><span class="ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 8l-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14"/></svg></span><h3>CookieScript</h3><span class="hl">Uma linguagem feita para o ecossistema</span><p>IDE própria, assistente Cookie AI e documentação para escrever e executar seus scripts.</p><span class="go">Abrir CookieScript →</span></a><a class="fc" target="_top" href="/finance"><span class="ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 19V5"/></svg></span><h3>Educação financeira</h3><span class="hl">Aprenda conversando</span><p>Módulos e um assistente de IA para tirar dúvidas de finanças e cripto, do básico ao avançado.</p><span class="go">Começar a aprender →</span></a><a class="fc" target="_top" href="/start"><span class="ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 15c-1.5 1-2 4-2 6 2 0 5-.5 6-2"/><path d="M14 4c3-1 6-1 6-1s0 3-1 6l-6 6-5-5z"/><circle cx="15" cy="9" r="1.2"/></svg></span><h3>OctoCookie Start</h3><span class="hl">Do zero ao primeiro projeto digital</span><p>Guia e assistente para quem quer empreender no digital e dar os primeiros passos com método.</p><span class="go">Abrir o Start →</span></a><a class="fc" target="_top" href="/community"><span class="ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.5 7.2L4 21l1.8-5A8 8 0 1 1 21 12z"/></svg></span><h3>Comunidade</h3><span class="hl">16 comunidades, um assunto em cada</span><p>Posts, votos e dados do app compartilhados: carteira, bot, analisador, CookieScript, cripto e mais.</p><span class="go">Entrar na comunidade →</span></a><a class="fc base" target="_top" href="/pesquisa"><span class="ic"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/></svg></span><h3>Holograma</h3><span class="hl">A pesquisa por trás de tudo</span><p>Três anos de estudo sobre limitação de perdas, com dados, erros e ressalvas registrados.</p><span class="go">Ler a pesquisa →</span></a></div>
 </div></section>
 
 <section><div class="wrap">
-  <div class="sec-h"><span class="kicker">Honestidade</span><h2>O que a pesquisa não promete.</h2>
-    <p>Estas ressalvas são do próprio trabalho. Ficam na frente porque são parte do resultado.</p></div>
-  <div class="nope">
-    <div><b>Não prevê preços</b><p>A correlação do sinal com o retorno futuro ficou perto de zero em todas as janelas testadas.</p></div>
-    <div><b>Não elimina perdas</b><p>Reduz a queda máxima, mas ainda há perdas, e em contas pequenas o gás fixo pesa muito.</p></div>
-    <div><b>Não é recomendação</b><p>O stop de 5% foi escolhido após observar os dados. É ordem de grandeza, não promessa.</p></div>
-  </div>
+  <div class="sec-h"><span class="kicker">Caminhos</span><h2>Escolha por onde começar.</h2>
+    <p>Quatro frentes que se completam.</p></div>
+  <div class="paths"><div><b>Web3</b><p>Carteira, bot e DeFi aplicados na prática, não só na teoria.</p></div><div><b>Conhecimento financeiro</b><p>Conteúdo guiado para entender risco, retorno e proteção de capital.</p></div><div><b>Empreendedorismo digital</b><p>Ferramentas e roteiro para tirar ideias do papel.</p></div><div><b>Desenvolvimento com IA</b><p>Programe em CookieScript com apoio da Cookie AI.</p></div></div>
 </div></section>
 
-<section id="ecossistema"><div class="wrap">
-  <div class="sec-h"><span class="kicker">Ecossistema</span><h2>Tudo que nasceu em volta do Holograma.</h2>
-    <p>Cinco grupos, um só sistema. Cada item abre dentro do OctoCookie.</p></div>
-  <div class="toc" id="toc"></div>
+<section><div class="wrap purpose">
+  <span class="kicker">Propósito</span>
+  <p style="margin-top:1rem">O OctoCookie existe para reunir conhecimento, ferramentas e comunidade num só lugar, de forma que qualquer pessoa possa entender Web3 e finanças, testar ideias com segurança e criar algo próprio.</p>
+</div></section>
+
+<section class="final"><div class="wrap">
+  <span class="kicker">Pronto?</span>
+  <h2>Entre no universo OctoCookie.</h2>
+  <div class="cta"><a class="pill solid" href="/carteira" target="_top">Acessar a carteira →</a><a class="pill" href="/community" target="_top">Conversar na comunidade</a></div>
 </div></section>
 
 <footer><div class="wrap">
   <p>OctoCookie é conteúdo educacional e experimental. Nada aqui é recomendação de investimento; criptoativos podem causar perda total do capital.</p>
-  <a class="pill" href="/community" target="_top">Conversar na comunidade →</a>
+  <a class="pill" href="/pesquisa" target="_top">Conheça a pesquisa →</a>
 </div></footer>
 
 <script>
-/* tema */
 document.getElementById("tbtn").onclick=function(){OctoTheme.toggle()};
-
-/* ecossistema */
-var G=[
- ["Pesquisa",[["Holograma (pesquisa)","O trabalho completo, com tabelas, erros e referências","/pesquisa"]]],
- ["Ferramentas",[["Carteira","Cryptex: portfólio e MetaMask","/carteira"],["Bot Trading","Swap trader com stop móvel","/octo-app"],["Bot 24/7","O mesmo bot, rodando sem parar","/bot-24x7"],["Analisador","Leitura de mercado e indicadores","/analyzer"],["Simulador","Teste sem risco real","/simulator"]]],
- ["Programar",[["CookieScript","A linguagem do ecossistema","/cookiescript"],["IDE simulada","Escreva e rode código","/ide"]]],
- ["Aprender",[["Finance","Educação financeira com IA","/finance"],["Start","Empreender no digital","/start"],["Explorar","Conversa livre com o assistente","/launch"]]],
- ["Comunidade",[["Comunidade","Posts, votos e dados do app","/community"]]]
-];
-var toc=document.getElementById("toc"),k=0;
-toc.innerHTML=G.map(function(g){return '<div class="grp"><h3>'+g[0]+'</h3>'+g[1].map(function(i){k++;
-  return '<a class="row" target="_top" href="'+i[2]+'"><span class="n">'+String(k).padStart(2,"0")+'</span><b>'+i[0]+'</b><span class="d">'+i[1]+'</span><span class="arr">→</span></a>'}).join("")+'</div>'}).join("");
-
-/* gráficos (SVG) */
-function bars(id,rows,min,max,c2,unit){
-  var W=520,rowH=46,L=118,H=rows.length*rowH+34,R=14,pw=W-L-R;
-  function x(v){return L+(v-min)/(max-min)*pw}
-  var s='<svg class="chart" viewBox="0 0 '+W+' '+H+'" role="img">';
-  for(var t=Math.ceil(min/50)*50;t<=max;t+=50){s+='<line class="grid" x1="'+x(t)+'" x2="'+x(t)+'" y1="0" y2="'+(H-22)+'"/><text x="'+x(t)+'" y="'+(H-6)+'" text-anchor="middle">'+t+'%</text>'}
-  s+='<line class="zero" x1="'+x(0)+'" x2="'+x(0)+'" y1="0" y2="'+(H-22)+'"/>';
-  rows.forEach(function(r,i){var y=i*rowH+6;
-    s+='<text class="lbl" x="0" y="'+(y+20)+'">'+r[0]+'</text>';
-    [[r[1],"var(--o-faint)"],[r[2],c2]].forEach(function(b,j){var v=b[0],x0=x(Math.min(0,v)),w=Math.abs(x(v)-x(0));
-      s+='<rect x="'+x0+'" y="'+(y+j*16)+'" width="'+Math.max(w,2)+'" height="13" rx="3" fill="'+b[1]+'"/>';
-      var lx=v>=0?x(v)+5:x(v)-5;
-      s+='<text x="'+lx+'" y="'+(y+j*16+11)+'" text-anchor="'+(v>=0?"start":"end")+'">'+(v>0?"+":"")+v.toString().replace(".",",")+'%</text>'});
-  });
-  document.getElementById(id).innerHTML=s+'</svg>';
-}
-bars("c1",[["Últimos 360d",-27.9,-3.4],["360d anteriores",46.6,129.7],["540 dias",65.8,93.8],["Janela 20",-27.9,12.3],["Janela 40",-27.9,-10.0]],-90,170,"var(--o-cyan)");
-bars("c2",[["2024-10→2025-10",-63.6,-33.8],["2025-10→2026-10",-63.2,-36.6],["540 dias",-67.7,-55.4]],-100,10,"var(--o-gold)");
-
-/* holograma reage ao mouse/toque */
 (function(){var s=document.getElementById("seal");if(!s||matchMedia("(prefers-reduced-motion: reduce)").matches)return;
   function mv(cx,cy){var r=s.getBoundingClientRect(),px=(cx-r.left)/r.width,py=(cy-r.top)/r.height;
     s.style.setProperty("--holo-x",(px*100)+"%");s.style.setProperty("--holo-y",(py*100)+"%");
