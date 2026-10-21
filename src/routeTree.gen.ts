@@ -24,6 +24,7 @@ import { Route as PesquisaRouteImport } from './routes/pesquisa'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as SimulatorRouteImport } from './routes/simulator'
 import { Route as StartRouteImport } from './routes/start'
+import { Route as TokenRouteImport } from './routes/token'
 import { Route as ApiBotRouteImport } from './routes/api/bot'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as ApiEduChatRouteImport } from './routes/api/edu-chat'
@@ -106,6 +107,11 @@ const StartRoute = StartRouteImport.update({
   path: '/start',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TokenRoute = TokenRouteImport.update({
+  id: '/token',
+  path: '/token',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiBotRoute = ApiBotRouteImport.update({
   id: '/api/bot',
   path: '/api/bot',
@@ -153,6 +159,7 @@ export interface FileRoutesByFullPath {
   '/settings': typeof SettingsRoute
   '/simulator': typeof SimulatorRoute
   '/start': typeof StartRoute
+  '/token': typeof TokenRoute
   '/api/bot': typeof ApiBotRoute
   '/api/chat': typeof ApiChatRoute
   '/api/edu-chat': typeof ApiEduChatRoute
@@ -176,6 +183,7 @@ export interface FileRoutesByTo {
   '/settings': typeof SettingsRoute
   '/simulator': typeof SimulatorRoute
   '/start': typeof StartRoute
+  '/token': typeof TokenRoute
   '/api/bot': typeof ApiBotRoute
   '/api/chat': typeof ApiChatRoute
   '/api/edu-chat': typeof ApiEduChatRoute
@@ -200,6 +208,7 @@ export interface FileRoutesById {
   '/settings': typeof SettingsRoute
   '/simulator': typeof SimulatorRoute
   '/start': typeof StartRoute
+  '/token': typeof TokenRoute
   '/api/bot': typeof ApiBotRoute
   '/api/chat': typeof ApiChatRoute
   '/api/edu-chat': typeof ApiEduChatRoute
@@ -225,6 +234,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/simulator'
     | '/start'
+    | '/token'
     | '/api/bot'
     | '/api/chat'
     | '/api/edu-chat'
@@ -248,6 +258,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/simulator'
     | '/start'
+    | '/token'
     | '/api/bot'
     | '/api/chat'
     | '/api/edu-chat'
@@ -271,6 +282,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/simulator'
     | '/start'
+    | '/token'
     | '/api/bot'
     | '/api/chat'
     | '/api/edu-chat'
@@ -295,6 +307,7 @@ export interface RootRouteChildren {
   SettingsRoute: typeof SettingsRoute
   SimulatorRoute: typeof SimulatorRoute
   StartRoute: typeof StartRoute
+  TokenRoute: typeof TokenRoute
   ApiBotRoute: typeof ApiBotRoute
   ApiChatRoute: typeof ApiChatRoute
   ApiEduChatRoute: typeof ApiEduChatRoute
@@ -410,6 +423,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StartRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/token': {
+      id: '/token'
+      path: '/token'
+      fullPath: '/token'
+      preLoaderRoute: typeof TokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/bot': {
       id: '/api/bot'
       path: '/api/bot'
@@ -471,6 +491,7 @@ const rootRouteChildren: RootRouteChildren = {
   SettingsRoute: SettingsRoute,
   SimulatorRoute: SimulatorRoute,
   StartRoute: StartRoute,
+  TokenRoute: TokenRoute,
   ApiBotRoute: ApiBotRoute,
   ApiChatRoute: ApiChatRoute,
   ApiEduChatRoute: ApiEduChatRoute,

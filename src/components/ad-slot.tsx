@@ -12,12 +12,21 @@ const KEYS: string[] = [import.meta.env.VITE_AD_KEY_1, import.meta.env.VITE_AD_K
 const DISABLED = import.meta.env.VITE_ADS_DISABLED === "1";
 const AD_W = 468;
 const AD_H = 60;
-// O banner roda no PRÓPRIO iframe com sandbox (sem allow-same-origin): o script do anunciante não enxerga o site,
-// o login do Firebase nem a carteira, e não redireciona a página. VITE_ADS_SANDBOX=0 desliga isso (menos seguro).
-const SANDBOX = import.meta.env.VITE_ADS_SANDBOX !== "0";
+// Sandbox sem allow-same-origin deixa o iframe com origem "null": o script do Adsterra não acessa localStorage/cookies nem
+// valida o domínio, e o banner fica em branco. Por isso o padrão é um iframe comum.
+// Para isolar de verdade, sirva /ad.html num OUTRO domínio/subdomínio e defina VITE_ADS_ORIGIN=https://ads.seudominio.com:
+// aí o iframe é de origem diferente e ganha sandbox COM allow-same-origin. VITE_ADS_SANDBOX=1 força o sandbox estrito (sem anúncio).
+const ADS_ORIGIN = String(import.meta.env.VITE_ADS_ORIGIN ?? "").replace(/\/+$/, "");
+const CROSS_ORIGIN =
+  /^https?:\/\//i.test(ADS_ORIGIN) && (typeof window === "undefined" || ADS_ORIGIN !== window.location.origin);
+const SANDBOX_ATTR: string | undefined = CROSS_ORIGIN
+  ? "allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-forms"
+  : import.meta.env.VITE_ADS_SANDBOX === "1"
+    ? "allow-scripts allow-popups allow-popups-to-escape-sandbox"
+    : undefined;
 
 // Página real do próprio site (/ad.html?k=CHAVE), não srcdoc: assim o Adsterra enxerga o domínio.
-const adSrc = (key: string) => `/ad.html?k=${encodeURIComponent(key)}`;
+const adSrc = (key: string) => `${/^https?:\/\//i.test(ADS_ORIGIN) ? ADS_ORIGIN : ""}/ad.html?k=${encodeURIComponent(key)}`;
 
 export function AdSlot({ slot = 1, className }: { slot?: 1 | 2; className?: string }) {
   const boxRef = useRef<HTMLElement>(null);
@@ -75,7 +84,7 @@ export function AdSlot({ slot = 1, className }: { slot?: 1 | 2; className?: stri
             width={AD_W}
             height={AD_H}
             scrolling="no"
-            sandbox={SANDBOX ? "allow-scripts allow-popups allow-popups-to-escape-sandbox" : undefined}
+            sandbox={SANDBOX_ATTR}
             referrerPolicy="no-referrer-when-downgrade"
             style={{ border: 0, display: "block", transform: `scale(${scale})`, transformOrigin: "top left" }}
           />

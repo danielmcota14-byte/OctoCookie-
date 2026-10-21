@@ -16,7 +16,7 @@ async function run(url, { embedded = false, cfg = null, html = PAGE } = {}) {
 const frames = (w) => [...w.document.querySelectorAll('.octo-ad-slot iframe')];
 let ok = 0; const t = async (n, f) => { await f(); ok++; console.log('✓', n); };
 (async () => {
-  await t('2 banners DENTRO do conteúdo (não fixos, nada no topo nem no rodapé), isolados e com a chave certa', async () => {
+  await t('2 banners DENTRO do conteúdo (não fixos, nada no topo nem no rodapé), sem sandbox opaco e com a chave certa', async () => {
     const w = await run('http://x.test/cryptex.html', { cfg: { keys: [KEY, KEY] } });
     const f = frames(w); assert.equal(f.length, 2);
     assert.equal(w.document.querySelectorAll('#octo-ads').length, 0, 'sem dock de rodapé');
@@ -26,7 +26,7 @@ let ok = 0; const t = async (n, f) => { await f(); ok++; console.log('✓', n); 
       assert.ok(!/fixed|sticky/.test(s.style.position || ''));
     }
     for (const x of f) {
-      const sb = x.getAttribute('sandbox'); assert.ok(sb.includes('allow-scripts') && !sb.includes('allow-same-origin') && !sb.includes('allow-top-navigation'), sb);
+      assert.ok(!x.hasAttribute('sandbox'), 'sandbox sem allow-same-origin deixa o Adsterra em branco');
       assert.equal(x.getAttribute('src'), '/ad.html?k=' + KEY); assert.equal(x.getAttribute('width'), '468'); assert.equal(x.getAttribute('height'), '60');
     }
     assert.equal(w.document.querySelectorAll('.octo-ad-label').length, 2);
@@ -43,9 +43,13 @@ let ok = 0; const t = async (n, f) => { await f(); ok++; console.log('✓', n); 
     const g = frames(await run('http://x.test/a.html', { cfg: { keys: ['<script>', K2] } }));
     assert.ok(g[0].src.includes(KEY) && !g[0].src.includes('<script') && g[1].src.includes(K2));
   });
-  await t('sandbox:false desliga o isolamento, mas no octocookie.html ele fica SEMPRE ligado', async () => {
-    const a = frames(await run('http://x.test/cryptex.html', { cfg: { sandbox: false } })); assert.ok(a.every((f) => !f.hasAttribute('sandbox')));
-    const b = frames(await run('http://x.test/octocookie-app/octocookie.html', { cfg: { sandbox: false } })); assert.ok(b.every((f) => f.hasAttribute('sandbox')));
+  await t('sem sandbox por padrão (inclusive no octocookie.html); origin em outro domínio = sandbox COM allow-same-origin; sandbox:true = estrito', async () => {
+    const a = frames(await run('http://x.test/octocookie-app/octocookie.html')); assert.equal(a.length, 2); assert.ok(a.every((f) => !f.hasAttribute('sandbox')));
+    const b = frames(await run('http://x.test/cryptex.html', { cfg: { origin: 'https://ads.outro.com/' } }));
+    for (const f of b) { const sb = f.getAttribute('sandbox'); assert.ok(sb.includes('allow-scripts') && sb.includes('allow-same-origin') && !sb.includes('allow-top-navigation'), sb); assert.equal(f.getAttribute('src'), 'https://ads.outro.com/ad.html?k=' + KEY); }
+    const c = frames(await run('http://x.test/cryptex.html', { cfg: { origin: 'http://x.test' } })); assert.ok(c.every((f) => !f.hasAttribute('sandbox') && f.getAttribute('src') === 'http://x.test/ad.html?k=' + KEY));
+    const d = frames(await run('http://x.test/cryptex.html', { cfg: { origin: 'javascript:alert(1)' } })); assert.ok(d.every((f) => f.getAttribute('src') === '/ad.html?k=' + KEY));
+    const e = frames(await run('http://x.test/cryptex.html', { cfg: { sandbox: true } })); assert.ok(e.every((f) => f.getAttribute('sandbox') === 'allow-scripts allow-popups allow-popups-to-escape-sandbox'));
   });
   await t('funciona dentro do site (iframe); executor do servidor (?headless=1) e disabled:true nunca carregam anúncio', async () => {
     assert.equal(frames(await run('http://x.test/a.html', { embedded: true })).length, 2);

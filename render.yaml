@@ -1,35 +1,45 @@
-# OctoCookie — UM serviço no Render roda tudo (site + bot 24/7 + CookieScript).
-# Render: New → Blueprint → conecte o repositório (este arquivo na RAIZ). Segredos são pedidos no painel.
+# Blueprint Render — Bot OctoCookie 24/7 (octocookie.html rodando sozinho num Chromium sem tela)
+# No Render: New → Blueprint → conecte o repositório (o render.yaml deve ficar na RAIZ: copie este arquivo para ../render.yaml)
+# Segredos (OWNER_TOKEN, SERVER_MASTER_KEY, RPC_URL_ETHEREUM) são pedidos no painel: sync: false.
 services:
   - type: web
-    name: octocookie
+    name: octocookie-bot-24x7
     runtime: docker
-    dockerfilePath: ./Dockerfile
+    dockerfilePath: ./bot-server/Dockerfile
     dockerContext: .
-    plan: standard          # Chromium (bot) + Python + site precisam de RAM; 512 MB estoura
-    healthCheckPath: /healthz
+    plan: standard        # Chromium + página do bot precisam de RAM; no plano de 512 MB costuma estourar
+    healthCheckPath: /health
     disk:
       name: octo-data
-      mountPath: /data      # cofre cifrado do bot; sem disco ele some a cada deploy
+      mountPath: /data    # guarda o cofre cifrado; sem disco o cofre some a cada deploy
       sizeGB: 1
     envVars:
-      - key: GROQ_API_KEYS
-        sync: false         # até 5 chaves Groq separadas por vírgula (site, Finance, Start, IDE...)
-      - key: GROQ_API_KEY
-        sync: false         # 1 chave Groq para a "Cookie Potencializada" do CookieScript
       - key: OWNER_TOKEN
-        sync: false         # mín. 24 caracteres; se vazio, usa o token de public/octocookie-app/bot-config.js
+        sync: false       # mín. 24 caracteres; é o "login" do seu site no servidor
       - key: SERVER_MASTER_KEY
-        sync: false         # opcional (openssl rand -base64 32)
+        sync: false       # opcional (openssl rand -base64 32): só para "reiniciar sozinho"
       - key: RPC_URL_ETHEREUM
-        sync: false         # seu RPC https (Alchemy/Infura)
+        sync: false       # seu RPC (Alchemy/Infura) https://...
       - key: ADMIN_UIDS
-        sync: false
+        sync: false       # UID(s) Firebase dos administradores, separados por vírgula (o /adm.html mostra o seu UID ao entrar)
       - key: ADMIN_EMAILS
-        value: danimcota@gmail.com
+        value: danimcota@gmail.com   # login único do painel /adm.html (e-mail VERIFICADO: entre com o Google)
       - key: FIREBASE_PROJECT_ID
         value: octo-10d4f
       - key: ADSTERRA_TOKEN
-        sync: false
+        sync: false       # token da Publisher API do Adsterra (fica só no servidor)
       - key: ALLOWED_ORIGINS
-        value: "*"
+        value: "*"        # troque pelo domínio do seu site
+      # ---------- Token OctoCookie (pagamentos premium e recompensas) ----------
+      - key: TOKEN_CONTRACT_ADDRESS
+        value: "0x2f5f737D15ec5C79995f2d72dD0A0DaA1b75a44D"   # OctoToken (Sepolia)
+      - key: TOKEN_CHAIN_ID
+        value: "11155111"   # Sepolia
+      - key: TOKEN_RPC_URL
+        sync: false         # OPCIONAL: vazio = RPC público da Sepolia. Em produção use o seu (Alchemy/Infura). Só no servidor.
+      - key: TOKEN_TREASURY_ADDRESS
+        sync: false         # OPCIONAL: vazio = o owner() do contrato recebe os pagamentos. Recomendado: uma carteira só para isso.
+      - key: TOKEN_EXPLORER_URL
+        value: "https://sepolia.etherscan.io"
+      - key: TOKEN_MIN_CONFIRMATIONS
+        value: "3"

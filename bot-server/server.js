@@ -19,6 +19,10 @@ import { ethers } from 'ethers';
 import { newHello, openRequest, normalizePk, Vault } from './vault.js';
 import { Runner } from './runner.js';
 import { createFirebaseVerifier, isAdmin, parseList, AuthError } from './firebase-auth.js';
+import { loadTokenConfig } from './token/config.js';
+import { ChainService } from './token/chain.js';
+import { TokenStore } from './token/store.js';
+import { createTokenRouters } from './token/router.js';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const FIELD_IDS = new Set(['networkSelect', 'tradePairSelect', 'stakePct', 'slPct', 'tpPct', 'maxTradesInput', 'securityLevel', 'riskLevel', 'usarLimDia']);
@@ -46,7 +50,7 @@ export const DEFAULT_ADMIN_EMAIL = 'danimcota@gmail.com'; // login único do pai
 export const FEE_MSG_HEAD = 'OctoCookie — destino da taxa de serviço (2%)';
 const ADSTERRA_BASE = 'https://api3.adsterratools.com/publisher';
 
-export function createApp({ vault, runner, ownerToken, masterKey, adminToken = '', adminUids = [], adminEmails = [], verifyIdToken = null, adsterraToken = '', fetchFn = fetch, origins = '*', logs = [], now = () => Date.now() }) {
+export function createApp({ vault, runner, ownerToken, masterKey, adminToken = '', adminUids = [], adminEmails = [], verifyIdToken = null, adsterraToken = '', fetchFn = fetch, origins = '*', logs = [], now = () => Date.now(), token = null }) {
   const app = express();
   app.disable('x-powered-by');
   app.use(cors({ origin: origins === '*' ? true : origins.split(',').map((s) => s.trim()), allowedHeaders: ['Content-Type', 'Authorization'] }));
@@ -59,6 +63,10 @@ export function createApp({ vault, runner, ownerToken, masterKey, adminToken = '
 
   // Destino da taxa de serviço: leitura pública (o site consulta ao abrir). Quem ESCREVE é só o admin (/adm).
   app.get('/fee-recipient', (_q, r) => { const f = vault.feeRecipient(); r.set('Cache-Control', 'no-store'); r.json({ recipient: f?.recipient || null, updatedAt: f?.updatedAt || null }); });
+
+  // ---- Token OctoCookie (pagamentos premium, recompensas): /token/* (usuário) e /adm/token/* (admin) ----
+  const tokenRouters = token ? createTokenRouters({ ...token, verifyIdToken, now }) : null;
+  if (tokenRouters) app.use('/token', tokenRouters.pub);
 
   // ---- /adm: login do Firebase (ID token) de um admin da lista ADMIN_UIDS/ADMIN_EMAILS; ADMIN_TOKEN é opcional (diferente do OWNER_TOKEN, que o site publica) ----
   const admHits = new Map(), temToken = adminToken && adminToken.length >= 24, temFirebase = !!verifyIdToken && (adminUids.length + adminEmails.length) > 0;
@@ -84,6 +92,7 @@ export function createApp({ vault, runner, ownerToken, masterKey, adminToken = '
   });
   const wrapA = (fn) => async (req, res) => { try { await fn(req, res); } catch (e) { res.status(400).json({ erro: e.message || 'erro' }); } };
 
+  if (tokenRouters) app.use('/adm/token', tokenRouters.adm); // depois do middleware /adm: só admin entra
   app.get('/adm/ping', (req, r) => r.json({ ok: true, admin: req.admin, adsterra: !!adsterraToken, destinoTaxa: vault.feeRecipient()?.recipient || null }));
 
   // Define a carteira que recebe os 2%. Exige assinatura DA PRÓPRIA carteira (prova que você controla o endereço, evita erro de digitação).
@@ -181,7 +190,9 @@ async function main() {
   const vault = new Vault(dataDir);
   const runner = new Runner({ appDir, dataDir, rpc, log, feeSource: () => vault.feeRecipient()?.recipient || null });
   const masterKey = process.env.SERVER_MASTER_KEY || '';
-  const app = createApp({ vault, runner, ownerToken: process.env.OWNER_TOKEN || '', masterKey, adminToken: process.env.ADMIN_TOKEN || '', adminUids: parseList(process.env.ADMIN_UIDS), adminEmails: parseList(process.env.ADMIN_EMAILS || DEFAULT_ADMIN_EMAIL).map((e) => e.toLowerCase()), verifyIdToken: createFirebaseVerifier({ projectId: process.env.FIREBASE_PROJECT_ID || 'octo-10d4f' }), adsterraToken: process.env.ADSTERRA_TOKEN || '', origins: process.env.ALLOWED_ORIGINS || '*', logs });
+  const tokenCfg = loadTokenConfig(process.env), tokenChain = new ChainService(tokenCfg), tokenStore = new TokenStore(dataDir);
+  tokenChain.inspect().then((i) => log(i.ready ? `🪙 Token verificado: ${i.info.symbol} (${i.info.decimals} casas) em ${tokenCfg.contract}.` : '🪙 Token DESABILITADO: ' + i.issues.join(' | ')));
+  const app = createApp({ token: { cfg: tokenCfg, chain: tokenChain, store: tokenStore }, vault, runner, ownerToken: process.env.OWNER_TOKEN || '', masterKey, adminToken: process.env.ADMIN_TOKEN || '', adminUids: parseList(process.env.ADMIN_UIDS), adminEmails: parseList(process.env.ADMIN_EMAILS || DEFAULT_ADMIN_EMAIL).map((e) => e.toLowerCase()), verifyIdToken: createFirebaseVerifier({ projectId: process.env.FIREBASE_PROJECT_ID || 'octo-10d4f' }), adsterraToken: process.env.ADSTERRA_TOKEN || '', origins: process.env.ALLOWED_ORIGINS || '*', logs });
   const port = process.env.PORT || 3000;
   app.listen(port, () => log(`Servidor 24/7 na porta ${port}. Carteira pareada: ${vault.address() || 'nenhuma'}.`));
   if (!process.env.OWNER_TOKEN) log('⚠️ OWNER_TOKEN ausente: rotas /247 desativadas.');

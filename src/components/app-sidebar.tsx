@@ -22,6 +22,7 @@ import {
   Moon,
   BookOpenText,
   MessageCircle,
+  Coins,
   type LucideIcon,
 } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -38,6 +39,7 @@ const NAV_GROUPS: { title: string; items: NavItem[] }[] = [
   ] },
   { title: "Ferramentas", items: [
     { to: "/carteira", label: "Carteira", icon: Wallet },
+    { to: "/token", label: "OctoCookie Token", icon: Coins },
     { to: "/octo-app", label: "Bot Trading", icon: LayoutDashboard },
     { to: "/bot-24x7", label: "Bot 24/7", icon: Server },
     { to: "/analyzer", label: "Analisador", icon: LineChart },

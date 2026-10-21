@@ -3,11 +3,14 @@
  * Nada de rodapé nem cabeçalho: cada página tem 2 espaços  <div class="octo-ad-slot" data-slot="1|2"></div>  colocados
  * entre blocos de conteúdo. Este script só preenche esses espaços.
  *
- * Opções (antes deste script, opcional):  window.OCTO_ADS = { keys: ['<chave 1>', '<chave 2>'], sandbox: true, disabled: false }
+ * Opções (antes deste script, opcional):  window.OCTO_ADS = { keys: ['<chave 1>', '<chave 2>'], origin: 'https://ads.seudominio.com', sandbox: false, disabled: false }
  * Sem opções, os dois espaços usam a chave padrão abaixo.
  *
- * - O banner roda num iframe isolado (sandbox SEM allow-same-origin): o script do anunciante não lê o DOM, o
- *   localStorage nem os campos da página (seed, token do bot...). sandbox:false desliga isso, MENOS no octocookie.html.
+ * - POR QUE NÃO HÁ SANDBOX POR PADRÃO: um iframe com sandbox sem allow-same-origin tem origem "null" (opaca): o script do
+ *   Adsterra não acessa localStorage/cookies, não valida o domínio e o banner fica em branco. Por isso o padrão é um iframe comum.
+ * - ISOLAMENTO SEGURO: se `origin` apontar para OUTRO domínio/subdomínio que sirva /ad.html (ex.: ads.seudominio.com), o iframe
+ *   fica naturalmente isolado do site (origem diferente) e ganha sandbox COM allow-same-origin (o anunciante enxerga só o domínio dele).
+ *   Também vale  window.OCTO_ADS_ORIGIN = '...'.  sandbox:true força o sandbox estrito antigo (os anúncios provavelmente não aparecem).
  * - O iframe só é criado quando o espaço aparece na tela (lazy): páginas/abas escondidas não geram impressão invisível.
  * - Escala sozinho em telas estreitas (celular) e reserva a altura antes de carregar (sem "pulo" de layout).
  * - Funciona também dentro do iframe do site React (essas páginas NÃO têm banner na moldura React, para não duplicar).
@@ -22,9 +25,13 @@
   if (cfg.disabled) return;
   var ok = function (k) { return /^[0-9a-f]{32}$/i.test(String(k || '')); };
   var keys = [0, 1].map(function (i) { var k = cfg.keys && cfg.keys[i]; return ok(k) ? String(k) : DEFAULT_KEY; });
-  var isolar = cfg.sandbox !== false || /octocookie\.html$/.test(location.pathname);
+  var origin = String(cfg.origin || window.OCTO_ADS_ORIGIN || '').replace(/\/+$/, '');
+  if (origin && !/^https?:\/\//i.test(origin)) origin = '';
+  var cross = !!origin && origin !== location.origin; // /ad.html em outro domínio = isolamento real, sem quebrar o anúncio
+  var SB_STRICT = 'allow-scripts allow-popups allow-popups-to-escape-sandbox'; // origem opaca: o Adsterra NÃO renderiza
+  var SB_CROSS = 'allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-forms'; // só com origem diferente
 
-  function src(key) { return '/ad.html?k=' + key; } // página real do site (não srcdoc): o Adsterra enxerga o domínio
+  function src(key) { return origin + '/ad.html?k=' + key; } // página real (não srcdoc): o Adsterra enxerga o domínio
 
   var CSS =
     '.octo-ad-slot{display:block;box-sizing:border-box;width:100%;max-width:100%;margin:18px auto;text-align:center;' +
@@ -61,7 +68,7 @@
       if (f) return;
       f = document.createElement('iframe'); f.title = 'Publicidade ' + (idx + 1);
       f.setAttribute('width', W); f.setAttribute('height', H); f.setAttribute('scrolling', 'no');
-      if (isolar) f.setAttribute('sandbox', 'allow-scripts allow-popups allow-popups-to-escape-sandbox');
+      if (cross) f.setAttribute('sandbox', SB_CROSS); else if (cfg.sandbox === true) f.setAttribute('sandbox', SB_STRICT);
       f.setAttribute('referrerpolicy', 'no-referrer-when-downgrade');
       // !important: algumas páginas têm regra global "iframe{width:100%;border:...}"
       [['border', '0'], ['width', W + 'px'], ['height', H + 'px'], ['max-width', 'none'], ['margin', '0'], ['padding', '0'],

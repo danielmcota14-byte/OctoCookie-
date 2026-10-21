@@ -30,3 +30,16 @@ services:
         sync: false       # token da Publisher API do Adsterra (fica só no servidor)
       - key: ALLOWED_ORIGINS
         value: "*"        # troque pelo domínio do seu site
+      # ---------- Token OctoCookie (pagamentos premium e recompensas) ----------
+      - key: TOKEN_CONTRACT_ADDRESS
+        value: "0x2f5f737D15ec5C79995f2d72dD0A0DaA1b75a44D"   # OctoToken (Sepolia)
+      - key: TOKEN_CHAIN_ID
+        value: "11155111"   # Sepolia
+      - key: TOKEN_RPC_URL
+        sync: false         # OPCIONAL: vazio = RPC público da Sepolia. Em produção use o seu (Alchemy/Infura). Só no servidor.
+      - key: TOKEN_TREASURY_ADDRESS
+        sync: false         # OPCIONAL: vazio = o owner() do contrato recebe os pagamentos. Recomendado: uma carteira só para isso.
+      - key: TOKEN_EXPLORER_URL
+        value: "https://sepolia.etherscan.io"
+      - key: TOKEN_MIN_CONFIRMATIONS
+        value: "3"
