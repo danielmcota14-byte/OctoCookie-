@@ -42,9 +42,26 @@ const BUILD_ENV = {
   VITE_COOKIESCRIPT_URL: process.env.VITE_COOKIESCRIPT_URL || "https://cookiescript-jgvh.onrender.com",
   VITE_BOT_24X7_URL: process.env.VITE_BOT_24X7_URL || "/bot",
 };
-if (!fs.existsSync(path.join(ROOT, "node_modules"))) {
+// Guarda: o package.json da raiz TEM que ser o do site (com script "build"). Já vimos o do bot-server colado aqui por engano.
+let rootPkg = {};
+try { rootPkg = JSON.parse(fs.readFileSync(path.join(ROOT, "package.json"), "utf8")); } catch {}
+if (!rootPkg.scripts || !rootPkg.scripts.build || !(rootPkg.dependencies || {})["@tanstack/react-start"]) {
+  console.error("\n[octo] ERRO: o package.json da raiz NÃO é o do site (é o do bot-server, sem script \"build\").");
+  console.error("[octo] Substitua por package.json do zip OctoCookie-ACOES-final, apague package-lock.json, node_modules e .output, e rode de novo.\n");
+  process.exit(1);
+}
+const nm = path.join(ROOT, "node_modules");
+// reinstala se faltar node_modules, se faltar uma dependência essencial (ex.: tslib, usada pelo Firebase) ou se o package.json for mais novo
+const lockMark = path.join(nm, ".package-lock.json");
+const depsStale =
+  !fs.existsSync(nm) ||
+  !fs.existsSync(path.join(nm, "tslib")) ||
+  !fs.existsSync(path.join(nm, "@tanstack/react-start")) ||
+  (fs.existsSync(lockMark) && fs.statSync(path.join(ROOT, "package.json")).mtimeMs > fs.statSync(lockMark).mtimeMs + 1000);
+if (depsStale) {
   log("instalando dependências do site…");
   if (sh("npm", ["install", "--no-audit", "--no-fund", "--legacy-peer-deps"]).status !== 0) process.exit(1);
+  fs.rmSync(path.join(ROOT, ".output"), { recursive: true, force: true }); // build antigo não serve com dependências novas
 }
 if (!fs.existsSync(path.join(ROOT, ".output/server/index.mjs"))) {
   log("compilando o site…");
