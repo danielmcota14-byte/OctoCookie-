@@ -1,24 +1,16 @@
-import { At as TooManyEmbeddingValuesForCallError, C as createNullLanguageModelUsage, Ct as union, F as isCustomReasoning, G as parseProviderOptions, K as postFormDataToApi, M as getTopLevelMediaType, Ot as InvalidPromptError, S as createLanguageModelResponseMetadata, St as string, T as downloadBlob, X as resolveFullMediaType, _t as looseObject, at as WORKFLOW_DESERIALIZE, b as createJsonErrorResponseHandler, bt as object, dt as array, et as serializeModelOptions, ft as boolean, g as convertToFormData, gt as literal, h as convertToBase64, jt as UnsupportedFunctionalityError, k as generateId, kt as InvalidResponseDataError, l as StreamingToolCallTracker, m as convertBase64ToUint8Array, nt as withUserAgentSuffix, ot as WORKFLOW_SERIALIZE, p as combineHeaders, q as postJsonToApi, rt as withoutTrailingSlash, st as _enum, ut as any, v as createEventSourceResponseHandler, x as createJsonResponseHandler, xt as record, yt as number } from "./@ai-sdk/gateway+[...].mjs";
+import { $ as withoutTrailingSlash, C as downloadBlob, Ct as InvalidPromptError, D as generateId, Et as UnsupportedFunctionalityError, H as postFormDataToApi, K as resolveFullMediaType, M as isCustomReasoning, Q as withUserAgentSuffix, U as postJsonToApi, V as parseProviderOptions, X as serializeModelOptions, _t as record, b as createJsonErrorResponseHandler, ct as boolean, ft as literal, g as convertToFormData, gt as object, h as convertToBase64, ht as number, k as getTopLevelMediaType, l as StreamingToolCallTracker, m as convertBase64ToUint8Array, nt as WORKFLOW_SERIALIZE, ot as any, p as combineHeaders, pt as looseObject, rt as _enum, st as array, tt as WORKFLOW_DESERIALIZE, v as createEventSourceResponseHandler, vt as string, wt as TooManyEmbeddingValuesForCallError, x as createJsonResponseHandler, yt as union } from "./@ai-sdk/gateway+[...].mjs";
 //#region node_modules/@ai-sdk/openai-compatible/dist/index.js
 function toCamelCase(str) {
 	return str.replace(/[_-]([a-z])/g, (g) => g[1].toUpperCase());
 }
-/**
-Resolves which key to use for providerMetadata based on what the caller
-passed in providerOptions. Returns the camelCase variant when the caller
-supplied it, otherwise falls back to the raw name.
-*/
 function resolveProviderOptionsKey(rawName, providerOptions) {
 	const camelName = toCamelCase(rawName);
-	if (camelName !== rawName && providerOptions?.[camelName] != null) return camelName;
+	if (camelName !== rawName && (providerOptions == null ? void 0 : providerOptions[camelName]) != null) return camelName;
 	return rawName;
 }
-/**
-Pushes a deprecation warning when the user supplies providerOptions under a non-camelCase key
-*/
 function warnIfDeprecatedProviderOptionsKey({ rawName, providerOptions, warnings }) {
 	const camelName = toCamelCase(rawName);
-	if (camelName !== rawName && providerOptions?.[rawName] != null) warnings.push({
+	if (camelName !== rawName && (providerOptions == null ? void 0 : providerOptions[rawName]) != null) warnings.push({
 		type: "deprecated",
 		setting: `providerOptions key '${rawName}'`,
 		message: `Use '${camelName}' instead.`
@@ -34,11 +26,25 @@ var defaultOpenAICompatibleErrorStructure = {
 	errorToMessage: (data) => data.error.message
 };
 function convertOpenAICompatibleChatUsage(usage) {
-	if (usage == null) return createNullLanguageModelUsage();
-	const promptTokens = usage.prompt_tokens ?? 0;
-	const completionTokens = usage.completion_tokens ?? 0;
-	const cacheReadTokens = usage.prompt_tokens_details?.cached_tokens ?? 0;
-	const reasoningTokens = usage.completion_tokens_details?.reasoning_tokens ?? 0;
+	var _a, _b, _c, _d, _e, _f;
+	if (usage == null) return {
+		inputTokens: {
+			total: void 0,
+			noCache: void 0,
+			cacheRead: void 0,
+			cacheWrite: void 0
+		},
+		outputTokens: {
+			total: void 0,
+			text: void 0,
+			reasoning: void 0
+		},
+		raw: void 0
+	};
+	const promptTokens = (_a = usage.prompt_tokens) != null ? _a : 0;
+	const completionTokens = (_b = usage.completion_tokens) != null ? _b : 0;
+	const cacheReadTokens = (_d = (_c = usage.prompt_tokens_details) == null ? void 0 : _c.cached_tokens) != null ? _d : 0;
+	const reasoningTokens = (_f = (_e = usage.completion_tokens_details) == null ? void 0 : _e.reasoning_tokens) != null ? _f : 0;
 	return {
 		inputTokens: {
 			total: promptTokens,
@@ -48,14 +54,15 @@ function convertOpenAICompatibleChatUsage(usage) {
 		},
 		outputTokens: {
 			total: completionTokens,
-			text: Math.max(0, completionTokens - reasoningTokens),
+			text: completionTokens - reasoningTokens,
 			reasoning: reasoningTokens
 		},
 		raw: usage
 	};
 }
 function getOpenAIMetadata(message) {
-	return message?.providerOptions?.openaiCompatible ?? {};
+	var _a, _b;
+	return (_b = (_a = message == null ? void 0 : message.providerOptions) == null ? void 0 : _a.openaiCompatible) != null ? _b : {};
 }
 function getAudioFormat(mediaType) {
 	switch (mediaType) {
@@ -65,72 +72,8 @@ function getAudioFormat(mediaType) {
 		default: return null;
 	}
 }
-function convertToOpenAICompatibleContentPart(part) {
-	const partMetadata = getOpenAIMetadata(part);
-	switch (part.type) {
-		case "text": return {
-			type: "text",
-			text: part.text,
-			...partMetadata
-		};
-		case "file": switch (part.data.type) {
-			case "reference": throw new UnsupportedFunctionalityError({ functionality: "file parts with provider references" });
-			case "text": throw new UnsupportedFunctionalityError({ functionality: "text file parts" });
-			case "url":
-			case "data": {
-				const topLevel = getTopLevelMediaType(part.mediaType);
-				if (topLevel === "image") return {
-					type: "image_url",
-					image_url: { url: part.data.type === "url" ? part.data.url.toString() : `data:${resolveFullMediaType({ part })};base64,${convertToBase64(part.data.data)}` },
-					...partMetadata
-				};
-				if (topLevel === "video") return {
-					type: "video_url",
-					video_url: { url: part.data.type === "url" ? part.data.url.toString() : `data:${resolveFullMediaType({ part })};base64,${convertToBase64(part.data.data)}` },
-					...partMetadata
-				};
-				if (topLevel === "audio") {
-					if (part.data.type === "url") throw new UnsupportedFunctionalityError({ functionality: "audio file parts with URLs" });
-					const fullMediaType = resolveFullMediaType({ part });
-					const format = getAudioFormat(fullMediaType);
-					if (format === null) throw new UnsupportedFunctionalityError({ functionality: `audio media type ${fullMediaType}` });
-					return {
-						type: "input_audio",
-						input_audio: {
-							data: convertToBase64(part.data.data),
-							format
-						},
-						...partMetadata
-					};
-				}
-				if (topLevel === "application") {
-					if (part.data.type === "url") throw new UnsupportedFunctionalityError({ functionality: "PDF file parts with URLs" });
-					const fullMediaType = resolveFullMediaType({ part });
-					if (fullMediaType !== "application/pdf") throw new UnsupportedFunctionalityError({ functionality: `file part media type ${fullMediaType}` });
-					return {
-						type: "file",
-						file: {
-							filename: part.filename ?? "document.pdf",
-							file_data: `data:application/pdf;base64,${convertToBase64(part.data.data)}`
-						},
-						...partMetadata
-					};
-				}
-				if (topLevel === "text") return {
-					type: "text",
-					text: part.data.type === "url" ? part.data.url.toString() : typeof part.data.data === "string" ? new TextDecoder().decode(convertBase64ToUint8Array(part.data.data)) : new TextDecoder().decode(part.data.data),
-					...partMetadata
-				};
-				throw new UnsupportedFunctionalityError({ functionality: `file part media type ${part.mediaType}` });
-			}
-		}
-	}
-}
-function convertToolContentPart(part) {
-	if (part.type === "custom") throw new UnsupportedFunctionalityError({ functionality: "custom tool content parts" });
-	return convertToOpenAICompatibleContentPart(part);
-}
-function convertToOpenAICompatibleChatMessages(prompt, { providerOptionsKey = "google", supportsMultiPartToolContent = false } = {}) {
+function convertToOpenAICompatibleChatMessages(prompt) {
+	var _a, _b, _c;
 	const messages = [];
 	for (const { role, content, ...message } of prompt) {
 		const metadata = getOpenAIMetadata({ ...message });
@@ -153,7 +96,63 @@ function convertToOpenAICompatibleChatMessages(prompt, { providerOptionsKey = "g
 				}
 				messages.push({
 					role: "user",
-					content: content.map(convertToOpenAICompatibleContentPart),
+					content: content.map((part) => {
+						var _a2;
+						const partMetadata = getOpenAIMetadata(part);
+						switch (part.type) {
+							case "text": return {
+								type: "text",
+								text: part.text,
+								...partMetadata
+							};
+							case "file": switch (part.data.type) {
+								case "reference": throw new UnsupportedFunctionalityError({ functionality: "file parts with provider references" });
+								case "text": throw new UnsupportedFunctionalityError({ functionality: "text file parts" });
+								case "url":
+								case "data": {
+									const topLevel = getTopLevelMediaType(part.mediaType);
+									if (topLevel === "image") return {
+										type: "image_url",
+										image_url: { url: part.data.type === "url" ? part.data.url.toString() : `data:${resolveFullMediaType({ part })};base64,${convertToBase64(part.data.data)}` },
+										...partMetadata
+									};
+									if (topLevel === "audio") {
+										if (part.data.type === "url") throw new UnsupportedFunctionalityError({ functionality: "audio file parts with URLs" });
+										const fullMediaType = resolveFullMediaType({ part });
+										const format = getAudioFormat(fullMediaType);
+										if (format === null) throw new UnsupportedFunctionalityError({ functionality: `audio media type ${fullMediaType}` });
+										return {
+											type: "input_audio",
+											input_audio: {
+												data: convertToBase64(part.data.data),
+												format
+											},
+											...partMetadata
+										};
+									}
+									if (topLevel === "application") {
+										if (part.data.type === "url") throw new UnsupportedFunctionalityError({ functionality: "PDF file parts with URLs" });
+										const fullMediaType = resolveFullMediaType({ part });
+										if (fullMediaType !== "application/pdf") throw new UnsupportedFunctionalityError({ functionality: `file part media type ${fullMediaType}` });
+										return {
+											type: "file",
+											file: {
+												filename: (_a2 = part.filename) != null ? _a2 : "document.pdf",
+												file_data: `data:application/pdf;base64,${convertToBase64(part.data.data)}`
+											},
+											...partMetadata
+										};
+									}
+									if (topLevel === "text") return {
+										type: "text",
+										text: part.data.type === "url" ? part.data.url.toString() : typeof part.data.data === "string" ? new TextDecoder().decode(convertBase64ToUint8Array(part.data.data)) : new TextDecoder().decode(part.data.data),
+										...partMetadata
+									};
+									throw new UnsupportedFunctionalityError({ functionality: `file part media type ${part.mediaType}` });
+								}
+							}
+						}
+					}),
 					...metadata
 				});
 				break;
@@ -171,7 +170,7 @@ function convertToOpenAICompatibleChatMessages(prompt, { providerOptionsKey = "g
 							reasoning += part.text;
 							break;
 						case "tool-call": {
-							const thoughtSignature = part.providerOptions?.[providerOptionsKey]?.thoughtSignature ?? part.providerOptions?.google?.thoughtSignature;
+							const thoughtSignature = (_b = (_a = part.providerOptions) == null ? void 0 : _a.google) == null ? void 0 : _b.thoughtSignature;
 							toolCalls.push({
 								id: part.toolCallId,
 								type: "function",
@@ -206,13 +205,13 @@ function convertToOpenAICompatibleChatMessages(prompt, { providerOptionsKey = "g
 							contentValue = output.value;
 							break;
 						case "execution-denied":
-							contentValue = output.reason ?? "Tool call execution denied.";
+							contentValue = (_c = output.reason) != null ? _c : "Tool call execution denied.";
 							break;
+						case "content":
 						case "json":
 						case "error-json":
 							contentValue = JSON.stringify(output.value);
 							break;
-						case "content": contentValue = supportsMultiPartToolContent ? output.value.map(convertToolContentPart) : JSON.stringify(output.value);
 					}
 					const toolResponseMetadata = getOpenAIMetadata(toolResponse);
 					messages.push({
@@ -228,14 +227,14 @@ function convertToOpenAICompatibleChatMessages(prompt, { providerOptionsKey = "g
 	}
 	return messages;
 }
-function getResponseMetadata$1({ id, model, created }) {
-	return createLanguageModelResponseMetadata({
-		id,
-		model,
-		created: created || void 0
-	});
+function getResponseMetadata({ id, model, created }) {
+	return {
+		id: id != null ? id : void 0,
+		modelId: model != null ? model : void 0,
+		timestamp: created != null ? /* @__PURE__ */ new Date(created * 1e3) : void 0
+	};
 }
-function mapOpenAICompatibleFinishReason$1(finishReason) {
+function mapOpenAICompatibleFinishReason(finishReason) {
 	switch (finishReason) {
 		case "stop": return "stop";
 		case "length": return "length";
@@ -269,7 +268,7 @@ var openaiCompatibleLanguageModelChatOptions = object({
 	strictJsonSchema: boolean().optional()
 });
 function prepareTools({ tools, toolChoice }) {
-	tools = tools?.length ? tools : void 0;
+	tools = (tools == null ? void 0 : tools.length) ? tools : void 0;
 	const toolWarnings = [];
 	if (tools == null) return {
 		tools: void 0,
@@ -315,7 +314,17 @@ function prepareTools({ tools, toolChoice }) {
 		default: throw new UnsupportedFunctionalityError({ functionality: `tool choice type: ${type}` });
 	}
 }
-var OpenAICompatibleChatLanguageModel = class OpenAICompatibleChatLanguageModel {
+var OpenAICompatibleChatLanguageModel = class _OpenAICompatibleChatLanguageModel {
+	constructor(modelId, config) {
+		this.specificationVersion = "v4";
+		var _a, _b;
+		this.modelId = modelId;
+		this.config = config;
+		const errorStructure = (_a = config.errorStructure) != null ? _a : defaultOpenAICompatibleErrorStructure;
+		this.chunkSchema = createOpenAICompatibleChatChunkSchema(errorStructure.errorSchema);
+		this.failedResponseHandler = createJsonErrorResponseHandler(errorStructure);
+		this.supportsStructuredOutputs = (_b = config.supportsStructuredOutputs) != null ? _b : false;
+	}
 	static [WORKFLOW_SERIALIZE](model) {
 		return serializeModelOptions({
 			modelId: model.modelId,
@@ -323,16 +332,7 @@ var OpenAICompatibleChatLanguageModel = class OpenAICompatibleChatLanguageModel 
 		});
 	}
 	static [WORKFLOW_DESERIALIZE](options) {
-		return new OpenAICompatibleChatLanguageModel(options.modelId, options.config);
-	}
-	constructor(modelId, config) {
-		this.specificationVersion = "v4";
-		this.modelId = modelId;
-		this.config = config;
-		const errorStructure = config.errorStructure ?? defaultOpenAICompatibleErrorStructure;
-		this.chunkSchema = createOpenAICompatibleChatChunkSchema(errorStructure.errorSchema);
-		this.failedResponseHandler = createJsonErrorResponseHandler(errorStructure);
-		this.supportsStructuredOutputs = config.supportsStructuredOutputs ?? false;
+		return new _OpenAICompatibleChatLanguageModel(options.modelId, options.config);
 	}
 	get provider() {
 		return this.config.provider;
@@ -341,15 +341,19 @@ var OpenAICompatibleChatLanguageModel = class OpenAICompatibleChatLanguageModel 
 		return this.config.provider.split(".")[0].trim();
 	}
 	get supportedUrls() {
-		return this.config.supportedUrls?.() ?? {};
+		var _a, _b, _c;
+		return (_c = (_b = (_a = this.config).supportedUrls) == null ? void 0 : _b.call(_a)) != null ? _c : {};
 	}
-	transformRequestBody(args, warnings) {
-		return this.config.transformRequestBody?.(args, warnings) ?? args;
+	transformRequestBody(args) {
+		var _a, _b, _c;
+		return (_c = (_b = (_a = this.config).transformRequestBody) == null ? void 0 : _b.call(_a, args)) != null ? _c : args;
 	}
 	convertUsage(usage) {
-		return this.config.convertUsage?.(usage) ?? convertOpenAICompatibleChatUsage(usage);
+		var _a, _b, _c;
+		return (_c = (_b = (_a = this.config).convertUsage) == null ? void 0 : _b.call(_a, usage)) != null ? _c : convertOpenAICompatibleChatUsage(usage);
 	}
 	async getArgs({ prompt, maxOutputTokens, temperature, topP, topK, frequencyPenalty, presencePenalty, reasoning, providerOptions, stopSequences, responseFormat, seed, toolChoice, tools }) {
+		var _a, _b, _c, _d, _e, _f;
 		const warnings = [];
 		const deprecatedOptions = await parseProviderOptions({
 			provider: "openai-compatible",
@@ -366,25 +370,25 @@ var OpenAICompatibleChatLanguageModel = class OpenAICompatibleChatLanguageModel 
 			providerOptions,
 			warnings
 		});
-		const compatibleOptions = Object.assign(deprecatedOptions ?? {}, await parseProviderOptions({
+		const compatibleOptions = Object.assign(deprecatedOptions != null ? deprecatedOptions : {}, (_a = await parseProviderOptions({
 			provider: "openaiCompatible",
 			providerOptions,
 			schema: openaiCompatibleLanguageModelChatOptions
-		}) ?? {}, await parseProviderOptions({
+		})) != null ? _a : {}, (_b = await parseProviderOptions({
 			provider: this.providerOptionsName,
 			providerOptions,
 			schema: openaiCompatibleLanguageModelChatOptions
-		}) ?? {}, await parseProviderOptions({
+		})) != null ? _b : {}, (_c = await parseProviderOptions({
 			provider: toCamelCase(this.providerOptionsName),
 			providerOptions,
 			schema: openaiCompatibleLanguageModelChatOptions
-		}) ?? {});
-		const strictJsonSchema = compatibleOptions?.strictJsonSchema ?? true;
+		})) != null ? _c : {});
+		const strictJsonSchema = (_d = compatibleOptions == null ? void 0 : compatibleOptions.strictJsonSchema) != null ? _d : true;
 		if (topK != null) warnings.push({
 			type: "unsupported",
 			feature: "topK"
 		});
-		if (responseFormat?.type === "json" && responseFormat.schema != null && !this.supportsStructuredOutputs) warnings.push({
+		if ((responseFormat == null ? void 0 : responseFormat.type) === "json" && responseFormat.schema != null && !this.supportsStructuredOutputs) warnings.push({
 			type: "unsupported",
 			feature: "responseFormat",
 			details: "JSON response format schema is only supported with structuredOutputs"
@@ -393,9 +397,8 @@ var OpenAICompatibleChatLanguageModel = class OpenAICompatibleChatLanguageModel 
 			tools,
 			toolChoice
 		});
-		const metadataKey = resolveProviderOptionsKey(this.providerOptionsName, providerOptions);
 		return {
-			metadataKey,
+			metadataKey: resolveProviderOptionsKey(this.providerOptionsName, providerOptions),
 			args: {
 				model: this.modelId,
 				user: compatibleOptions.user,
@@ -404,27 +407,24 @@ var OpenAICompatibleChatLanguageModel = class OpenAICompatibleChatLanguageModel 
 				top_p: topP,
 				frequency_penalty: frequencyPenalty,
 				presence_penalty: presencePenalty,
-				response_format: responseFormat?.type === "json" ? this.supportsStructuredOutputs === true && responseFormat.schema != null ? {
+				response_format: (responseFormat == null ? void 0 : responseFormat.type) === "json" ? this.supportsStructuredOutputs === true && responseFormat.schema != null ? {
 					type: "json_schema",
 					json_schema: {
 						schema: responseFormat.schema,
 						strict: strictJsonSchema,
-						name: responseFormat.name ?? "response",
+						name: (_e = responseFormat.name) != null ? _e : "response",
 						description: responseFormat.description
 					}
 				} : { type: "json_object" } : void 0,
 				stop: stopSequences,
 				seed,
 				...Object.fromEntries(Object.entries({
-					...providerOptions?.[this.providerOptionsName],
-					...providerOptions?.[toCamelCase(this.providerOptionsName)]
+					...providerOptions == null ? void 0 : providerOptions[this.providerOptionsName],
+					...providerOptions == null ? void 0 : providerOptions[toCamelCase(this.providerOptionsName)]
 				}).filter(([key]) => !Object.keys(openaiCompatibleLanguageModelChatOptions.shape).includes(key))),
-				reasoning_effort: compatibleOptions.reasoningEffort ?? (isCustomReasoning(reasoning) ? reasoning : void 0),
+				reasoning_effort: (_f = compatibleOptions.reasoningEffort) != null ? _f : isCustomReasoning(reasoning) && reasoning !== "none" ? reasoning : void 0,
 				verbosity: compatibleOptions.textVerbosity,
-				messages: convertToOpenAICompatibleChatMessages(prompt, {
-					providerOptionsKey: metadataKey,
-					supportsMultiPartToolContent: this.config.supportsMultiPartToolContent
-				}),
+				messages: convertToOpenAICompatibleChatMessages(prompt),
 				tools: openaiTools,
 				tool_choice: openaiToolChoice
 			},
@@ -432,15 +432,16 @@ var OpenAICompatibleChatLanguageModel = class OpenAICompatibleChatLanguageModel 
 		};
 	}
 	async doGenerate(options) {
+		var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j;
 		const { args, warnings, metadataKey } = await this.getArgs({ ...options });
-		const transformedBody = this.transformRequestBody(args, warnings);
+		const transformedBody = this.transformRequestBody(args);
 		const body = JSON.stringify(transformedBody);
 		const { responseHeaders, value: responseBody, rawValue: rawResponse } = await postJsonToApi({
 			url: this.config.url({
 				path: "/chat/completions",
 				modelId: this.modelId
 			}),
-			headers: combineHeaders(this.config.headers?.(), options.headers),
+			headers: combineHeaders((_b = (_a = this.config).headers) == null ? void 0 : _b.call(_a), options.headers),
 			body: transformedBody,
 			failedResponseHandler: this.failedResponseHandler,
 			successfulResponseHandler: createJsonResponseHandler(OpenAICompatibleChatResponseSchema),
@@ -448,22 +449,22 @@ var OpenAICompatibleChatLanguageModel = class OpenAICompatibleChatLanguageModel 
 			fetch: this.config.fetch
 		});
 		const choice = responseBody.choices[0];
-		if (choice == null) throw new InvalidResponseDataError({
-			data: rawResponse,
-			message: "Response did not contain any choices."
-		});
 		const content = [];
-		content.push(...convertOpenAICompatibleContent(choice.message.content));
-		const reasoning = choice.message.reasoning_content ?? choice.message.reasoning;
+		const text = choice.message.content;
+		if (text != null && text.length > 0) content.push({
+			type: "text",
+			text
+		});
+		const reasoning = (_c = choice.message.reasoning_content) != null ? _c : choice.message.reasoning;
 		if (reasoning != null && reasoning.length > 0) content.push({
 			type: "reasoning",
 			text: reasoning
 		});
 		if (choice.message.tool_calls != null) for (const toolCall of choice.message.tool_calls) {
-			const thoughtSignature = toolCall.extra_content?.google?.thought_signature;
+			const thoughtSignature = (_e = (_d = toolCall.extra_content) == null ? void 0 : _d.google) == null ? void 0 : _e.thought_signature;
 			content.push({
 				type: "tool-call",
-				toolCallId: toolCall.id || generateId(),
+				toolCallId: (_f = toolCall.id) != null ? _f : generateId(),
 				toolName: toolCall.function.name,
 				input: toolCall.function.arguments,
 				...thoughtSignature ? { providerMetadata: { [metadataKey]: { thoughtSignature } } } : {}
@@ -471,22 +472,22 @@ var OpenAICompatibleChatLanguageModel = class OpenAICompatibleChatLanguageModel 
 		}
 		const providerMetadata = {
 			[metadataKey]: {},
-			...await this.config.metadataExtractor?.extractMetadata?.({ parsedBody: rawResponse })
+			...await ((_h = (_g = this.config.metadataExtractor) == null ? void 0 : _g.extractMetadata) == null ? void 0 : _h.call(_g, { parsedBody: rawResponse }))
 		};
-		const completionTokenDetails = responseBody.usage?.completion_tokens_details;
-		if (completionTokenDetails?.accepted_prediction_tokens != null) providerMetadata[metadataKey].acceptedPredictionTokens = completionTokenDetails?.accepted_prediction_tokens;
-		if (completionTokenDetails?.rejected_prediction_tokens != null) providerMetadata[metadataKey].rejectedPredictionTokens = completionTokenDetails?.rejected_prediction_tokens;
+		const completionTokenDetails = (_i = responseBody.usage) == null ? void 0 : _i.completion_tokens_details;
+		if ((completionTokenDetails == null ? void 0 : completionTokenDetails.accepted_prediction_tokens) != null) providerMetadata[metadataKey].acceptedPredictionTokens = completionTokenDetails == null ? void 0 : completionTokenDetails.accepted_prediction_tokens;
+		if ((completionTokenDetails == null ? void 0 : completionTokenDetails.rejected_prediction_tokens) != null) providerMetadata[metadataKey].rejectedPredictionTokens = completionTokenDetails == null ? void 0 : completionTokenDetails.rejected_prediction_tokens;
 		return {
 			content,
 			finishReason: {
-				unified: mapOpenAICompatibleFinishReason$1(choice.finish_reason),
-				raw: choice.finish_reason ?? void 0
+				unified: mapOpenAICompatibleFinishReason(choice.finish_reason),
+				raw: (_j = choice.finish_reason) != null ? _j : void 0
 			},
 			usage: this.convertUsage(responseBody.usage),
 			providerMetadata,
 			request: { body },
 			response: {
-				...getResponseMetadata$1(responseBody),
+				...getResponseMetadata(responseBody),
 				headers: responseHeaders,
 				body: rawResponse
 			},
@@ -494,19 +495,20 @@ var OpenAICompatibleChatLanguageModel = class OpenAICompatibleChatLanguageModel 
 		};
 	}
 	async doStream(options) {
+		var _a, _b, _c;
 		const { args, warnings, metadataKey } = await this.getArgs({ ...options });
 		const body = this.transformRequestBody({
 			...args,
 			stream: true,
 			stream_options: this.config.includeUsage ? { include_usage: true } : void 0
-		}, warnings);
-		const metadataExtractor = this.config.metadataExtractor?.createStreamExtractor();
+		});
+		const metadataExtractor = (_a = this.config.metadataExtractor) == null ? void 0 : _a.createStreamExtractor();
 		const { responseHeaders, value: response } = await postJsonToApi({
 			url: this.config.url({
 				path: "/chat/completions",
 				modelId: this.modelId
 			}),
-			headers: combineHeaders(this.config.headers?.(), options.headers),
+			headers: combineHeaders((_c = (_b = this.config).headers) == null ? void 0 : _c.call(_b), options.headers),
 			body,
 			failedResponseHandler: this.failedResponseHandler,
 			successfulResponseHandler: createEventSourceResponseHandler(this.chunkSchema),
@@ -518,6 +520,7 @@ var OpenAICompatibleChatLanguageModel = class OpenAICompatibleChatLanguageModel 
 		const pendingToolCalls = /* @__PURE__ */ new Map();
 		const forwardedToolCallIndices = /* @__PURE__ */ new Set();
 		const processToolCallDelta = (toolCallDelta) => {
+			var _a2, _b2, _c2, _d, _e;
 			const index = toolCallDelta.index;
 			if (index == null || forwardedToolCallIndices.has(index)) {
 				toolCallTracker.processDelta(toolCallDelta);
@@ -526,18 +529,18 @@ var OpenAICompatibleChatLanguageModel = class OpenAICompatibleChatLanguageModel 
 			let pending = pendingToolCalls.get(index);
 			if (pending == null) {
 				pending = {
-					id: toolCallDelta.id ?? null,
+					id: (_a2 = toolCallDelta.id) != null ? _a2 : null,
 					bufferedArguments: "",
-					extraContent: toolCallDelta.extra_content ?? null
+					extraContent: (_b2 = toolCallDelta.extra_content) != null ? _b2 : null
 				};
 				pendingToolCalls.set(index, pending);
 			} else {
 				if (pending.id == null && toolCallDelta.id != null) pending.id = toolCallDelta.id;
 				if (pending.extraContent == null && toolCallDelta.extra_content != null) pending.extraContent = toolCallDelta.extra_content;
 			}
-			const argumentsDelta = toolCallDelta.function?.arguments;
+			const argumentsDelta = (_c2 = toolCallDelta.function) == null ? void 0 : _c2.arguments;
 			if (argumentsDelta != null) pending.bufferedArguments += argumentsDelta;
-			const name = toolCallDelta.function?.name;
+			const name = (_d = toolCallDelta.function) == null ? void 0 : _d.name;
 			if (name != null) {
 				const forwardDelta = {
 					index,
@@ -546,26 +549,30 @@ var OpenAICompatibleChatLanguageModel = class OpenAICompatibleChatLanguageModel 
 						name,
 						arguments: pending.bufferedArguments
 					},
-					extra_content: pending.extraContent ?? void 0
+					extra_content: (_e = pending.extraContent) != null ? _e : void 0
 				};
 				toolCallTracker.processDelta(forwardDelta);
 				pendingToolCalls.delete(index);
 				forwardedToolCallIndices.add(index);
 			}
 		};
-		let finishReason;
+		let finishReason = {
+			unified: "other",
+			raw: void 0
+		};
 		let usage = void 0;
-		let metadataExtracted = false;
+		let isFirstChunk = true;
 		let isActiveReasoning = false;
 		let isActiveText = false;
-		const convertUsage = (usage) => this.convertUsage(usage);
+		const convertUsage = (usage2) => this.convertUsage(usage2);
 		return {
 			stream: response.pipeThrough(new TransformStream({
 				start(controller) {
 					toolCallTracker = new StreamingToolCallTracker(controller, {
 						generateId,
 						extractMetadata: (delta) => {
-							const thoughtSignature = delta.extra_content?.google?.thought_signature;
+							var _a2, _b2;
+							const thoughtSignature = (_b2 = (_a2 = delta.extra_content) == null ? void 0 : _a2.google) == null ? void 0 : _b2.thought_signature;
 							return thoughtSignature ? { [providerOptionsName]: { thoughtSignature } } : void 0;
 						},
 						buildToolCallProviderMetadata: (metadata) => metadata
@@ -576,6 +583,7 @@ var OpenAICompatibleChatLanguageModel = class OpenAICompatibleChatLanguageModel 
 					});
 				},
 				transform(chunk, controller) {
+					var _a2, _b2;
 					if (options.includeRawChunks) controller.enqueue({
 						type: "raw",
 						rawValue: chunk.rawValue
@@ -604,32 +612,23 @@ var OpenAICompatibleChatLanguageModel = class OpenAICompatibleChatLanguageModel 
 						return;
 					}
 					const value = chunk.value;
-					if (!metadataExtracted) {
-						const metadata = getResponseMetadata$1(value);
-						if (Object.values(metadata).some(Boolean)) {
-							metadataExtracted = true;
-							controller.enqueue({
-								type: "response-metadata",
-								...metadata
-							});
-						}
+					if (isFirstChunk) {
+						isFirstChunk = false;
+						controller.enqueue({
+							type: "response-metadata",
+							...getResponseMetadata(value)
+						});
 					}
 					if (value.usage != null) usage = value.usage;
 					const choice = value.choices[0];
-					if (choice?.finish_reason != null) finishReason = {
-						unified: mapOpenAICompatibleFinishReason$1(choice.finish_reason),
-						raw: choice.finish_reason ?? void 0
+					if ((choice == null ? void 0 : choice.finish_reason) != null) finishReason = {
+						unified: mapOpenAICompatibleFinishReason(choice.finish_reason),
+						raw: (_a2 = choice.finish_reason) != null ? _a2 : void 0
 					};
-					if (choice?.delta == null) return;
+					if ((choice == null ? void 0 : choice.delta) == null) return;
 					const delta = choice.delta;
-					const enqueueReasoningDelta = (reasoningDelta) => {
-						if (isActiveText) {
-							controller.enqueue({
-								type: "text-end",
-								id: "txt-0"
-							});
-							isActiveText = false;
-						}
+					const reasoningContent = (_b2 = delta.reasoning_content) != null ? _b2 : delta.reasoning;
+					if (reasoningContent) {
 						if (!isActiveReasoning) {
 							controller.enqueue({
 								type: "reasoning-start",
@@ -640,10 +639,10 @@ var OpenAICompatibleChatLanguageModel = class OpenAICompatibleChatLanguageModel 
 						controller.enqueue({
 							type: "reasoning-delta",
 							id: "reasoning-0",
-							delta: reasoningDelta
+							delta: reasoningContent
 						});
-					};
-					const enqueueTextDelta = (textDelta) => {
+					}
+					if (delta.content) {
 						if (isActiveReasoning) {
 							controller.enqueue({
 								type: "reasoning-end",
@@ -661,14 +660,10 @@ var OpenAICompatibleChatLanguageModel = class OpenAICompatibleChatLanguageModel 
 						controller.enqueue({
 							type: "text-delta",
 							id: "txt-0",
-							delta: textDelta
+							delta: delta.content
 						});
-					};
-					const reasoningContent = delta.reasoning_content ?? delta.reasoning;
-					if (reasoningContent) enqueueReasoningDelta(reasoningContent);
-					for (const contentPart of convertOpenAICompatibleContent(delta.content)) if (contentPart.type === "reasoning") enqueueReasoningDelta(contentPart.text);
-					else enqueueTextDelta(contentPart.text);
-					if (delta.tool_calls != null && delta.tool_calls.length > 0) {
+					}
+					if (delta.tool_calls != null) {
 						if (isActiveReasoning) {
 							controller.enqueue({
 								type: "reasoning-end",
@@ -680,6 +675,7 @@ var OpenAICompatibleChatLanguageModel = class OpenAICompatibleChatLanguageModel 
 					}
 				},
 				flush(controller) {
+					var _a2, _b2, _c2, _d;
 					if (isActiveReasoning) controller.enqueue({
 						type: "reasoning-end",
 						id: "reasoning-0"
@@ -695,25 +691,12 @@ var OpenAICompatibleChatLanguageModel = class OpenAICompatibleChatLanguageModel 
 					});
 					pendingToolCalls.clear();
 					toolCallTracker.flush();
-					if (finishReason == null) {
-						finishReason = {
-							unified: "error",
-							raw: void 0
-						};
-						controller.enqueue({
-							type: "error",
-							error: new InvalidResponseDataError({
-								data: void 0,
-								message: "Response stream ended without a finish reason."
-							})
-						});
-					}
 					const providerMetadata = {
 						[providerOptionsName]: {},
-						...metadataExtractor?.buildMetadata()
+						...metadataExtractor == null ? void 0 : metadataExtractor.buildMetadata()
 					};
-					if (usage?.completion_tokens_details?.accepted_prediction_tokens != null) providerMetadata[providerOptionsName].acceptedPredictionTokens = usage?.completion_tokens_details?.accepted_prediction_tokens;
-					if (usage?.completion_tokens_details?.rejected_prediction_tokens != null) providerMetadata[providerOptionsName].rejectedPredictionTokens = usage?.completion_tokens_details?.rejected_prediction_tokens;
+					if (((_a2 = usage == null ? void 0 : usage.completion_tokens_details) == null ? void 0 : _a2.accepted_prediction_tokens) != null) providerMetadata[providerOptionsName].acceptedPredictionTokens = (_b2 = usage == null ? void 0 : usage.completion_tokens_details) == null ? void 0 : _b2.accepted_prediction_tokens;
+					if (((_c2 = usage == null ? void 0 : usage.completion_tokens_details) == null ? void 0 : _c2.rejected_prediction_tokens) != null) providerMetadata[providerOptionsName].rejectedPredictionTokens = (_d = usage == null ? void 0 : usage.completion_tokens_details) == null ? void 0 : _d.rejected_prediction_tokens;
 					controller.enqueue({
 						type: "finish",
 						finishReason,
@@ -731,35 +714,13 @@ var openaiCompatibleTokenUsageSchema = looseObject({
 	prompt_tokens: number().nullish(),
 	completion_tokens: number().nullish(),
 	total_tokens: number().nullish(),
-	prompt_tokens_details: looseObject({ cached_tokens: number().nullish() }).nullish(),
-	completion_tokens_details: looseObject({
+	prompt_tokens_details: object({ cached_tokens: number().nullish() }).nullish(),
+	completion_tokens_details: object({
 		reasoning_tokens: number().nullish(),
 		accepted_prediction_tokens: number().nullish(),
 		rejected_prediction_tokens: number().nullish()
 	}).nullish()
 }).nullish();
-var openAICompatibleContentSchema = union([string(), array(looseObject({ type: string() }))]).nullish();
-function convertOpenAICompatibleContent(content) {
-	if (content == null) return [];
-	if (typeof content === "string") return content.length > 0 ? [{
-		type: "text",
-		text: content
-	}] : [];
-	const result = [];
-	for (const part of content) if (part.type === "text" && typeof part.text === "string") {
-		if (part.text.length > 0) result.push({
-			type: "text",
-			text: part.text
-		});
-	} else if (part.type === "thinking" && Array.isArray(part.thinking)) {
-		const reasoningText = part.thinking.filter((chunk) => chunk != null && typeof chunk === "object" && "type" in chunk && chunk.type === "text" && "text" in chunk && typeof chunk.text === "string").map((chunk) => chunk.text).join("");
-		if (reasoningText.length > 0) result.push({
-			type: "reasoning",
-			text: reasoningText
-		});
-	}
-	return result;
-}
 var OpenAICompatibleChatResponseSchema = looseObject({
 	id: string().nullish(),
 	created: number().nullish(),
@@ -767,7 +728,7 @@ var OpenAICompatibleChatResponseSchema = looseObject({
 	choices: array(object({
 		message: object({
 			role: literal("assistant").nullish(),
-			content: openAICompatibleContentSchema,
+			content: string().nullish(),
 			reasoning_content: string().nullish(),
 			reasoning: string().nullish(),
 			tool_calls: array(object({
@@ -790,7 +751,7 @@ var chunkBaseSchema = looseObject({
 	choices: array(object({
 		delta: object({
 			role: _enum(["assistant", ""]).nullish(),
-			content: openAICompatibleContentSchema,
+			content: string().nullish(),
 			reasoning_content: string().nullish(),
 			reasoning: string().nullish(),
 			tool_calls: array(object({
@@ -809,9 +770,23 @@ var chunkBaseSchema = looseObject({
 });
 var createOpenAICompatibleChatChunkSchema = (errorSchema) => union([chunkBaseSchema, errorSchema]);
 function convertOpenAICompatibleCompletionUsage(usage) {
-	if (usage == null) return createNullLanguageModelUsage();
-	const promptTokens = usage.prompt_tokens ?? 0;
-	const completionTokens = usage.completion_tokens ?? 0;
+	var _a, _b;
+	if (usage == null) return {
+		inputTokens: {
+			total: void 0,
+			noCache: void 0,
+			cacheRead: void 0,
+			cacheWrite: void 0
+		},
+		outputTokens: {
+			total: void 0,
+			text: void 0,
+			reasoning: void 0
+		},
+		raw: void 0
+	};
+	const promptTokens = (_a = usage.prompt_tokens) != null ? _a : 0;
+	const completionTokens = (_b = usage.completion_tokens) != null ? _b : 0;
 	return {
 		inputTokens: {
 			total: promptTokens,
@@ -830,7 +805,9 @@ function convertOpenAICompatibleCompletionUsage(usage) {
 function convertToOpenAICompatibleCompletionPrompt({ prompt, user = "user", assistant = "assistant" }) {
 	let text = "";
 	if (prompt[0].role === "system") {
-		text += `${prompt[0].content}\n\n`;
+		text += `${prompt[0].content}
+
+`;
 		prompt = prompt.slice(1);
 	}
 	for (const { role, content } of prompt) switch (role) {
@@ -844,7 +821,10 @@ function convertToOpenAICompatibleCompletionPrompt({ prompt, user = "user", assi
 					case "text": return part.text;
 				}
 			}).filter(Boolean).join("");
-			text += `${user}:\n${userMessage}\n\n`;
+			text += `${user}:
+${userMessage}
+
+`;
 			break;
 		}
 		case "assistant": {
@@ -854,19 +834,31 @@ function convertToOpenAICompatibleCompletionPrompt({ prompt, user = "user", assi
 					case "tool-call": throw new UnsupportedFunctionalityError({ functionality: "tool-call messages" });
 				}
 			}).join("");
-			text += `${assistant}:\n${assistantMessage}\n\n`;
+			text += `${assistant}:
+${assistantMessage}
+
+`;
 			break;
 		}
 		case "tool": throw new UnsupportedFunctionalityError({ functionality: "tool messages" });
 		default: throw new Error(`Unsupported role: ${role}`);
 	}
-	text += `${assistant}:\n`;
+	text += `${assistant}:
+`;
 	return {
 		prompt: text,
-		stopSequences: [`\n${user}:`]
+		stopSequences: [`
+${user}:`]
 	};
 }
-function mapOpenAICompatibleFinishReason(finishReason) {
+function getResponseMetadata2({ id, model, created }) {
+	return {
+		id: id != null ? id : void 0,
+		modelId: model != null ? model : void 0,
+		timestamp: created != null ? /* @__PURE__ */ new Date(created * 1e3) : void 0
+	};
+}
+function mapOpenAICompatibleFinishReason2(finishReason) {
 	switch (finishReason) {
 		case "stop": return "stop";
 		case "length": return "length";
@@ -898,7 +890,16 @@ var openaiCompatibleLanguageModelCompletionOptions = object({
 	*/
 	user: string().optional()
 });
-var OpenAICompatibleCompletionLanguageModel = class OpenAICompatibleCompletionLanguageModel {
+var OpenAICompatibleCompletionLanguageModel = class _OpenAICompatibleCompletionLanguageModel {
+	constructor(modelId, config) {
+		this.specificationVersion = "v4";
+		var _a;
+		this.modelId = modelId;
+		this.config = config;
+		const errorStructure = (_a = config.errorStructure) != null ? _a : defaultOpenAICompatibleErrorStructure;
+		this.chunkSchema = createOpenAICompatibleCompletionChunkSchema(errorStructure.errorSchema);
+		this.failedResponseHandler = createJsonErrorResponseHandler(errorStructure);
+	}
 	static [WORKFLOW_SERIALIZE](model) {
 		return serializeModelOptions({
 			modelId: model.modelId,
@@ -906,15 +907,7 @@ var OpenAICompatibleCompletionLanguageModel = class OpenAICompatibleCompletionLa
 		});
 	}
 	static [WORKFLOW_DESERIALIZE](options) {
-		return new OpenAICompatibleCompletionLanguageModel(options.modelId, options.config);
-	}
-	constructor(modelId, config) {
-		this.specificationVersion = "v4";
-		this.modelId = modelId;
-		this.config = config;
-		const errorStructure = config.errorStructure ?? defaultOpenAICompatibleErrorStructure;
-		this.chunkSchema = createOpenAICompatibleCompletionChunkSchema(errorStructure.errorSchema);
-		this.failedResponseHandler = createJsonErrorResponseHandler(errorStructure);
+		return new _OpenAICompatibleCompletionLanguageModel(options.modelId, options.config);
 	}
 	get provider() {
 		return this.config.provider;
@@ -923,29 +916,31 @@ var OpenAICompatibleCompletionLanguageModel = class OpenAICompatibleCompletionLa
 		return this.config.provider.split(".")[0].trim();
 	}
 	get supportedUrls() {
-		return this.config.supportedUrls?.() ?? {};
+		var _a, _b, _c;
+		return (_c = (_b = (_a = this.config).supportedUrls) == null ? void 0 : _b.call(_a)) != null ? _c : {};
 	}
 	async getArgs({ prompt, maxOutputTokens, temperature, topP, topK, frequencyPenalty, presencePenalty, stopSequences: userStopSequences, responseFormat, seed, providerOptions, tools, toolChoice }) {
+		var _a, _b;
 		const warnings = [];
 		warnIfDeprecatedProviderOptionsKey({
 			rawName: this.providerOptionsName,
 			providerOptions,
 			warnings
 		});
-		const completionOptions = Object.assign(await parseProviderOptions({
+		const completionOptions = Object.assign((_a = await parseProviderOptions({
 			provider: this.providerOptionsName,
 			providerOptions,
 			schema: openaiCompatibleLanguageModelCompletionOptions
-		}) ?? {}, await parseProviderOptions({
+		})) != null ? _a : {}, (_b = await parseProviderOptions({
 			provider: toCamelCase(this.providerOptionsName),
 			providerOptions,
 			schema: openaiCompatibleLanguageModelCompletionOptions
-		}) ?? {});
+		})) != null ? _b : {});
 		if (topK != null) warnings.push({
 			type: "unsupported",
 			feature: "topK"
 		});
-		if (tools?.length) warnings.push({
+		if (tools == null ? void 0 : tools.length) warnings.push({
 			type: "unsupported",
 			feature: "tools"
 		});
@@ -959,7 +954,7 @@ var OpenAICompatibleCompletionLanguageModel = class OpenAICompatibleCompletionLa
 			details: "JSON response format is not supported."
 		});
 		const { prompt: completionPrompt, stopSequences } = convertToOpenAICompatibleCompletionPrompt({ prompt });
-		const stop = [...stopSequences ?? [], ...userStopSequences ?? []];
+		const stop = [...stopSequences != null ? stopSequences : [], ...userStopSequences != null ? userStopSequences : []];
 		return {
 			args: {
 				model: this.modelId,
@@ -973,8 +968,8 @@ var OpenAICompatibleCompletionLanguageModel = class OpenAICompatibleCompletionLa
 				frequency_penalty: frequencyPenalty,
 				presence_penalty: presencePenalty,
 				seed,
-				...providerOptions?.[this.providerOptionsName],
-				...providerOptions?.[toCamelCase(this.providerOptionsName)],
+				...providerOptions == null ? void 0 : providerOptions[this.providerOptionsName],
+				...providerOptions == null ? void 0 : providerOptions[toCamelCase(this.providerOptionsName)],
 				prompt: completionPrompt,
 				stop: stop.length > 0 ? stop : void 0
 			},
@@ -982,13 +977,14 @@ var OpenAICompatibleCompletionLanguageModel = class OpenAICompatibleCompletionLa
 		};
 	}
 	async doGenerate(options) {
+		var _a, _b;
 		const { args, warnings } = await this.getArgs(options);
 		const { responseHeaders, value: response, rawValue: rawResponse } = await postJsonToApi({
 			url: this.config.url({
 				path: "/completions",
 				modelId: this.modelId
 			}),
-			headers: combineHeaders(this.config.headers?.(), options.headers),
+			headers: combineHeaders((_b = (_a = this.config).headers) == null ? void 0 : _b.call(_a), options.headers),
 			body: args,
 			failedResponseHandler: this.failedResponseHandler,
 			successfulResponseHandler: createJsonResponseHandler(openaiCompatibleCompletionResponseSchema),
@@ -1005,12 +1001,12 @@ var OpenAICompatibleCompletionLanguageModel = class OpenAICompatibleCompletionLa
 			content,
 			usage: convertOpenAICompatibleCompletionUsage(response.usage),
 			finishReason: {
-				unified: mapOpenAICompatibleFinishReason(choice.finish_reason),
+				unified: mapOpenAICompatibleFinishReason2(choice.finish_reason),
 				raw: choice.finish_reason
 			},
 			request: { body: args },
 			response: {
-				...createLanguageModelResponseMetadata(response),
+				...getResponseMetadata2(response),
 				headers: responseHeaders,
 				body: rawResponse
 			},
@@ -1018,6 +1014,7 @@ var OpenAICompatibleCompletionLanguageModel = class OpenAICompatibleCompletionLa
 		};
 	}
 	async doStream(options) {
+		var _a, _b;
 		const { args, warnings } = await this.getArgs(options);
 		const body = {
 			...args,
@@ -1029,7 +1026,7 @@ var OpenAICompatibleCompletionLanguageModel = class OpenAICompatibleCompletionLa
 				path: "/completions",
 				modelId: this.modelId
 			}),
-			headers: combineHeaders(this.config.headers?.(), options.headers),
+			headers: combineHeaders((_b = (_a = this.config).headers) == null ? void 0 : _b.call(_a), options.headers),
 			body,
 			failedResponseHandler: this.failedResponseHandler,
 			successfulResponseHandler: createEventSourceResponseHandler(this.chunkSchema),
@@ -1051,6 +1048,7 @@ var OpenAICompatibleCompletionLanguageModel = class OpenAICompatibleCompletionLa
 					});
 				},
 				transform(chunk, controller) {
+					var _a2;
 					if (options.includeRawChunks) controller.enqueue({
 						type: "raw",
 						rawValue: chunk.rawValue
@@ -1082,7 +1080,7 @@ var OpenAICompatibleCompletionLanguageModel = class OpenAICompatibleCompletionLa
 						isFirstChunk = false;
 						controller.enqueue({
 							type: "response-metadata",
-							...createLanguageModelResponseMetadata(value)
+							...getResponseMetadata2(value)
 						});
 						controller.enqueue({
 							type: "text-start",
@@ -1091,11 +1089,11 @@ var OpenAICompatibleCompletionLanguageModel = class OpenAICompatibleCompletionLa
 					}
 					if (value.usage != null) usage = value.usage;
 					const choice = value.choices[0];
-					if (choice?.finish_reason != null) finishReason = {
-						unified: mapOpenAICompatibleFinishReason(choice.finish_reason),
-						raw: choice.finish_reason ?? void 0
+					if ((choice == null ? void 0 : choice.finish_reason) != null) finishReason = {
+						unified: mapOpenAICompatibleFinishReason2(choice.finish_reason),
+						raw: (_a2 = choice.finish_reason) != null ? _a2 : void 0
 					};
-					if (choice?.text != null) controller.enqueue({
+					if ((choice == null ? void 0 : choice.text) != null) controller.enqueue({
 						type: "text-delta",
 						id: "0",
 						delta: choice.text
@@ -1118,7 +1116,7 @@ var OpenAICompatibleCompletionLanguageModel = class OpenAICompatibleCompletionLa
 		};
 	}
 };
-var usageSchema = looseObject({
+var usageSchema = object({
 	prompt_tokens: number(),
 	completion_tokens: number(),
 	total_tokens: number()
@@ -1156,15 +1154,22 @@ var openaiCompatibleEmbeddingModelOptions = object({
 	*/
 	user: string().optional()
 });
-var OpenAICompatibleEmbeddingModel = class OpenAICompatibleEmbeddingModel {
+var OpenAICompatibleEmbeddingModel = class _OpenAICompatibleEmbeddingModel {
+	constructor(modelId, config) {
+		this.specificationVersion = "v4";
+		this.modelId = modelId;
+		this.config = config;
+	}
 	get provider() {
 		return this.config.provider;
 	}
 	get maxEmbeddingsPerCall() {
-		return this.config.maxEmbeddingsPerCall ?? 2048;
+		var _a;
+		return (_a = this.config.maxEmbeddingsPerCall) != null ? _a : 2048;
 	}
 	get supportsParallelCalls() {
-		return this.config.supportsParallelCalls ?? true;
+		var _a;
+		return (_a = this.config.supportsParallelCalls) != null ? _a : true;
 	}
 	static [WORKFLOW_SERIALIZE](model) {
 		return serializeModelOptions({
@@ -1173,17 +1178,13 @@ var OpenAICompatibleEmbeddingModel = class OpenAICompatibleEmbeddingModel {
 		});
 	}
 	static [WORKFLOW_DESERIALIZE](options) {
-		return new OpenAICompatibleEmbeddingModel(options.modelId, options.config);
-	}
-	constructor(modelId, config) {
-		this.specificationVersion = "v4";
-		this.modelId = modelId;
-		this.config = config;
+		return new _OpenAICompatibleEmbeddingModel(options.modelId, options.config);
 	}
 	get providerOptionsName() {
 		return this.config.provider.split(".")[0].trim();
 	}
-	async doEmbed({ values, dimensions, headers, abortSignal, providerOptions }) {
+	async doEmbed({ values, headers, abortSignal, providerOptions }) {
+		var _a, _b, _c, _d, _e;
 		const warnings = [];
 		const deprecatedOptions = await parseProviderOptions({
 			provider: "openai-compatible",
@@ -1200,15 +1201,15 @@ var OpenAICompatibleEmbeddingModel = class OpenAICompatibleEmbeddingModel {
 			providerOptions,
 			warnings
 		});
-		const compatibleOptions = Object.assign(deprecatedOptions ?? {}, await parseProviderOptions({
+		const compatibleOptions = Object.assign(deprecatedOptions != null ? deprecatedOptions : {}, (_a = await parseProviderOptions({
 			provider: "openaiCompatible",
 			providerOptions,
 			schema: openaiCompatibleEmbeddingModelOptions
-		}) ?? {}, await parseProviderOptions({
+		})) != null ? _a : {}, (_b = await parseProviderOptions({
 			provider: this.providerOptionsName,
 			providerOptions,
 			schema: openaiCompatibleEmbeddingModelOptions
-		}) ?? {});
+		})) != null ? _b : {});
 		if (values.length > this.maxEmbeddingsPerCall) throw new TooManyEmbeddingValuesForCallError({
 			provider: this.provider,
 			modelId: this.modelId,
@@ -1220,15 +1221,15 @@ var OpenAICompatibleEmbeddingModel = class OpenAICompatibleEmbeddingModel {
 				path: "/embeddings",
 				modelId: this.modelId
 			}),
-			headers: combineHeaders(this.config.headers?.(), headers),
+			headers: combineHeaders((_d = (_c = this.config).headers) == null ? void 0 : _d.call(_c), headers),
 			body: {
 				model: this.modelId,
 				input: values,
 				encoding_format: "float",
-				dimensions: compatibleOptions.dimensions ?? dimensions,
+				dimensions: compatibleOptions.dimensions,
 				user: compatibleOptions.user
 			},
-			failedResponseHandler: createJsonErrorResponseHandler(this.config.errorStructure ?? defaultOpenAICompatibleErrorStructure),
+			failedResponseHandler: createJsonErrorResponseHandler((_e = this.config.errorStructure) != null ? _e : defaultOpenAICompatibleErrorStructure),
 			successfulResponseHandler: createJsonResponseHandler(openaiTextEmbeddingResponseSchema),
 			abortSignal,
 			fetch: this.config.fetch
@@ -1250,7 +1251,13 @@ var openaiTextEmbeddingResponseSchema = object({
 	usage: object({ prompt_tokens: number() }).nullish(),
 	providerMetadata: record(string(), record(string(), any())).optional()
 });
-var OpenAICompatibleImageModel = class OpenAICompatibleImageModel {
+var OpenAICompatibleImageModel = class _OpenAICompatibleImageModel {
+	constructor(modelId, config) {
+		this.modelId = modelId;
+		this.config = config;
+		this.specificationVersion = "v4";
+		this.maxImagesPerCall = 10;
+	}
 	get provider() {
 		return this.config.provider;
 	}
@@ -1267,15 +1274,7 @@ var OpenAICompatibleImageModel = class OpenAICompatibleImageModel {
 		});
 	}
 	static [WORKFLOW_DESERIALIZE](options) {
-		return new OpenAICompatibleImageModel(options.modelId, options.config);
-	}
-	constructor(modelId, config) {
-		this.modelId = modelId;
-		this.config = config;
-		this.specificationVersion = "v4";
-		this.maxImagesPerCall = 10;
-		this.supportsFileInputs = void 0;
-		this.supportsMaskInputs = void 0;
+		return new _OpenAICompatibleImageModel(options.modelId, options.config);
 	}
 	getArgs(providerOptions, warnings) {
 		warnIfDeprecatedProviderOptionsKey({
@@ -1289,6 +1288,7 @@ var OpenAICompatibleImageModel = class OpenAICompatibleImageModel {
 		};
 	}
 	async doGenerate({ prompt, n, size, aspectRatio, seed, providerOptions, headers, abortSignal, files, mask }) {
+		var _a, _b, _c, _d, _e, _f, _g, _h, _i;
 		const warnings = [];
 		if (aspectRatio != null) warnings.push({
 			type: "unsupported",
@@ -1299,15 +1299,15 @@ var OpenAICompatibleImageModel = class OpenAICompatibleImageModel {
 			type: "unsupported",
 			feature: "seed"
 		});
-		const currentDate = this.config._internal?.currentDate?.() ?? /* @__PURE__ */ new Date();
+		const currentDate = (_c = (_b = (_a = this.config._internal) == null ? void 0 : _a.currentDate) == null ? void 0 : _b.call(_a)) != null ? _c : /* @__PURE__ */ new Date();
 		const args = this.getArgs(providerOptions, warnings);
 		if (files != null && files.length > 0) {
-			const { value: response, responseHeaders } = await postFormDataToApi({
+			const { value: response2, responseHeaders: responseHeaders2 } = await postFormDataToApi({
 				url: this.config.url({
 					path: "/images/edits",
 					modelId: this.modelId
 				}),
-				headers: combineHeaders(this.config.headers?.(), headers),
+				headers: combineHeaders((_e = (_d = this.config).headers) == null ? void 0 : _e.call(_d), headers),
 				formData: convertToFormData({
 					model: this.modelId,
 					prompt,
@@ -1317,19 +1317,18 @@ var OpenAICompatibleImageModel = class OpenAICompatibleImageModel {
 					size,
 					...args
 				}),
-				failedResponseHandler: createJsonErrorResponseHandler(this.config.errorStructure ?? defaultOpenAICompatibleErrorStructure),
+				failedResponseHandler: createJsonErrorResponseHandler((_f = this.config.errorStructure) != null ? _f : defaultOpenAICompatibleErrorStructure),
 				successfulResponseHandler: createJsonResponseHandler(openaiCompatibleImageResponseSchema),
 				abortSignal,
 				fetch: this.config.fetch
 			});
 			return {
-				images: response.data.map((item) => item.b64_json),
+				images: response2.data.map((item) => item.b64_json),
 				warnings,
-				usage: mapImageUsage(response.usage),
 				response: {
 					timestamp: currentDate,
 					modelId: this.modelId,
-					headers: responseHeaders
+					headers: responseHeaders2
 				}
 			};
 		}
@@ -1338,7 +1337,7 @@ var OpenAICompatibleImageModel = class OpenAICompatibleImageModel {
 				path: "/images/generations",
 				modelId: this.modelId
 			}),
-			headers: combineHeaders(this.config.headers?.(), headers),
+			headers: combineHeaders((_h = (_g = this.config).headers) == null ? void 0 : _h.call(_g), headers),
 			body: {
 				model: this.modelId,
 				prompt,
@@ -1346,7 +1345,7 @@ var OpenAICompatibleImageModel = class OpenAICompatibleImageModel {
 				size,
 				...args
 			},
-			failedResponseHandler: createJsonErrorResponseHandler(this.config.errorStructure ?? defaultOpenAICompatibleErrorStructure),
+			failedResponseHandler: createJsonErrorResponseHandler((_i = this.config.errorStructure) != null ? _i : defaultOpenAICompatibleErrorStructure),
 			successfulResponseHandler: createJsonResponseHandler(openaiCompatibleImageResponseSchema),
 			abortSignal,
 			fetch: this.config.fetch
@@ -1354,7 +1353,6 @@ var OpenAICompatibleImageModel = class OpenAICompatibleImageModel {
 		return {
 			images: response.data.map((item) => item.b64_json),
 			warnings,
-			usage: mapImageUsage(response.usage),
 			response: {
 				timestamp: currentDate,
 				modelId: this.modelId,
@@ -1363,30 +1361,13 @@ var OpenAICompatibleImageModel = class OpenAICompatibleImageModel {
 		};
 	}
 };
-function mapImageUsage(usage) {
-	return usage == null ? void 0 : {
-		inputTokens: usage.input_tokens ?? void 0,
-		outputTokens: usage.output_tokens ?? void 0,
-		totalTokens: usage.total_tokens ?? void 0
-	};
-}
-var openaiCompatibleImageResponseSchema = object({
-	data: array(object({ b64_json: string() })),
-	usage: object({
-		input_tokens: number().nullish(),
-		output_tokens: number().nullish(),
-		total_tokens: number().nullish()
-	}).nullish()
-});
+var openaiCompatibleImageResponseSchema = object({ data: array(object({ b64_json: string() })) });
 async function fileToBlob(file) {
 	if (file.type === "url") return downloadBlob(file.url);
 	const data = file.data instanceof Uint8Array ? file.data : convertBase64ToUint8Array(file.data);
 	return new Blob([data], { type: file.mediaType });
 }
-var VERSION = "3.0.67";
-/**
-* Create an OpenAICompatible provider instance.
-*/
+var VERSION = "3.0.14";
 function createOpenAICompatible(options) {
 	const baseURL = withoutTrailingSlash(options.baseURL);
 	const providerName = options.name;
@@ -1394,7 +1375,7 @@ function createOpenAICompatible(options) {
 		...options.apiKey && { Authorization: `Bearer ${options.apiKey}` },
 		...options.headers
 	};
-	const getHeaders = () => withUserAgentSuffix(headers, `ai-sdk-openai-compatible/${VERSION}`);
+	const getHeaders = () => withUserAgentSuffix(headers, `ai-sdk/openai-compatible/${VERSION}`);
 	const getCommonModelConfig = (modelType) => ({
 		provider: `${providerName}.${modelType}`,
 		url: ({ path }) => {
@@ -1410,7 +1391,6 @@ function createOpenAICompatible(options) {
 		...getCommonModelConfig("chat"),
 		includeUsage: options.includeUsage,
 		supportsStructuredOutputs: options.supportsStructuredOutputs,
-		supportsMultiPartToolContent: options.supportsMultiPartToolContent,
 		supportedUrls: options.supportedUrls,
 		transformRequestBody: options.transformRequestBody,
 		metadataExtractor: options.metadataExtractor,

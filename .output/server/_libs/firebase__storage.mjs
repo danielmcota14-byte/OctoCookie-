@@ -32,13 +32,13 @@ var CONFIG_STORAGE_BUCKET_KEY = "storageBucket";
 *
 * The timeout for all operations except upload.
 */
-var DEFAULT_MAX_OPERATION_RETRY_TIME = 12e4;
+var DEFAULT_MAX_OPERATION_RETRY_TIME = 120 * 1e3;
 /**
 * 10 minutes
 *
 * The timeout for upload.
 */
-var DEFAULT_MAX_UPLOAD_RETRY_TIME = 6e5;
+var DEFAULT_MAX_UPLOAD_RETRY_TIME = 600 * 1e3;
 /**
 * @license
 * Copyright 2017 Google LLC
@@ -222,7 +222,7 @@ var Location = class Location {
 		function gsModify(loc) {
 			if (loc.path.charAt(loc.path.length - 1) === "/") loc.path_ = loc.path_.slice(0, -1);
 		}
-		const gsRegex = new RegExp("^gs://" + bucketDomain + "(/(.*))?$", "i");
+		const gsRegex = /* @__PURE__ */ new RegExp("^gs://([A-Za-z0-9.\\-_]+)(/(.*))?$", "i");
 		const gsIndices = {
 			bucket: 1,
 			path: 3

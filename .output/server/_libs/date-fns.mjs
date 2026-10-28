@@ -31,7 +31,7 @@ var minutesInDay = 1440;
 * @name secondsInDay
 * @summary Seconds in 1 day.
 */
-var secondsInDay = 86400;
+var secondsInDay = 3600 * 24;
 secondsInDay * 7;
 secondsInDay * daysInYear / 12 * 3;
 /**
@@ -530,10 +530,8 @@ var formatDistance$2 = (token, count, options) => {
 	if (typeof tokenValue === "string") result = tokenValue;
 	else if (count === 1) result = tokenValue.one;
 	else result = tokenValue.other.replace("{{count}}", count.toString());
-	if (options?.addSuffix) {
-		if (options.comparison && options.comparison > 0) return "in " + result;
-		else return result + " ago";
-	}
+	if (options?.addSuffix) if (options.comparison && options.comparison > 0) return "in " + result;
+	else return result + " ago";
 	return result;
 };
 //#endregion
@@ -1127,17 +1125,15 @@ function formatDistance$1(laterDate, earlierDate, options) {
 	const offsetInSeconds = (getTimezoneOffsetInMilliseconds(earlierDate_) - getTimezoneOffsetInMilliseconds(laterDate_)) / 1e3;
 	const minutes = Math.round((seconds - offsetInSeconds) / 60);
 	let months;
-	if (minutes < 2) {
-		if (options?.includeSeconds) {
-			if (seconds < 5) return locale.formatDistance("lessThanXSeconds", 5, localizeOptions);
-			else if (seconds < 10) return locale.formatDistance("lessThanXSeconds", 10, localizeOptions);
-			else if (seconds < 20) return locale.formatDistance("lessThanXSeconds", 20, localizeOptions);
-			else if (seconds < 40) return locale.formatDistance("halfAMinute", 0, localizeOptions);
-			else if (seconds < 60) return locale.formatDistance("lessThanXMinutes", 1, localizeOptions);
-			else return locale.formatDistance("xMinutes", 1, localizeOptions);
-		} else if (minutes === 0) return locale.formatDistance("lessThanXMinutes", 1, localizeOptions);
-		else return locale.formatDistance("xMinutes", minutes, localizeOptions);
-	} else if (minutes < 45) return locale.formatDistance("xMinutes", minutes, localizeOptions);
+	if (minutes < 2) if (options?.includeSeconds) if (seconds < 5) return locale.formatDistance("lessThanXSeconds", 5, localizeOptions);
+	else if (seconds < 10) return locale.formatDistance("lessThanXSeconds", 10, localizeOptions);
+	else if (seconds < 20) return locale.formatDistance("lessThanXSeconds", 20, localizeOptions);
+	else if (seconds < 40) return locale.formatDistance("halfAMinute", 0, localizeOptions);
+	else if (seconds < 60) return locale.formatDistance("lessThanXMinutes", 1, localizeOptions);
+	else return locale.formatDistance("xMinutes", 1, localizeOptions);
+	else if (minutes === 0) return locale.formatDistance("lessThanXMinutes", 1, localizeOptions);
+	else return locale.formatDistance("xMinutes", minutes, localizeOptions);
+	else if (minutes < 45) return locale.formatDistance("xMinutes", minutes, localizeOptions);
 	else if (minutes < 90) return locale.formatDistance("aboutXHours", 1, localizeOptions);
 	else if (minutes < 1440) {
 		const hours = Math.round(minutes / 60);
@@ -1146,7 +1142,7 @@ function formatDistance$1(laterDate, earlierDate, options) {
 	else if (minutes < 43200) {
 		const days = Math.round(minutes / minutesInDay);
 		return locale.formatDistance("xDays", days, localizeOptions);
-	} else if (minutes < 86400) {
+	} else if (minutes < 43200 * 2) {
 		months = Math.round(minutes / minutesInMonth);
 		return locale.formatDistance("aboutXMonths", months, localizeOptions);
 	}
@@ -1322,10 +1318,8 @@ var formatDistance = (token, count, options) => {
 	if (typeof tokenValue === "string") result = tokenValue;
 	else if (count === 1) result = tokenValue.one;
 	else result = tokenValue.other.replace("{{count}}", String(count));
-	if (options?.addSuffix) {
-		if (options.comparison && options.comparison > 0) return "em " + result;
-		else return "há " + result;
-	}
+	if (options?.addSuffix) if (options.comparison && options.comparison > 0) return "em " + result;
+	else return "há " + result;
 	return result;
 };
 var formatLong = {

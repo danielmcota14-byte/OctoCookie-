@@ -1256,7 +1256,7 @@ var DEFAULT_BACKOFF_FACTOR = 2;
 *
 * <p>Visible for testing
 */
-var MAX_VALUE_MILLIS = 144e5;
+var MAX_VALUE_MILLIS = 14400 * 1e3;
 /**
 * The percentage of backoff time to randomize by.
 * See
@@ -2330,10 +2330,8 @@ function initializeApp(_options, rawConfig = {}) {
 	options || (options = getDefaultAppConfig());
 	if (!options) throw ERROR_FACTORY$2.create("no-options");
 	const existingApp = _apps.get(name);
-	if (existingApp) {
-		if (deepEqual(options, existingApp.options) && deepEqual(config, existingApp.config)) return existingApp;
-		else throw ERROR_FACTORY$2.create("duplicate-app", { appName: name });
-	}
+	if (existingApp) if (deepEqual(options, existingApp.options) && deepEqual(config, existingApp.config)) return existingApp;
+	else throw ERROR_FACTORY$2.create("duplicate-app", { appName: name });
 	const container = new ComponentContainer(name);
 	for (const component of _components.values()) container.addComponent(component);
 	const newApp = new FirebaseAppImpl(options, config, container);
@@ -2729,7 +2727,7 @@ var PENDING_TIMEOUT_MS = 1e4;
 var PACKAGE_VERSION = `w:${version$1}`;
 var INTERNAL_AUTH_VERSION = "FIS_v2";
 var INSTALLATIONS_API_URL = "https://firebaseinstallations.googleapis.com/v1";
-var TOKEN_EXPIRATION_BUFFER = 36e5;
+var TOKEN_EXPIRATION_BUFFER = 3600 * 1e3;
 /**
 * @license
 * Copyright 2019 Google LLC
@@ -2933,7 +2931,7 @@ var INVALID_FID = "";
 */
 function generateFid() {
 	try {
-		const fidByteArray = /* @__PURE__ */ new Uint8Array(17);
+		const fidByteArray = new Uint8Array(17);
 		(self.crypto || self.msCrypto).getRandomValues(fidByteArray);
 		fidByteArray[0] = 112 + fidByteArray[0] % 16;
 		const fid = encode(fidByteArray);
@@ -3589,7 +3587,7 @@ registerVersion(name$1, version$1, "esm2017");
 var ANALYTICS_TYPE = "analytics";
 var GA_FID_KEY = "firebase_id";
 var ORIGIN_KEY = "origin";
-var FETCH_TIMEOUT_MILLIS = 6e4;
+var FETCH_TIMEOUT_MILLIS = 60 * 1e3;
 var DYNAMIC_CONFIG_URL = "https://firebase.googleapis.com/v1alpha/projects/-/apps/{app-id}/webConfig";
 var GTAG_URL = "https://www.googletagmanager.com/gtag/js";
 /**
@@ -4264,10 +4262,8 @@ function factory(app, installations, options) {
 	warnOnBrowserContextMismatch();
 	const appId = app.options.appId;
 	if (!appId) throw ERROR_FACTORY.create("no-app-id");
-	if (!app.options.apiKey) {
-		if (app.options.measurementId) logger.warn(`The "apiKey" field is empty in the local Firebase config. This is needed to fetch the latest measurement ID for this Firebase app. Falling back to the measurement ID ${app.options.measurementId} provided in the "measurementId" field in the local Firebase config.`);
-		else throw ERROR_FACTORY.create("no-api-key");
-	}
+	if (!app.options.apiKey) if (app.options.measurementId) logger.warn(`The "apiKey" field is empty in the local Firebase config. This is needed to fetch the latest measurement ID for this Firebase app. Falling back to the measurement ID ${app.options.measurementId} provided in the "measurementId" field in the local Firebase config.`);
+	else throw ERROR_FACTORY.create("no-api-key");
 	if (initializationPromisesMap[appId] != null) throw ERROR_FACTORY.create("already-exists", { id: appId });
 	if (!globalInitDone) {
 		getOrCreateDataLayer(dataLayerName);

@@ -2,223 +2,76 @@
 <html lang="pt-BR"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>OctoCookie — Pesquisa</title>
-<meta name="description" content="OctoCookie: um laboratório financeiro digital para testar, automatizar e validar estratégias. Proposta, metodologia de testes, evolução do projeto e o Holograma Quântico como correção do drawdown do bot da tarde.">
+<meta name="description" content="OctoCookie: um site para aprender e testar investimentos em ações sem arriscar dinheiro. Em testes, o trader superou o comprar e esperar.">
 <link rel="stylesheet" href="/octo.css"><script src="/octo.js"></script>
 <style>
 :root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--hero1:#07111f;--hero2:#0b2a3f}
-html{scroll-behavior:smooth;scroll-padding-top:calc(64px + env(safe-area-inset-top,0px))}
 *{box-sizing:border-box}
-body{margin:0;background:var(--o-bg);color:var(--o-ink);font-family:var(--octo-serif);font-size:17px;line-height:1.5}
-#bar{position:fixed;left:0;top:0;height:3px;width:0;background:linear-gradient(90deg,var(--o-cyan),var(--o-gold));z-index:50}
-
-nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:40;background:color-mix(in srgb,var(--o-bg) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--o-line);font:600 13px var(--octo-sans)}
-nav div{max-width:1100px;margin:auto;padding:14px 20px;display:flex;gap:20px;overflow-x:auto;white-space:nowrap}
-nav a{color:var(--o-mut);text-decoration:none;padding-bottom:2px;border-bottom:2px solid transparent}
-nav a:hover{color:var(--o-cyan)}
-nav a.on{color:var(--o-ink);border-bottom-color:var(--o-gold)}
-nav a:focus-visible{outline:2px solid var(--o-cyan);outline-offset:3px;border-radius:3px}
-
-/* Folha de rosto do artigo (NBR 6022): título, subtítulo, autor, data */
-.hero{background:radial-gradient(1200px 500px at 80% -10%,#155e7555,transparent),linear-gradient(160deg,var(--hero1),var(--hero2));color:#eaf2fb;padding:72px 20px 80px;position:relative;overflow:hidden;text-align:center}
-.hero:before{content:"";position:absolute;inset:0;background-image:linear-gradient(#ffffff0d 1px,transparent 1px),linear-gradient(90deg,#ffffff0d 1px,transparent 1px);background-size:44px 44px;mask-image:radial-gradient(circle at 50% 30%,#000,transparent 70%);-webkit-mask-image:radial-gradient(circle at 50% 30%,#000,transparent 70%)}
-.wrap{max-width:860px;margin:auto;position:relative}
-h1{font:400 clamp(24px,3.6vw,38px)/1.2 var(--octo-sans);margin:0 0 28px;letter-spacing:-.01em;text-wrap:balance}
-h1 strong{font-weight:800}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--o-bg);color:var(--o-ink);font-family:var(--octo-serif);font-size:17px;line-height:1.55}
+.hero{background:radial-gradient(1200px 500px at 80% -10%,#155e7555,transparent),linear-gradient(160deg,var(--hero1),var(--hero2));color:#eaf2fb;padding:64px 20px 80px;text-align:center}
+.wrap{max-width:860px;margin:auto}
+h1{font:800 clamp(22px,3.4vw,36px)/1.2 var(--octo-sans);margin:0 0 22px;letter-spacing:-.01em;text-wrap:balance}
 .autor{font:600 17px var(--octo-sans);margin:0}
 .data{font:400 15px var(--octo-sans);color:#9fd8f2;margin:6px 0 0}
-
-main{max-width:800px;margin:-32px auto 48px;background:var(--o-surface);border:1px solid var(--o-line);border-radius:var(--o-radius);padding:clamp(24px,5vw,64px);position:relative;box-shadow:var(--o-shadow)}
-
-/* Títulos: numeração progressiva (NBR 6024). Primária: maiúsculas e negrito. Secundária: negrito. Terciária: negrito e itálico. */
-h2{font:700 1.05rem/1.4 var(--octo-sans);text-transform:uppercase;margin:2.6rem 0 1.2rem;text-wrap:balance}
-h2.sn{text-align:center}
-main>section:first-child>h2{margin-top:0}
-.hero p{text-align:center;text-indent:0}
-h3{font:700 1.02rem/1.4 var(--octo-sans);margin:1.9rem 0 .9rem}
-h4{font:700 italic .98rem/1.4 var(--octo-sans);margin:1.5rem 0 .7rem}
-h2 span,h3 span,h4 span{margin-right:.6em}
-
-/* Texto: justificado, entrelinhas 1,5, recuo de parágrafo de 1,25 cm */
-p{margin:0;text-align:justify;text-indent:1.25cm;hyphens:auto}
-p.ni{text-indent:0}
-b,strong{font-weight:650}
-
-/* Resumo e abstract: parágrafo único, espaçamento simples, sem recuo */
-.res p{text-indent:0;line-height:1.35;font-size:.95rem}
-.res .pc{margin-top:.8rem}
-
-/* Alíneas (NBR 6024): a), b), c)... */
-ol.al{list-style:none;counter-reset:al;margin:.5rem 0 .5rem;padding-left:2.5cm}
-ol.al li{counter-increment:al;margin:0;text-align:justify;position:relative}
-ol.al li::before{content:counter(al,lower-alpha) ") ";position:absolute;left:-1.2rem}
-
-/* Tabelas (norma de apresentação tabular do IBGE): título acima, sem traços verticais, fonte abaixo */
-.tw{overflow-x:auto;margin:1.4rem 0 0}
-table{border-collapse:collapse;width:100%;min-width:540px;font:400 .88rem/1.35 var(--octo-sans)}
-caption{caption-side:top;text-align:left;font:600 .88rem/1.35 var(--octo-sans);padding-bottom:.6rem}
-th,td{padding:.5rem .7rem;text-align:left}
-thead tr{border-top:2px solid var(--o-ink);border-bottom:1px solid var(--o-ink)}
-tbody tr:last-child{border-bottom:2px solid var(--o-ink)}
-td{font-variant-numeric:tabular-nums}
-td:first-child{white-space:nowrap}
-.fonte{font:400 .82rem/1.4 var(--octo-sans);margin:.5rem 0 1.4rem;text-indent:0;text-align:left}
-
-/* Referências (NBR 6023): alinhadas à esquerda, espaçamento simples, linha em branco entre elas */
-.ref{list-style:none;margin:0;padding:0}
-.ref li{margin:0 0 1rem;line-height:1.35;text-align:left;font-size:.95rem;overflow-wrap:anywhere}
-.ref a{color:inherit}
-
-footer{text-align:center;font:400 13px var(--octo-sans);color:var(--o-mut);padding:0 20px 44px;max-width:720px;margin:auto}
-@media(max-width:600px){body{font-size:16px}.hero{padding:52px 18px 60px}p{text-indent:1cm}ol.al{padding-left:1.8cm}}
-@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
-@page{size:A4;margin:3cm 2cm 2cm 3cm}
-@media print{#bar,nav,footer,.octo-ad-slot{display:none}body{background:#fff;color:#000;font-size:12pt}.hero{background:none;color:#000;padding:0 0 1.2cm}.hero:before{display:none}.data{color:#000}main{box-shadow:none;border:0;margin:0;padding:0;background:none;max-width:none}h2{break-after:avoid}table{min-width:0}}
+main{max-width:800px;margin:-32px auto 48px;background:var(--o-surface);border:1px solid var(--o-line);border-radius:var(--o-radius);padding:clamp(24px,5vw,56px);box-shadow:var(--o-shadow)}
+section{margin:0 0 2.2rem}
+section:last-of-type{margin-bottom:0}
+h2{font:700 1.05rem/1.4 var(--octo-sans);text-transform:uppercase;margin:0 0 .8rem;letter-spacing:.02em}
+h2 span{color:var(--o-cyan);margin-right:.6em}
+.l{display:block;margin:0 0 .35rem}
+.refs .l{font:400 .9rem/1.45 var(--octo-sans);color:var(--o-mut)}
+.aviso{font:400 .85rem/1.4 var(--octo-sans);color:var(--o-mut);text-align:center;margin:1.8rem 0 0;padding-top:1.2rem;border-top:1px solid var(--o-line)}
+b{font-weight:650}
 </style></head>
-<body><div id="bar"></div>
-<nav aria-label="Seções da pesquisa"><div><a href="#resumo">Resumo</a><a href="#introducao">Introdução</a><a href="#metodologia">Metodologia</a><a href="#desenvolvimento">Desenvolvimento</a><a href="#holograma">Holograma</a><a href="#conclusao">Conclusão</a><a href="#referencias">Referências</a></div></nav>
-
+<body>
 <header class="hero"><div class="wrap">
-<h1><strong>OctoCookie</strong>: um laboratório financeiro digital para testar, automatizar e validar estratégias</h1>
-<p class="autor ni">Daniel</p>
-<p class="data ni">Outubro de 2026</p>
+  <h1>OctoCookie: aprenda e teste investimentos em ações</h1>
+  <p class="autor">Daniel</p>
+  <p class="data">Outubro de 2026</p>
 </div></header>
 
 <main>
-<section class="res" aria-labelledby="resumo">
-<h2 class="sn" id="resumo">Resumo</h2>
-<p>Este trabalho apresenta o OctoCookie, uma plataforma experimental de tecnologia financeira concebida como um laboratório digital para criar, testar e automatizar estratégias financeiras, primeiro em ambiente simulado e, depois, em aplicações reais, sem prometer rentabilidade. Descreve a metodologia de testes, baseada em simulação com dados de mercado, no registro de cada decisão do algoritmo e na análise por métricas como taxa de acerto, resultado acumulado, drawdown e relação entre risco e retorno, repetidas com diferentes parâmetros e períodos. Relata o desenvolvimento do projeto, sua origem no NIB (New In Bot), um projeto escolar sobre inteligência artificial e educação financeira, e a evolução técnica do autor até a construção de sistemas automatizados. Apresenta o Holograma Quântico ETH/USDC, um limitador de perdas por tendência e stop móvel incorporado para corrigir o drawdown do bot da tarde. Nos testes com dados da Binance Futures, o stop móvel reduziu a queda máxima em 49 de 50 variantes, e a queda máxima do sistema ficou entre −19% e −30%, contra −63% a −68% de comprar e segurar. Conclui-se que o OctoCookie funciona como ambiente de validação tecnológica e que o limitador reduz, mas não elimina, o risco de queda.</p>
-<p class="pc"><b>Palavras-chave:</b> tecnologia financeira; automação; estratégias financeiras; drawdown; simulação.</p>
-</section>
-<section class="res" lang="en" aria-labelledby="abstract">
-<h2 class="sn" id="abstract">Abstract</h2>
-<p>This paper presents OctoCookie, an experimental financial technology platform designed as a digital laboratory to create, test and automate financial strategies, first in a simulated environment and later in real applications, without promising returns. It describes the testing methodology, based on simulation with market data, a record of every decision made by the algorithm, and analysis through metrics such as hit rate, cumulative result, drawdown and risk-return ratio, repeated across different parameters and periods. It reports the development of the project, its origin in NIB (New In Bot), a school project on artificial intelligence and financial education, and the author's technical evolution toward building automated systems. It presents Quantum Hologram ETH/USDC, a loss limiter based on trend and trailing stop, incorporated to correct the drawdown of the “bot da tarde” (afternoon bot). In tests with Binance Futures data, the trailing stop reduced maximum drawdown in 49 of 50 variants, and the system's maximum drawdown stayed between −19% and −30%, against −63% to −68% for buy and hold. It is concluded that OctoCookie works as a technological validation environment and that the limiter reduces, but does not eliminate, the risk of losses.</p>
-<p class="pc"><b>Keywords:</b> financial technology; automation; financial strategies; drawdown; simulation.</p>
-</section>
-<h2 id="introducao"><span>1</span>Introdução</h2>
-<p>O OctoCookie é um projeto de tecnologia e finanças que reúne ferramentas de análise, automação e experimentação financeira em uma interface única. A proposta não é simplesmente ser uma corretora. É mais como um laboratório financeiro digital, onde você consegue:</p>
-<ol class="al">
-<li>acompanhar ativos e mercados;</li>
-<li>testar estratégias de investimento;</li>
-<li>executar e automatizar estratégias por meio de bots;</li>
-<li>visualizar resultados e indicadores;</li>
-<li>experimentar operações simuladas e reais;</li>
-<li>integrar diferentes serviços e APIs financeiros;</li>
-<li>transformar estratégias em sistemas automatizados.</li>
-</ol>
-<p>A ideia central é: um ambiente para transformar estratégias financeiras em sistemas, testar essas estratégias e acompanhar seus resultados.</p>
-<p>O OctoCookie é uma plataforma experimental voltada à criação, análise e automação de estratégias financeiras. A proposta é criar um ambiente onde o usuário possa testar estratégias de investimento, analisar dados do mercado e utilizar automações para executar e acompanhar operações, começando pelo modo simulado e podendo evoluir para aplicações reais.</p>
-<p>O projeto busca unir tecnologia, inteligência artificial, análise de dados e educação financeira, permitindo que estratégias sejam desenvolvidas, testadas e avaliadas antes de serem utilizadas em situações reais. O objetivo principal não é prometer rentabilidade, mas oferecer uma infraestrutura para experimentação, análise e automação financeira, tornando conceitos de mercado mais acessíveis por meio da tecnologia.</p>
+  <section id="resumo">
+    <h2><span>1</span>Resumo</h2>
+    <span class="l">O OctoCookie é um site onde qualquer pessoa aprende sobre ações e testa ideias sem arriscar dinheiro.</span>
+    <span class="l">Uma <b>ação</b> é um pedacinho de uma empresa: comprar uma da Apple é virar dono de uma fatia minúscula dela.</span>
+    <span class="l">O site tem um robô, o <b>trader</b>, que compra e vende sozinho seguindo regras simples de proteção.</span>
+    <span class="l">Nos testes, ele perdeu bem menos que quem só comprou e esperou. Nada aqui é promessa de lucro.</span>
+  </section>
 
-<h2 id="metodologia"><span>2</span>Metodologia de testes</h2>
-<p>O OctoCookie utiliza uma metodologia baseada em simulação, coleta de dados, execução de estratégias e análise dos resultados. O objetivo dos testes é verificar como uma estratégia se comportaria em diferentes condições de mercado antes de considerar sua utilização em operações reais.</p>
-<p>Primeiramente, são definidos os parâmetros da estratégia, como condições de entrada e saída, indicadores utilizados, valor destinado a cada operação, limite de perda e objetivo de ganho.</p>
-<p>Em seguida, a estratégia é executada em um ambiente simulado, utilizando dados de mercado. Nesse estágio, nenhuma operação real é realizada. O sistema registra cada decisão tomada pelo algoritmo, incluindo momento da entrada, momento da saída, preço, resultado e condições existentes no mercado.</p>
-<p>Após a execução, os resultados são analisados por meio de métricas como taxa de acerto, quantidade de operações, lucro ou prejuízo acumulado, maior sequência de perdas, drawdown e relação entre risco e retorno.</p>
-<p>Também são realizados testes com diferentes parâmetros e períodos de mercado. Isso permite verificar se o resultado observado permanece consistente ou se depende de uma condição específica do mercado.</p>
-<p>Por fim, os resultados são comparados entre diferentes configurações para identificar quais apresentam maior estabilidade. Uma estratégia que apresenta bons resultados em apenas um período não é considerada suficiente; o objetivo é avaliar seu comportamento em diferentes cenários e condições de mercado.</p>
-<p>Dessa forma, o OctoCookie utiliza os testes como uma etapa de validação tecnológica, e não como garantia de rentabilidade. Os resultados simulados servem para identificar limitações, comparar estratégias e orientar o desenvolvimento do sistema.</p>
+  <section id="objetivo">
+    <h2><span>2</span>Objetivo</h2>
+    <span class="l">Tornar investimentos fáceis de entender para quem nunca estudou o assunto, aprendendo na prática.</span>
+    <span class="l"><b>Carteira de ações:</b> você acompanha o que tem, como uma lista de compras, só que de ações.</span>
+    <span class="l"><b>Trader e simulador:</b> o robô opera até com você offline, e o simulador testa tudo com dinheiro de mentira.</span>
+    <span class="l"><b>Analisador, IA e comunidade:</b> explicam uma ação em linguagem simples e deixam você tirar dúvidas e conversar.</span>
+  </section>
 
-<div class="octo-ad-slot" data-slot="1"></div>
-<h2 id="desenvolvimento"><span>3</span>Desenvolvimento</h2>
-<h3><span>3.1</span>Desenvolvimento da plataforma</h3>
-<p>O desenvolvimento do OctoCookie começou com a ideia de utilizar programação para criar uma plataforma capaz de transformar estratégias financeiras em sistemas automatizados.</p>
-<p>O projeto foi construído utilizando tecnologias web e integrações com APIs, criando uma estrutura para coleta de dados, análise de mercado, geração de indicadores e execução de estratégias. A plataforma também foi desenvolvida de forma modular, permitindo adicionar diferentes estratégias e ferramentas sem precisar reconstruir todo o sistema.</p>
-<p>Durante o desenvolvimento, foram realizados testes em ambiente simulado para avaliar o comportamento das estratégias e identificar possíveis melhorias. A partir desses testes, foram ajustados parâmetros de entrada, gerenciamento de risco e mecanismos de automação.</p>
-<p>O projeto continua sendo desenvolvido como um laboratório de tecnologia financeira, com foco em experimentação, automação e análise de dados, sem estabelecer promessa de rentabilidade.</p>
+  <section id="metodologia">
+    <h2><span>3</span>Metodologia</h2>
+    <span class="l">Tudo começou na escola, no projeto NIB (New In Bot), que usava inteligência artificial para ensinar finanças.</span>
+    <span class="l">Depois virou o OctoCookie, um site de verdade, com carteira, analisador, comunidade e o trader.</span>
+    <span class="l">Para testar, criamos regras simples, como "vender se o preço cair 5% desde o ponto mais alto" (o <b>stop</b>).</span>
+    <span class="l">Rodamos as regras com preços reais do passado, sem gastar nada, anotando cada compra e cada venda.</span>
+    <span class="l">Depois comparamos com o <b>comprar e esperar</b>: comprar uma vez e nunca vender, aconteça o que acontecer.</span>
+  </section>
 
-<h3 id="nib"><span>3.2</span>Da NIB ao OctoCookie: a evolução de um projeto de tecnologia</h3>
-<h4><span>3.2.1</span>Origem: NIB — New In Bot</h4>
-<p>A trajetória começou com o NIB (New In Bot), um projeto desenvolvido no ambiente escolar, com orientação de César Bastos e participação na área de robótica. A proposta inicial era explorar o potencial da inteligência artificial na educação financeira, aproximando tecnologia, investimentos e aprendizado.</p>
-<p>O projeto buscava enfrentar a desinformação financeira, especialmente a relacionada a apostas, e desenvolver ferramentas que ajudassem os usuários a compreender melhor o funcionamento do mercado financeiro. Entre as ideias estavam o uso de inteligência artificial para educação financeira e um simulador de investimentos baseado no mercado brasileiro.</p>
-<p>O NIB também representou uma oportunidade de experimentar, apresentar ideias e desenvolver soluções tecnológicas a partir de problemas reais.</p>
-<h4><span>3.2.2</span>Da pesquisa à criação de plataformas</h4>
-<p>Com o avanço do projeto, o trabalho passou a envolver não apenas a concepção das ideias, mas também o desenvolvimento de sistemas web, interfaces, integrações com APIs e ferramentas de automação.</p>
-<p>Essa etapa marcou uma mudança importante: em vez de trabalhar somente na proposta de uma solução, o objetivo passou a ser construir aplicações funcionais, testar recursos e aprimorar os sistemas por meio do desenvolvimento prático.</p>
-<p>A experiência acumulada com o NIB serviu como ponto de partida para explorar outras possibilidades de aplicação da programação, incluindo automação, análise de dados e desenvolvimento de produtos digitais.</p>
-<h4><span>3.2.3</span>OctoCookie: aprofundamento em tecnologia financeira</h4>
-<p>O OctoCookie surgiu como uma evolução dessa exploração tecnológica, com foco mais direcionado à criação de sistemas relacionados ao mercado financeiro.</p>
-<p>A proposta passou a envolver o desenvolvimento de estratégias automatizadas, ferramentas de análise e mecanismos para testar diferentes configurações de operação. A intenção é utilizar a programação para transformar regras financeiras em processos executáveis e mensuráveis.</p>
-<p>Nessa etapa, os testes assumem um papel central. As estratégias podem ser avaliadas em ambientes simulados, seus resultados registrados e seu comportamento analisado por métricas como taxa de acerto, resultado acumulado e drawdown. Isso permite identificar limitações e comparar configurações sem confundir resultados históricos ou simulados com garantias de desempenho futuro.</p>
-<p>O OctoCookie representa, portanto, uma investigação prática sobre como software, dados e automação podem ser utilizados para desenvolver ferramentas financeiras.</p>
-<h4><span>3.2.4</span>Situação atual e próximos passos</h4>
-<p>Atualmente, o OctoCookie faz parte de uma trajetória de desenvolvimento que começou com a pesquisa em inteligência artificial e educação financeira e avançou para a construção de aplicações e sistemas de automação.</p>
-<p>O próximo passo é fortalecer a metodologia de testes, organizar os componentes da plataforma, avaliar a confiabilidade dos resultados e aprimorar os mecanismos de controle de risco. A evolução também depende de documentar os experimentos, registrar as limitações e comparar o desempenho das estratégias em diferentes condições de mercado.</p>
-<p>A evolução do NIB ao OctoCookie demonstra uma continuidade de interesses: utilizar programação e inteligência artificial para investigar problemas, desenvolver ferramentas e transformar conceitos em sistemas funcionais. Mais do que uma mudança de nome ou de produto, essa trajetória representa o aprofundamento de uma experiência em tecnologia — da educação financeira como tema de pesquisa à automação e análise financeira como desafios de desenvolvimento.</p>
+  <section id="teste">
+    <h2><span>4</span>Teste</h2>
+    <span class="l">Quando testamos, o trader superou o comprar e esperar: ficou à frente nas 5 rodadas de teste.</span>
+    <span class="l">Exemplo: em 540 dias, R$ 100 no topo caíram para cerca de R$ 32 só esperando, e para cerca de R$ 72 com o trader.</span>
+    <span class="l">Ele ganhou porque vendeu quando o preço começou a despencar, em vez de ficar parado vendo a queda.</span>
+  </section>
 
-<h3 id="evolucao"><span>3.3</span>Evolução técnica: do NIB ao OctoCookie</h3>
-<p>Minha evolução técnica começou com o NIB (New In Bot), um projeto de pesquisa e desenvolvimento que conectava inteligência artificial, educação financeira e tecnologia. A partir dele, comecei a transformar ideias em aplicações práticas, aprofundando meus conhecimentos em programação e desenvolvimento de sistemas.</p>
-<h4><span>3.3.1</span>Primeira etapa — Pesquisa e concepção tecnológica</h4>
-<p>No início, meu foco estava em identificar problemas relacionados à educação financeira e explorar como a inteligência artificial poderia ajudar a enfrentá-los. Essa fase contribuiu para desenvolver minha capacidade de estruturar projetos, definir objetivos e pensar em soluções tecnológicas aplicadas a problemas reais.</p>
-<h4><span>3.3.2</span>Segunda etapa — Desenvolvimento de aplicações web</h4>
-<p>Com a evolução do NIB, passei a trabalhar de forma mais prática na construção de plataformas digitais. Isso envolveu desenvolvimento de interfaces, organização de funcionalidades, integração de serviços e utilização de APIs. A programação deixou de ser apenas um meio de apresentar uma ideia e passou a ser a ferramenta principal para construir sistemas funcionais.</p>
-<h4><span>3.3.3</span>Terceira etapa — Integração e automação</h4>
-<p>Posteriormente, comecei a explorar sistemas mais complexos, integrando diferentes componentes e serviços. O trabalho passou a exigir maior atenção à comunicação entre aplicações, ao processamento de dados, à organização da lógica de negócio e à automação de processos.</p>
-<h4><span>3.3.4</span>Quarta etapa — OctoCookie e experimentação financeira</h4>
-<p>Com o OctoCookie, direcionei essa experiência para o desenvolvimento de ferramentas relacionadas à análise de mercado e à automação de estratégias financeiras. Passei a trabalhar com a ideia de transformar regras operacionais em algoritmos, testar parâmetros, registrar resultados e avaliar estratégias por meio de métricas quantitativas.</p>
-<p>Essa etapa representa uma mudança importante na complexidade dos problemas que busco resolver: além de construir interfaces, o desafio passa a incluir o comportamento dos sistemas, a consistência dos resultados, o gerenciamento de risco e a avaliação de diferentes cenários.</p>
-<h4><span>3.3.5</span>Evolução da forma de desenvolver</h4>
-<p>A principal mudança ao longo dessa trajetória foi passar da concepção de projetos para a construção de soluções tecnológicas cada vez mais integradas. Aprendi a abordar o desenvolvimento como um processo iterativo: definir um problema, implementar uma solução, testar seu funcionamento, identificar limitações e realizar melhorias.</p>
-<h4><span>3.3.6</span>Síntese da evolução</h4>
-<p>Minha trajetória pode ser compreendida em quatro movimentos: pesquisa e concepção, desenvolvimento web, integração de sistemas e automação orientada por dados.</p>
-<p>O NIB estabeleceu a base temática e experimental; os projetos posteriores ampliaram minha experiência prática com aplicações e integrações; e o OctoCookie representa a aplicação desses conhecimentos em um domínio que exige maior rigor lógico, testes sistemáticos e análise quantitativa.</p>
-<p>Essa evolução demonstra meu direcionamento para o desenvolvimento de software, a inteligência artificial e a criação de sistemas capazes de transformar ideias em ferramentas funcionais.</p>
+  <section id="conclusao" class="refs">
+    <h2><span>5</span>Conclusão e referências</h2>
+    <span class="l" style="font:inherit;color:inherit">O OctoCookie mostra que dá para aprender e testar sem medo, e que se proteger das quedas pesou mais que só esperar.</span>
+    <span class="l" style="font:inherit;color:inherit">Resultados de teste não garantem o futuro, e nada aqui é recomendação de investimento.</span>
+    <span class="l">YAHOO FINANCE. Market data. 2026. finance.yahoo.com · HOLOGRAMA Quântico AAPL/USDC. Pesquisa independente, 2026.</span>
+    <span class="l">QISKIT CONTRIBUTORS. Qiskit: an open-source framework for quantum computing. Zenodo, 2023. DOI 10.5281/zenodo.2573505.</span>
+  </section>
 
-<h2 id="holograma"><span>4</span>Holograma Quântico ETH/USDC: correção do drawdown do bot da tarde</h2>
-<p>O bot da tarde tinha um problema grave de drawdown, e o Holograma Quântico foi incorporado ao projeto para corrigi-lo, deixando o sistema e o código do bot mais robustos. O Holograma não tenta prever o preço: ele limita perdas. Quando a tendência vira, a carteira sai de ETH para USDC.</p>
-<h3><span>4.1</span>Limitador de perdas</h3>
-<p>A pesquisa do Holograma Quântico ETH/USDC (HOLOGRAMA..., 2026) desenvolveu um limitador de perdas por tendência e stop móvel, com três partes:</p>
-<ol class="al">
-<li><b>Filtro de tendência:</b> mantém ETH enquanto o retorno nas últimas 30 velas de 8 horas supera +3% e vai para USDC abaixo de −3%;</li>
-<li><b>Stop móvel de 5%:</b> sai quando o preço cai 5% do topo desde a entrada e só reentra em novo sinal de compra;</li>
-<li><b>Barra de risco (0 a 100%):</b> uma barra única que regula a exposição, o stop, o limiar e a janela.</li>
-</ol>
-<p>Um circuito de 8 qubits simulado em Qiskit (QISKIT CONTRIBUTORS, 2023) alimenta o painel (mapa de qubits e holograma), mas não superou o controle de exposição fixa e ficou fora da regra de decisão.</p>
-<h3><span>4.2</span>Resultados</h3>
-<p>Com dados reais da Binance Futures (BINANCE, 2026), velas de 8 horas e custo de 0,10% por troca, o stop móvel reduziu a queda máxima (drawdown) em 49 de 50 variantes, e o sistema ficou à frente de comprar e segurar nas cinco rodadas de teste. A Tabela 1 apresenta a queda máxima em três dos períodos testados.</p>
-
-<div class="tw"><table>
-<caption>Tabela 1 – Queda máxima (drawdown) por estratégia e período</caption>
-<thead><tr><th>Período</th><th>Comprar e segurar</th><th>Tendência pura (30/3%)</th><th>Tendência + stop de 5%</th></tr></thead>
-<tbody>
-<tr><td>out/2024 → out/2025</td><td>−63,6%</td><td>−33,8%</td><td>−19,1%</td></tr>
-<tr><td>out/2025 → out/2026</td><td>−63,2%</td><td>−36,6%</td><td>−22,6%</td></tr>
-<tr><td>540 dias</td><td>−67,7%</td><td>−55,4%</td><td>−28,3%</td></tr>
-</tbody></table></div>
-<p class="fonte">Fonte: elaborada pelo autor (2026), com base na pesquisa Holograma Quântico ETH/USDC (HOLOGRAMA..., 2026). Nota: velas de 8 horas e custo de 0,10% por troca.</p>
-
-<p>O limitador reduz o risco, mas não o elimina: a queda máxima do sistema ainda ficou entre −19% e −30%, e o retorno extra depende do valor de 5%, escolhido depois de observar os dados. A Tabela 1 compara o Holograma com comprar e segurar; a comparação direta entre o bot da tarde sozinho e com o Holograma ainda precisa ser medida com as mesmas métricas.</p>
-
-<div class="octo-ad-slot" data-slot="2"></div>
-<h2 id="conclusao"><span>5</span>Conclusão: minha contribuição e o propósito do projeto</h2>
-<p>A principal intenção do projeto é incentivar as pessoas a desenvolverem sua criatividade, explorarem ideias e criarem projetos que envolvam dinheiro, investimentos e organização financeira. Acredito que muitas pessoas possuem capacidade de construir soluções para melhorar sua realidade financeira, mas acabam limitadas pela falta de informação, conhecimento prático e acesso a ferramentas que as ajudem a compreender suas possibilidades.</p>
-<p>A proposta desta pesquisa é demonstrar que a falta de conhecimento não precisa ser uma barreira definitiva para quem deseja construir um futuro financeiro melhor. É possível aprender, experimentar, desenvolver estratégias e transformar ideias em projetos concretos quando existem informação acessível, orientação e oportunidades de colocar o conhecimento em prática.</p>
-<p>É nesse contexto que desenvolvo o OctoCookie: não apenas como uma plataforma tecnológica, mas como uma ferramenta de experimentação e aprendizado. A intenção é oferecer ao usuário informações, recursos de análise, possibilidades de simulação e ferramentas que permitam compreender melhor o funcionamento das estratégias financeiras, testar suas próprias ideias e avaliar diferentes caminhos antes de tomar decisões.</p>
-<p>Minha contribuição está em transformar essa visão em um projeto prático, utilizando programação, automação e análise de dados para aproximar o conhecimento financeiro da realidade das pessoas. Quero que o usuário não apenas receba informações, mas também consiga experimentar, descobrir alternativas, compreender riscos e desenvolver sua própria capacidade de tomar decisões.</p>
-<p>Mais do que ensinar alguém a investir, quero incentivar as pessoas a acreditarem na capacidade de aprender, criar e construir suas próprias oportunidades financeiras. A esperança que o projeto busca proporcionar não vem de promessas de lucro ou de resultados garantidos, mas da possibilidade concreta de adquirir conhecimento, desenvolver habilidades e tomar decisões mais conscientes.</p>
-<p>No fim, o propósito do OctoCookie é mostrar que, quando a informação se transforma em conhecimento prático, o usuário passa a enxergar um leque maior de possibilidades. E, com mais compreensão sobre o que está fazendo, pode desenvolver mais confiança para experimentar, inovar e construir seus próprios caminhos financeiros.</p>
-<section id="referencias" aria-labelledby="ref-t">
-<h2 class="sn" id="ref-t">Referências</h2>
-<ul class="ref">
-<li>BINANCE. <b>Binance Futures API documentation</b>. [S. l.], 2026. Disponível em: <a href="https://binance-docs.github.io/apidocs/futures/en/">https://binance-docs.github.io/apidocs/futures/en/</a>. Acesso em: 5 out. 2026.</li>
-<li><b>HOLOGRAMA Quântico ETH/USDC</b>: limitador de perdas por tendência e stop móvel, com circuito de qubits como indicador de risco. [S. l.], 2026. Pesquisa independente. Disponível em: <a href="https://github.com/danielmcota14-byte/OctoCookie-/blob/main/holograma/pesquisa.html">https://github.com/danielmcota14-byte/OctoCookie-/blob/main/holograma/pesquisa.html</a>. Acesso em: 13 out. 2026.</li>
-<li>QISKIT CONTRIBUTORS. <b>Qiskit</b>: an open-source framework for quantum computing. [S. l.]: Zenodo, 2023. DOI: 10.5281/zenodo.2573505.</li>
-</ul>
-</section>
+  <p class="aviso">Resultados simulados não garantem desempenho futuro. Esta pesquisa não constitui recomendação de investimento.</p>
 </main>
-
-<footer>Resultados simulados não garantem desempenho futuro. Esta pesquisa não constitui recomendação de investimento.</footer>
-
-<script>
-(function(){
-  var bar=document.getElementById("bar");
-  function prog(){var h=document.documentElement,s=h.scrollTop||document.body.scrollTop,t=h.scrollHeight-h.clientHeight;bar.style.width=(t>0?s/t*100:0)+"%"}
-  window.addEventListener("scroll",prog,{passive:true});prog();
-  var links=[].slice.call(document.querySelectorAll("nav a"));
-  if("IntersectionObserver" in window){
-    var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){links.forEach(function(a){a.classList.toggle("on",a.getAttribute("href")==="#"+e.target.id)})}})},{rootMargin:"-20% 0px -70% 0px"});
-    links.forEach(function(a){var el=document.querySelector(a.getAttribute("href"));if(el)io.observe(el)});
-  }
-})();
-</script>
-<script src="/octocookie-app/ads.js"></script>
 </body></html>

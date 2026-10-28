@@ -91,8 +91,7 @@ function _createError(authOrCode, ...rest) {
 	return createErrorInternal(authOrCode, ...rest);
 }
 function _errorWithCustomMessage(auth, code, message) {
-	const errorMap = Object.assign(Object.assign({}, prodErrorMap()), { [code]: message });
-	return new ErrorFactory("auth", "Firebase", errorMap).create(code, { appName: auth.name });
+	return new ErrorFactory("auth", "Firebase", Object.assign(Object.assign({}, prodErrorMap()), { [code]: message })).create(code, { appName: auth.name });
 }
 function _serverAppCurrentUserOperationNotSupportedError(auth) {
 	return _errorWithCustomMessage(auth, "operation-not-supported-in-this-environment", "Operations that alter the current user are not supported in conjunction with FirebaseServerApp");
@@ -382,10 +381,8 @@ async function _performApiRequest(auth, method, path, request, customErrorMap = 
 	return _performFetchWithErrorHandling(auth, customErrorMap, async () => {
 		let body = {};
 		let params = {};
-		if (request) {
-			if (method === "GET") params = request;
-			else body = { body: JSON.stringify(request) };
-		}
+		if (request) if (method === "GET") params = request;
+		else body = { body: JSON.stringify(request) };
 		const query = querystring(Object.assign({ key: auth.config.apiKey }, params)).slice(1);
 		const headers = await auth._getAdditionalHeaders();
 		headers["Content-Type"] = "application/json";
@@ -2264,27 +2261,25 @@ async function injectRecaptchaFields(auth, request, action, isCaptchaResp = fals
 }
 async function handleRecaptchaFlow(authInstance, request, actionName, actionMethod, recaptchaAuthProvider) {
 	var _a, _b;
-	if (recaptchaAuthProvider === "EMAIL_PASSWORD_PROVIDER") {
-		if ((_a = authInstance._getRecaptchaConfig()) === null || _a === void 0 ? void 0 : _a.isProviderEnabled("EMAIL_PASSWORD_PROVIDER")) return actionMethod(authInstance, await injectRecaptchaFields(authInstance, request, actionName, actionName === "getOobCode"));
-		else return actionMethod(authInstance, request).catch(async (error) => {
-			if (error.code === `auth/missing-recaptcha-token`) {
-				console.log(`${actionName} is protected by reCAPTCHA Enterprise for this project. Automatically triggering the reCAPTCHA flow and restarting the flow.`);
-				return actionMethod(authInstance, await injectRecaptchaFields(authInstance, request, actionName, actionName === "getOobCode"));
-			} else return Promise.reject(error);
-		});
-	} else if (recaptchaAuthProvider === "PHONE_PROVIDER") {
-		if ((_b = authInstance._getRecaptchaConfig()) === null || _b === void 0 ? void 0 : _b.isProviderEnabled("PHONE_PROVIDER")) return actionMethod(authInstance, await injectRecaptchaFields(authInstance, request, actionName)).catch(async (error) => {
-			var _a;
-			if (((_a = authInstance._getRecaptchaConfig()) === null || _a === void 0 ? void 0 : _a.getProviderEnforcementState("PHONE_PROVIDER")) === "AUDIT") {
-				if (error.code === `auth/missing-recaptcha-token` || error.code === `auth/invalid-app-credential`) {
-					console.log(`Failed to verify with reCAPTCHA Enterprise. Automatically triggering the reCAPTCHA v2 flow to complete the ${actionName} flow.`);
-					return actionMethod(authInstance, await injectRecaptchaFields(authInstance, request, actionName, false, true));
-				}
+	if (recaptchaAuthProvider === "EMAIL_PASSWORD_PROVIDER") if ((_a = authInstance._getRecaptchaConfig()) === null || _a === void 0 ? void 0 : _a.isProviderEnabled("EMAIL_PASSWORD_PROVIDER")) return actionMethod(authInstance, await injectRecaptchaFields(authInstance, request, actionName, actionName === "getOobCode"));
+	else return actionMethod(authInstance, request).catch(async (error) => {
+		if (error.code === `auth/missing-recaptcha-token`) {
+			console.log(`${actionName} is protected by reCAPTCHA Enterprise for this project. Automatically triggering the reCAPTCHA flow and restarting the flow.`);
+			return actionMethod(authInstance, await injectRecaptchaFields(authInstance, request, actionName, actionName === "getOobCode"));
+		} else return Promise.reject(error);
+	});
+	else if (recaptchaAuthProvider === "PHONE_PROVIDER") if ((_b = authInstance._getRecaptchaConfig()) === null || _b === void 0 ? void 0 : _b.isProviderEnabled("PHONE_PROVIDER")) return actionMethod(authInstance, await injectRecaptchaFields(authInstance, request, actionName)).catch(async (error) => {
+		var _a;
+		if (((_a = authInstance._getRecaptchaConfig()) === null || _a === void 0 ? void 0 : _a.getProviderEnforcementState("PHONE_PROVIDER")) === "AUDIT") {
+			if (error.code === `auth/missing-recaptcha-token` || error.code === `auth/invalid-app-credential`) {
+				console.log(`Failed to verify with reCAPTCHA Enterprise. Automatically triggering the reCAPTCHA v2 flow to complete the ${actionName} flow.`);
+				return actionMethod(authInstance, await injectRecaptchaFields(authInstance, request, actionName, false, true));
 			}
-			return Promise.reject(error);
-		});
-		else return actionMethod(authInstance, await injectRecaptchaFields(authInstance, request, actionName, false, true));
-	} else return Promise.reject(recaptchaAuthProvider + " provider is not supported.");
+		}
+		return Promise.reject(error);
+	});
+	else return actionMethod(authInstance, await injectRecaptchaFields(authInstance, request, actionName, false, true));
+	else return Promise.reject(recaptchaAuthProvider + " provider is not supported.");
 }
 /**
 * @license
@@ -2331,8 +2326,7 @@ function initializeAuth(app, deps) {
 	const provider = _getProvider(app, "auth");
 	if (provider.isInitialized()) {
 		const auth = provider.getImmediate();
-		const initialOptions = provider.getOptions();
-		if (deepEqual(initialOptions, deps !== null && deps !== void 0 ? deps : {})) return auth;
+		if (deepEqual(provider.getOptions(), deps !== null && deps !== void 0 ? deps : {})) return auth;
 		else _fail(auth, "already-initialized");
 	}
 	return provider.initialize({ options: deps });
@@ -2444,10 +2438,8 @@ function emitEmulatorWarning() {
 		document.body.appendChild(el);
 	}
 	if (typeof console !== "undefined" && typeof console.info === "function") console.info("WARNING: You are using the Auth Emulator, which is intended for local testing only.  Do not use with production credentials.");
-	if (typeof window !== "undefined" && typeof document !== "undefined") {
-		if (document.readyState === "loading") window.addEventListener("DOMContentLoaded", attachBanner);
-		else attachBanner();
-	}
+	if (typeof window !== "undefined" && typeof document !== "undefined") if (document.readyState === "loading") window.addEventListener("DOMContentLoaded", attachBanner);
+	else attachBanner();
 }
 /**
 * @license
@@ -3623,21 +3615,18 @@ var UserCredentialImpl = class UserCredentialImpl {
 		this.operationType = params.operationType;
 	}
 	static async _fromIdTokenResponse(auth, operationType, idTokenResponse, isAnonymous = false) {
-		const user = await UserImpl._fromIdTokenResponse(auth, idTokenResponse, isAnonymous);
-		const providerId = providerIdForResponse(idTokenResponse);
 		return new UserCredentialImpl({
-			user,
-			providerId,
+			user: await UserImpl._fromIdTokenResponse(auth, idTokenResponse, isAnonymous),
+			providerId: providerIdForResponse(idTokenResponse),
 			_tokenResponse: idTokenResponse,
 			operationType
 		});
 	}
 	static async _forOperation(user, operationType, response) {
 		await user._updateTokensIfNecessary(response, true);
-		const providerId = providerIdForResponse(response);
 		return new UserCredentialImpl({
 			user,
-			providerId,
+			providerId: providerIdForResponse(response),
 			_tokenResponse: response,
 			operationType
 		});

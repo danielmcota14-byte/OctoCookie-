@@ -344,11 +344,9 @@ function wrap(middleware, callback) {
 			if (fnExpectsCallback && called) throw exception;
 			return done(exception);
 		}
-		if (!fnExpectsCallback) {
-			if (result && result.then && typeof result.then === "function") result.then(then, done);
-			else if (result instanceof Error) done(result);
-			else then(result);
-		}
+		if (!fnExpectsCallback) if (result && result.then && typeof result.then === "function") result.then(then, done);
+		else if (result instanceof Error) done(result);
+		else then(result);
 	}
 	/**
 	* Call `callback`, only once.
@@ -1864,10 +1862,9 @@ var unified = new class Processor extends CallableInstance {
 		const namespace = this.namespace;
 		assertUnfrozen("use", this.frozen);
 		if (value === null || value === void 0) {} else if (typeof value === "function") addPlugin(value, parameters);
-		else if (typeof value === "object") {
-			if (Array.isArray(value)) addList(value);
-			else addPreset(value);
-		} else throw new TypeError("Expected usable value, not `" + value + "`");
+		else if (typeof value === "object") if (Array.isArray(value)) addList(value);
+		else addPreset(value);
+		else throw new TypeError("Expected usable value, not `" + value + "`");
 		return this;
 		/**
 		* @param {Pluggable} value
@@ -1875,12 +1872,11 @@ var unified = new class Processor extends CallableInstance {
 		*/
 		function add(value) {
 			if (typeof value === "function") addPlugin(value, []);
-			else if (typeof value === "object") {
-				if (Array.isArray(value)) {
-					const [plugin, ...parameters] = value;
-					addPlugin(plugin, parameters);
-				} else addPreset(value);
-			} else throw new TypeError("Expected usable value, not `" + value + "`");
+			else if (typeof value === "object") if (Array.isArray(value)) {
+				const [plugin, ...parameters] = value;
+				addPlugin(plugin, parameters);
+			} else addPreset(value);
+			else throw new TypeError("Expected usable value, not `" + value + "`");
 		}
 		/**
 		* @param {Preset} result

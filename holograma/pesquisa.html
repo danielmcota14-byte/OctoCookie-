@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="pt-BR"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Holograma Quântico ETH/USDC — Pesquisa</title>
+<title>Holograma Quântico AAPL/USDC — Pesquisa</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
@@ -42,15 +42,15 @@ ol.ref{padding-left:0;list-style:none;font-size:.92rem}ol.ref li{margin:0 0 10px
 
 <header class="hero"><div class="wrap">
 <div class="kick">Pesquisa independente · Outubro de 2026</div>
-<h1>Holograma Quântico ETH/USDC: <em>limitador de perdas</em> por tendência e stop móvel, com circuito de qubits como indicador de risco</h1>
-<p class="sub n">O objetivo não é prever o mercado: é limitar perdas. Quando a tendência vira, a carteira sai de ETH; um stop móvel corta as quedas; uma barra única ajusta o risco. Resultados, versões e erros documentados.</p>
-<div class="chips"><span>Objetivo: limitar perdas</span><span>Dados reais · Binance Futures</span><span>Custos incluídos</span><span>Fora da amostra</span><span>Erros documentados</span></div>
+<h1>Holograma Quântico AAPL/USDC: <em>limitador de perdas</em> por tendência e stop móvel, com circuito de qubits como indicador de risco</h1>
+<p class="sub n">O objetivo não é prever o mercado: é limitar perdas. Quando a tendência vira, a carteira sai de AAPL; um stop móvel corta as quedas; uma barra única ajusta o risco. Resultados, versões e erros documentados.</p>
+<div class="chips"><span>Objetivo: limitar perdas</span><span>Dados reais · Mercado de ações</span><span>Custos incluídos</span><span>Fora da amostra</span><span>Erros documentados</span></div>
 <div class="kpis"><div class="kpi"><b>49/50</b><span>variantes com queda máxima menor</span></div><div class="kpi"><b>5/5</b><span>rodadas à frente de comprar e segurar</span></div><div class="kpi"><b data-n="7">0</b><span>versões do sistema</span></div><div class="kpi"><b data-n="16">0</b><span>capturas de teste e erro</span></div></div>
 <a class="cta" href="#instalavel">Ir ao instalável ↓</a></div></header>
 
 <main>
 <h2 id="resumo">Resumo</h2>
-<p class="n">Este trabalho relata o desenvolvimento de um sistema de gestão de risco para o par ETH/USDC cujo objetivo é limitar perdas, e não prever preços. O sistema combina um filtro de tendência, que migra para USDC quando o retorno recente cai abaixo de um limiar, um stop móvel de 5% contado do topo desde a entrada e uma barra única de risco que regula exposição, stop, limiar e janela. Um circuito de oito qubits simulado em Qiskit alimenta o painel e foi avaliado como indicador de incerteza. Com dados reais da Binance Futures, velas de 8 horas, custo de 0,10% por troca, validação fora da amostra e <em>walk-forward</em>, o stop móvel reduziu a queda máxima em 49 de 50 variantes, e o sistema ficou à frente de comprar e segurar nas cinco rodadas, embora o retorno adicional dependa do valor de 5%, escolhido após observar os dados. O circuito não superou o controle de exposição fixa. Regras de previsão por fluxo de ordens e <em>funding rate</em> foram descartadas. Conclui-se que o limitador reduz perdas de forma consistente, sem eliminá-las e sem prever o mercado.</p>
+<p class="n">Este trabalho relata o desenvolvimento de um sistema de gestão de risco para o par AAPL/USDC cujo objetivo é limitar perdas, e não prever preços. O sistema combina um filtro de tendência, que migra para USDC quando o retorno recente cai abaixo de um limiar, um stop móvel de 5% contado do topo desde a entrada e uma barra única de risco que regula exposição, stop, limiar e janela. Um circuito de oito qubits simulado em Qiskit alimenta o painel e foi avaliado como indicador de incerteza. Com dados reais da mercado de ações, velas de 8 horas, custo de 0,10% por troca, validação fora da amostra e <em>walk-forward</em>, o stop móvel reduziu a queda máxima em 49 de 50 variantes, e o sistema ficou à frente de comprar e segurar nas cinco rodadas, embora o retorno adicional dependa do valor de 5%, escolhido após observar os dados. O circuito não superou o controle de exposição fixa. Regras de previsão por fluxo de ordens e <em>funding rate</em> foram descartadas. Conclui-se que o limitador reduz perdas de forma consistente, sem eliminá-las e sem prever o mercado.</p>
 <p class="n"><b>Palavras-chave:</b> limitação de perdas; stop móvel; gestão de risco; criptoativos; simulação quântica.</p>
 
 <h2 id="intro">1 Introdução</h2>
@@ -58,8 +58,8 @@ ol.ref{padding-left:0;list-style:none;font-size:.92rem}ol.ref li{margin:0 0 10px
 <p>Objetivos: (a) construir o sistema e o painel; (b) medir o efeito do limitador sobre a queda máxima e o retorno; (c) testar o circuito como indicador de risco; (d) registrar versões e falhas; (e) disponibilizar o instalável.</p>
 
 <h2 id="metodo">2 Metodologia</h2>
-<p>Os dados vieram da API pública da Binance Futures (BINANCE, 2026): velas de preço de ETH de 8 horas, <em>funding rate</em> e velas de 1 minuto de ETHUSDC. O custo foi de 0,10% por troca nos testes de 8 horas e 0,35% no teste de fluxo. O circuito de 8 qubits foi implementado em Qiskit (QISKIT CONTRIBUTORS, 2023): quatro qubits codificam variáveis de mercado por rotação RY, quatro representam o complemento em USDC, e portas CZ as encadeiam; extraem-se a probabilidade de Born e a entropia de Von Neumann entre os grupos ETH e USDC.</p>
-<p>O limitador tem três partes: (i) <b>filtro de tendência</b>, que mantém ETH quando o retorno na janela supera +limiar e vai para USDC abaixo de −limiar (padrão: 30 velas e 3%); (ii) <b>stop móvel</b>, que sai quando o preço cai X% do topo desde a entrada e só reentra em novo sinal de compra (X de 3% a 7%, dez variantes por rodada); (iii) <b>barra de risco</b>, de 0 a 100%. As métricas são a queda máxima (maior recuo a partir do pico do patrimônio), o retorno com custos e o retorno por queda. Avaliaram-se dois períodos de 360 dias, um de 540 dias, janelas de 20 e 40 velas e <em>walk-forward</em> em blocos de 90 dias. Os testes de correlação entre sinal e retorno seguinte (valor-p, metades da amostra) foram usados só para verificar se algum sinal previa o preço. Os testes checam o stop no fechamento da vela e ignoram atraso de execução.</p>
+<p>Os dados vieram da API pública da mercado de ações (BINANCE, 2026): velas de preço de AAPL de 8 horas, <em>funding rate</em> e velas de 1 minuto de AAPL/USDC. O custo foi de 0,10% por troca nos testes de 8 horas e 0,35% no teste de fluxo. O circuito de 8 qubits foi implementado em Qiskit (QISKIT CONTRIBUTORS, 2023): quatro qubits codificam variáveis de mercado por rotação RY, quatro representam o complemento em USDC, e portas CZ as encadeiam; extraem-se a probabilidade de Born e a entropia de Von Neumann entre os grupos AAPL e USDC.</p>
+<p>O limitador tem três partes: (i) <b>filtro de tendência</b>, que mantém AAPL quando o retorno na janela supera +limiar e vai para USDC abaixo de −limiar (padrão: 30 velas e 3%); (ii) <b>stop móvel</b>, que sai quando o preço cai X% do topo desde a entrada e só reentra em novo sinal de compra (X de 3% a 7%, dez variantes por rodada); (iii) <b>barra de risco</b>, de 0 a 100%. As métricas são a queda máxima (maior recuo a partir do pico do patrimônio), o retorno com custos e o retorno por queda. Avaliaram-se dois períodos de 360 dias, um de 540 dias, janelas de 20 e 40 velas e <em>walk-forward</em> em blocos de 90 dias. Os testes de correlação entre sinal e retorno seguinte (valor-p, metades da amostra) foram usados só para verificar se algum sinal previa o preço. Os testes checam o stop no fechamento da vela e ignoram atraso de execução.</p>
 
 <h2 id="versoes">3 Desenvolvimento e versões</h2>
 <p class="n">O Quadro 1 resume a evolução. As Figuras 1 a 4 mostram o painel nas primeiras versões.</p>
@@ -154,7 +154,7 @@ ol.ref{padding-left:0;list-style:none;font-size:.92rem}ol.ref li{margin:0 0 10px
 <h2 id="refs">Referências</h2>
 <ol class="ref">
 <li>ASSOCIAÇÃO BRASILEIRA DE NORMAS TÉCNICAS. <b>NBR 6022</b>: informação e documentação: artigo em publicação periódica científica impressa: apresentação. Rio de Janeiro: ABNT, 2018.</li>
-<li>BINANCE. <b>Binance Futures API documentation</b>. Disponível em: https://binance-docs.github.io/apidocs/futures/en/. Acesso em: 5 out. 2026.</li>
+<li>BINANCE. <b>mercado de ações API documentation</b>. Disponível em: https://finance.yahoo.com/. Acesso em: 5 out. 2026.</li>
 <li>FAMA, E. F. Efficient capital markets: a review of theory and empirical work. <b>The Journal of Finance</b>, v. 25, n. 2, p. 383-417, 1970.</li>
 <li>QISKIT CONTRIBUTORS. <b>Qiskit</b>: an open-source framework for quantum computing. Zenodo, 2023. DOI: 10.5281/zenodo.2573505.</li></ol>
 </main>

@@ -4,7 +4,7 @@
 <link rel="stylesheet" href="/octo.css"><link rel="stylesheet" href="/octo-legacy.css"><script src="/octo.js"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>OCTOCOOKIE | Crypto Swap Trader Bot</title>
+  <title>OCTOCOOKIE | Trader de Ações</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/ethers@6.9.1/dist/ethers.umd.min.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
@@ -220,8 +220,8 @@ a { color:var(--o-cyan); }
   <div class="oc-content" id="botView">
     <div class="flex-between" style="margin-bottom:20px">
       <div>
-        <div class="app-title"><i class="fas fa-bolt"></i> SWAP TRADER BOT</div>
-        <div style="font-size:10px;color:var(--text3)">DEX Swap · 7 perfis (quiz) · Holograma / clássico / quântico · Uniswap · Multi-rede</div>
+        <div class="app-title"><i class="fas fa-bolt"></i> TRADER DE AÇÕES</div>
+        <div style="font-size:10px;color:var(--text3)">Ações Tokenizadas · 7 perfis · Holograma / clássico / quântico · Mercado Acionário</div>
       </div>
     </div>
 
@@ -280,19 +280,23 @@ a { color:var(--o-cyan); }
         <div>
           <label>Rede</label>
           <select id="networkSelect" onchange="changeNetwork()">
-            <option value="ethereum">Ethereum (Uniswap V3)</option>
-            <option value="bsc">BNB Chain (PancakeSwap)</option>
-            <option value="polygon">Polygon (QuickSwap)</option>
-            <option value="arbitrum">Arbitrum (Uniswap V3)</option>
+            <option value="ethereum">Ações Tokenizadas (rede principal)</option>
+            <option value="bsc">BNB Chain (Mercado de Ações)</option>
+            <option value="polygon">Polygon (Mercado de Ações)</option>
+            <option value="arbitrum">Arbitrum (Ações Tokenizadas)</option>
           </select>
-          <label>Par de Swap</label>
-          <select id="tradePairSelect" onchange="changePair()">
-            <option value="WETH_USDC">ETH → USDC (e vice-versa)</option>
-            <option value="WBTC_USDC">WBTC → USDC (e vice-versa)</option>
-            <option value="WETH_USDT">ETH → USDT</option>
-            <option value="BNB_BUSD">BNB → BUSD</option>
-            <option value="MATIC_USDC">MATIC → USDC</option>
-          </select>
+          <label>Par de Ações</label>
+          <div id="pairSearchWrap" style="display:flex;flex-direction:column;gap:6px;min-width:220px;max-width:360px">
+            <input id="assetSearch" type="search" placeholder="Pesquisar ativo (ex: AAPL, Tesla, NVDA)..." autocomplete="off"
+              style="width:100%;padding:8px 10px;border-radius:8px;border:1px solid var(--border,#333);background:var(--surface,#111);color:inherit" />
+            <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+              <select id="tradePairSelect" onchange="changePair()" style="width:100%;padding:8px;border-radius:8px;border:1px solid var(--border,#333);background:var(--surface,#111);color:inherit">
+                <option value="AAPL_USDC">Carregando catálogo xStocks…</option>
+              </select>
+              <span style="font-size:12px;opacity:.85">Quote: <strong>USDC</strong></span>
+            </div>
+            <div id="assetCountLabel" style="font-size:11px;opacity:.7">—</div>
+          </div>
         </div>
       </div>
       <div style="font-size:11px;color:var(--text3);padding:8px;background:var(--bg3);border-radius:8px;margin-top:4px">
@@ -350,12 +354,12 @@ a { color:var(--o-cyan); }
         <div id="tradeProfitAbs" style="font-size:11px;color:var(--text2);margin-top:4px">—</div>
       </div>
       <div class="dash-card">
-        <div class="dash-card-title">Swaps Hoje</div>
+        <div class="dash-card-title">Operações Hoje</div>
         <div id="tradesCount" class="dash-card-value">0/5</div>
         <div style="font-size:11px;color:var(--text2);margin-top:4px">Último: <span id="lastTrade">--:--</span></div>
       </div>
       <div class="dash-card">
-        <div class="dash-card-title">Win Rate</div>
+        <div class="dash-card-title">Taxa de Acerto</div>
         <div id="winRate" class="dash-card-value positive">0%</div>
         <div style="font-size:11px;color:var(--text2);margin-top:4px">
           <span id="winCount">0</span>W / <span id="lossCount">0</span>L
@@ -391,7 +395,7 @@ a { color:var(--o-cyan); }
           <div style="font-size:10px;color:var(--text3);margin-top:3px">= <span id="tpUSD">0.00</span>%</div>
         </div>
         <div>
-          <label>Swaps Máx./Dia</label>
+          <label>Operações Máx./Dia</label>
           <input type="number" id="maxTradesInput" value="5" min="1" step="1">
           <label>Horário Início (hora)</label>
           <input type="number" id="tradeStartHour" value="9" min="0" max="23" step="1">
@@ -468,7 +472,7 @@ a { color:var(--o-cyan); }
       <div class="lim-row"><label>Saldo inicial (USDC) <input type="number" id="hgSaldoIni" value="1000" min="10" step="100"></label><button class="close-btn" id="hgZerar" style="width:auto;padding:4px 12px;font-size:11px">Zerar carteira virtual</button></div>
       <div class="card-header" style="margin-top:14px"><i class="fas fa-table"></i> Curva da barra (histórico)</div>
       <div style="overflow-x:auto"><table id="hgCurva"></table></div>
-      <div style="font-size:10px;color:var(--text3);margin-top:8px">Só o ponto de 100% foi testado; os intermediários são interpolação sem teste próprio. O circuito usa as mesmas variáveis de preço da tendência: confira no histórico acima se ele supera a tendência pura antes de confiar nele. Conteúdo educacional, sem recomendação de investimento. Operar criptoativos pode causar perda total.</div>
+      <div style="font-size:10px;color:var(--text3);margin-top:8px">Só o ponto de 100% foi testado; os intermediários são interpolação sem teste próprio. O circuito usa as mesmas variáveis de preço da tendência: confira no histórico acima se ele supera a tendência pura antes de confiar nele. Conteúdo educacional, sem recomendação de investimento. Operar ações (incluindo tokenizadas) pode causar perda total.</div>
     </div>
 
     <!-- GRÁFICOS -->
@@ -531,9 +535,9 @@ a { color:var(--o-cyan); }
       <button class="close-btn" id="closeTermsBtn">&times;</button>
     </div>
     <div class="popup-content">
-      <h2>Bot de Swap DEX Automatizado — OCTOCOOKIE</h2>
+      <h2>Bot Trader de Ações Automatizado — OCTOCOOKIE</h2>
       <p>⚠️ AVISO IMPORTANTE: O uso deste bot envolve riscos significativos, incluindo perda de capital.</p>
-      <p>1. <strong>Riscos de DeFi:</strong> Swaps em DEX podem incorrer em slippage, taxas de gas, falhas de liquidez e volatilidade extrema. Nunca invista mais do que pode perder.</p>
+      <p>1. <strong>Riscos de mercado:</strong> Operações com ações tokenizadas podem incorrer em slippage, taxas de rede, falhas de liquidez e volatilidade. Nunca invista mais do que pode perder.</p>
       <p>2. <strong>Responsabilidade:</strong> Você é o único responsável pelas operações executadas com sua carteira.</p>
       <p>3. <strong>Não-custodial:</strong> No modo normal, a OctoCookie nunca solicita, recebe ou armazena sua chave privada ou seed phrase. A conexão é feita via sua própria wallet (MetaMask ou compatível); toda transação — swaps e taxa de serviço — é assinada individualmente por você, na sua wallet. <strong>Exceção — Bot 24/7 no servidor (opcional):</strong> se você ativar esse modo, a chave de uma carteira dedicada ao bot é enviada ao servidor que VOCÊ configurou, cifrada por Diffie-Hellman + AES-256, e guardada cifrada com uma chave K que volta para você. Enquanto o bot roda, o servidor mantém a chave em memória e assina as transações sozinho. Use só valores que aceita perder.</p>
       <p>4. <strong>Estratégia:</strong> Por padrão o bot usa a regra do Holograma Quântico em modo tendência (preço em velas de 8h, stop móvel, potência 100%). Opcionalmente, pode usar o trader original (RSI, Bollinger, MACD e SMA), o limitador do Holograma sobre o trader original, ou o circuito quântico simulado de 8 qubits. Não prevê preços e não garante lucro; performance passada não garante resultados futuros.</p>
@@ -556,9 +560,9 @@ function showTerms() {
 
 <script>
 // =============================================
-//  OCTOCOOKIE — CRYPTO SWAP TRADER BOT
+//  OCTOCOOKIE — CRYPTO TRADER DE AÇÕES
 //  Estratégia: Holograma tendência 100% (padrão) · opcional: trader original (RSI/SMA/MACD/Bollinger), combinado, ou circuito quântico
-//  Execução: DEX Swap via ethers.js
+//  Execução: Troca de Ações via ethers.js
 //  Preços: Binance API
 // =============================================
 
@@ -581,19 +585,145 @@ try {
 //  REDE / TOKENS / ROTEADORES
 // =============================================
 const NETWORKS = {
-  ethereum:{ name:"Ethereum",  chainId:1,     symbol:"ETH",  rpc:"https://mainnet.infura.io/v3/1f56a4faa8e2403da1ed011dc2895a2f", dex:"Uniswap V3", router:"0xE592427A0AEce92De3Edee1F18E0157C05861564", explorer:"https://etherscan.io" },
-  bsc:     { name:"BNB Chain", chainId:56,    symbol:"BNB",  rpc:"https://bsc-dataseed.binance.org/",                                dex:"PancakeSwap",router:"0x13f4EA83D0bd40E75C8222255bc855a974568Dd4", explorer:"https://bscscan.com" },
-  polygon: { name:"Polygon",   chainId:137,   symbol:"MATIC",rpc:"https://polygon-rpc.com/",                                          dex:"QuickSwap",  router:"0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff", explorer:"https://polygonscan.com" },
-  arbitrum:{ name:"Arbitrum",  chainId:42161, symbol:"ETH",  rpc:"https://arb1.arbitrum.io/rpc",                                      dex:"Uniswap V3", router:"0xE592427A0AEce92De3Edee1F18E0157C05861564", explorer:"https://arbiscan.io" }
+  ethereum:{ name:"Ethereum",  chainId:1,     symbol:"ETH",  rpc:"https://mainnet.infura.io/v3/1f56a4faa8e2403da1ed011dc2895a2f", dex:"Mercado de Ações", router:"0xE592427A0AEce92De3Edee1F18E0157C05861564", explorer:"https://etherscan.io" },
+  bsc:     { name:"BNB Chain", chainId:56,    symbol:"BNB",  rpc:"https://bsc-dataseed.binance.org/",                                dex:"Mercado de Ações",router:"0x13f4EA83D0bd40E75C8222255bc855a974568Dd4", explorer:"https://bscscan.com" },
+  polygon: { name:"Polygon",   chainId:137,   symbol:"MATIC",rpc:"https://polygon-rpc.com/",                                          dex:"Mercado de Ações",  router:"0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff", explorer:"https://polygonscan.com" },
+  arbitrum:{ name:"Arbitrum",  chainId:42161, symbol:"ETH",  rpc:"https://arb1.arbitrum.io/rpc",                                      dex:"Mercado de Ações", router:"0xE592427A0AEce92De3Edee1F18E0157C05861564", explorer:"https://arbiscan.io" }
 };
 
-const TOKEN_PAIRS = {
-  WETH_USDC: { tokenIn:"0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2", tokenOut:"0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48", symbolIn:"ETH",  symbolOut:"USDC", cgIn:"ethereum",        cgOut:"usd-coin",    decimalsIn:18, decimalsOut:6 },
-  WBTC_USDC: { tokenIn:"0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599", tokenOut:"0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48", symbolIn:"WBTC", symbolOut:"USDC", cgIn:"wrapped-bitcoin",  cgOut:"usd-coin",    decimalsIn:8,  decimalsOut:6 },
-  WETH_USDT: { tokenIn:"0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2", tokenOut:"0xdAC17F958D2ee523a2206206994597C13D831ec7", symbolIn:"ETH",  symbolOut:"USDT", cgIn:"ethereum",        cgOut:"tether",      decimalsIn:18, decimalsOut:6 },
-  BNB_BUSD:  { tokenIn:"0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c", tokenOut:"0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56", symbolIn:"BNB",  symbolOut:"BUSD", cgIn:"binancecoin",     cgOut:"binance-usd", decimalsIn:18, decimalsOut:18},
-  MATIC_USDC:{ tokenIn:"0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270",tokenOut:"0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174", symbolIn:"MATIC",symbolOut:"USDC", cgIn:"matic-network",   cgOut:"usd-coin",    decimalsIn:18, decimalsOut:6 }
+
+// Catálogo completo xStocks (API) — carregado de xstocks-tokens.json
+// Fonte: https://api.xstocks.fi/api/v2/public/assets
+let XSTOCKS_CATALOG = null; // { ethereum: [{s,a,n,u,d}], bsc, arbitrum }
+let TOKEN_PAIRS = {};
+const QUOTE_STABLE = 'USDC'; // apenas USDC
+
+const STABLES = {
+  ethereum: { USDC: { address: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', decimals: 6 } },
+  bsc: { USDC: { address: '0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d', decimals: 18 } },
+  arbitrum: { USDC: { address: '0xaf88d065e77c8cC2239327C5EDb3A432268e5831', decimals: 6 } },
+  polygon: { USDC: { address: '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174', decimals: 6 } }
 };
+
+function netKey() {
+  const n = (typeof CONFIG !== 'undefined' && CONFIG.network) || 'ethereum';
+  if (n === 'binance' || n === 'bsc') return 'bsc';
+  return n;
+}
+
+function buildTokenPairs(filterText) {
+  TOKEN_PAIRS = {};
+  const net = netKey();
+  const list = (XSTOCKS_CATALOG && XSTOCKS_CATALOG[net]) || [];
+  const stable = STABLES[net] && STABLES[net][QUOTE_STABLE]
+    ? STABLES[net][QUOTE_STABLE]
+    : STABLES.ethereum.USDC;
+  const q = (filterText || '').trim().toLowerCase();
+  let count = 0;
+  for (const t of list) {
+    if (t.s === 'USDC' || t.s === 'USDT') continue;
+    if (q) {
+      const hay = (t.s + ' ' + (t.n || '') + ' ' + (t.u || '')).toLowerCase();
+      if (!hay.includes(q)) continue;
+    }
+    const key = t.s + '_' + QUOTE_STABLE;
+    TOKEN_PAIRS[key] = {
+      tokenIn: t.a,
+      tokenOut: stable.address,
+      symbolIn: t.s,
+      symbolOut: QUOTE_STABLE,
+      cgIn: (t.u || t.s).toLowerCase(),
+      cgOut: 'usd-coin',
+      decimalsIn: t.d || 18,
+      decimalsOut: stable.decimals,
+      name: t.n || t.s
+    };
+    count++;
+  }
+  return count;
+}
+
+function repopulatePairSelect(filterText) {
+  const sel = document.getElementById('tradePairSelect');
+  if (!sel) return;
+  const n = buildTokenPairs(filterText);
+  const prev = sel.value;
+  sel.innerHTML = '';
+  const prefer = ['AAPLx','TSLAx','NVDAx','MSFTx','AMZNx','GOOGLx','METAx','SPYx','QQQx'];
+  let keys = Object.keys(TOKEN_PAIRS);
+  keys.sort((a,b) => {
+    const sa = a.split('_')[0], sb = b.split('_')[0];
+    const ia = prefer.indexOf(sa), ib = prefer.indexOf(sb);
+    if (ia >= 0 || ib >= 0) return (ia < 0 ? 999 : ia) - (ib < 0 ? 999 : ib);
+    return a.localeCompare(b);
+  });
+  // Sem filtro: só mostra os principais (evita trava). Com busca: até 80 resultados.
+  const q = (filterText || '').trim();
+  if (!q) {
+    keys = keys.filter(k => prefer.some(p => k.startsWith(p + '_')) || prefer.includes(k.split('_')[0]));
+    if (keys.length < 9) {
+      // inclui mais alguns alfabéticos se preferidos faltarem
+      keys = Object.keys(TOKEN_PAIRS).sort().slice(0, 30);
+    }
+  } else {
+    keys = keys.slice(0, 80);
+  }
+  for (const k of keys) {
+    const p = TOKEN_PAIRS[k];
+    if (!p) continue;
+    const opt = document.createElement('option');
+    opt.value = k;
+    opt.textContent = p.symbolIn + ' → USDC' + (p.name && p.name !== p.symbolIn ? ' — ' + p.name : '');
+    sel.appendChild(opt);
+  }
+  if (prev && TOKEN_PAIRS[prev]) sel.value = prev;
+  else if (TOKEN_PAIRS['AAPLx_USDC']) sel.value = 'AAPLx_USDC';
+  else if (keys.length) sel.value = keys[0];
+  if (typeof CONFIG !== 'undefined') CONFIG.pair = sel.value;
+  const lbl = document.getElementById('assetCountLabel');
+  if (lbl) {
+    const total = XSTOCKS_CATALOG ? ((XSTOCKS_CATALOG[netKey()] || []).length) : n;
+    lbl.textContent = q
+      ? (keys.length + ' resultados · digite para filtrar · quote USDC')
+      : ('Principais ativos · pesquise para ver os ' + total + ' · quote USDC');
+  }
+}
+
+function changeQuoteStable() { /* apenas USDC */ }
+
+async function loadXStocksCatalog() {
+  try {
+    const res = await fetch('/octocookie-app/xstocks-tokens.json', { cache: 'no-store' });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    XSTOCKS_CATALOG = await res.json();
+    repopulatePairSelect('');
+    const search = document.getElementById('assetSearch');
+    if (search && !search._bound) {
+      search._bound = true;
+      let timer;
+      search.addEventListener('input', () => {
+        clearTimeout(timer);
+        timer = setTimeout(() => repopulatePairSelect(search.value), 120);
+      });
+    }
+    if (typeof addLog === 'function') addLog(`Catálogo xStocks: ${Object.keys(TOKEN_PAIRS).length}+ pares carregados`, 'success');
+  } catch (e) {
+    console.error('loadXStocksCatalog', e);
+    // fallback mínimo
+    TOKEN_PAIRS = {
+      AAPL_USDC: { tokenIn:'0x9d275685dC284C8eB1C79f6ABA7a63Dc75ec890a', tokenOut:'0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', symbolIn:'AAPLx', symbolOut:'USDC', cgIn:'apple', cgOut:'usd-coin', decimalsIn:18, decimalsOut:6 }
+    };
+    const sel = document.getElementById('tradePairSelect');
+    if (sel) sel.innerHTML = '<option value="AAPL_USDC">AAPLx → USDC (fallback)</option>';
+  }
+}
+
+// boot catalog ASAP
+if (typeof window !== 'undefined') {
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', loadXStocksCatalog);
+  else loadXStocksCatalog();
+}
+
 
 const COINGECKO_KEY = "CG-8o9D3j5kmHipYh4ayEFGXjDt"; // não usada mais, mantida só de referência
 // Mapa dos ids internos (cgIn) para os símbolos de ticker da Binance.
@@ -640,7 +770,7 @@ window.addEventListener('load', async () => {
 
 const CONFIG = {
   network: 'ethereum',
-  pair: 'WETH_USDC',
+  pair: 'AAPL_USDC',
   stake: 0.01,
   stakePct: 5,
   stopLoss: -3,
@@ -837,7 +967,42 @@ async function changeNetwork() {
   }
 }
 
+
+/** Garante que o par selecionado existe e tem contratos válidos. */
+function assertActivePair() {
+  const key = (typeof CONFIG !== 'undefined' && CONFIG.pair) || '';
+  const pair = TOKEN_PAIRS[key];
+  if (!pair) throw new Error('Par não encontrado: ' + key + ' — selecione um ativo na lista.');
+  if (!pair.tokenIn || !/^0x[a-fA-F0-9]{40}$/.test(pair.tokenIn))
+    throw new Error('Contrato do ativo inválido: ' + pair.symbolIn);
+  if (!pair.tokenOut || !/^0x[a-fA-F0-9]{40}$/.test(pair.tokenOut))
+    throw new Error('Contrato USDC inválido no par ' + pair.symbolIn);
+  if (pair.symbolOut !== 'USDC')
+    throw new Error('Quote deve ser USDC, recebido: ' + pair.symbolOut);
+  // bloqueia confusão ETH/WETH legado
+  const WETH = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2'.toLowerCase();
+  if (pair.tokenIn.toLowerCase() === WETH)
+    throw new Error('Par aponta para WETH em vez do ativo — recarregue o catálogo.');
+  return { key, pair };
+}
+
+function logPairGuard(direction) {
+  const { key, pair } = assertActivePair();
+  addLog(
+    `🔒 Trade ${direction}: ${pair.symbolIn} (${pair.tokenIn.slice(0,8)}…) ↔ ${pair.symbolOut} (${pair.tokenOut.slice(0,8)}…) · chave=${key}`,
+    'info'
+  );
+  return pair;
+}
+
+
 function changePair() {
+  // rebuild if catalog ready and pair missing
+  if (XSTOCKS_CATALOG && !TOKEN_PAIRS[document.getElementById('tradePairSelect')?.value]) {
+    const q = document.getElementById('assetSearch');
+    repopulatePairSelect(q ? q.value : '');
+  }
+
   CONFIG.pair = document.getElementById('tradePairSelect').value;
   const p = TOKEN_PAIRS[CONFIG.pair];
   addLog(`Par alterado: ${p.symbolIn} ↔ ${p.symbolOut}`, 'info');
@@ -859,59 +1024,124 @@ async function refreshBalance() {
   }
 }
 
+
 // =============================================
-//  PREÇO VIA BINANCE (API pública, sem key, CORS liberado)
+//  PREÇO: 1) Uniswap via Infura/RPC (on-chain)  2) Binance API pública
 // =============================================
+function underlyingTicker(pair) {
+  // AAPLx / AAPLon / MSFTx -> AAPL / MSFT
+  let s = (pair.symbolIn || pair.cgIn || '').toString();
+  s = s.replace(/on$/i, '').replace(/x$/i, '');
+  return s.toUpperCase();
+}
+
+function binanceSymbolForPair(pair) {
+  const u = underlyingTicker(pair);
+  return u ? (u + 'USDT') : null;
+}
+
+async function fetchPriceFromBinance(pair) {
+  const symbol = binanceSymbolForPair(pair) || BINANCE_SYMBOLS[pair.cgIn];
+  if (!symbol) throw new Error('Sem símbolo Binance para ' + (pair.symbolIn || pair.cgIn));
+  const bases = [
+    'https://data-api.binance.vision/api/v3',
+    'https://api1.binance.com/api/v3',
+    'https://api.binance.com/api/v3',
+  ];
+  let lastErr = 'falha de rede';
+  for (const base of bases) {
+    try {
+      const res = await fetch(`${base}/ticker/price?symbol=${symbol}`, { cache: 'no-store' });
+      if (!res.ok) { lastErr = 'Binance HTTP ' + res.status; continue; }
+      const data = await res.json();
+      if (data?.price) return parseFloat(data.price);
+      lastErr = 'Preço não retornado';
+    } catch (e) { lastErr = e.message || lastErr; }
+  }
+  throw new Error(lastErr + ' (' + symbol + ')');
+}
+
+/** Preço on-chain via Quoter Uniswap V3 no RPC (Infura quando CONFIG.network=ethereum). */
+async function fetchPriceFromInfura(pair) {
+  if (!state.provider) throw new Error('Sem provider RPC');
+  const net = NETWORKS[CONFIG.network] || NETWORKS.ethereum;
+  // Uniswap V3 QuoterV2 ethereum
+  const QUOTER = {
+    ethereum: '0x61fFE014bA17989E743c5F6cB21bF9697530B21e',
+    arbitrum: '0x61fFE014bA17989E743c5F6cB21bF9697530B21e',
+  };
+  const quoterAddr = QUOTER[CONFIG.network];
+  if (!quoterAddr || !net.router) throw new Error('Quoter não configurado nesta rede');
+  const quoterAbi = [
+    'function quoteExactInputSingle((address tokenIn,address tokenOut,uint256 amountIn,uint24 fee,uint160 sqrtPriceLimitX96)) view returns (uint256 amountOut,uint160,uint32,uint256)'
+  ];
+  const quoter = new ethers.Contract(quoterAddr, quoterAbi, state.provider);
+  const amountIn = ethers.parseUnits('1', pair.decimalsIn || 18);
+  // tenta fees comuns
+  for (const fee of [3000, 500, 10000, 100]) {
+    try {
+      const r = await quoter.quoteExactInputSingle({
+        tokenIn: pair.tokenIn,
+        tokenOut: pair.tokenOut,
+        amountIn,
+        fee,
+        sqrtPriceLimitX96: 0
+      });
+      const out = r.amountOut ?? r[0];
+      const price = parseFloat(ethers.formatUnits(out, pair.decimalsOut || 6));
+      if (price > 0) return price;
+    } catch (_) { /* próximo fee */ }
+  }
+  throw new Error('Sem pool Uniswap com liquidez para este par');
+}
+
 async function fetchPrice() {
   const pair = TOKEN_PAIRS[CONFIG.pair];
-  const cgId = pair.cgIn;
-  const symbol = BINANCE_SYMBOLS[cgId];
+  if (!pair) return 0;
   const t0 = performance.now();
-  try {
-    if(!symbol) throw new Error('Sem símbolo Binance mapeado para ' + cgId);
-    // api.binance.com devolve 451 em muitos IPs de cloud (Render/AWS). data-api.binance.vision é o espelho público.
-    const bases = [
-      'https://data-api.binance.vision/api/v3',
-      'https://api1.binance.com/api/v3',
-      'https://api.binance.com/api/v3',
-    ];
-    let data = null, lastErr = 'falha de rede';
-    for (const base of bases) {
-      try {
-        const res = await fetch(`${base}/ticker/price?symbol=${symbol}`, { cache:'no-store' });
-        if (!res.ok) { lastErr = 'Binance HTTP ' + res.status; continue; }
-        data = await res.json();
-        if (data?.price) break;
-        lastErr = 'Preço não retornado';
-        data = null;
-      } catch (e) { lastErr = e.message || lastErr; }
+  // 1) Tenta preço on-chain via Infura/RPC se carteira/provider ativo
+  if (state.provider && state.apiStatus.provider) {
+    try {
+      const price = await fetchPriceFromInfura(pair);
+      state.apiStatus.coingecko = true;
+      updateAPIStatus();
+      state.cgFailCount = 0;
+      state.priceOk = true;
+      state.lastLatencyMs = performance.now() - t0;
+      state.latencyHistory.push(state.lastLatencyMs);
+      if (state.latencyHistory.length > 30) state.latencyHistory.shift();
+      state.priceSource = 'infura-uniswap';
+      return price;
+    } catch (e) {
+      if (state.cgFailCount === 0 || state.cgFailCount % 10 === 0) {
+        addLog(`RPC/Infura preço: ${e.message} — tentando Binance`, 'info');
+      }
     }
-    if (!data?.price) throw new Error(lastErr);
-    const price = data.price;
+  }
+  // 2) Binance API pública
+  try {
+    const price = await fetchPriceFromBinance(pair);
     state.apiStatus.coingecko = true;
     updateAPIStatus();
     state.cgFailCount = 0;
     state.priceOk = true;
     state.lastLatencyMs = performance.now() - t0;
     state.latencyHistory.push(state.lastLatencyMs);
-    if(state.latencyHistory.length > 30) state.latencyHistory.shift();
-    return parseFloat(price);
-  } catch(e) {
+    if (state.latencyHistory.length > 30) state.latencyHistory.shift();
+    state.priceSource = 'binance';
+    return price;
+  } catch (e) {
     state.apiStatus.coingecko = false;
-    state.priceOk = false; // preço de fallback/semente NÃO é real: o motor da regra não opera com ele
+    state.priceOk = false;
     updateAPIStatus();
     state.cgFailCount = (state.cgFailCount || 0) + 1;
-    // Loga o motivo real da falha (antes isso era engolido em silêncio)
-    if(state.cgFailCount === 1 || state.cgFailCount % 5 === 0) {
+    if (state.cgFailCount === 1 || state.cgFailCount % 5 === 0) {
       addLog(`❌ Feed de preço falhou (${state.cgFailCount}x): ${e.message}`, 'error');
     }
-    // fallback: variação leve no último preço para manter o histórico vivo
-    if(state.currentPrice > 0) return state.currentPrice * (1 + (Math.random()-0.5)*0.001);
-    // Sem preço inicial nunca definido: usa um preço-semente para destravar
-    // o histórico em vez de ficar preso em 0 para sempre.
-    if(state.cgFailCount >= 3) {
-      addLog('⚠️ Feed de preço indisponível — usando preço-semente para destravar o bot.', 'warn');
-      return SEED_PRICES[cgId] || 0;
+    if (state.currentPrice > 0) return state.currentPrice * (1 + (Math.random() - 0.5) * 0.001);
+    if (state.cgFailCount >= 3) {
+      addLog('⚠️ Feed de preço indisponível — usando preço-semente.', 'warn');
+      return SEED_PRICES[pair.cgIn] || SEED_PRICES[underlyingTicker(pair)] || 0;
     }
     return 0;
   }
@@ -934,7 +1164,7 @@ async function trySwapV3ExactInputSingle(router, baseParams, feeTiers, overrides
       lastErr = err;
     }
   }
-  throw lastErr || new Error('Nenhuma pool Uniswap V3 encontrada para este par.');
+  throw lastErr || new Error('Nenhuma pool Mercado de Ações encontrada para este par.');
 }
 
 // Mesma lógica, mas via multicall (swap + unwrapWETH9) para o caminho Token → ETH
@@ -951,155 +1181,170 @@ async function trySwapV3Multicall(router, baseParams, feeTiers, deadline, recipi
       lastErr = err;
     }
   }
-  throw lastErr || new Error('Nenhuma pool Uniswap V3 encontrada para este par.');
+  throw lastErr || new Error('Nenhuma pool Mercado de Ações encontrada para este par.');
 }
 
 // =============================================
 //  EXECUÇÃO REAL DE SWAP (ethers.js + DEX)
 // =============================================
 async function executeSwap(direction, opts) {
-  opts = opts || {}; // opts.amountEth (ETH->token) ou opts.amountToken (token->ETH, BigInt): usados pelo motor da regra
-  // direction: 'BUY' = comprar tokenIn com tokenOut, 'SELL' = o inverso
+  opts = opts || {};
+  // direction: 'BUY' = USDC → ativo (tokenIn) | 'SELL' = ativo → USDC
   if(!state.wallet) { addLog('Sem carteira conectada.', 'error'); return null; }
   if(state.openSwap) { addLog('Swap já em andamento.', 'warn'); return null; }
-  if(state.balance <= 0) { addLog('Saldo insuficiente.', 'error'); return null; }
 
-  const pair = TOKEN_PAIRS[CONFIG.pair];
-  const net  = NETWORKS[CONFIG.network];
+  let pair;
+  try {
+    pair = logPairGuard(direction);
+  } catch (e) {
+    addLog('❌ ' + e.message, 'error');
+    return null;
+  }
+
+  const net = NETWORKS[CONFIG.network];
   state.openSwap = true;
   showPendingSwap(`Executando ${direction} ${pair.symbolIn}/${pair.symbolOut}...`);
 
+  const tokenABI = [
+    "function approve(address spender, uint256 amount) external returns (bool)",
+    "function balanceOf(address) view returns (uint256)",
+    "function allowance(address owner, address spender) view returns (uint256)",
+    "function decimals() view returns (uint8)",
+    "function symbol() view returns (string)"
+  ];
+
   try {
-    const stakeAmount = (opts.amountEth != null) ? opts.amountEth : state.balance * (CONFIG.stakePct / 100);
-    const amountIn = ethers.parseEther(stakeAmount.toFixed(6));
-    const deadline = Math.floor(Date.now()/1000) + 300;
-    const slippageFactor = BigInt(Math.floor((1 - CONFIG.slippage/100) * 10000));
-    // Obter quote do preço atual
-    const priceAtExec = state.currentPrice;
-    let amountOutMin = BigInt(0);
-    if(pair.symbolOut !== 'USDC' && pair.symbolOut !== 'USDT') {
-      amountOutMin = BigInt(0);
-    } else {
-      const expectedOut = stakeAmount * priceAtExec;
-      const outRaw = BigInt(Math.floor(expectedOut * Math.pow(10, pair.decimalsOut)));
-      amountOutMin = (outRaw * slippageFactor) / BigInt(10000);
+    // Confirma on-chain que o contrato do ativo responde com símbolo compatível (quando possível)
+    try {
+      const stock = new ethers.Contract(pair.tokenIn, tokenABI, state.provider);
+      const sym = await stock.symbol();
+      if (sym && pair.symbolIn && !String(sym).toUpperCase().includes(String(pair.symbolIn).replace(/x$/i,'').toUpperCase().slice(0,3)) && String(sym).toUpperCase() !== String(pair.symbolIn).toUpperCase()) {
+        addLog(`⚠️ Símbolo on-chain "${sym}" ≠ selecionado "${pair.symbolIn}" — abortando por segurança.`, 'error');
+        state.openSwap = false;
+        hidePendingSwap();
+        return null;
+      }
+      addLog(`✅ Contrato ativo ok: on-chain symbol=${sym}`, 'success');
+    } catch (e) {
+      addLog(`⚠️ Não foi possível ler symbol() do ativo (${e.message}) — seguindo com endereço do catálogo.`, 'warn');
     }
 
-    // ABI do router Uniswap V2 / PancakeSwap / QuickSwap (redes bsc, polygon)
+    const deadline = Math.floor(Date.now()/1000) + 300;
+    const isV3 = (CONFIG.network === 'ethereum' || CONFIG.network === 'arbitrum');
+    const FEE_TIERS_V3 = [3000, 500, 10000, 100];
     const routerABIv2 = [
-      "function swapExactETHForTokens(uint amountOutMin, address[] calldata path, address to, uint deadline) external payable returns (uint[] memory amounts)",
-      "function swapExactTokensForETH(uint amountIn, uint amountOutMin, address[] calldata path, address to, uint deadline) external returns (uint[] memory amounts)",
+      "function swapExactTokensForTokens(uint amountIn, uint amountOutMin, address[] calldata path, address to, uint deadline) external returns (uint[] memory amounts)",
       "function getAmountsOut(uint amountIn, address[] calldata path) external view returns (uint[] memory amounts)"
     ];
-
-    // ABI do SwapRouter Uniswap V3 (redes ethereum, arbitrum) — o router V3
-    // NÃO tem swapExactETHForTokens/swapExactTokensForETH, por isso o swap
-    // revertia (CALL_EXCEPTION) ao chamar essas funções nesse contrato.
     const routerABIv3 = [
-      "function exactInputSingle((address tokenIn,address tokenOut,uint24 fee,address recipient,uint256 deadline,uint256 amountIn,uint256 amountOutMinimum,uint160 sqrtPriceLimitX96)) external payable returns (uint256 amountOut)",
-      "function multicall(bytes[] data) external payable returns (bytes[] memory results)",
-      "function unwrapWETH9(uint256 amountMinimum, address recipient) external payable"
+      "function exactInputSingle((address tokenIn,address tokenOut,uint24 fee,address recipient,uint256 deadline,uint256 amountIn,uint256 amountOutMinimum,uint160 sqrtPriceLimitX96)) external payable returns (uint256 amountOut)"
     ];
-
-    const isV3 = net.dex === "Uniswap V3";
-    const WETH = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2";
-    // Endereço mágico do Uniswap V3: significa "mantenha o token no próprio router"
-    // (usado quando o output ainda precisa ser desembrulhado de WETH para ETH)
-    const ADDRESS_THIS = ethers.ZeroAddress; // SwapRouter v1: recipient 0x0 = "fica no próprio router" (para o unwrapWETH9)
-    const FEE_TIERS_V3 = [3000, 500, 10000]; // 0.3% / 0.05% / 1% — tenta nessa ordem
     const router = new ethers.Contract(net.router, isV3 ? routerABIv3 : routerABIv2, state.wallet);
+    const gasPrice = await state.provider.getFeeData();
+    const gasOpts = { gasLimit: isV3 ? 450000n : 350000n, maxFeePerGas: gasPrice.maxFeePerGas, maxPriorityFeePerGas: gasPrice.maxPriorityFeePerGas };
+
+    const usdc = new ethers.Contract(pair.tokenOut, tokenABI, state.wallet);
+    const stock = new ethers.Contract(pair.tokenIn, tokenABI, state.wallet);
+    const priceAtExec = state.currentPrice || 0;
 
     let tx;
-    const gasPrice = await state.provider.getFeeData();
-    const gasOpts = { gasLimit: isV3 ? 400000n : 300000n, maxFeePerGas: gasPrice.maxFeePerGas, maxPriorityFeePerGas: gasPrice.maxPriorityFeePerGas };
-
-    if(isV3) {
-      // ---- UNISWAP V3 ----
-      if(direction === 'BUY') {
-        // ETH → Token: o router faz o wrap do ETH enviado em msg.value automaticamente
-        // quando tokenIn = WETH, então basta mandar `value: amountIn`.
+    if (direction === 'BUY') {
+      // USDC → ativo
+      const usdcBal = await usdc.balanceOf(state.walletAddress);
+      if (usdcBal === 0n) {
+        addLog('Saldo USDC insuficiente para BUY.', 'error');
+        state.openSwap = false; hidePendingSwap(); return null;
+      }
+      let amountIn = usdcBal;
+      if (opts.amountToken != null) amountIn = opts.amountToken < usdcBal ? opts.amountToken : usdcBal;
+      else if (CONFIG.stakePct && CONFIG.stakePct < 100) {
+        amountIn = (usdcBal * BigInt(Math.floor(CONFIG.stakePct * 100))) / 10000n;
+      }
+      const allow = await usdc.allowance(state.walletAddress, net.router);
+      if (allow < amountIn) {
+        const approveTx = await usdc.approve(net.router, amountIn);
+        await approveTx.wait();
+        addLog('Approve USDC ok', 'info');
+      }
+      let amountOutMin = 0n;
+      if (priceAtExec > 0) {
+        const usdcHuman = Number(ethers.formatUnits(amountIn, pair.decimalsOut || 6));
+        const expectedStock = usdcHuman / priceAtExec;
+        const raw = BigInt(Math.floor(expectedStock * Math.pow(10, pair.decimalsIn || 18) * (1 - (CONFIG.slippage || 1) / 100)));
+        amountOutMin = raw > 0n ? raw : 0n;
+      }
+      addLog(`BUY path: ${pair.tokenOut.slice(0,10)}… → ${pair.tokenIn.slice(0,10)}… amountIn=${amountIn}`, 'swap');
+      if (isV3) {
         const baseParams = {
-          tokenIn: WETH,
-          tokenOut: pair.tokenOut,
+          tokenIn: pair.tokenOut,   // USDC
+          tokenOut: pair.tokenIn,   // ativo
           recipient: state.walletAddress,
           deadline,
           amountIn,
           amountOutMinimum: amountOutMin,
           sqrtPriceLimitX96: 0n
         };
-        tx = await trySwapV3ExactInputSingle(router, baseParams, FEE_TIERS_V3, { ...gasOpts, value: amountIn });
+        tx = await trySwapV3ExactInputSingle(router, baseParams, FEE_TIERS_V3, gasOpts);
       } else {
-        // Token → ETH: precisa approve, depois exactInputSingle mandando o WETH
-        // resultante para o próprio router (ADDRESS_THIS) e, no mesmo multicall,
-        // um unwrapWETH9 que converte para ETH nativo e manda pro usuário.
-        const tokenABI = [
-          "function approve(address spender, uint256 amount) external returns (bool)",
-          "function balanceOf(address) view returns (uint256)",
-          "function allowance(address owner, address spender) view returns (uint256)"
-        ];
-        const tokenContract = new ethers.Contract(pair.tokenOut, tokenABI, state.wallet);
-        const tokenBalance = await tokenContract.balanceOf(state.walletAddress);
-        const swapIn = (opts.amountToken != null && opts.amountToken < tokenBalance) ? opts.amountToken : tokenBalance;
-        const currentAllowance = await tokenContract.allowance(state.walletAddress, net.router);
-        if(currentAllowance < tokenBalance) {
-          const approveTx = await tokenContract.approve(net.router, tokenBalance);
-          await approveTx.wait(); // espera minerar, senão o swap pode reverter por falta de allowance
-        }
-        const expectedEth = (Number(swapIn) / Math.pow(10, pair.decimalsOut)) / priceAtExec; // o token vendido é o tokenOut do par (USDC/USDT)
-        const minEth = BigInt(Math.floor(expectedEth * (1 - CONFIG.slippage/100) * 1e18));
-        const baseParams = {
-          tokenIn: pair.tokenOut,
-          tokenOut: WETH,
-          recipient: ADDRESS_THIS,
-          deadline,
-          amountIn: swapIn,
-          amountOutMinimum: minEth,
-          sqrtPriceLimitX96: 0n
-        };
-        tx = await trySwapV3Multicall(router, baseParams, FEE_TIERS_V3, deadline, state.walletAddress, gasOpts);
+        tx = await router.swapExactTokensForTokens(
+          amountIn, amountOutMin,
+          [pair.tokenOut, pair.tokenIn],
+          state.walletAddress, deadline, gasOpts
+        );
       }
     } else {
-      // ---- UNISWAP V2 / PANCAKESWAP / QUICKSWAP ----
-      if(direction === 'BUY') {
-        tx = await router.swapExactETHForTokens(
-          amountOutMin,
-          [WETH, pair.tokenOut],
-          state.walletAddress,
+      // SELL: ativo → USDC
+      const stockBal = await stock.balanceOf(state.walletAddress);
+      if (stockBal === 0n) {
+        addLog(`Saldo de ${pair.symbolIn} insuficiente para SELL.`, 'error');
+        state.openSwap = false; hidePendingSwap(); return null;
+      }
+      let amountIn = stockBal;
+      if (opts.amountToken != null) amountIn = opts.amountToken < stockBal ? opts.amountToken : stockBal;
+      else if (CONFIG.stakePct && CONFIG.stakePct < 100) {
+        amountIn = (stockBal * BigInt(Math.floor(CONFIG.stakePct * 100))) / 10000n;
+      }
+      const allow = await stock.allowance(state.walletAddress, net.router);
+      if (allow < amountIn) {
+        const approveTx = await stock.approve(net.router, amountIn);
+        await approveTx.wait();
+        addLog('Approve ' + pair.symbolIn + ' ok', 'info');
+      }
+      let amountOutMin = 0n;
+      if (priceAtExec > 0) {
+        const stockHuman = Number(ethers.formatUnits(amountIn, pair.decimalsIn || 18));
+        const expectedUsdc = stockHuman * priceAtExec;
+        const raw = BigInt(Math.floor(expectedUsdc * Math.pow(10, pair.decimalsOut || 6) * (1 - (CONFIG.slippage || 1) / 100)));
+        amountOutMin = raw > 0n ? raw : 0n;
+      }
+      addLog(`SELL path: ${pair.tokenIn.slice(0,10)}… → ${pair.tokenOut.slice(0,10)}… amountIn=${amountIn}`, 'swap');
+      if (isV3) {
+        const baseParams = {
+          tokenIn: pair.tokenIn,    // ativo
+          tokenOut: pair.tokenOut,  // USDC
+          recipient: state.walletAddress,
           deadline,
-          { ...gasOpts, value: amountIn }
-        );
+          amountIn,
+          amountOutMinimum: amountOutMin,
+          sqrtPriceLimitX96: 0n
+        };
+        tx = await trySwapV3ExactInputSingle(router, baseParams, FEE_TIERS_V3, gasOpts);
       } else {
-        const tokenABI = [
-          "function approve(address spender, uint256 amount) external returns (bool)",
-          "function balanceOf(address) view returns (uint256)",
-          "function allowance(address owner, address spender) view returns (uint256)"
-        ];
-        const tokenContract = new ethers.Contract(pair.tokenOut, tokenABI, state.wallet);
-        const tokenBalance = await tokenContract.balanceOf(state.walletAddress);
-        const swapIn = (opts.amountToken != null && opts.amountToken < tokenBalance) ? opts.amountToken : tokenBalance;
-        const currentAllowance = await tokenContract.allowance(state.walletAddress, net.router);
-        if(currentAllowance < tokenBalance) {
-          const approveTx = await tokenContract.approve(net.router, tokenBalance);
-          await approveTx.wait(); // espera minerar antes de tentar o swap
-        }
-        tx = await router.swapExactTokensForETH(
-          swapIn,
-          0n,
-          [pair.tokenOut, WETH],
-          state.walletAddress,
-          deadline,
-          gasOpts
+        tx = await router.swapExactTokensForTokens(
+          amountIn, amountOutMin,
+          [pair.tokenIn, pair.tokenOut],
+          state.walletAddress, deadline, gasOpts
         );
       }
     }
 
-    addLog(`📤 TX enviada: ${tx.hash.slice(0,16)}...`, 'swap');
+    addLog(`📤 TX enviada: ${tx.hash.slice(0,16)}... · ${direction} ${pair.symbolIn}/USDC`, 'swap');
     state.apiStatus.dex = true;
     updateAPIStatus();
     const receipt = await tx.wait();
     hidePendingSwap();
     state.openSwap = false;
-    return { hash: tx.hash, gasUsed: receipt.gasUsed.toString(), priceAtExec };
+    return { hash: tx.hash, gasUsed: receipt.gasUsed.toString(), priceAtExec, symbol: pair.symbolIn, tokenIn: pair.tokenIn, tokenOut: pair.tokenOut };
   } catch(e) {
     hidePendingSwap();
     state.openSwap = false;
@@ -1109,6 +1354,7 @@ async function executeSwap(direction, opts) {
     return null;
   }
 }
+
 
 // Versão SIMULADA do swap (sem carteira ou modo demo)
 async function simulateSwap(direction, priceAtExec) {
@@ -1201,7 +1447,7 @@ function performSecurityChecks() {
     macdCheck:        { passed: true, reason: 'OK', value: 0 },
     // 5. Max trades per day
     dailyLimitCheck:  { passed: true, reason: 'OK', value: 0 },
-    // 14. Win Rate (when >= 5 trades)
+    // 14. Taxa de Acerto (when >= 5 trades)
     winRateCheck:     { passed: true, reason: 'OK', value: 0 },
     // 13. Consecutive losses
     consecutiveLossCheck: { passed: true, reason: 'OK', value: 0 },
@@ -1255,12 +1501,12 @@ function performSecurityChecks() {
   checks.dailyLimitCheck.reason = `${state.tradesToday}/${CONFIG.maxTrades} swaps hoje`;
   checks.dailyLimitCheck.value = `${state.tradesToday}/${CONFIG.maxTrades}`;
 
-  // 14. Win Rate (só verifica quando >= 5 trades)
+  // 14. Taxa de Acerto (só verifica quando >= 5 trades)
   const total = state.wins + state.losses;
   if(total >= 5) {
     const wr = (state.wins/total)*100;
     checks.winRateCheck.passed = wr >= 55;
-    checks.winRateCheck.reason = `Win Rate: ${wr.toFixed(1)}%`;
+    checks.winRateCheck.reason = `Taxa de Acerto: ${wr.toFixed(1)}%`;
   } else {
     checks.winRateCheck.passed = true;
     checks.winRateCheck.reason = 'Histórico < 5 trades';
@@ -1300,7 +1546,7 @@ function displaySecurityResults(analyses, direction, resultEl) {
     {key:'smaCheck',           label:'SMA 20'},
     {key:'macdCheck',          label:'MACD Histograma'},
     {key:'dailyLimitCheck',    label:'Limite Diário'},
-    {key:'winRateCheck',       label:'Win Rate'},
+    {key:'winRateCheck',       label:'Taxa de Acerto'},
     {key:'consecutiveLossCheck',label:'Perdas Consecutivas'},
     {key:'balanceCheck',       label:'P&L Diário'},
     {key:'openSwapCheck',      label:'Sem Swap Aberto'},
@@ -2047,7 +2293,7 @@ document.addEventListener('DOMContentLoaded', function() {
   } catch(e) { if(termsPopup) termsPopup.style.display='flex'; }
 
   addLog('✅ OCTOCOOKIE Swap Trader Bot pronto. Conecte sua carteira e clique INICIAR.', 'success');
-  addLog('APIs: Binance (preços) · ethers.js (execução) · Uniswap/PancakeSwap (DEX)', 'info');
+  addLog('APIs: Binance (preços) · ethers.js (execução) · Mercado de Ações/Mercado de Ações (DEX)', 'info');
 });
 </script>
 <script>
@@ -2486,7 +2732,7 @@ if (typeof window !== 'undefined') window.HG_CORE = HG_CORE;
 /* ================= INTEGRAÇÃO COM O TRADER =================
  * A regra do holograma_quantico.py (circuito de 8 qubits -> Q, tendência, stop móvel, barra de risco) DECIDE as ordens.
  * Sem carteira conectada: carteira virtual (como o --simulado do Python, mas com preço real da Binance).
- * Com carteira conectada (ETH/USDC ou ETH/USDT na Ethereum): rebalanceia a carteira real para a exposição alvo.        */
+ * Com carteira conectada (AAPL/USDC etc.): rebalanceia a carteira real para a exposição alvo.        */
 const K = HG_CORE;
 const $ = (id) => document.getElementById(id);
 const pct = (v, d = 1) => (v >= 0 ? '+' : '') + v.toFixed(d) + '%';

@@ -5,7 +5,7 @@ import type { Post, Comment } from "@/lib/social-types";
 import { AuthModal } from "@/components/social/auth-modal";
 import { useAuth } from "@/lib/auth-context";
 import { Button } from "@/components/ui/button";
-import { CryptoTicker } from "@/components/crypto-ticker";
+import { StockTicker } from "@/components/stock-ticker";
 import { AdSlot } from "@/components/ad-slot";
 import {
   ArrowBigUp,
@@ -134,7 +134,7 @@ function PostPage() {
         </div>
       </header>
 
-      <CryptoTicker />
+      <StockTicker />
 
       <div className="mx-auto w-full max-w-3xl px-4 py-4">
         <article className="flex gap-3 rounded-lg border bg-card p-4">

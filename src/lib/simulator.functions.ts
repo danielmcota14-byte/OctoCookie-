@@ -5,7 +5,7 @@ import { createLovableAiGatewayProvider, withGroqModelFallback } from "./ai-gate
 
 const Input = z.object({
   code: z.string().min(1).max(20000),
-  symbol: z.string().default("BTC/USDT"),
+  symbol: z.string().default("AAPL"),
   timeframe: z.string().default("1h"),
   bars: z.number().int().min(50).max(500).default(200),
   seed: z.number().int().optional(),

@@ -1923,15 +1923,13 @@ var VFileMessage = class extends Error {
 		/** @type {Options} */
 		let options = {};
 		let legacyCause = false;
-		if (optionsOrParentOrPlace) {
-			if ("line" in optionsOrParentOrPlace && "column" in optionsOrParentOrPlace) options = { place: optionsOrParentOrPlace };
-			else if ("start" in optionsOrParentOrPlace && "end" in optionsOrParentOrPlace) options = { place: optionsOrParentOrPlace };
-			else if ("type" in optionsOrParentOrPlace) options = {
-				ancestors: [optionsOrParentOrPlace],
-				place: optionsOrParentOrPlace.position
-			};
-			else options = { ...optionsOrParentOrPlace };
-		}
+		if (optionsOrParentOrPlace) if ("line" in optionsOrParentOrPlace && "column" in optionsOrParentOrPlace) options = { place: optionsOrParentOrPlace };
+		else if ("start" in optionsOrParentOrPlace && "end" in optionsOrParentOrPlace) options = { place: optionsOrParentOrPlace };
+		else if ("type" in optionsOrParentOrPlace) options = {
+			ancestors: [optionsOrParentOrPlace],
+			place: optionsOrParentOrPlace.position
+		};
+		else options = { ...optionsOrParentOrPlace };
 		if (typeof causeOrReason === "string") reason = causeOrReason;
 		else if (!options.cause && causeOrReason) {
 			legacyCause = true;
@@ -2097,15 +2095,14 @@ var own = {}.hasOwnProperty;
 /** @type {Map<string, number>} */
 var emptyMap = /* @__PURE__ */ new Map();
 var cap = /[A-Z]/g;
-var tableElements = /* @__PURE__ */ new Set([
+var tableElements = new Set([
 	"table",
 	"tbody",
 	"thead",
 	"tfoot",
 	"tr"
 ]);
-var tableCellElement = /* @__PURE__ */ new Set(["td", "th"]);
-var docs = "https://github.com/syntax-tree/hast-util-to-jsx-runtime";
+var tableCellElement = new Set(["td", "th"]);
 /**
 * Transform a hast tree to preact, react, solid, svelte, vue, etc.,
 * with an automatic JSX runtime.
@@ -2410,27 +2407,25 @@ function createElementProps(state, node) {
 function createJsxElementProps(state, node) {
 	/** @type {Props} */
 	const props = {};
-	for (const attribute of node.attributes) if (attribute.type === "mdxJsxExpressionAttribute") {
-		if (attribute.data && attribute.data.estree && state.evaluater) {
-			const expression = attribute.data.estree.body[0];
-			expression.type;
-			const objectExpression = expression.expression;
-			objectExpression.type;
-			const property = objectExpression.properties[0];
-			property.type;
-			Object.assign(props, state.evaluater.evaluateExpression(property.argument));
-		} else crashEstree(state, node.position);
-	} else {
+	for (const attribute of node.attributes) if (attribute.type === "mdxJsxExpressionAttribute") if (attribute.data && attribute.data.estree && state.evaluater) {
+		const expression = attribute.data.estree.body[0];
+		expression.type;
+		const objectExpression = expression.expression;
+		objectExpression.type;
+		const property = objectExpression.properties[0];
+		property.type;
+		Object.assign(props, state.evaluater.evaluateExpression(property.argument));
+	} else crashEstree(state, node.position);
+	else {
 		const name = attribute.name;
 		/** @type {unknown} */
 		let value;
-		if (attribute.value && typeof attribute.value === "object") {
-			if (attribute.value.data && attribute.value.data.estree && state.evaluater) {
-				const expression = attribute.value.data.estree.body[0];
-				expression.type;
-				value = state.evaluater.evaluateExpression(expression.expression);
-			} else crashEstree(state, node.position);
-		} else value = attribute.value === null ? true : attribute.value;
+		if (attribute.value && typeof attribute.value === "object") if (attribute.value.data && attribute.value.data.estree && state.evaluater) {
+			const expression = attribute.value.data.estree.body[0];
+			expression.type;
+			value = state.evaluater.evaluateExpression(expression.expression);
+		} else crashEstree(state, node.position);
+		else value = attribute.value === null ? true : attribute.value;
 		props[name] = value;
 	}
 	return props;
@@ -2517,7 +2512,7 @@ function parseStyle(state, value) {
 			source: "hast-util-to-jsx-runtime"
 		});
 		message.file = state.filePath || void 0;
-		message.url = docs + "#cannot-parse-style-attribute";
+		message.url = "https://github.com/syntax-tree/hast-util-to-jsx-runtime#cannot-parse-style-attribute";
 		throw message;
 	}
 }
@@ -2590,7 +2585,7 @@ function crashEstree(state, place) {
 		source: "hast-util-to-jsx-runtime"
 	});
 	message.file = state.filePath || void 0;
-	message.url = docs + "#cannot-handle-mdx-estrees-without-createevaluater";
+	message.url = "https://github.com/syntax-tree/hast-util-to-jsx-runtime#cannot-handle-mdx-estrees-without-createevaluater";
 	throw message;
 }
 /**

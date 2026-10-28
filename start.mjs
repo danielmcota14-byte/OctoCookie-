@@ -17,6 +17,18 @@ import { spawn, spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 
 const ROOT = path.dirname(fileURLToPath(import.meta.url));
+// Guard global: proxy/stream não pode derrubar o processo
+process.on("uncaughtException", (err) => {
+  const code = err && err.code;
+  if (code === "ERR_STREAM_WRITE_AFTER_END" || code === "ECONNRESET" || code === "EPIPE" || code === "ERR_HTTP_HEADERS_SENT") {
+    console.log(`[proxy] aviso ignorado: ${code}`);
+    return;
+  }
+  console.error(err);
+  process.exit(1);
+});
+process.on("unhandledRejection", (err) => console.error("[proxy] rejection", err));
+
 const PUBLIC_PORT = Number(process.env.PORT) || 3000;
 const PORTS = { site: 3100, bot: 3101, cookiescript: 3102 };
 const isWin = process.platform === "win32";
@@ -113,6 +125,68 @@ function launch(svc) {
 }
 services.forEach(launch);
 
+
+// ---------- fallback estático (.output/public) quando o site SSR está fora ----------
+const PUBLIC_DIR = path.join(ROOT, ".output/public");
+const MIME = {
+  ".html": "text/html; charset=utf-8",
+  ".js": "application/javascript; charset=utf-8",
+  ".mjs": "application/javascript; charset=utf-8",
+  ".css": "text/css; charset=utf-8",
+  ".json": "application/json; charset=utf-8",
+  ".png": "image/png",
+  ".jpg": "image/jpeg",
+  ".jpeg": "image/jpeg",
+  ".svg": "image/svg+xml",
+  ".webp": "image/webp",
+  ".ico": "image/x-icon",
+  ".woff": "font/woff",
+  ".woff2": "font/woff2",
+  ".map": "application/json",
+  ".txt": "text/plain; charset=utf-8",
+};
+
+function safeJoin(base, reqPath) {
+  const decoded = decodeURIComponent((reqPath || "/").split("?")[0].split("#")[0]);
+  const rel = decoded.replace(/^\/+/, "");
+  const full = path.normalize(path.join(base, rel));
+  if (!full.startsWith(path.normalize(base))) return null;
+  return full;
+}
+
+function tryStatic(req, res) {
+  let urlPath = (req.url || "/").split("?")[0];
+  if (urlPath === "/") urlPath = "/index.html";
+  // apps embutidos
+  if (urlPath === "/octocookie-app" || urlPath === "/octocookie-app/") urlPath = "/octocookie-app/octocookie.html";
+  if (urlPath === "/cryptex" || urlPath === "/cryptex/") urlPath = "/octocookie-app/cryptex.html";
+
+  let file = safeJoin(PUBLIC_DIR, urlPath);
+  if (!file) return false;
+  if (fs.existsSync(file) && fs.statSync(file).isDirectory()) {
+    file = path.join(file, "index.html");
+  }
+  if (!fs.existsSync(file) || !fs.statSync(file).isFile()) {
+    // SPA fallback só para rotas sem extensão
+    if (!path.extname(urlPath)) {
+      const idx = path.join(PUBLIC_DIR, "index.html");
+      if (fs.existsSync(idx)) file = idx;
+      else return false;
+    } else return false;
+  }
+  const ext = path.extname(file).toLowerCase();
+  const type = MIME[ext] || "application/octet-stream";
+  try {
+    const data = fs.readFileSync(file);
+    res.writeHead(200, { "content-type": type, "cache-control": "no-cache" });
+    res.end(data);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+
 // ---------- proxy: uma porta pública ----------
 function under(url, prefix) {
   return url === prefix || url.startsWith(prefix + "/") || url.startsWith(prefix + "?");
@@ -122,16 +196,52 @@ function forward(req, res, port, strip) {
   const target = strip ? req.url.slice(strip.length) || "/" : req.url;
   const headers = { ...req.headers, "x-forwarded-for": req.socket.remoteAddress || "" };
   if (!headers["x-forwarded-proto"]) headers["x-forwarded-proto"] = "http";
+  let done = false;
+  const kill = (s) => { try { s.destroy(); } catch (_) {} };
+  const endRes = (code, body) => {
+    if (done || res.writableEnded || res.destroyed) return;
+    done = true;
+    try {
+      if (!res.headersSent) res.writeHead(code || 502, { "content-type": "application/json", "connection": "close" });
+      res.end(body || "");
+    } catch (_) {}
+  };
+  // cliente já foi embora
+  res.on("error", () => { done = true; });
+  res.on("close", () => { done = true; });
+
   const up = http.request({ host: "127.0.0.1", port, method: req.method, path: target.startsWith("/") ? target : "/" + target, headers }, (r) => {
-    res.writeHead(r.statusCode || 502, r.headers);
-    r.pipe(res);
+    if (done || res.writableEnded || res.destroyed) { r.resume(); kill(r); return; }
+    r.on("error", () => endRes(502, JSON.stringify({ error: "upstream error" })));
+    try {
+      const hdrs = { ...r.headers };
+      delete hdrs["transfer-encoding"];
+      delete hdrs.connection;
+      delete hdrs["keep-alive"];
+      if (!res.headersSent) res.writeHead(r.statusCode || 502, hdrs);
+    } catch (_) { r.resume(); return; }
+    // pipe com proteção: se res já fechou, não escreve
+    r.on("data", (chunk) => {
+      if (done || res.writableEnded || res.destroyed) { kill(r); return; }
+      try {
+        const ok = res.write(chunk);
+        if (ok === false) r.pause();
+      } catch (_) { done = true; kill(r); }
+    });
+    r.on("end", () => {
+      if (!res.writableEnded && !res.destroyed) {
+        try { res.end(); } catch (_) {}
+      }
+      done = true;
+    });
+    res.on("drain", () => { try { r.resume(); } catch (_) {} });
   });
-  up.on("error", () => {
-    if (!res.headersSent) res.writeHead(502, { "content-type": "application/json" });
-    res.end(JSON.stringify({ error: "Serviço iniciando ou fora do ar. Tente de novo em alguns segundos." }));
-  });
-  res.on("close", () => up.destroy());
-  req.pipe(up);
+  up.on("error", () => endRes(502, JSON.stringify({ error: "Serviço iniciando ou fora do ar. Tente de novo em alguns segundos." })));
+  res.on("close", () => { done = true; kill(up); });
+  req.on("error", () => { done = true; kill(up); });
+  req.on("aborted", () => { done = true; kill(up); });
+  if (req.readable) req.pipe(up);
+  else up.end();
 }
 
 function alive(port) {
@@ -146,24 +256,124 @@ function alive(port) {
 const server = http.createServer(async (req, res) => {
   const url = req.url || "/";
   if (url === "/healthz") {
-    const st = { site: await alive(PORTS.site), bot: await alive(PORTS.bot), cookiescript: await alive(PORTS.cookiescript) };
-    res.writeHead(st.site ? 200 : 503, { "content-type": "application/json" });
-    return res.end(JSON.stringify(st));
+    const stt = { site: await alive(PORTS.site), bot: await alive(PORTS.bot), cookiescript: await alive(PORTS.cookiescript) };
+    res.writeHead(stt.site ? 200 : 503, { "content-type": "application/json" });
+    return res.end(JSON.stringify(stt));
   }
   if (url === "/cookiescript-app") { res.writeHead(301, { Location: "/cookiescript-app/" }); return res.end(); }
   if (under(url, "/cookiescript-app")) return forward(req, res, PORTS.cookiescript, "/cookiescript-app");
   if (under(url, "/bot")) return forward(req, res, PORTS.bot, "/bot");
-  return forward(req, res, PORTS.site, "");
+
+  const pathOnly = url.split("?")[0];
+  const accept = String(req.headers.accept || "");
+  const wantsHtml = accept.includes("text/html") || !path.extname(pathOnly);
+
+  // Estáticos do trader/cryptex/assets sempre do disco
+  if (
+    pathOnly.startsWith("/octocookie-app/") ||
+    pathOnly.startsWith("/assets/") ||
+    pathOnly.endsWith(".json") ||
+    pathOnly.endsWith(".html") ||
+    pathOnly === "/cryptex" || pathOnly === "/cryptex/"
+  ) {
+    if (tryStatic(req, res)) return;
+  }
+
+  // Atalhos diretos para apps embutidos (não dependem do React SSR)
+  if (pathOnly === "/trader" || pathOnly === "/trader/") {
+    res.writeHead(302, { Location: "/octocookie-app/octocookie.html" });
+    return res.end();
+  }
+  if (pathOnly === "/carteira" || pathOnly === "/cryptex" || pathOnly.startsWith("/carteira")) {
+    // carteira React pode estar fora — oferece cryptex estático como fallback de conteúdo
+  }
+
+  const siteUp = await alive(PORTS.site);
+  if (siteUp) {
+    // Proxy com fallback: se o upstream falhar e for navegação HTML, serve estático
+    return forwardWithFallback(req, res, PORTS.site, "");
+  }
+  if (tryStatic(req, res)) return;
+  res.writeHead(503, { "content-type": "text/html; charset=utf-8" });
+  res.end(`<!doctype html><html><body style="font-family:sans-serif;padding:2rem;background:#faf7f2;color:#1a1a1a">
+    <h1>Site iniciando…</h1>
+    <p>O React ainda está subindo. Enquanto isso você pode usar:</p>
+    <ul>
+      <li><a href="/octocookie-app/octocookie.html">Trader / Bot</a></li>
+      <li><a href="/octocookie-app/cryptex.html">Cryptex (carteira)</a></li>
+      <li><a href="/healthz">Status /healthz</a></li>
+    </ul>
+    <p>Perfil financeiro: rota <code>/finance</code> (volta quando o site React estabilizar).</p>
+  </body></html>`);
 });
+
+function forwardWithFallback(req, res, port, strip) {
+  const target = strip ? req.url.slice(strip.length) || "/" : req.url;
+  const headers = { ...req.headers, "x-forwarded-for": req.socket.remoteAddress || "" };
+  if (!headers["x-forwarded-proto"]) headers["x-forwarded-proto"] = "http";
+  let done = false;
+  const kill = (s) => { try { s.destroy(); } catch (_) {} };
+  const fallback = () => {
+    if (done || res.headersSent) return;
+    if (tryStatic(req, res)) { done = true; return; }
+    done = true;
+    try {
+      res.writeHead(503, { "content-type": "text/html; charset=utf-8" });
+      res.end(`<!doctype html><html><body style="font-family:sans-serif;padding:2rem">
+        <h1>Serviço reiniciando</h1>
+        <p><a href="/octocookie-app/octocookie.html">Trader</a> · <a href="/octocookie-app/cryptex.html">Cryptex</a> · <a href="/">Início</a></p>
+      </body></html>`);
+    } catch (_) {}
+  };
+  const up = http.request({ host: "127.0.0.1", port, method: req.method, path: target.startsWith("/") ? target : "/" + target, headers }, (r) => {
+    if (done || res.writableEnded) { r.resume(); return; }
+    // Se upstream devolve 502/503 em navegação, tenta estático
+    if ((r.statusCode === 502 || r.statusCode === 503) && String(req.headers.accept || "").includes("text/html")) {
+      r.resume();
+      return fallback();
+    }
+    try {
+      const hdrs = { ...r.headers };
+      delete hdrs["transfer-encoding"];
+      delete hdrs.connection;
+      if (!res.headersSent) res.writeHead(r.statusCode || 502, hdrs);
+    } catch (_) { r.resume(); return fallback(); }
+    r.on("error", () => fallback());
+    r.on("data", (chunk) => {
+      if (done || res.writableEnded) { kill(r); return; }
+      try {
+        if (res.write(chunk) === false) r.pause();
+      } catch (_) { done = true; kill(r); }
+    });
+    r.on("end", () => {
+      if (!res.writableEnded) { try { res.end(); } catch (_) {} }
+      done = true;
+    });
+    res.on("drain", () => { try { r.resume(); } catch (_) {} });
+  });
+  up.on("error", () => fallback());
+  res.on("close", () => { done = true; kill(up); });
+  res.on("error", () => { done = true; kill(up); });
+  req.on("error", () => { done = true; kill(up); });
+  if (req.readable) req.pipe(up);
+  else up.end();
+}
 
 server.on("upgrade", (req, socket, head) => {
   const t = net.connect(PORTS.site, "127.0.0.1", () => {
-    t.write(`${req.method} ${req.url} HTTP/1.1\r\n` + Object.entries(req.headers).map(([k, v]) => `${k}: ${v}`).join("\r\n") + "\r\n\r\n");
-    t.write(head);
-    socket.pipe(t).pipe(socket);
+    try {
+      t.write(`${req.method} ${req.url} HTTP/1.1\r\n` + Object.entries(req.headers).map(([k, v]) => `${k}: ${v}`).join("\r\n") + "\r\n\r\n");
+      if (head && head.length) t.write(head);
+      socket.pipe(t);
+      t.pipe(socket);
+    } catch (_) {
+      try { socket.destroy(); } catch (__) {}
+      try { t.destroy(); } catch (__) {}
+    }
   });
-  t.on("error", () => socket.destroy());
-  socket.on("error", () => t.destroy());
+  t.on("error", () => { try { socket.destroy(); } catch (_) {} });
+  socket.on("error", () => { try { t.destroy(); } catch (_) {} });
+  socket.on("close", () => { try { t.destroy(); } catch (_) {} });
 });
 
 server.listen(PUBLIC_PORT, "0.0.0.0", () => log(`pronto em http://localhost:${PUBLIC_PORT}  (site /, bot /bot, CookieScript /cookiescript-app/)`));

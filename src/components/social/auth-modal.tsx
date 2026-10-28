@@ -67,7 +67,7 @@ export function AuthModal({ open, onOpenChange }: Props) {
             {mode === "login" ? "Entrar no OctoCommunity" : "Criar conta"}
           </DialogTitle>
           <DialogDescription>
-            Rede social Web3 do OctoCookie — compartilhe análises, portfolios e discussões.
+            Rede social de ações do OctoCookie — compartilhe análises, portfolios e discussões.
           </DialogDescription>
         </DialogHeader>
 

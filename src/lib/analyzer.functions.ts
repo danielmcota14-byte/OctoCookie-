@@ -5,61 +5,116 @@ import { createLovableAiGatewayProvider, withGroqModelFallback } from "./ai-gate
 
 const Input = z.object({ coinId: z.string().min(1).max(60) });
 
+// Nomes de tickers comuns (Yahoo Finance). Tickers da B3 usam o sufixo .SA automaticamente
+const STOCK_NAMES: Record<string, string> = {
+  aapl: "Apple Inc.",
+  msft: "Microsoft Corporation",
+  nvda: "NVIDIA Corporation",
+  tsla: "Tesla, Inc.",
+  amzn: "Amazon.com, Inc.",
+  googl: "Alphabet Inc.",
+  goog: "Alphabet Inc.",
+  meta: "Meta Platforms, Inc.",
+  "brk.b": "Berkshire Hathaway",
+  brkb: "Berkshire Hathaway",
+  jpm: "JPMorgan Chase",
+  v: "Visa Inc.",
+  jnj: "Johnson & Johnson",
+  wmt: "Walmart Inc.",
+  xom: "Exxon Mobil",
+  unh: "UnitedHealth Group",
+  ma: "Mastercard",
+  pg: "Procter & Gamble",
+};
+
+async function fetchYahooQuote(symbol: string) {
+  let json: any = null;
+  let lastErr = "sem resposta";
+  for (const host of ["query1", "query2"]) {
+    try {
+      const url = `https://${host}.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?range=1mo&interval=1d`;
+      const res = await fetch(url, {
+        headers: { "User-Agent": "Mozilla/5.0", Accept: "application/json" },
+        signal: AbortSignal.timeout(10000),
+      });
+      if (!res.ok) { lastErr = `Yahoo ${res.status}`; continue; }
+      json = await res.json();
+      break;
+    } catch (e) {
+      lastErr = e instanceof Error ? e.message : "erro de rede";
+    }
+  }
+  if (!json) throw new Error(lastErr);
+  const result = json?.chart?.result?.[0];
+  if (!result) throw new Error("Sem dados");
+  const meta = result.meta;
+  const closes: number[] = (result.indicators?.quote?.[0]?.close ?? []).filter(
+    (n: unknown) => typeof n === "number" && !Number.isNaN(n)
+  );
+  const price = meta.regularMarketPrice ?? closes[closes.length - 1];
+  const prev = meta.chartPreviousClose ?? closes[closes.length - 2] ?? price;
+  const change24h = prev ? ((price - prev) / prev) * 100 : 0;
+  const first = closes[0] ?? price;
+  const change30d = first ? ((price - first) / first) * 100 : 0;
+  const c7 = closes.length > 7 ? closes[closes.length - 8] : first;
+  const change7d = c7 ? ((price - c7) / c7) * 100 : change30d;
+  return {
+    symbol: (meta.symbol || symbol).toUpperCase(),
+    name: STOCK_NAMES[symbol.toLowerCase()] || meta.shortName || meta.symbol || symbol.toUpperCase(),
+    price,
+    change24h,
+    change7d,
+    change30d,
+    marketCap: meta.marketCap ?? null,
+    volume24h: meta.regularMarketVolume ?? null,
+    high52: meta.fiftyTwoWeekHigh ?? null,
+    low52: meta.fiftyTwoWeekLow ?? null,
+    sparkline: closes.slice(-30),
+    currency: meta.currency || "USD",
+  };
+}
+
 export const analyzeToken = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => Input.parse(input))
   .handler(async ({ data }) => {
-    const id = data.coinId.toLowerCase().trim().replace(/[^a-z0-9-]/g, "");
-    if (!id) return { error: "ID inválido" as string, coin: null, sparkline: [], analysis: "" };
+    const rawId = data.coinId.trim();
+    let symbol = rawId.toUpperCase().replace(/[^A-Z0-9.\-]/g, "");
+    // Ticker da B3 (ex.: PETR4, VALE3, BOVA11) → sufixo .SA do Yahoo Finance
+    if (/^[A-Z]{4}\d{1,2}$/.test(symbol)) symbol = `${symbol}.SA`;
+    if (!symbol) return { error: "Ticker inválido" as string, coin: null, sparkline: [], analysis: "" };
 
-    const url = `https://api.coingecko.com/api/v3/coins/${id}?localization=false&tickers=false&market_data=true&community_data=false&developer_data=false&sparkline=true`;
-    let raw: {
-      id: string;
-      symbol: string;
-      name: string;
-      image: { small: string };
-      market_cap_rank: number | null;
-      description: { en: string };
-      market_data: {
-        current_price: { usd: number };
-        market_cap: { usd: number };
-        total_volume: { usd: number };
-        price_change_percentage_24h: number;
-        price_change_percentage_7d: number;
-        price_change_percentage_30d: number;
-        ath: { usd: number };
-        atl: { usd: number };
-        circulating_supply: number;
-        sparkline_7d?: { price: number[] };
-      };
-    };
+    let quote: Awaited<ReturnType<typeof fetchYahooQuote>>;
     try {
-      const res = await fetch(url, { headers: { accept: "application/json" } });
-      if (!res.ok) {
-        return { error: res.status === 404 ? "Moeda não encontrada. Use o id do CoinGecko (ex.: bitcoin, ethereum, solana)." : `Falha na API (${res.status})`, coin: null, sparkline: [], analysis: "" };
-      }
-      raw = await res.json();
+      quote = await fetchYahooQuote(symbol);
     } catch (e) {
-      return { error: e instanceof Error ? e.message : "Erro de rede", coin: null, sparkline: [], analysis: "" };
+      return {
+        error:
+          e instanceof Error
+            ? `Ação não encontrada ou API indisponível. Use o ticker (ex.: AAPL, NVDA, PETR4, VALE3). (${e.message})`
+            : "Erro ao buscar ação",
+        coin: null,
+        sparkline: [],
+        analysis: "",
+      };
     }
 
     const coin = {
-      id: raw.id,
-      symbol: raw.symbol.toUpperCase(),
-      name: raw.name,
-      image: raw.image?.small ?? "",
-      rank: raw.market_cap_rank,
-      price: raw.market_data.current_price.usd,
-      marketCap: raw.market_data.market_cap.usd,
-      volume24h: raw.market_data.total_volume.usd,
-      change24h: raw.market_data.price_change_percentage_24h,
-      change7d: raw.market_data.price_change_percentage_7d,
-      change30d: raw.market_data.price_change_percentage_30d,
-      ath: raw.market_data.ath.usd,
-      atl: raw.market_data.atl.usd,
-      supply: raw.market_data.circulating_supply,
+      id: quote.symbol.toLowerCase(),
+      symbol: quote.symbol,
+      name: quote.name,
+      image: "",
+      rank: null as number | null,
+      price: quote.price,
+      marketCap: quote.marketCap,
+      volume24h: quote.volume24h,
+      change24h: quote.change24h,
+      change7d: quote.change7d,
+      change30d: quote.change30d,
+      high52: quote.high52 as number | null,
+      low52: quote.low52 as number | null,
+      currency: quote.currency,
     };
-    const sparkline = raw.market_data.sparkline_7d?.price ?? [];
-    const descRaw = (raw.description.en || "").replace(/<[^>]+>/g, "").slice(0, 1200);
+    const sparkline = quote.sparkline;
 
     let analysis = "";
     try {
@@ -67,21 +122,20 @@ export const analyzeToken = createServerFn({ method: "POST" })
         const gateway = createLovableAiGatewayProvider(key);
         const { text } = await generateText({
           model: gateway(modelId),
-          prompt: `Você é o OctoCookie, analista educacional. Explique em português BR de forma didática e neutra o token abaixo em 3 parágrafos curtos:
-1) O que é o projeto (com base na descrição).
-2) O que os números atuais dizem (preço, market cap, variações 24h/7d/30d, volume, distância do ATH).
-3) Riscos e conceitos que a pessoa deveria estudar antes de operar.
+          prompt: `Você é o OctoCookie, analista educacional de mercado acionário. Explique em português BR de forma didática e neutra a ação abaixo em 3 parágrafos curtos:
+1) O que é a empresa (setor, negócio principal).
+2) O que os números atuais dizem (preço, variações 24h/7d/30d, volume quando disponível).
+3) Riscos e conceitos que a pessoa deveria estudar antes de investir em ações (volatilidade, diversificação, horizonte).
 
 NUNCA dê recomendação de compra ou venda. Sempre reforce que é educacional.
 
-TOKEN: ${coin.name} (${coin.symbol})
-DESCRIÇÃO: ${descRaw}
-DADOS: preço $${coin.price}, market cap $${coin.marketCap}, vol 24h $${coin.volume24h}, 24h ${coin.change24h?.toFixed(2)}%, 7d ${coin.change7d?.toFixed(2)}%, 30d ${coin.change30d?.toFixed(2)}%, ATH $${coin.ath}, ATL $${coin.atl}, supply ${coin.supply}`,
+AÇÃO: ${coin.name} (${coin.symbol})
+DADOS: preço ${coin.currency} ${coin.price}, vol 24h ${coin.volume24h ?? "n/d"}, 24h ${coin.change24h?.toFixed(2)}%, 7d ${coin.change7d?.toFixed(2)}%, 30d ${coin.change30d?.toFixed(2)}%`,
         });
         return text.trim();
       });
     } catch {
-      /* ignore analysis errors (sem chave ou todas falharam) */
+      /* ignore analysis errors */
     }
 
     return { error: null as string | null, coin, sparkline, analysis };

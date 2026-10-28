@@ -15,7 +15,7 @@ import { CreatePostForm } from "@/components/social/create-post-form";
 import { AuthModal } from "@/components/social/auth-modal";
 import { useAuth } from "@/lib/auth-context";
 import { Button } from "@/components/ui/button";
-import { CryptoTicker } from "@/components/crypto-ticker";
+import { StockTicker } from "@/components/stock-ticker";
 import { AdSlot } from "@/components/ad-slot";
 import { Users, Flame, Clock } from "lucide-react";
 
@@ -134,7 +134,7 @@ function CommunityPage() {
         </div>
       </header>
 
-      <CryptoTicker />
+      <StockTicker />
 
       <div className="mx-auto w-full max-w-6xl px-4 py-4">
         {/* Banner comunidade */}

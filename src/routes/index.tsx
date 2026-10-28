@@ -10,7 +10,7 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "Web3, educação financeira, empreendedorismo digital e desenvolvimento com IA no mesmo sistema.",
+          "Ações, educação financeira, empreendedorismo digital e desenvolvimento com IA no mesmo sistema.",
       },
     ],
   }),

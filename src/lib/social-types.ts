@@ -1,4 +1,4 @@
-/** Tipos da rede social OctoCommunity (estilo Reddit + Web3) */
+/** Tipos da rede social OctoCommunity (estilo Reddit + Ações) */
 
 export type UserProfile = {
   uid: string;
@@ -8,12 +8,12 @@ export type UserProfile = {
   bio?: string;
   karma: number;
   createdAt: number;
-  walletAddress?: string; // opcional Web3
+  walletAddress?: string; // opcional carteira
   badges?: string[];
 };
 
 export type Community = {
-  id: string; // slug, ex: "bitcoin", "defi", "octocookie"
+  id: string; // slug, ex: "tech-stocks", "value", "octocookie"
   name: string;
   description: string;
   icon?: string;
@@ -23,7 +23,7 @@ export type Community = {
   createdBy: string;
   rules?: string[];
   isNSFW?: boolean;
-  topics?: string[]; // tags web3
+  topics?: string[]; // tags de ações
   group?: string; // agrupamento na listagem (ex: "Ferramentas")
 };
 

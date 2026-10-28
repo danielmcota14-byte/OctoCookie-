@@ -8,7 +8,7 @@ export const Route = createFileRoute("/$threadId")({
   head: () => ({
     meta: [
       { title: "Chat — OctoCookie" },
-      { name: "description", content: "Converse com o OctoCookie sobre finanças, cripto e bots." },
+      { name: "description", content: "Converse com o OctoCookie sobre finanças, ações e bots." },
     ],
   }),
   component: ThreadPage,

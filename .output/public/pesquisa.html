@@ -1,8 +1,8 @@
 <!doctype html>
 <html lang="pt-BR"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>OctoCookie — Pesquisa</title>
-<meta name="description" content="OctoCookie: um laboratório financeiro digital para testar, automatizar e validar estratégias. Proposta, metodologia de testes, evolução do projeto e o Holograma Quântico como correção do drawdown do bot da tarde.">
+<title>OctoCookie — Pesquisa em Ações e Estratégias</title>
+<meta name="description" content="OctoCookie: um laboratório financeiro digital para testar, automatizar e validar estratégias. Proposta, metodologia de testes, evolução do projeto e o Holograma Quântico AAPL/USDC e validação de estratégias em ações.">
 <link rel="stylesheet" href="/octo.css"><script src="/octo.js"></script>
 <style>
 :root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--hero1:#07111f;--hero2:#0b2a3f}
@@ -86,12 +86,12 @@ footer{text-align:center;font:400 13px var(--octo-sans);color:var(--o-mut);paddi
 <main>
 <section class="res" aria-labelledby="resumo">
 <h2 class="sn" id="resumo">Resumo</h2>
-<p>Este trabalho apresenta o OctoCookie, uma plataforma experimental de tecnologia financeira concebida como um laboratório digital para criar, testar e automatizar estratégias financeiras, primeiro em ambiente simulado e, depois, em aplicações reais, sem prometer rentabilidade. Descreve a metodologia de testes, baseada em simulação com dados de mercado, no registro de cada decisão do algoritmo e na análise por métricas como taxa de acerto, resultado acumulado, drawdown e relação entre risco e retorno, repetidas com diferentes parâmetros e períodos. Relata o desenvolvimento do projeto, sua origem no NIB (New In Bot), um projeto escolar sobre inteligência artificial e educação financeira, e a evolução técnica do autor até a construção de sistemas automatizados. Apresenta o Holograma Quântico ETH/USDC, um limitador de perdas por tendência e stop móvel incorporado para corrigir o drawdown do bot da tarde. Nos testes com dados da Binance Futures, o stop móvel reduziu a queda máxima em 49 de 50 variantes, e a queda máxima do sistema ficou entre −19% e −30%, contra −63% a −68% de comprar e segurar. Conclui-se que o OctoCookie funciona como ambiente de validação tecnológica e que o limitador reduz, mas não elimina, o risco de queda.</p>
+<p>Este trabalho apresenta o OctoCookie, uma plataforma experimental de tecnologia financeira concebida como um laboratório digital para criar, testar e automatizar estratégias financeiras, primeiro em ambiente simulado e, depois, em aplicações reais, sem prometer rentabilidade. Descreve a metodologia de testes, baseada em simulação com dados de mercado, no registro de cada decisão do algoritmo e na análise por métricas como taxa de acerto, resultado acumulado, drawdown e relação entre risco e retorno, repetidas com diferentes parâmetros e períodos. Relata o desenvolvimento do projeto, sua origem no NIB (New In Bot), um projeto escolar sobre inteligência artificial e educação financeira, e a evolução técnica do autor até a construção de sistemas automatizados. Apresenta o Holograma Quântico AAPL/USDC, um limitador de perdas por tendência e stop móvel incorporado para corrigir o drawdown do bot da tarde. Nos testes com dados de mercado de ações, o stop móvel reduziu a queda máxima em 49 de 50 variantes, e a queda máxima do sistema ficou entre −19% e −30%, contra −63% a −68% de comprar e segurar. Conclui-se que o OctoCookie funciona como ambiente de validação tecnológica e que o limitador reduz, mas não elimina, o risco de queda.</p>
 <p class="pc"><b>Palavras-chave:</b> tecnologia financeira; automação; estratégias financeiras; drawdown; simulação.</p>
 </section>
 <section class="res" lang="en" aria-labelledby="abstract">
 <h2 class="sn" id="abstract">Abstract</h2>
-<p>This paper presents OctoCookie, an experimental financial technology platform designed as a digital laboratory to create, test and automate financial strategies, first in a simulated environment and later in real applications, without promising returns. It describes the testing methodology, based on simulation with market data, a record of every decision made by the algorithm, and analysis through metrics such as hit rate, cumulative result, drawdown and risk-return ratio, repeated across different parameters and periods. It reports the development of the project, its origin in NIB (New In Bot), a school project on artificial intelligence and financial education, and the author's technical evolution toward building automated systems. It presents Quantum Hologram ETH/USDC, a loss limiter based on trend and trailing stop, incorporated to correct the drawdown of the “bot da tarde” (afternoon bot). In tests with Binance Futures data, the trailing stop reduced maximum drawdown in 49 of 50 variants, and the system's maximum drawdown stayed between −19% and −30%, against −63% to −68% for buy and hold. It is concluded that OctoCookie works as a technological validation environment and that the limiter reduces, but does not eliminate, the risk of losses.</p>
+<p>This paper presents OctoCookie, an experimental financial technology platform designed as a digital laboratory to create, test and automate financial strategies, first in a simulated environment and later in real applications, without promising returns. It describes the testing methodology, based on simulation with market data, a record of every decision made by the algorithm, and analysis through metrics such as hit rate, cumulative result, drawdown and risk-return ratio, repeated across different parameters and periods. It reports the development of the project, its origin in NIB (New In Bot), a school project on artificial intelligence and financial education, and the author's technical evolution toward building automated systems. It presents Quantum Hologram AAPL/USDC, a loss limiter based on trend and trailing stop, incorporated to correct the drawdown of the “bot da tarde” (afternoon bot). In tests with stock market data, the trailing stop reduced maximum drawdown in 49 of 50 variants, and the system's maximum drawdown stayed between −19% and −30%, against −63% to −68% for buy and hold. It is concluded that OctoCookie works as a technological validation environment and that the limiter reduces, but does not eliminate, the risk of losses.</p>
 <p class="pc"><b>Keywords:</b> financial technology; automation; financial strategies; drawdown; simulation.</p>
 </section>
 <h2 id="introducao"><span>1</span>Introdução</h2>
@@ -163,18 +163,18 @@ footer{text-align:center;font:400 13px var(--octo-sans);color:var(--o-mut);paddi
 <p>O NIB estabeleceu a base temática e experimental; os projetos posteriores ampliaram minha experiência prática com aplicações e integrações; e o OctoCookie representa a aplicação desses conhecimentos em um domínio que exige maior rigor lógico, testes sistemáticos e análise quantitativa.</p>
 <p>Essa evolução demonstra meu direcionamento para o desenvolvimento de software, a inteligência artificial e a criação de sistemas capazes de transformar ideias em ferramentas funcionais.</p>
 
-<h2 id="holograma"><span>4</span>Holograma Quântico ETH/USDC: correção do drawdown do bot da tarde</h2>
-<p>O bot da tarde tinha um problema grave de drawdown, e o Holograma Quântico foi incorporado ao projeto para corrigi-lo, deixando o sistema e o código do bot mais robustos. O Holograma não tenta prever o preço: ele limita perdas. Quando a tendência vira, a carteira sai de ETH para USDC.</p>
+<h2 id="holograma"><span>4</span>Holograma Quântico AAPL/USDC: correção do drawdown do bot da tarde</h2>
+<p>O bot da tarde tinha um problema grave de drawdown, e o Holograma Quântico foi incorporado ao projeto para corrigi-lo, deixando o sistema e o código do bot mais robustos. O Holograma não tenta prever o preço: ele limita perdas. Quando a tendência vira, a carteira sai de AAPL para USDC.</p>
 <h3><span>4.1</span>Limitador de perdas</h3>
-<p>A pesquisa do Holograma Quântico ETH/USDC (HOLOGRAMA..., 2026) desenvolveu um limitador de perdas por tendência e stop móvel, com três partes:</p>
+<p>A pesquisa do Holograma Quântico AAPL/USDC (HOLOGRAMA..., 2026) desenvolveu um limitador de perdas por tendência e stop móvel, com três partes:</p>
 <ol class="al">
-<li><b>Filtro de tendência:</b> mantém ETH enquanto o retorno nas últimas 30 velas de 8 horas supera +3% e vai para USDC abaixo de −3%;</li>
+<li><b>Filtro de tendência:</b> mantém AAPL enquanto o retorno nas últimas 30 velas de 8 horas supera +3% e vai para USDC abaixo de −3%;</li>
 <li><b>Stop móvel de 5%:</b> sai quando o preço cai 5% do topo desde a entrada e só reentra em novo sinal de compra;</li>
 <li><b>Barra de risco (0 a 100%):</b> uma barra única que regula a exposição, o stop, o limiar e a janela.</li>
 </ol>
 <p>Um circuito de 8 qubits simulado em Qiskit (QISKIT CONTRIBUTORS, 2023) alimenta o painel (mapa de qubits e holograma), mas não superou o controle de exposição fixa e ficou fora da regra de decisão.</p>
 <h3><span>4.2</span>Resultados</h3>
-<p>Com dados reais da Binance Futures (BINANCE, 2026), velas de 8 horas e custo de 0,10% por troca, o stop móvel reduziu a queda máxima (drawdown) em 49 de 50 variantes, e o sistema ficou à frente de comprar e segurar nas cinco rodadas de teste. A Tabela 1 apresenta a queda máxima em três dos períodos testados.</p>
+<p>Com dados reais de mercado de ações (YAHOO FINANCE, 2026), velas de 8 horas e custo de 0,10% por troca, o stop móvel reduziu a queda máxima (drawdown) em 49 de 50 variantes, e o sistema ficou à frente de comprar e segurar nas cinco rodadas de teste. A Tabela 1 apresenta a queda máxima em três dos períodos testados.</p>
 
 <div class="tw"><table>
 <caption>Tabela 1 – Queda máxima (drawdown) por estratégia e período</caption>
@@ -184,7 +184,7 @@ footer{text-align:center;font:400 13px var(--octo-sans);color:var(--o-mut);paddi
 <tr><td>out/2025 → out/2026</td><td>−63,2%</td><td>−36,6%</td><td>−22,6%</td></tr>
 <tr><td>540 dias</td><td>−67,7%</td><td>−55,4%</td><td>−28,3%</td></tr>
 </tbody></table></div>
-<p class="fonte">Fonte: elaborada pelo autor (2026), com base na pesquisa Holograma Quântico ETH/USDC (HOLOGRAMA..., 2026). Nota: velas de 8 horas e custo de 0,10% por troca.</p>
+<p class="fonte">Fonte: elaborada pelo autor (2026), com base na pesquisa Holograma Quântico AAPL/USDC (HOLOGRAMA..., 2026). Nota: velas de 8 horas e custo de 0,10% por troca.</p>
 
 <p>O limitador reduz o risco, mas não o elimina: a queda máxima do sistema ainda ficou entre −19% e −30%, e o retorno extra depende do valor de 5%, escolhido depois de observar os dados. A Tabela 1 compara o Holograma com comprar e segurar; a comparação direta entre o bot da tarde sozinho e com o Holograma ainda precisa ser medida com as mesmas métricas.</p>
 
@@ -199,8 +199,8 @@ footer{text-align:center;font:400 13px var(--octo-sans);color:var(--o-mut);paddi
 <section id="referencias" aria-labelledby="ref-t">
 <h2 class="sn" id="ref-t">Referências</h2>
 <ul class="ref">
-<li>BINANCE. <b>Binance Futures API documentation</b>. [S. l.], 2026. Disponível em: <a href="https://binance-docs.github.io/apidocs/futures/en/">https://binance-docs.github.io/apidocs/futures/en/</a>. Acesso em: 5 out. 2026.</li>
-<li><b>HOLOGRAMA Quântico ETH/USDC</b>: limitador de perdas por tendência e stop móvel, com circuito de qubits como indicador de risco. [S. l.], 2026. Pesquisa independente. Disponível em: <a href="https://github.com/danielmcota14-byte/OctoCookie-/blob/main/holograma/pesquisa.html">https://github.com/danielmcota14-byte/OctoCookie-/blob/main/holograma/pesquisa.html</a>. Acesso em: 13 out. 2026.</li>
+<li>YAHOO FINANCE. <b>Yahoo Finance market data</b>. [S. l.], 2026. Disponível em: <a href="https://finance.yahoo.com/">https://finance.yahoo.com/</a>. Acesso em: 5 out. 2026.</li>
+<li><b>HOLOGRAMA Quântico AAPL/USDC</b>: limitador de perdas por tendência e stop móvel, com circuito de qubits como indicador de risco. [S. l.], 2026. Pesquisa independente. Disponível em: <a href="https://github.com/danielmcota14-byte/OctoCookie-/blob/main/holograma/pesquisa.html">https://github.com/danielmcota14-byte/OctoCookie-/blob/main/holograma/pesquisa.html</a>. Acesso em: 13 out. 2026.</li>
 <li>QISKIT CONTRIBUTORS. <b>Qiskit</b>: an open-source framework for quantum computing. [S. l.]: Zenodo, 2023. DOI: 10.5281/zenodo.2573505.</li>
 </ul>
 </section>

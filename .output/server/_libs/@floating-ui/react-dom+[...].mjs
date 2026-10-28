@@ -38,15 +38,12 @@ var require_react_dom_production = /* @__PURE__ */ __commonJSMin(((exports) => {
 		},
 		p: 0,
 		findDOMNode: null
-	};
-	var REACT_PORTAL_TYPE = Symbol.for("react.portal");
-	var REACT_RECOVERABLE_TYPE = Symbol.for("react.recoverable");
-	var REACT_OPTIMISTIC_KEY = Symbol.for("react.optimistic_key");
+	}, REACT_PORTAL_TYPE = Symbol.for("react.portal");
 	function createPortal$1(children, containerInfo, implementation) {
 		var key = 3 < arguments.length && void 0 !== arguments[3] ? arguments[3] : null;
 		return {
 			$$typeof: REACT_PORTAL_TYPE,
-			key: null == key ? null : key === REACT_OPTIMISTIC_KEY ? REACT_OPTIMISTIC_KEY : "" + key,
+			key: null == key ? null : "" + key,
 			children,
 			containerInfo,
 			implementation
@@ -58,12 +55,6 @@ var require_react_dom_production = /* @__PURE__ */ __commonJSMin(((exports) => {
 		if ("string" === typeof input) return "use-credentials" === input ? input : "";
 	}
 	exports.__DOM_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE = Internals;
-	exports.browser = function(reason) {
-		return {
-			$$typeof: REACT_RECOVERABLE_TYPE,
-			_reason: reason
-		};
-	};
 	exports.createPortal = function(children, container) {
 		var key = 2 < arguments.length && void 0 !== arguments[2] ? arguments[2] : null;
 		if (!container || 1 !== container.nodeType && 9 !== container.nodeType && 11 !== container.nodeType) throw Error(formatProdErrorMessage(299));
@@ -105,8 +96,7 @@ var require_react_dom_production = /* @__PURE__ */ __commonJSMin(((exports) => {
 				Internals.d.M(href, {
 					crossOrigin,
 					integrity: "string" === typeof options.integrity ? options.integrity : void 0,
-					nonce: "string" === typeof options.nonce ? options.nonce : void 0,
-					fetchPriority: "string" === typeof options.fetchPriority ? options.fetchPriority : void 0
+					nonce: "string" === typeof options.nonce ? options.nonce : void 0
 				});
 			}
 		} else options ?? Internals.d.M(href);
@@ -133,9 +123,7 @@ var require_react_dom_production = /* @__PURE__ */ __commonJSMin(((exports) => {
 			Internals.d.m(href, {
 				as: "string" === typeof options.as && "script" !== options.as ? options.as : void 0,
 				crossOrigin,
-				integrity: "string" === typeof options.integrity ? options.integrity : void 0,
-				nonce: "string" === typeof options.nonce ? options.nonce : void 0,
-				fetchPriority: "string" === typeof options.fetchPriority ? options.fetchPriority : void 0
+				integrity: "string" === typeof options.integrity ? options.integrity : void 0
 			});
 		} else Internals.d.m(href);
 	};
@@ -151,7 +139,7 @@ var require_react_dom_production = /* @__PURE__ */ __commonJSMin(((exports) => {
 	exports.useFormStatus = function() {
 		return ReactSharedInternals.H.useHostTransitionStatus();
 	};
-	exports.version = "19.3.0";
+	exports.version = "19.2.5";
 }));
 //#endregion
 //#region node_modules/react-dom/index.js

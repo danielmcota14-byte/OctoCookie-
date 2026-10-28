@@ -36,7 +36,7 @@ function SettingsPage() {
               <p className="mt-2 text-sm text-muted-foreground">
                 O OctoCookie é uma plataforma educacional: chat com IA, Swap Trader Bot
                 (Holograma Quântico em modo tendência por padrão, trader clássico opcional)
-                e ferramentas de estudo em cripto. Não oferecemos recomendações de
+                e ferramentas de estudo em ações e finanças. Não oferecemos recomendações de
                 investimento nem sinais de compra/venda. As chaves da IA (GROQ_API_KEYS, até 5) ficam só no servidor
                 (variáveis de ambiente do Vercel) — nunca no navegador. Se uma esgota o limite, o app troca para a próxima automaticamente.
               </p>

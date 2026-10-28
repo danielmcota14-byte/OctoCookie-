@@ -1,5 +1,5 @@
 import { o as __toESM, t as __commonJSMin } from "../../_runtime.mjs";
-import { $ as safeValidateTypes, A as getRuntimeEnvironmentUserAgent, B as isProviderStreamError, Ct as union, D as fetchUntrustedUrl, Dt as EmptyResponseBodyError, E as executeTool, Et as APICallError, H as lazySchema, I as isExecutableTool, J as readResponseWithSizeLimit, L as isFullMediaType, Mt as getErrorMessage, N as isAbortError, O as filterNullable, Ot as InvalidPromptError, P as isBuffer, Q as safeParseJSON, R as isNonNullable, St as string, Tt as AISDKError, U as normalizeHeaders, V as isUrlSupported, W as parseJsonEventStream, Y as resolve, Z as retryWithExponentialBackoff, _ as convertUint8ArrayToBase64, _t as looseObject, bt as object, c as DownloadError, ct as _instanceof, d as asSchema, dt as array, f as cancelResponseBody, ft as boolean, gt as literal, ht as lazy, it as zodSchema, j as getToolCaller, jt as UnsupportedFunctionalityError, k as generateId, lt as _null, m as convertBase64ToUint8Array, mt as discriminatedUnion, n as GatewayError, nt as withUserAgentSuffix, pt as custom, r as gateway, s as DelayedPromise, st as _enum, t as GatewayAuthenticationError, tt as validateTypes, u as asArray, vt as never, w as detectMediaType, wt as unknown, xt as record, y as createIdGenerator, yt as number, z as isProviderReference } from "./gateway+[...].mjs";
+import { A as isAbortError, B as parseJsonEventStream, Ct as InvalidPromptError, D as generateId, Dt as getErrorMessage, E as filterNullable, Et as UnsupportedFunctionalityError, F as isNonNullable, G as resolve, I as isProviderReference, J as safeParseJSON, L as isUrlSupported, N as isExecutableTool, O as getRuntimeEnvironmentUserAgent, P as isFullMediaType, Q as withUserAgentSuffix, R as lazySchema, S as detectMediaType, St as APICallError, T as fetchWithValidatedRedirects, Tt as TypeValidationError, W as readResponseWithSizeLimit, Y as safeValidateTypes, Z as validateTypes, _ as convertUint8ArrayToBase64, _t as record, at as _null, bt as unknown, c as DownloadError, ct as boolean, d as asSchema, dt as lazy, et as zodSchema, f as cancelResponseBody, ft as literal, gt as object$1, ht as number, it as _instanceof, j as isBuffer, lt as custom, m as convertBase64ToUint8Array, mt as never, n as GatewayError, o as DEFAULT_MAX_DOWNLOAD_SIZE, pt as looseObject, q as retryWithExponentialBackoff, r as gateway, rt as _enum, s as DelayedPromise, st as array$1, t as GatewayAuthenticationError, u as asArray, ut as discriminatedUnion, vt as string, w as executeTool, xt as AISDKError, y as createIdGenerator, yt as union, z as normalizeHeaders } from "./gateway+[...].mjs";
 //#region node_modules/react/cjs/react.production.js
 /**
 * @license React
@@ -11,20 +11,7 @@ import { $ as safeValidateTypes, A as getRuntimeEnvironmentUserAgent, B as isPro
 * LICENSE file in the root directory of this source tree.
 */
 var require_react_production = /* @__PURE__ */ __commonJSMin(((exports) => {
-	var REACT_ELEMENT_TYPE = Symbol.for("react.transitional.element");
-	var REACT_PORTAL_TYPE = Symbol.for("react.portal");
-	var REACT_FRAGMENT_TYPE = Symbol.for("react.fragment");
-	var REACT_STRICT_MODE_TYPE = Symbol.for("react.strict_mode");
-	var REACT_PROFILER_TYPE = Symbol.for("react.profiler");
-	var REACT_CONSUMER_TYPE = Symbol.for("react.consumer");
-	var REACT_CONTEXT_TYPE = Symbol.for("react.context");
-	var REACT_FORWARD_REF_TYPE = Symbol.for("react.forward_ref");
-	var REACT_SUSPENSE_TYPE = Symbol.for("react.suspense");
-	var REACT_MEMO_TYPE = Symbol.for("react.memo");
-	var REACT_LAZY_TYPE = Symbol.for("react.lazy");
-	var REACT_ACTIVITY_TYPE = Symbol.for("react.activity");
-	var REACT_VIEW_TRANSITION_TYPE = Symbol.for("react.view_transition");
-	var MAYBE_ITERATOR_SYMBOL = Symbol.iterator;
+	var REACT_ELEMENT_TYPE = Symbol.for("react.transitional.element"), REACT_PORTAL_TYPE = Symbol.for("react.portal"), REACT_FRAGMENT_TYPE = Symbol.for("react.fragment"), REACT_STRICT_MODE_TYPE = Symbol.for("react.strict_mode"), REACT_PROFILER_TYPE = Symbol.for("react.profiler"), REACT_CONSUMER_TYPE = Symbol.for("react.consumer"), REACT_CONTEXT_TYPE = Symbol.for("react.context"), REACT_FORWARD_REF_TYPE = Symbol.for("react.forward_ref"), REACT_SUSPENSE_TYPE = Symbol.for("react.suspense"), REACT_MEMO_TYPE = Symbol.for("react.memo"), REACT_LAZY_TYPE = Symbol.for("react.lazy"), REACT_ACTIVITY_TYPE = Symbol.for("react.activity"), MAYBE_ITERATOR_SYMBOL = Symbol.iterator;
 	function getIteratorFn(maybeIterable) {
 		if (null === maybeIterable || "object" !== typeof maybeIterable) return null;
 		maybeIterable = MAYBE_ITERATOR_SYMBOL && maybeIterable[MAYBE_ITERATOR_SYMBOL] || maybeIterable["@@iterator"];
@@ -37,9 +24,7 @@ var require_react_production = /* @__PURE__ */ __commonJSMin(((exports) => {
 		enqueueForceUpdate: function() {},
 		enqueueReplaceState: function() {},
 		enqueueSetState: function() {}
-	};
-	var assign = Object.assign;
-	var emptyObject = {};
+	}, assign = Object.assign, emptyObject = {};
 	function Component(props, context, updater) {
 		this.props = props;
 		this.context = context;
@@ -73,8 +58,7 @@ var require_react_production = /* @__PURE__ */ __commonJSMin(((exports) => {
 		A: null,
 		T: null,
 		S: null
-	};
-	var hasOwnProperty = Object.prototype.hasOwnProperty;
+	}, hasOwnProperty = Object.prototype.hasOwnProperty;
 	function ReactElement(type, key, props) {
 		var refProp = props.ref;
 		return {
@@ -162,13 +146,14 @@ var require_react_production = /* @__PURE__ */ __commonJSMin(((exports) => {
 	}
 	function lazyInitializer(payload) {
 		if (-1 === payload._status) {
-			var ctor = payload._result, thenable = ctor();
-			thenable.then(function(moduleObject) {
-				if (0 === payload._status || -1 === payload._status) payload._status = 1, payload._result = moduleObject, void 0 === thenable.status && (thenable.status = "fulfilled", thenable.value = moduleObject);
+			var ctor = payload._result;
+			ctor = ctor();
+			ctor.then(function(moduleObject) {
+				if (0 === payload._status || -1 === payload._status) payload._status = 1, payload._result = moduleObject;
 			}, function(error) {
-				if (0 === payload._status || -1 === payload._status) payload._status = 2, payload._result = error, void 0 === thenable.status && (thenable.status = "rejected", thenable.reason = error);
+				if (0 === payload._status || -1 === payload._status) payload._status = 2, payload._result = error;
 			});
-			-1 === payload._status && (payload._status = 0, payload._result = thenable);
+			-1 === payload._status && (payload._status = 0, payload._result = ctor);
 		}
 		if (1 === payload._status) return payload._result.default;
 		throw payload._result;
@@ -187,29 +172,7 @@ var require_react_production = /* @__PURE__ */ __commonJSMin(((exports) => {
 			return;
 		}
 		console.error(error);
-	};
-	function startTransition(scope) {
-		var prevTransition = ReactSharedInternals.T, currentTransition = {};
-		currentTransition.types = null !== prevTransition ? prevTransition.types : null;
-		ReactSharedInternals.T = currentTransition;
-		try {
-			var returnValue = scope(), onStartTransitionFinish = ReactSharedInternals.S;
-			null !== onStartTransitionFinish && onStartTransitionFinish(currentTransition, returnValue);
-			"object" === typeof returnValue && null !== returnValue && "function" === typeof returnValue.then && returnValue.then(noop, reportGlobalError);
-		} catch (error) {
-			reportGlobalError(error);
-		} finally {
-			null !== prevTransition && null !== currentTransition.types && (prevTransition.types = currentTransition.types), ReactSharedInternals.T = prevTransition;
-		}
-	}
-	function addTransitionType(type) {
-		var transition = ReactSharedInternals.T;
-		if (null !== transition) {
-			var transitionTypes = transition.types;
-			null === transitionTypes ? transition.types = [type] : -1 === transitionTypes.indexOf(type) && transitionTypes.push(type);
-		} else startTransition(addTransitionType.bind(null, type));
-	}
-	var Children = {
+	}, Children = {
 		map: mapChildren,
 		forEach: function(children, forEachFunc, forEachContext) {
 			mapChildren(children, function() {
@@ -241,7 +204,6 @@ var require_react_production = /* @__PURE__ */ __commonJSMin(((exports) => {
 	exports.PureComponent = PureComponent;
 	exports.StrictMode = REACT_STRICT_MODE_TYPE;
 	exports.Suspense = REACT_SUSPENSE_TYPE;
-	exports.ViewTransition = REACT_VIEW_TRANSITION_TYPE;
 	exports.__CLIENT_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE = ReactSharedInternals;
 	exports.__COMPILER_RUNTIME = {
 		__proto__: null,
@@ -249,7 +211,6 @@ var require_react_production = /* @__PURE__ */ __commonJSMin(((exports) => {
 			return ReactSharedInternals.H.useMemoCache(size);
 		}
 	};
-	exports.addTransitionType = addTransitionType;
 	exports.cache = function(fn) {
 		return function() {
 			return fn.apply(null, arguments);
@@ -325,7 +286,19 @@ var require_react_production = /* @__PURE__ */ __commonJSMin(((exports) => {
 			compare: void 0 === compare ? null : compare
 		};
 	};
-	exports.startTransition = startTransition;
+	exports.startTransition = function(scope) {
+		var prevTransition = ReactSharedInternals.T, currentTransition = {};
+		ReactSharedInternals.T = currentTransition;
+		try {
+			var returnValue = scope(), onStartTransitionFinish = ReactSharedInternals.S;
+			null !== onStartTransitionFinish && onStartTransitionFinish(currentTransition, returnValue);
+			"object" === typeof returnValue && null !== returnValue && "function" === typeof returnValue.then && returnValue.then(noop, reportGlobalError);
+		} catch (error) {
+			reportGlobalError(error);
+		} finally {
+			null !== prevTransition && null !== currentTransition.types && (prevTransition.types = currentTransition.types), ReactSharedInternals.T = prevTransition;
+		}
+	};
 	exports.unstable_useCacheRefresh = function() {
 		return ReactSharedInternals.H.useCacheRefresh();
 	};
@@ -384,7 +357,7 @@ var require_react_production = /* @__PURE__ */ __commonJSMin(((exports) => {
 	exports.useTransition = function() {
 		return ReactSharedInternals.H.useTransition();
 	};
-	exports.version = "19.3.0";
+	exports.version = "19.2.5";
 }));
 //#endregion
 //#region node_modules/react/index.js
@@ -403,8 +376,7 @@ var require_react = /* @__PURE__ */ __commonJSMin(((exports, module) => {
 * LICENSE file in the root directory of this source tree.
 */
 var require_react_jsx_runtime_production = /* @__PURE__ */ __commonJSMin(((exports) => {
-	var REACT_ELEMENT_TYPE = Symbol.for("react.transitional.element");
-	var REACT_FRAGMENT_TYPE = Symbol.for("react.fragment");
+	var REACT_ELEMENT_TYPE = Symbol.for("react.transitional.element"), REACT_FRAGMENT_TYPE = Symbol.for("react.fragment");
 	function jsxProd(type, config, maybeKey) {
 		var key = null;
 		void 0 !== maybeKey && (key = "" + maybeKey);
@@ -433,213 +405,204 @@ var require_jsx_runtime = /* @__PURE__ */ __commonJSMin(((exports, module) => {
 }));
 //#endregion
 //#region node_modules/ai/dist/index.js
-var name$23 = "AI_InvalidArgumentError";
-var marker$23 = `vercel.ai.error.${name$23}`;
-var symbol$23 = Symbol.for(marker$23);
+var __defProp = Object.defineProperty;
+var __export = (target, all) => {
+	for (var name22 in all) __defProp(target, name22, {
+		get: all[name22],
+		enumerable: true
+	});
+};
+var name = "AI_InvalidArgumentError";
+var marker = `vercel.ai.error.${name}`;
+var symbol = Symbol.for(marker);
+var _a;
 var InvalidArgumentError = class extends AISDKError {
 	constructor({ parameter, value, message }) {
 		super({
-			name: name$23,
+			name,
 			message: `Invalid argument for parameter ${parameter}: ${message}`
 		});
-		this[symbol$23] = true;
+		this[_a] = true;
 		this.parameter = parameter;
 		this.value = value;
 	}
 	static isInstance(error) {
-		return AISDKError.hasMarker(error, marker$23);
+		return AISDKError.hasMarker(error, marker);
 	}
 };
-var name$21 = "AI_InvalidToolApprovalError";
-var marker$21 = `vercel.ai.error.${name$21}`;
-var symbol$21 = Symbol.for(marker$21);
+_a = symbol;
+var name3 = "AI_InvalidToolApprovalError";
+var marker3 = `vercel.ai.error.${name3}`;
+var symbol3 = Symbol.for(marker3);
+var _a3;
 var InvalidToolApprovalError = class extends AISDKError {
 	constructor({ approvalId }) {
 		super({
-			name: name$21,
+			name: name3,
 			message: `Tool approval response references unknown approvalId: "${approvalId}". No matching tool-approval-request found in message history.`
 		});
-		this[symbol$21] = true;
+		this[_a3] = true;
 		this.approvalId = approvalId;
 	}
 	static isInstance(error) {
-		return AISDKError.hasMarker(error, marker$21);
+		return AISDKError.hasMarker(error, marker3);
 	}
 };
-var name$20 = "AI_InvalidToolApprovalSignatureError";
-var marker$20 = `vercel.ai.error.${name$20}`;
-var symbol$20 = Symbol.for(marker$20);
+_a3 = symbol3;
+var name4 = "AI_InvalidToolApprovalSignatureError";
+var marker4 = `vercel.ai.error.${name4}`;
+var symbol4 = Symbol.for(marker4);
+var _a4;
 var InvalidToolApprovalSignatureError = class extends AISDKError {
 	constructor({ approvalId, toolCallId, reason }) {
 		super({
-			name: name$20,
+			name: name4,
 			message: `Tool approval signature verification failed for approval "${approvalId}" (tool call "${toolCallId}"): ${reason}`
 		});
-		this[symbol$20] = true;
+		this[_a4] = true;
 		this.approvalId = approvalId;
 		this.toolCallId = toolCallId;
 	}
 	static isInstance(error) {
-		return AISDKError.hasMarker(error, marker$20);
+		return AISDKError.hasMarker(error, marker4);
 	}
 };
-var name$19 = "AI_InvalidToolInputError";
-var marker$19 = `vercel.ai.error.${name$19}`;
-var symbol$19 = Symbol.for(marker$19);
+_a4 = symbol4;
+var name5 = "AI_InvalidToolInputError";
+var marker5 = `vercel.ai.error.${name5}`;
+var symbol5 = Symbol.for(marker5);
+var _a5;
 var InvalidToolInputError = class extends AISDKError {
 	constructor({ toolInput, toolName, cause, message = `Invalid input for tool ${toolName}: ${getErrorMessage(cause)}` }) {
 		super({
-			name: name$19,
+			name: name5,
 			message,
 			cause
 		});
-		this[symbol$19] = true;
+		this[_a5] = true;
 		this.toolInput = toolInput;
 		this.toolName = toolName;
 	}
 	static isInstance(error) {
-		return AISDKError.hasMarker(error, marker$19);
+		return AISDKError.hasMarker(error, marker5);
 	}
 };
-var name$18 = "AI_ToolCallNotFoundForApprovalError";
-var marker$18 = `vercel.ai.error.${name$18}`;
-var symbol$18 = Symbol.for(marker$18);
+_a5 = symbol5;
+var name6 = "AI_ToolCallNotFoundForApprovalError";
+var marker6 = `vercel.ai.error.${name6}`;
+var symbol6 = Symbol.for(marker6);
+var _a6;
 var ToolCallNotFoundForApprovalError = class extends AISDKError {
 	constructor({ toolCallId, approvalId }) {
 		super({
-			name: name$18,
+			name: name6,
 			message: `Tool call "${toolCallId}" not found for approval request "${approvalId}".`
 		});
-		this[symbol$18] = true;
+		this[_a6] = true;
 		this.toolCallId = toolCallId;
 		this.approvalId = approvalId;
 	}
 	static isInstance(error) {
-		return AISDKError.hasMarker(error, marker$18);
+		return AISDKError.hasMarker(error, marker6);
 	}
 };
-var name$17 = "AI_MissingToolResultsError";
-var marker$17 = `vercel.ai.error.${name$17}`;
-var symbol$17 = Symbol.for(marker$17);
+_a6 = symbol6;
+var name7 = "AI_MissingToolResultsError";
+var marker7 = `vercel.ai.error.${name7}`;
+var symbol7 = Symbol.for(marker7);
+var _a7;
 var MissingToolResultsError = class extends AISDKError {
 	constructor({ toolCallIds }) {
 		super({
-			name: name$17,
+			name: name7,
 			message: `Tool result${toolCallIds.length > 1 ? "s are" : " is"} missing for tool call${toolCallIds.length > 1 ? "s" : ""} ${toolCallIds.join(", ")}.`
 		});
-		this[symbol$17] = true;
+		this[_a7] = true;
 		this.toolCallIds = toolCallIds;
 	}
 	static isInstance(error) {
-		return AISDKError.hasMarker(error, marker$17);
+		return AISDKError.hasMarker(error, marker7);
 	}
 };
-var name$14 = "AI_NoOutputGeneratedError";
-var marker$14 = `vercel.ai.error.${name$14}`;
-var symbol$14 = Symbol.for(marker$14);
-/**
-* Thrown when no LLM output was generated, e.g. because of errors.
-*/
-var NoOutputGeneratedError = class extends AISDKError {
-	constructor({ message = "No output generated.", cause } = {}) {
+_a7 = symbol7;
+var name9 = "AI_NoObjectGeneratedError";
+var marker9 = `vercel.ai.error.${name9}`;
+var symbol9 = Symbol.for(marker9);
+var _a9;
+var NoObjectGeneratedError = class extends AISDKError {
+	constructor({ message = "No object generated.", cause, text: text2, response, usage, finishReason }) {
 		super({
-			name: name$14,
+			name: name9,
 			message,
 			cause
 		});
-		this[symbol$14] = true;
+		this[_a9] = true;
+		this.text = text2;
+		this.response = response;
+		this.usage = usage;
+		this.finishReason = finishReason;
 	}
 	static isInstance(error) {
-		return AISDKError.hasMarker(error, marker$14);
+		return AISDKError.hasMarker(error, marker9);
 	}
 };
-var name$9 = "AI_NoSuchToolError";
-var marker$9 = `vercel.ai.error.${name$9}`;
-var symbol$9 = Symbol.for(marker$9);
+_a9 = symbol9;
+var name10 = "AI_NoOutputGeneratedError";
+var marker10 = `vercel.ai.error.${name10}`;
+var symbol10 = Symbol.for(marker10);
+var _a10;
+var NoOutputGeneratedError = class extends AISDKError {
+	constructor({ message = "No output generated.", cause } = {}) {
+		super({
+			name: name10,
+			message,
+			cause
+		});
+		this[_a10] = true;
+	}
+	static isInstance(error) {
+		return AISDKError.hasMarker(error, marker10);
+	}
+};
+_a10 = symbol10;
+var name14 = "AI_NoSuchToolError";
+var marker14 = `vercel.ai.error.${name14}`;
+var symbol14 = Symbol.for(marker14);
+var _a14;
 var NoSuchToolError = class extends AISDKError {
 	constructor({ toolName, availableTools = void 0, message = `Model tried to call unavailable tool '${toolName}'. ${availableTools === void 0 ? "No tools are available." : `Available tools: ${availableTools.join(", ")}.`}` }) {
 		super({
-			name: name$9,
+			name: name14,
 			message
 		});
-		this[symbol$9] = true;
+		this[_a14] = true;
 		this.toolName = toolName;
 		this.availableTools = availableTools;
 	}
 	static isInstance(error) {
-		return AISDKError.hasMarker(error, marker$9);
+		return AISDKError.hasMarker(error, marker14);
 	}
 };
-var name$8 = "AI_StreamProviderError";
-var marker$8 = `vercel.ai.error.${name$8}`;
-var symbol$8 = Symbol.for(marker$8);
-/**
-* Error reported by a provider after a model response stream has started.
-*/
-var StreamProviderError = class extends AISDKError {
-	constructor({ message, type, code, statusCode, isRetryable = isRetryableStatusCode$1(statusCode), data, cause }) {
-		super({
-			name: name$8,
-			message,
-			cause
-		});
-		this[symbol$8] = true;
-		this.type = type;
-		this.code = code;
-		this.statusCode = statusCode;
-		this.isRetryable = isRetryable;
-		this.data = data;
-	}
-	static isInstance(error) {
-		return AISDKError.hasMarker(error, marker$8);
-	}
-};
-function isRetryableStatusCode$1(statusCode) {
-	return statusCode != null && (statusCode === 408 || statusCode === 409 || statusCode === 429 || statusCode >= 500);
-}
-var name$7 = "AI_ToolCallRepairError";
-var marker$7 = `vercel.ai.error.${name$7}`;
-var symbol$7 = Symbol.for(marker$7);
+_a14 = symbol14;
+var name15 = "AI_ToolCallRepairError";
+var marker15 = `vercel.ai.error.${name15}`;
+var symbol15 = Symbol.for(marker15);
+var _a15;
 var ToolCallRepairError = class extends AISDKError {
 	constructor({ cause, originalError, message = `Error repairing tool call: ${getErrorMessage(cause)}` }) {
 		super({
-			name: name$7,
+			name: name15,
 			message,
 			cause
 		});
-		this[symbol$7] = true;
+		this[_a15] = true;
 		this.originalError = originalError;
 	}
 	static isInstance(error) {
-		return AISDKError.hasMarker(error, marker$7);
+		return AISDKError.hasMarker(error, marker15);
 	}
 };
-var name$6 = "AI_ToolChoiceViolationError";
-var marker$6 = `vercel.ai.error.${name$6}`;
-var symbol$6 = Symbol.for(marker$6);
-/**
-* Thrown when a model response does not satisfy an enforced tool choice.
-*/
-var ToolChoiceViolationError = class extends AISDKError {
-	constructor({ toolChoice, finishReason, provider, modelId, content, message = toolChoice.type === "required" ? "Model response did not contain a tool call even though tool choice was required." : `Model response did not contain a call to the required tool '${toolChoice.toolName}'.` }) {
-		super({
-			name: name$6,
-			message
-		});
-		this[symbol$6] = true;
-		this.toolChoice = toolChoice;
-		this.finishReason = finishReason;
-		this.provider = provider;
-		this.modelId = modelId;
-		this.content = content;
-	}
-	static isInstance(error) {
-		return AISDKError.hasMarker(error, marker$6);
-	}
-};
-/**
-* Error that is thrown when a model with an unsupported version is used.
-*/
+_a15 = symbol15;
 var UnsupportedModelVersionError = class extends AISDKError {
 	constructor(options) {
 		super({
@@ -651,138 +614,100 @@ var UnsupportedModelVersionError = class extends AISDKError {
 		this.modelId = options.modelId;
 	}
 };
-var name$5 = "AI_UIMessageStreamError";
-var marker$5 = `vercel.ai.error.${name$5}`;
-var symbol$5 = Symbol.for(marker$5);
-/**
-* Error thrown when a UI message stream reports an error or contains invalid
-* or out-of-sequence chunks.
-*
-* This typically occurs when:
-* - An error chunk is received
-* - A delta chunk is received without a corresponding start chunk
-* - An end chunk is received without a corresponding start chunk
-* - A tool invocation is not found for the given toolCallId
-*
-* @see https://ai-sdk.dev/docs/reference/ai-sdk-errors/ai-ui-message-stream-error
-*/
+var name16 = "AI_UIMessageStreamError";
+var marker16 = `vercel.ai.error.${name16}`;
+var symbol16 = Symbol.for(marker16);
+var _a16;
 var UIMessageStreamError = class extends AISDKError {
 	constructor({ chunkType, chunkId, message }) {
 		super({
-			name: name$5,
+			name: name16,
 			message
 		});
-		this[symbol$5] = true;
+		this[_a16] = true;
 		this.chunkType = chunkType;
 		this.chunkId = chunkId;
 	}
 	static isInstance(error) {
-		return AISDKError.hasMarker(error, marker$5);
+		return AISDKError.hasMarker(error, marker16);
 	}
 };
-var name$4 = "AI_InvalidDataContentError";
-var marker$4 = `vercel.ai.error.${name$4}`;
-var symbol$4 = Symbol.for(marker$4);
+_a16 = symbol16;
+var name17 = "AI_InvalidDataContentError";
+var marker17 = `vercel.ai.error.${name17}`;
+var symbol17 = Symbol.for(marker17);
+var _a17;
 var InvalidDataContentError = class extends AISDKError {
 	constructor({ content, cause, message = `Invalid data content. Expected a base64 string, Uint8Array, ArrayBuffer, or Buffer, but got ${typeof content}.` }) {
 		super({
-			name: name$4,
+			name: name17,
 			message,
 			cause
 		});
-		this[symbol$4] = true;
+		this[_a17] = true;
 		this.content = content;
 	}
 	static isInstance(error) {
-		return AISDKError.hasMarker(error, marker$4);
+		return AISDKError.hasMarker(error, marker17);
 	}
 };
-var name$3 = "AI_InvalidMessageRoleError";
-var marker$3 = `vercel.ai.error.${name$3}`;
-var symbol$3 = Symbol.for(marker$3);
+_a17 = symbol17;
+var name18 = "AI_InvalidMessageRoleError";
+var marker18 = `vercel.ai.error.${name18}`;
+var symbol18 = Symbol.for(marker18);
+var _a18;
 var InvalidMessageRoleError = class extends AISDKError {
 	constructor({ role, message = `Invalid message role: '${role}'. Must be one of: "system", "user", "assistant", "tool".` }) {
 		super({
-			name: name$3,
+			name: name18,
 			message
 		});
-		this[symbol$3] = true;
+		this[_a18] = true;
 		this.role = role;
 	}
 	static isInstance(error) {
-		return AISDKError.hasMarker(error, marker$3);
+		return AISDKError.hasMarker(error, marker18);
 	}
 };
-var name$2 = "AI_MessageConversionError";
-var marker$2 = `vercel.ai.error.${name$2}`;
-var symbol$2 = Symbol.for(marker$2);
+_a18 = symbol18;
+var name19 = "AI_MessageConversionError";
+var marker19 = `vercel.ai.error.${name19}`;
+var symbol19 = Symbol.for(marker19);
+var _a19;
 var MessageConversionError = class extends AISDKError {
 	constructor({ originalMessage, message }) {
 		super({
-			name: name$2,
+			name: name19,
 			message
 		});
-		this[symbol$2] = true;
+		this[_a19] = true;
 		this.originalMessage = originalMessage;
 	}
 	static isInstance(error) {
-		return AISDKError.hasMarker(error, marker$2);
+		return AISDKError.hasMarker(error, marker19);
 	}
 };
-var name$1 = "AI_RetryError";
-var marker$1 = `vercel.ai.error.${name$1}`;
-var symbol$1 = Symbol.for(marker$1);
+_a19 = symbol19;
+var name20 = "AI_RetryError";
+var marker20 = `vercel.ai.error.${name20}`;
+var symbol20 = Symbol.for(marker20);
+var _a20;
 var RetryError = class extends AISDKError {
 	constructor({ message, reason, errors }) {
 		super({
-			name: name$1,
+			name: name20,
 			message
 		});
-		this[symbol$1] = true;
+		this[_a20] = true;
 		this.reason = reason;
 		this.errors = errors;
 		this.lastError = errors[errors.length - 1];
 	}
 	static isInstance(error) {
-		return AISDKError.hasMarker(error, marker$1);
+		return AISDKError.hasMarker(error, marker20);
 	}
 };
-var deprecationCodes = /* @__PURE__ */ new Map([
-	["generateObject", "AISDK_DEP_GENERATE_OBJECT"],
-	["streamObject", "AISDK_DEP_STREAM_OBJECT"],
-	["experimental_generateSpeech", "AISDK_DEP_EXPERIMENTAL_GENERATE_SPEECH"],
-	["experimental_transcribe", "AISDK_DEP_EXPERIMENTAL_TRANSCRIBE"],
-	["\"image\" content part", "AISDK_DEP_IMAGE_CONTENT_PART"],
-	["\"tool-result\" content of type \"file-data\"", "AISDK_DEP_TOOL_RESULT_FILE_DATA"],
-	["\"tool-result\" content of type \"file-url\"", "AISDK_DEP_TOOL_RESULT_FILE_URL"],
-	["\"tool-result\" content of type \"file-id\"", "AISDK_DEP_TOOL_RESULT_FILE_ID"],
-	["\"tool-result\" content of type \"file-reference\"", "AISDK_DEP_TOOL_RESULT_FILE_REFERENCE"],
-	["\"tool-result\" content of type \"image-data\"", "AISDK_DEP_TOOL_RESULT_IMAGE_DATA"],
-	["\"tool-result\" content of type \"image-url\"", "AISDK_DEP_TOOL_RESULT_IMAGE_URL"],
-	["\"tool-result\" content of type \"image-file-id\"", "AISDK_DEP_TOOL_RESULT_IMAGE_FILE_ID"],
-	["\"tool-result\" content of type \"image-file-reference\"", "AISDK_DEP_TOOL_RESULT_IMAGE_FILE_REFERENCE"],
-	["rawInput in output-error UI message parts", "AISDK_DEP_UI_MESSAGE_RAW_INPUT"]
-]);
-/**
-* Escape punctuation and UTF-16 code units without losing case or collapsing
-* distinct settings. Underscores are escaped too, so `__` separates code parts.
-*/
-function encodeCodePart(value) {
-	return value.replace(/[^a-zA-Z0-9]/g, (character) => `_${character.charCodeAt(0).toString(16).toUpperCase().padStart(4, "0")}`);
-}
-function getDeprecationCode({ setting, provider }) {
-	if (provider == null) return deprecationCodes.get(setting) ?? `AISDK_DEP_SETTING_${encodeCodePart(setting)}`;
-	return `AISDK_DEP_PROVIDER_${encodeCodePart(provider)}__${encodeCodePart(setting)}`;
-}
-/**
-* Formats a warning object into a human-readable string with clear AI SDK branding.
-*
-* @param options - The options for formatting the warning.
-* @param options.warning - The warning to format.
-* @param options.provider - The provider id used for the call, if scoped to a specific provider.
-* @param options.model - The model id used for the call, if scoped to a specific provider.
-* @returns A formatted warning message string.
-*/
+_a20 = symbol20;
 function formatWarning({ warning, provider, model }) {
 	const prefix = `AI SDK Warning${provider != null && model != null ? ` (${provider} / ${model})` : ""}:`;
 	switch (warning.type) {
@@ -803,29 +728,6 @@ function formatWarning({ warning, provider, model }) {
 }
 var FIRST_WARNING_INFO_MESSAGE = "AI SDK Warning System: To turn off warning logging, set the AI_SDK_LOG_WARNINGS global to false.";
 var hasLoggedBefore = false;
-var emittedDeprecationCodes = /* @__PURE__ */ new Set();
-function emitWarning({ message, type, code }) {
-	if (typeof process !== "undefined" && typeof process.emitWarning === "function") process.emitWarning(message, code == null ? { type } : {
-		type,
-		code
-	});
-	else console.warn(code == null ? message : `[${code}] ${message}`);
-}
-/**
-* Logs warnings to the console or uses a custom logger if configured.
-*
-* The behavior can be customized via the `AI_SDK_LOG_WARNINGS` global variable:
-* - If set to `false`, warnings are suppressed.
-* - If set to a function, that function is called with the warnings.
-* - Otherwise, warnings use `process.emitWarning` when available, falling back
-*   to `console.warn`. Deprecations have stable codes and are emitted once per
-*   code by the default logger. Custom loggers receive every warning.
-*
-* @param options - The options containing warnings and context.
-* @param options.warnings - The warnings to log.
-* @param options.provider - The provider id used for the call, if scoped to a specific provider.
-* @param options.model - The model id used for the call, if scoped to a specific provider.
-*/
 var logWarnings = (options) => {
 	if (options.warnings.length === 0) return;
 	const logger = globalThis.AI_SDK_LOG_WARNINGS;
@@ -836,29 +738,16 @@ var logWarnings = (options) => {
 	}
 	if (!hasLoggedBefore) {
 		hasLoggedBefore = true;
-		emitWarning({
-			message: FIRST_WARNING_INFO_MESSAGE,
-			type: "Warning"
-		});
+		console.info(FIRST_WARNING_INFO_MESSAGE);
 	}
 	for (const warning of options.warnings) {
-		const code = warning.type === "deprecated" ? getDeprecationCode({
-			setting: warning.setting,
-			provider: options.provider
-		}) : void 0;
-		if (code != null) {
-			if (emittedDeprecationCodes.has(code)) continue;
-			emittedDeprecationCodes.add(code);
-		}
-		emitWarning({
-			message: formatWarning({
-				warning,
-				provider: options.provider,
-				model: options.model
-			}),
-			type: warning.type === "deprecated" ? "DeprecationWarning" : "Warning",
-			code
+		const message = formatWarning({
+			warning,
+			provider: options.provider,
+			model: options.model
 		});
+		if (typeof process !== "undefined" && typeof process.emitWarning === "function") process.emitWarning(message, { type: warning.type === "deprecated" ? "DeprecationWarning" : "Warning" });
+		else console.warn(message);
 	}
 };
 function logV2CompatibilityWarning({ provider, modelId }) {
@@ -948,7 +837,9 @@ function convertV2StreamToV3(stream) {
 					usage: convertV2UsageToV3(chunk.usage)
 				});
 				break;
-			default: controller.enqueue(chunk);
+			default:
+				controller.enqueue(chunk);
+				break;
 		}
 	} }));
 }
@@ -970,117 +861,16 @@ function convertV2UsageToV3(usage) {
 			total: usage.outputTokens,
 			text: void 0,
 			reasoning: usage.reasoningTokens
-		},
-		raw: usage.totalTokens == null ? void 0 : { totalTokens: usage.totalTokens }
+		}
 	};
 }
 function asLanguageModelV4(model) {
 	if (model.specificationVersion === "v4") return model;
 	const v3Model = model.specificationVersion === "v2" ? asLanguageModelV3(model) : model;
 	return new Proxy(v3Model, { get(target, prop) {
-		switch (prop) {
-			case "specificationVersion": return "v4";
-			case "doGenerate": return async (options) => {
-				const result = await target.doGenerate({
-					...options,
-					prompt: convertV4PromptToV3(options.prompt)
-				});
-				return {
-					...result,
-					content: result.content.map(convertV3ContentToV4)
-				};
-			};
-			case "doStream": return async (options) => {
-				const result = await target.doStream({
-					...options,
-					prompt: convertV4PromptToV3(options.prompt)
-				});
-				return {
-					...result,
-					stream: convertV3StreamToV4(result.stream)
-				};
-			};
-			default: return target[prop];
-		}
+		if (prop === "specificationVersion") return "v4";
+		return target[prop];
 	} });
-}
-function convertV4PromptToV3(prompt) {
-	return prompt.map((message) => {
-		if (message.role === "system") return message;
-		return {
-			...message,
-			content: message.content.map((part) => {
-				switch (part.type) {
-					case "file": return {
-						...part,
-						data: convertV4FileDataToV3(part.data)
-					};
-					case "tool-result": return {
-						...part,
-						output: convertV4ToolResultOutputToV3(part.output)
-					};
-					default: return part;
-				}
-			})
-		};
-	});
-}
-function convertV4FileDataToV3(data) {
-	switch (data.type) {
-		case "data": return data.data;
-		case "url": return data.url;
-		case "reference":
-		case "text": return data;
-	}
-}
-function convertV4ToolResultOutputToV3(output) {
-	if (output.type !== "content") return output;
-	return {
-		...output,
-		value: output.value.map((part) => {
-			if (part.type !== "file") return part;
-			switch (part.data.type) {
-				case "data": return {
-					type: "file-data",
-					data: typeof part.data.data === "string" ? part.data.data : convertUint8ArrayToBase64(part.data.data),
-					mediaType: part.mediaType,
-					filename: part.filename,
-					providerOptions: part.providerOptions
-				};
-				case "url": return {
-					type: "file-url",
-					url: part.data.url.toString(),
-					providerOptions: part.providerOptions
-				};
-				case "reference": return {
-					type: "file-id",
-					fileId: part.data.reference,
-					providerOptions: part.providerOptions
-				};
-				case "text": return part;
-			}
-		})
-	};
-}
-function convertV3ContentToV4(content) {
-	return content.type === "file" ? {
-		...content,
-		data: {
-			type: "data",
-			data: content.data
-		}
-	} : content;
-}
-function convertV3StreamToV4(stream) {
-	return stream.pipeThrough(new TransformStream({ transform(chunk, controller) {
-		controller.enqueue(chunk.type === "file" ? {
-			...chunk,
-			data: {
-				type: "data",
-				data: chunk.data
-			}
-		} : chunk);
-	} }));
 }
 function asRerankingModelV4(model) {
 	if (model.specificationVersion === "v4") return model;
@@ -1170,12 +960,9 @@ function resolveLanguageModel(model) {
 	return asLanguageModelV4(model);
 }
 function getGlobalProvider() {
-	return asProviderV4(globalThis.AI_SDK_DEFAULT_PROVIDER ?? gateway);
+	var _a22;
+	return asProviderV4((_a22 = globalThis.AI_SDK_DEFAULT_PROVIDER) != null ? _a22 : gateway);
 }
-/**
-* Clone model messages while preserving URL instances. Node's structuredClone
-* currently rejects URL objects, which are valid file/image prompt payloads.
-*/
 function cloneModelMessages(messages) {
 	return messages.map((message) => cloneValue(message));
 }
@@ -1185,27 +972,17 @@ function cloneValue(value) {
 	if (value instanceof Uint8Array) return new Uint8Array(value);
 	if (value instanceof ArrayBuffer) return value.slice(0);
 	if (value instanceof Date) return new Date(value);
-	if (value != null && typeof value === "object") return Object.fromEntries(Object.entries(value).map(([key, value]) => [key, cloneValue(value)]));
+	if (value != null && typeof value === "object") return Object.fromEntries(Object.entries(value).map(([key, value2]) => [key, cloneValue(value2)]));
 	return value;
 }
-var VERSION = "7.0.136";
-/**
-* Download a file from a URL.
-*
-* @param url - The URL to download from.
-* @param maxBytes - Maximum allowed download size in bytes. Defaults to 100 MiB.
-* @param abortSignal - An optional abort signal to cancel the download.
-* @returns The downloaded data and media type.
-*
-* @throws DownloadError if the download fails or exceeds maxBytes.
-*/
+var VERSION = "7.0.37";
 var download = async ({ url, maxBytes, abortSignal }) => {
+	var _a22;
 	const urlText = url.toString();
 	try {
-		const headers = withUserAgentSuffix({}, `ai-sdk/${VERSION}`, getRuntimeEnvironmentUserAgent());
-		const response = await fetchUntrustedUrl({
+		const response = await fetchWithValidatedRedirects({
 			url: urlText,
-			headers,
+			headers: withUserAgentSuffix({}, `ai-sdk/${VERSION}`, getRuntimeEnvironmentUserAgent()),
 			abortSignal
 		});
 		if (!response.ok) {
@@ -1220,9 +997,9 @@ var download = async ({ url, maxBytes, abortSignal }) => {
 			data: await readResponseWithSizeLimit({
 				response,
 				url: urlText,
-				maxBytes: maxBytes ?? 2147483648
+				maxBytes: maxBytes != null ? maxBytes : DEFAULT_MAX_DOWNLOAD_SIZE
 			}),
-			mediaType: response.headers.get("content-type") ?? void 0
+			mediaType: (_a22 = response.headers.get("content-type")) != null ? _a22 : void 0
 		};
 	} catch (error) {
 		if (DownloadError.isInstance(error)) throw error;
@@ -1232,27 +1009,7 @@ var download = async ({ url, maxBytes, abortSignal }) => {
 		});
 	}
 };
-/**
-* Default download function.
-* Downloads the file if it is not supported by the model.
-*/
-var createDefaultDownloadFunction = (download$1 = download, abortSignal) => (requestedDownloads) => Promise.all(requestedDownloads.map(async (requestedDownload) => requestedDownload.isUrlSupportedByModel ? null : await download$1({
-	...requestedDownload,
-	abortSignal
-})));
-/**
-* Deeply merges two objects together.
-* - Properties from the `overrides` object override those in the `base` object with the same key.
-* - For nested objects, the merge is performed recursively (deep merge).
-* - Arrays are replaced, not merged.
-* - Primitive values are replaced.
-* - If both `base` and `overrides` are undefined, returns undefined.
-* - If one of `base` or `overrides` is undefined, returns the other.
-*
-* @param base The target object to merge into
-* @param overrides The source object to merge from
-* @returns A new object with the merged properties, or undefined if both inputs are undefined
-*/
+var createDefaultDownloadFunction = (download2 = download) => (requestedDownloads) => Promise.all(requestedDownloads.map(async (requestedDownload) => requestedDownload.isUrlSupportedByModel ? null : await download2(requestedDownload)));
 function mergeObjects(base, overrides) {
 	if (base === void 0 && overrides === void 0) return;
 	if (base === void 0) return overrides;
@@ -1279,7 +1036,7 @@ function splitDataUrl(dataUrl) {
 			mediaType: header.split(";")[0].split(":")[1],
 			base64Content
 		};
-	} catch {
+	} catch (e) {
 		return {
 			mediaType: void 0,
 			base64Content: void 0
@@ -1291,7 +1048,7 @@ function isTaggedFileData(value) {
 	const type = value.type;
 	return type === "data" || type === "url" || type === "reference" || type === "text";
 }
-function convertUrlToFilePartData(url, originalUrl) {
+function convertUrlToFilePartData(url) {
 	if (url.protocol === "data:") {
 		const { mediaType, base64Content } = splitDataUrl(url.toString());
 		if (mediaType == null || base64Content == null) throw new InvalidDataContentError({
@@ -1309,16 +1066,10 @@ function convertUrlToFilePartData(url, originalUrl) {
 	return {
 		data: {
 			type: "url",
-			url,
-			...originalUrl != null ? { originalUrl } : {}
+			url
 		},
 		mediaType: void 0
 	};
-}
-function convertUrlStringToFilePartData(content) {
-	const result = convertUrlToFilePartData(new URL(content));
-	if (result.data.type === "url" && result.data.url.toString() !== content) result.data.originalUrl = content;
-	return result;
 }
 function convertInlineDataToFilePartData(content) {
 	if (content instanceof Uint8Array) return {
@@ -1350,13 +1101,6 @@ function convertInlineDataToFilePartData(content) {
 		mediaType: void 0
 	};
 }
-/**
-* Converts any legacy-or-tagged top-level `FilePart.data` /
-* `ReasoningFilePart.data` value into the tagged v4 provider prompt shape.
-*
-* Returns the tagged `data` together with the resolved mediaType (extracted
-* from a `data:` URL when applicable).
-*/
 function convertToLanguageModelV4FilePart(content) {
 	if (isTaggedFileData(content)) switch (content.type) {
 		case "data":
@@ -1365,7 +1109,7 @@ function convertToLanguageModelV4FilePart(content) {
 				message: "Data URLs are not valid inline data. Pass them as { type: \"url\", url } instead."
 			});
 			return convertInlineDataToFilePartData(content.data);
-		case "url": return convertUrlToFilePartData(content.url, content.originalUrl);
+		case "url": return convertUrlToFilePartData(content.url);
 		case "reference": return {
 			data: {
 				type: "reference",
@@ -1383,8 +1127,8 @@ function convertToLanguageModelV4FilePart(content) {
 	}
 	if (content instanceof URL) return convertUrlToFilePartData(content);
 	if (typeof content === "string") try {
-		return convertUrlStringToFilePartData(content);
-	} catch {
+		return convertUrlToFilePartData(new URL(content));
+	} catch (e) {
 		return convertInlineDataToFilePartData(content);
 	}
 	if (isProviderReference(content)) return {
@@ -1396,8 +1140,8 @@ function convertToLanguageModelV4FilePart(content) {
 	};
 	return convertInlineDataToFilePartData(content);
 }
-async function convertToLanguageModelPrompt({ prompt, supportedUrls, download, abortSignal, provider }) {
-	const downloadedAssets = await downloadAssets(prompt.messages, download ?? createDefaultDownloadFunction(void 0, abortSignal), supportedUrls);
+async function convertToLanguageModelPrompt({ prompt, supportedUrls, download: download2 = createDefaultDownloadFunction(), provider }) {
+	const downloadedAssets = await downloadAssets(prompt.messages, download2, supportedUrls);
 	const approvalIdToToolCallId = /* @__PURE__ */ new Map();
 	for (const message of prompt.messages) if (message.role === "assistant" && Array.isArray(message.content)) {
 		for (const part of message.content) if (part.type === "tool-approval-request" && "approvalId" in part && "toolCallId" in part) approvalIdToToolCallId.set(part.approvalId, part.toolCallId);
@@ -1428,11 +1172,11 @@ async function convertToLanguageModelPrompt({ prompt, supportedUrls, download, a
 			continue;
 		}
 		const lastCombinedMessage = combinedMessages.at(-1);
-		if (lastCombinedMessage?.role === "tool") {
+		if ((lastCombinedMessage == null ? void 0 : lastCombinedMessage.role) === "tool") {
 			const lastContentPart = lastCombinedMessage.content.at(-1);
 			if (lastContentPart != null && lastCombinedMessage.providerOptions != null) lastContentPart.providerOptions = mergeObjects(lastCombinedMessage.providerOptions, lastContentPart.providerOptions);
 			lastCombinedMessage.content.push(...message.content);
-			lastCombinedMessage.providerOptions = lastContentPart == null ? mergeObjects(lastCombinedMessage.providerOptions, message.providerOptions) : message.providerOptions;
+			lastCombinedMessage.providerOptions = message.providerOptions;
 		} else combinedMessages.push(message);
 	}
 	const toolCallIds = /* @__PURE__ */ new Set();
@@ -1447,18 +1191,12 @@ async function convertToLanguageModelPrompt({ prompt, supportedUrls, download, a
 		case "system":
 			for (const id of approvedToolCallIds) toolCallIds.delete(id);
 			if (toolCallIds.size > 0) throw new MissingToolResultsError({ toolCallIds: Array.from(toolCallIds) });
+			break;
 	}
 	for (const id of approvedToolCallIds) toolCallIds.delete(id);
 	if (toolCallIds.size > 0) throw new MissingToolResultsError({ toolCallIds: Array.from(toolCallIds) });
 	return combinedMessages.filter((message) => message.role !== "tool" || message.content.length > 0);
 }
-/**
-* Convert a ModelMessage to a LanguageModelV4Message.
-*
-* @param message - The ModelMessage to convert.
-* @param downloadedAssets - A map of URLs to their downloaded data. Only
-* available if the model does not support URLs, null otherwise.
-*/
 function convertToLanguageModelMessage({ message, downloadedAssets, provider }) {
 	const warnings = [];
 	const role = message.role;
@@ -1517,7 +1255,7 @@ function convertToLanguageModelMessage({ message, downloadedAssets, provider }) 
 								type: "file",
 								data,
 								filename: part.filename,
-								mediaType: mediaType ?? part.mediaType,
+								mediaType: mediaType != null ? mediaType : part.mediaType,
 								providerOptions
 							};
 						}
@@ -1532,7 +1270,7 @@ function convertToLanguageModelMessage({ message, downloadedAssets, provider }) 
 							return {
 								type: "reasoning-file",
 								data,
-								mediaType: mediaType ?? part.mediaType,
+								mediaType: mediaType != null ? mediaType : part.mediaType,
 								providerOptions
 							};
 						}
@@ -1602,18 +1340,16 @@ function convertToLanguageModelMessage({ message, downloadedAssets, provider }) 
 	}
 }
 function convertImagePartToFilePart(part) {
+	var _a22;
 	if (part.type !== "image") return part;
 	return {
 		type: "file",
 		data: part.image,
-		mediaType: part.mediaType ?? "image",
+		mediaType: (_a22 = part.mediaType) != null ? _a22 : "image",
 		providerOptions: part.providerOptions
 	};
 }
-/**
-* Downloads files from URLs in the user messages.
-*/
-async function downloadAssets(messages, download, supportedUrls) {
+async function downloadAssets(messages, download2, supportedUrls) {
 	const downloadableFiles = [];
 	for (const message of messages) {
 		if (message.role === "user" && Array.isArray(message.content)) for (const part of message.content) {
@@ -1646,20 +1382,12 @@ async function downloadAssets(messages, download, supportedUrls) {
 			supportedUrls
 		})
 	}));
-	const downloadedFiles = await download(plannedDownloads);
+	const downloadedFiles = await download2(plannedDownloads);
 	return Object.fromEntries(downloadedFiles.map((file, index) => file == null ? null : [plannedDownloads[index].url.toString(), {
 		data: file.data,
 		mediaType: file.mediaType
 	}]).filter((file) => file != null));
 }
-/**
-* Convert part of a user message to a LanguageModelV4Part.
-*
-* @param part - The part to convert.
-* @param downloadedAssets - A map of URLs to their downloaded data. Only
-* available if the model does not support URLs, null otherwise.
-* @returns The converted part.
-*/
 function convertPartToLanguageModelPart(part, downloadedAssets) {
 	if (part.type === "text") return {
 		type: "text",
@@ -1667,7 +1395,7 @@ function convertPartToLanguageModelPart(part, downloadedAssets) {
 		providerOptions: part.providerOptions
 	};
 	const { data: normalizedData, mediaType: dataUrlMediaType } = convertToLanguageModelV4FilePart(part.data);
-	let mediaType = dataUrlMediaType ?? part.mediaType;
+	let mediaType = dataUrlMediaType != null ? dataUrlMediaType : part.mediaType;
 	let data = normalizedData;
 	if (data.type === "url") {
 		const downloadedFile = downloadedAssets[data.url.toString()];
@@ -1700,6 +1428,7 @@ function mapToolResultOutput({ output, provider, warnings = [], downloadedAssets
 	return {
 		type: "content",
 		value: output.value.map((item) => {
+			var _a22;
 			switch (item.type) {
 				case "file": {
 					const convertedPart = convertPartToLanguageModelPart(item, downloadedAssets);
@@ -1723,8 +1452,7 @@ function mapToolResultOutput({ output, provider, warnings = [], downloadedAssets
 						providerOptions: item.providerOptions
 					};
 				case "file-url": {
-					const mediaType = item.mediaType ?? getMediaTypeFromUrl(item.url);
-					const url = new URL(item.url);
+					const mediaType = (_a22 = item.mediaType) != null ? _a22 : getMediaTypeFromUrl(item.url);
 					let message = `The "file-url" type for tool result content is deprecated. Use the "file" type with mediaType and { type: 'url', url } instead.`;
 					if (!item.mediaType) {
 						const inferenceSuffix = mediaType === "application/octet-stream" ? `Unable to infer media type from URL. Defaulting to 'application/octet-stream'.` : `Inferred media type '${mediaType}' from URL.`;
@@ -1739,8 +1467,7 @@ function mapToolResultOutput({ output, provider, warnings = [], downloadedAssets
 						type: "file",
 						data: {
 							type: "url",
-							url,
-							...url.toString() !== item.url ? { originalUrl: item.url } : {}
+							url: new URL(item.url)
 						},
 						mediaType,
 						providerOptions: item.providerOptions
@@ -1794,8 +1521,7 @@ function mapToolResultOutput({ output, provider, warnings = [], downloadedAssets
 						mediaType: item.mediaType,
 						providerOptions: item.providerOptions
 					};
-				case "image-url": {
-					const url = new URL(item.url);
+				case "image-url":
 					warnings.push({
 						type: "deprecated",
 						setting: "\"tool-result\" content of type \"image-url\"",
@@ -1805,13 +1531,11 @@ function mapToolResultOutput({ output, provider, warnings = [], downloadedAssets
 						type: "file",
 						data: {
 							type: "url",
-							url,
-							...url.toString() !== item.url ? { originalUrl: item.url } : {}
+							url: new URL(item.url)
 						},
 						mediaType: "image",
 						providerOptions: item.providerOptions
 					};
-				}
 				case "image-file-id":
 					warnings.push({
 						type: "deprecated",
@@ -1875,13 +1599,14 @@ var URL_EXTENSION_TO_MEDIA_TYPE = {
 	ogg: "audio/ogg"
 };
 function getMediaTypeFromUrl(url, fallbackMediaType = "application/octet-stream") {
+	var _a22;
 	try {
-		const fileExtension = new URL(url).pathname.split(".").pop()?.toLowerCase();
+		const fileExtension = (_a22 = new URL(url).pathname.split(".").pop()) == null ? void 0 : _a22.toLowerCase();
 		if (fileExtension && Object.hasOwn(URL_EXTENSION_TO_MEDIA_TYPE, fileExtension)) return URL_EXTENSION_TO_MEDIA_TYPE[fileExtension];
-	} catch {}
+	} catch (e) {}
 	return fallbackMediaType;
 }
-async function createToolModelOutput({ toolCallId, input, output, tool, errorMode }) {
+async function createToolModelOutput({ toolCallId, input, output, tool: tool2, errorMode }) {
 	if (errorMode === "text") return {
 		type: "error-text",
 		value: getErrorMessage(output)
@@ -1890,7 +1615,7 @@ async function createToolModelOutput({ toolCallId, input, output, tool, errorMod
 		type: "error-json",
 		value: toJSONValue(output)
 	};
-	if (tool?.toModelOutput) return await tool.toModelOutput({
+	if (tool2 == null ? void 0 : tool2.toModelOutput) return await tool2.toModelOutput({
 		toolCallId,
 		input,
 		output
@@ -1903,29 +1628,9 @@ async function createToolModelOutput({ toolCallId, input, output, tool, errorMod
 		value: toJSONValue(output)
 	};
 }
-/**
-* Normalizes an in-process tool output to a plain JSON value
-* (applies `toJSON`, converts `Date`, drops `undefined`, etc.)
-* by round-tripping it through `JSON.stringify`.
-*
-* The parsed text is produced by `JSON.stringify` from a value that is
-* already materialized in this process, so it is not untrusted input.
-* `JSON.parse` is used deliberately instead of the secure parser from
-* `@ai-sdk/provider-utils`: the secure parser rejects own `__proto__` and
-* `constructor.prototype` keys, which are valid data in tool outputs
-* (e.g. rows from an external API). `JSON.parse` defines `__proto__` as an
-* own data property and never modifies the prototype chain, so preserving
-* these keys here is safe. Do not reuse this pattern for text that comes
-* from outside the process; use `parseJSON` / `safeParseJSON` instead.
-*/
 function toJSONValue(value) {
-	if (value === void 0) return null;
-	const serialized = JSON.stringify(value);
-	return serialized === void 0 ? null : JSON.parse(serialized);
+	return value === void 0 ? null : value;
 }
-/**
-* Validates model call options and returns a new object with normalized values.
-*/
 function prepareLanguageModelCallOptions({ maxOutputTokens, temperature, topP, topK, presencePenalty, frequencyPenalty, seed, stopSequences, reasoning }) {
 	if (maxOutputTokens != null) {
 		if (!Number.isInteger(maxOutputTokens)) throw new InvalidArgumentError({
@@ -1999,34 +1704,34 @@ function prepareToolChoice({ toolChoice }) {
 		toolName: toolChoice.toolName
 	};
 }
-function isNonEmptyObject(object) {
-	return object != null && Object.keys(object).length > 0;
+function isNonEmptyObject(object2) {
+	return object2 != null && Object.keys(object2).length > 0;
 }
 async function prepareTools({ tools, toolOrder, toolsContext = {}, experimental_sandbox: sandbox }) {
 	if (!isNonEmptyObject(tools)) return;
 	const languageModelTools = [];
-	for (const [name, tool] of orderToolEntries({
+	for (const [name22, tool2] of orderToolEntries({
 		tools,
 		toolOrder
 	})) {
-		const toolType = tool.type;
+		const toolType = tool2.type;
 		switch (toolType) {
 			case void 0:
 			case "dynamic":
 			case "function": {
 				const description = resolveToolDescription({
-					tool,
-					toolName: name,
+					tool: tool2,
+					toolName: name22,
 					toolsContext,
 					experimental_sandbox: sandbox
 				});
-				const providerOptions = tool.providerOptions;
-				const inputExamples = tool.inputExamples;
-				const strict = tool.strict;
+				const providerOptions = tool2.providerOptions;
+				const inputExamples = tool2.inputExamples;
+				const strict = tool2.strict;
 				languageModelTools.push({
 					type: "function",
-					name,
-					inputSchema: await asSchema(tool.inputSchema).jsonSchema,
+					name: name22,
+					inputSchema: await asSchema(tool2.inputSchema).jsonSchema,
 					...description != null ? { description } : {},
 					...inputExamples != null ? { inputExamples } : {},
 					...providerOptions != null ? { providerOptions } : {},
@@ -2037,9 +1742,9 @@ async function prepareTools({ tools, toolOrder, toolsContext = {}, experimental_
 			case "provider":
 				languageModelTools.push({
 					type: "provider",
-					name,
-					id: tool.id,
-					args: tool.args
+					name: name22,
+					id: tool2.id,
+					args: tool2.args
 				});
 				break;
 			default: throw new Error(`Unsupported tool type: ${toolType}`);
@@ -2050,377 +1755,279 @@ async function prepareTools({ tools, toolOrder, toolsContext = {}, experimental_
 function orderToolEntries({ tools, toolOrder }) {
 	if (toolOrder == null) return Object.entries(tools);
 	const toolEntries = Object.entries(tools);
-	const orderedTools = toolEntries.filter(([name]) => toolOrder.includes(name)).sort(([nameA], [nameB]) => toolOrder.indexOf(nameA) - toolOrder.indexOf(nameB));
-	const unorderedTools = toolEntries.filter(([name]) => !toolOrder.includes(name)).sort(([nameA], [nameB]) => nameA < nameB ? -1 : nameA > nameB ? 1 : 0);
+	const orderedTools = toolEntries.filter(([name22]) => toolOrder.includes(name22)).sort(([nameA], [nameB]) => toolOrder.indexOf(nameA) - toolOrder.indexOf(nameB));
+	const unorderedTools = toolEntries.filter(([name22]) => !toolOrder.includes(name22)).sort(([nameA], [nameB]) => nameA < nameB ? -1 : nameA > nameB ? 1 : 0);
 	return [...orderedTools, ...unorderedTools];
 }
-function resolveToolDescription({ tool, toolName, toolsContext, experimental_sandbox: sandbox }) {
-	return tool.description === void 0 ? void 0 : typeof tool.description === "string" ? tool.description : tool.description({
+function resolveToolDescription({ tool: tool2, toolName, toolsContext, experimental_sandbox: sandbox }) {
+	return tool2.description === void 0 ? void 0 : typeof tool2.description === "string" ? tool2.description : tool2.description({
 		context: toolsContext[toolName],
 		experimental_sandbox: sandbox
 	});
 }
-/**
-* Extracts the total timeout value in milliseconds from a TimeoutConfiguration.
-*
-* @param timeout - The timeout configuration.
-* @returns The total timeout in milliseconds, or undefined if no timeout is configured.
-*/
 function getTotalTimeoutMs(timeout) {
 	if (timeout == null) return;
 	if (typeof timeout === "number") return timeout;
 	return timeout.totalMs;
 }
-/**
-* Extracts the step timeout value in milliseconds from a TimeoutConfiguration.
-*
-* @param timeout - The timeout configuration.
-* @returns The step timeout in milliseconds, or undefined if no step timeout is configured.
-*/
 function getStepTimeoutMs(timeout) {
 	if (timeout == null || typeof timeout === "number") return;
 	return timeout.stepMs;
 }
-/**
-* Extracts the first chunk timeout value in milliseconds from a TimeoutConfiguration.
-* This timeout is for streaming only - it aborts if no content chunk is received within the specified duration.
-*
-* @param timeout - The timeout configuration.
-* @returns The first chunk timeout in milliseconds, or undefined if no first chunk timeout is configured.
-*/
 function getFirstChunkTimeoutMs(timeout) {
 	if (timeout == null || typeof timeout === "number") return;
 	return timeout.firstChunkMs;
 }
-/**
-* Extracts the chunk timeout value in milliseconds from a TimeoutConfiguration.
-* This timeout is for streaming only - it aborts if no new content chunk is received within the specified duration.
-*
-* @param timeout - The timeout configuration.
-* @returns The chunk timeout in milliseconds, or undefined if no chunk timeout is configured.
-*/
 function getChunkTimeoutMs(timeout) {
 	if (timeout == null || typeof timeout === "number") return;
 	return timeout.chunkMs;
 }
 function getToolTimeoutMs(timeout, toolName) {
+	var _a22, _b;
 	if (timeout == null || typeof timeout === "number") return;
-	return timeout.tools?.[`${toolName}Ms`] ?? timeout.toolMs;
+	return (_b = (_a22 = timeout.tools) == null ? void 0 : _a22[`${toolName}Ms`]) != null ? _b : timeout.toolMs;
 }
-var z = {
-	array,
-	boolean,
-	custom,
-	discriminatedUnion,
-	enum: _enum,
-	instanceof: _instanceof,
-	lazy,
-	literal,
-	looseObject,
-	never,
-	null: _null,
-	number,
-	object,
-	record,
-	string,
-	union,
-	unknown
-};
-var jsonValueSchema = z.lazy(() => z.union([
-	z.null(),
-	z.string(),
-	z.number(),
-	z.boolean(),
-	z.record(z.string(), jsonValueSchema.optional()),
-	z.array(jsonValueSchema)
+var jsonValueSchema = lazy(() => union([
+	_null(),
+	string(),
+	number(),
+	boolean(),
+	record(string(), jsonValueSchema.optional()),
+	array$1(jsonValueSchema)
 ]));
-var providerMetadataSchema = z.record(z.string(), z.record(z.string(), jsonValueSchema.optional()));
-var fileInlineDataSchema = z.union([
-	z.string(),
-	z.instanceof(Uint8Array),
-	z.instanceof(ArrayBuffer),
-	z.custom(isBuffer, { message: "Must be a Buffer" })
+var providerMetadataSchema = record(string(), record(string(), jsonValueSchema.optional()));
+var fileInlineDataSchema = union([
+	string(),
+	_instanceof(Uint8Array),
+	_instanceof(ArrayBuffer),
+	custom(isBuffer, { message: "Must be a Buffer" })
 ]);
-var providerReferenceSchema$1 = z.record(z.string(), z.string());
-/**
-* @internal
-*/
-var textPartSchema = z.object({
-	type: z.literal("text"),
-	text: z.string(),
+var providerReferenceSchema = record(string(), string());
+var textPartSchema = object$1({
+	type: literal("text"),
+	text: string(),
 	providerOptions: providerMetadataSchema.optional()
 });
-/**
-* @internal
-* @deprecated Use `filePartSchema` with `mediaType: 'image'` instead:
-* `{ type: 'file', mediaType: 'image', data: { type: 'data', data } }`.
-*/
-var imagePartSchema = z.object({
-	type: z.literal("image"),
-	image: z.union([
+var imagePartSchema = object$1({
+	type: literal("image"),
+	image: union([
 		fileInlineDataSchema,
-		z.instanceof(URL),
-		providerReferenceSchema$1
+		_instanceof(URL),
+		providerReferenceSchema
 	]),
-	mediaType: z.string().optional(),
+	mediaType: string().optional(),
 	providerOptions: providerMetadataSchema.optional()
 });
-var taggedFileDataSchema = z.discriminatedUnion("type", [
-	z.object({
-		type: z.literal("data"),
+var taggedFileDataSchema = discriminatedUnion("type", [
+	object$1({
+		type: literal("data"),
 		data: fileInlineDataSchema
 	}),
-	z.object({
-		type: z.literal("url"),
-		url: z.instanceof(URL)
+	object$1({
+		type: literal("url"),
+		url: _instanceof(URL)
 	}),
-	z.object({
-		type: z.literal("reference"),
-		reference: providerReferenceSchema$1
+	object$1({
+		type: literal("reference"),
+		reference: providerReferenceSchema
 	}),
-	z.object({
-		type: z.literal("text"),
-		text: z.string()
+	object$1({
+		type: literal("text"),
+		text: string()
 	})
 ]);
-var taggedReasoningFileDataSchema = z.discriminatedUnion("type", [z.object({
-	type: z.literal("data"),
+var taggedReasoningFileDataSchema = discriminatedUnion("type", [object$1({
+	type: literal("data"),
 	data: fileInlineDataSchema
-}), z.object({
-	type: z.literal("url"),
-	url: z.instanceof(URL)
+}), object$1({
+	type: literal("url"),
+	url: _instanceof(URL)
 })]);
-/**
-* @internal
-*/
-var filePartSchema = z.object({
-	type: z.literal("file"),
-	data: z.union([
+var filePartSchema = object$1({
+	type: literal("file"),
+	data: union([
 		taggedFileDataSchema,
 		fileInlineDataSchema,
-		z.instanceof(URL),
-		providerReferenceSchema$1
+		_instanceof(URL),
+		providerReferenceSchema
 	]),
-	filename: z.string().optional(),
-	mediaType: z.string(),
+	filename: string().optional(),
+	mediaType: string(),
 	providerOptions: providerMetadataSchema.optional()
 });
-/**
-* @internal
-*/
-var reasoningPartSchema = z.object({
-	type: z.literal("reasoning"),
-	text: z.string(),
+var reasoningPartSchema = object$1({
+	type: literal("reasoning"),
+	text: string(),
 	providerOptions: providerMetadataSchema.optional()
 });
-/**
-* @internal
-*/
-var customPartSchema = z.object({
-	type: z.literal("custom"),
-	kind: z.string().transform((value) => value),
+var customPartSchema = object$1({
+	type: literal("custom"),
+	kind: string().transform((value) => value),
 	providerOptions: providerMetadataSchema.optional()
 });
-/**
-* @internal
-*/
-var reasoningFilePartSchema = z.object({
-	type: z.literal("reasoning-file"),
-	data: z.union([
+var reasoningFilePartSchema = object$1({
+	type: literal("reasoning-file"),
+	data: union([
 		taggedReasoningFileDataSchema,
 		fileInlineDataSchema,
-		z.instanceof(URL)
+		_instanceof(URL)
 	]),
-	mediaType: z.string(),
+	mediaType: string(),
 	providerOptions: providerMetadataSchema.optional()
 });
-/**
-* @internal
-*/
-var toolCallPartSchema = z.object({
-	type: z.literal("tool-call"),
-	toolCallId: z.string(),
-	toolName: z.string(),
-	input: z.unknown(),
+var toolCallPartSchema = object$1({
+	type: literal("tool-call"),
+	toolCallId: string(),
+	toolName: string(),
+	input: unknown(),
 	providerOptions: providerMetadataSchema.optional(),
-	providerExecuted: z.boolean().optional()
+	providerExecuted: boolean().optional()
 });
-/**
-* @internal
-*/
-var outputSchema = z.discriminatedUnion("type", [
-	z.object({
-		type: z.literal("text"),
-		value: z.string(),
+var outputSchema = discriminatedUnion("type", [
+	object$1({
+		type: literal("text"),
+		value: string(),
 		providerOptions: providerMetadataSchema.optional()
 	}),
-	z.object({
-		type: z.literal("json"),
+	object$1({
+		type: literal("json"),
 		value: jsonValueSchema,
 		providerOptions: providerMetadataSchema.optional()
 	}),
-	z.object({
-		type: z.literal("execution-denied"),
-		reason: z.string().optional(),
+	object$1({
+		type: literal("execution-denied"),
+		reason: string().optional(),
 		providerOptions: providerMetadataSchema.optional()
 	}),
-	z.object({
-		type: z.literal("error-text"),
-		value: z.string(),
+	object$1({
+		type: literal("error-text"),
+		value: string(),
 		providerOptions: providerMetadataSchema.optional()
 	}),
-	z.object({
-		type: z.literal("error-json"),
+	object$1({
+		type: literal("error-json"),
 		value: jsonValueSchema,
 		providerOptions: providerMetadataSchema.optional()
 	}),
-	z.object({
-		type: z.literal("content"),
-		value: z.array(z.union([
-			z.object({
-				type: z.literal("text"),
-				text: z.string(),
+	object$1({
+		type: literal("content"),
+		value: array$1(union([
+			object$1({
+				type: literal("text"),
+				text: string(),
 				providerOptions: providerMetadataSchema.optional()
 			}),
-			z.object({
-				type: z.literal("file"),
+			object$1({
+				type: literal("file"),
 				data: taggedFileDataSchema,
-				mediaType: z.string(),
-				filename: z.string().optional(),
+				mediaType: string(),
+				filename: string().optional(),
 				providerOptions: providerMetadataSchema.optional()
 			}),
-			z.object({
-				type: z.literal("file-data"),
-				data: z.string(),
-				mediaType: z.string(),
-				filename: z.string().optional(),
+			object$1({
+				type: literal("file-data"),
+				data: string(),
+				mediaType: string(),
+				filename: string().optional(),
 				providerOptions: providerMetadataSchema.optional()
 			}),
-			z.object({
-				type: z.literal("file-url"),
-				url: z.string(),
-				mediaType: z.string().optional(),
+			object$1({
+				type: literal("file-url"),
+				url: string(),
+				mediaType: string().optional(),
 				providerOptions: providerMetadataSchema.optional()
 			}),
-			z.object({
-				type: z.literal("file-id"),
-				fileId: z.union([z.string(), z.record(z.string(), z.string())]),
+			object$1({
+				type: literal("file-id"),
+				fileId: union([string(), record(string(), string())]),
 				providerOptions: providerMetadataSchema.optional()
 			}),
-			z.object({
-				type: z.literal("file-reference"),
-				providerReference: z.record(z.string(), z.string()),
+			object$1({
+				type: literal("file-reference"),
+				providerReference: record(string(), string()),
 				providerOptions: providerMetadataSchema.optional()
 			}),
-			z.object({
-				type: z.literal("image-data"),
-				data: z.string(),
-				mediaType: z.string(),
+			object$1({
+				type: literal("image-data"),
+				data: string(),
+				mediaType: string(),
 				providerOptions: providerMetadataSchema.optional()
 			}),
-			z.object({
-				type: z.literal("image-url"),
-				url: z.string(),
+			object$1({
+				type: literal("image-url"),
+				url: string(),
 				providerOptions: providerMetadataSchema.optional()
 			}),
-			z.object({
-				type: z.literal("image-file-id"),
-				fileId: z.union([z.string(), z.record(z.string(), z.string())]),
+			object$1({
+				type: literal("image-file-id"),
+				fileId: union([string(), record(string(), string())]),
 				providerOptions: providerMetadataSchema.optional()
 			}),
-			z.object({
-				type: z.literal("image-file-reference"),
-				providerReference: z.record(z.string(), z.string()),
+			object$1({
+				type: literal("image-file-reference"),
+				providerReference: record(string(), string()),
 				providerOptions: providerMetadataSchema.optional()
 			}),
-			z.object({
-				type: z.literal("custom"),
+			object$1({
+				type: literal("custom"),
 				providerOptions: providerMetadataSchema.optional()
 			})
 		]))
 	})
 ]);
-/**
-* @internal
-*/
-var toolResultPartSchema = z.object({
-	type: z.literal("tool-result"),
-	toolCallId: z.string(),
-	toolName: z.string(),
+var toolResultPartSchema = object$1({
+	type: literal("tool-result"),
+	toolCallId: string(),
+	toolName: string(),
 	output: outputSchema,
 	providerOptions: providerMetadataSchema.optional()
 });
-/**
-* @internal
-*/
-var toolApprovalRequestSchema = z.object({
-	type: z.literal("tool-approval-request"),
-	approvalId: z.string(),
-	toolCallId: z.string(),
-	reason: z.string().optional(),
-	isAutomatic: z.boolean().optional(),
-	signature: z.string().optional(),
-	inputSchemaInput: z.unknown().optional()
+var toolApprovalRequestSchema = object$1({
+	type: literal("tool-approval-request"),
+	approvalId: string(),
+	toolCallId: string()
 });
-/**
-* @internal
-*/
-var toolApprovalResponseSchema = z.object({
-	type: z.literal("tool-approval-response"),
-	approvalId: z.string(),
-	approved: z.boolean(),
-	reason: z.string().optional()
+var toolApprovalResponseSchema = object$1({
+	type: literal("tool-approval-response"),
+	approvalId: string(),
+	approved: boolean(),
+	reason: string().optional()
 });
-var systemModelMessageSchema = z.object({
-	role: z.literal("system"),
-	content: z.string(),
-	providerOptions: providerMetadataSchema.optional()
-});
-var userModelMessageSchema = z.object({
-	role: z.literal("user"),
-	content: z.union([z.string(), z.array(z.union([
-		textPartSchema,
-		imagePartSchema,
-		filePartSchema
-	]))]),
-	providerOptions: providerMetadataSchema.optional()
-});
-var assistantModelMessageSchema = z.object({
-	role: z.literal("assistant"),
-	content: z.union([z.string(), z.array(z.union([
-		textPartSchema,
-		customPartSchema,
-		filePartSchema,
-		reasoningPartSchema,
-		reasoningFilePartSchema,
-		toolCallPartSchema,
-		toolResultPartSchema,
-		toolApprovalRequestSchema
-	]))]),
-	providerOptions: providerMetadataSchema.optional()
-});
-var toolModelMessageSchema = z.object({
-	role: z.literal("tool"),
-	content: z.array(z.union([toolResultPartSchema, toolApprovalResponseSchema])),
-	providerOptions: providerMetadataSchema.optional()
-});
-var modelMessageSchema = z.union([
-	systemModelMessageSchema,
-	userModelMessageSchema,
-	assistantModelMessageSchema,
-	toolModelMessageSchema
+var modelMessageSchema = union([
+	object$1({
+		role: literal("system"),
+		content: string(),
+		providerOptions: providerMetadataSchema.optional()
+	}),
+	object$1({
+		role: literal("user"),
+		content: union([string(), array$1(union([
+			textPartSchema,
+			imagePartSchema,
+			filePartSchema
+		]))]),
+		providerOptions: providerMetadataSchema.optional()
+	}),
+	object$1({
+		role: literal("assistant"),
+		content: union([string(), array$1(union([
+			textPartSchema,
+			customPartSchema,
+			filePartSchema,
+			reasoningPartSchema,
+			reasoningFilePartSchema,
+			toolCallPartSchema,
+			toolResultPartSchema,
+			toolApprovalRequestSchema
+		]))]),
+		providerOptions: providerMetadataSchema.optional()
+	}),
+	object$1({
+		role: literal("tool"),
+		content: array$1(union([toolResultPartSchema, toolApprovalResponseSchema])),
+		providerOptions: providerMetadataSchema.optional()
+	})
 ]);
-/**
-* Converts a prompt input into a standardized prompt with validated model
-* messages.
-*
-* @param prompt - The prompt definition to standardize.
-* Set `allowSystemInMessages` to true to allow system messages in the
-* `prompt` or `messages` fields. System messages in the `instructions`
-* option are always allowed.
-* @returns The standardized prompt.
-* @throws {InvalidPromptError} When the prompt is invalid.
-*/
 async function standardizePrompt({ allowSystemInMessages = false, system, instructions = system, prompt, messages }) {
 	if (prompt == null && messages == null) throw new InvalidPromptError({
 		prompt,
@@ -2453,7 +2060,7 @@ async function standardizePrompt({ allowSystemInMessages = false, system, instru
 	});
 	const validationResult = await safeValidateTypes({
 		value: messages,
-		schema: z.array(modelMessageSchema)
+		schema: array$1(modelMessageSchema)
 	});
 	if (!validationResult.success) throw new InvalidPromptError({
 		prompt,
@@ -2467,10 +2074,21 @@ async function standardizePrompt({ allowSystemInMessages = false, system, instru
 }
 function wrapGatewayError(error) {
 	if (!GatewayAuthenticationError.isInstance(error)) return error;
-	return new AISDKError({
+	const isProductionEnv = (process == null ? void 0 : "production") === "production";
+	const moreInfoURL = "https://ai-sdk.dev/unauthenticated-ai-gateway";
+	if (isProductionEnv) return new AISDKError({
 		name: "GatewayError",
-		message: `Unauthenticated. Configure AI_GATEWAY_API_KEY or use a provider module. Learn more: https://ai-sdk.dev/unauthenticated-ai-gateway`
+		message: `Unauthenticated. Configure AI_GATEWAY_API_KEY or use a provider module. Learn more: ${moreInfoURL}`
 	});
+	return Object.assign(/* @__PURE__ */ new Error(`\x1B[1m\x1B[31mUnauthenticated request to AI Gateway.\x1B[0m
+
+To authenticate, set the \x1B[33mAI_GATEWAY_API_KEY\x1B[0m environment variable with your API key.
+
+Alternatively, you can use a provider module instead of the AI Gateway.
+
+Learn more: \x1B[34m${moreInfoURL}\x1B[0m
+
+`), { name: "GatewayAuthenticationError" });
 }
 function asLanguageModelUsage(usage) {
 	return {
@@ -2507,68 +2125,41 @@ function createNullLanguageModelUsage() {
 	};
 }
 function addLanguageModelUsage(usage1, usage2) {
-	const raw = isNullLanguageModelUsage(usage1) ? usage2.raw : isNullLanguageModelUsage(usage2) ? usage1.raw : void 0;
+	var _a22, _b, _c, _d, _e, _f, _g, _h, _i, _j;
 	return {
 		inputTokens: addTokenCounts(usage1.inputTokens, usage2.inputTokens),
 		inputTokenDetails: {
-			noCacheTokens: addTokenCounts(usage1.inputTokenDetails?.noCacheTokens, usage2.inputTokenDetails?.noCacheTokens),
-			cacheReadTokens: addTokenCounts(usage1.inputTokenDetails?.cacheReadTokens, usage2.inputTokenDetails?.cacheReadTokens),
-			cacheWriteTokens: addTokenCounts(usage1.inputTokenDetails?.cacheWriteTokens, usage2.inputTokenDetails?.cacheWriteTokens)
+			noCacheTokens: addTokenCounts((_a22 = usage1.inputTokenDetails) == null ? void 0 : _a22.noCacheTokens, (_b = usage2.inputTokenDetails) == null ? void 0 : _b.noCacheTokens),
+			cacheReadTokens: addTokenCounts((_c = usage1.inputTokenDetails) == null ? void 0 : _c.cacheReadTokens, (_d = usage2.inputTokenDetails) == null ? void 0 : _d.cacheReadTokens),
+			cacheWriteTokens: addTokenCounts((_e = usage1.inputTokenDetails) == null ? void 0 : _e.cacheWriteTokens, (_f = usage2.inputTokenDetails) == null ? void 0 : _f.cacheWriteTokens)
 		},
 		outputTokens: addTokenCounts(usage1.outputTokens, usage2.outputTokens),
 		outputTokenDetails: {
-			textTokens: addTokenCounts(usage1.outputTokenDetails?.textTokens, usage2.outputTokenDetails?.textTokens),
-			reasoningTokens: addTokenCounts(usage1.outputTokenDetails?.reasoningTokens, usage2.outputTokenDetails?.reasoningTokens)
+			textTokens: addTokenCounts((_g = usage1.outputTokenDetails) == null ? void 0 : _g.textTokens, (_h = usage2.outputTokenDetails) == null ? void 0 : _h.textTokens),
+			reasoningTokens: addTokenCounts((_i = usage1.outputTokenDetails) == null ? void 0 : _i.reasoningTokens, (_j = usage2.outputTokenDetails) == null ? void 0 : _j.reasoningTokens)
 		},
-		totalTokens: addTokenCounts(usage1.totalTokens, usage2.totalTokens),
-		...raw == null ? {} : { raw }
+		totalTokens: addTokenCounts(usage1.totalTokens, usage2.totalTokens)
 	};
 }
-function isNullLanguageModelUsage(usage) {
-	return usage.inputTokens == null && usage.inputTokenDetails?.noCacheTokens == null && usage.inputTokenDetails?.cacheReadTokens == null && usage.inputTokenDetails?.cacheWriteTokens == null && usage.outputTokens == null && usage.outputTokenDetails?.textTokens == null && usage.outputTokenDetails?.reasoningTokens == null && usage.totalTokens == null && usage.raw == null;
-}
 function addTokenCounts(tokenCount1, tokenCount2) {
-	return tokenCount1 == null && tokenCount2 == null ? void 0 : (tokenCount1 ?? 0) + (tokenCount2 ?? 0);
+	return tokenCount1 == null && tokenCount2 == null ? void 0 : (tokenCount1 != null ? tokenCount1 : 0) + (tokenCount2 != null ? tokenCount2 : 0);
 }
-/**
-* Reads a property by an untrusted key, ignoring inherited prototype members.
-*
-* Tool sets, tool contexts, and similar lookup objects are indexed by names
-* that can come from model output or client-supplied message history. Plain
-* bracket access (`obj[name]`) resolves names such as `constructor`,
-* `toString`, or `__proto__` to values on `Object.prototype`, which would slip
-* past the `== null` / `!value` guards that treat an unknown name as "not
-* present". This helper returns `undefined` unless `key` is an own property.
-*/
 function getOwn(obj, key) {
 	return obj != null && Object.hasOwn(obj, key) ? obj[key] : void 0;
 }
-/**
-* Merges multiple abort sources into a single `AbortSignal`.
-* The returned signal will abort when any input signal aborts or when any
-* numeric timeout elapses, using the reason from the first source to abort.
-*
-* @param signals - Abort signals or timeout durations in milliseconds.
-* `null` and `undefined` values are ignored.
-* @returns An `AbortSignal` that aborts when any valid source aborts,
-* or `undefined` if no valid sources are provided.
-*/
 function mergeAbortSignals(...signals) {
-	const validSignals = filterNullable(...signals).map((signal) => typeof signal === "number" ? AbortSignal.timeout(signal) : signal);
+	const validSignals = filterNullable(...signals).map((signal) => signal instanceof AbortSignal ? signal : AbortSignal.timeout(signal));
 	return validSignals.length === 0 ? void 0 : validSignals.length === 1 ? validSignals[0] : AbortSignal.any(validSignals);
 }
 function now() {
-	return globalThis?.performance?.now() ?? Date.now();
+	var _a22, _b;
+	return (_b = (_a22 = globalThis == null ? void 0 : globalThis.performance) == null ? void 0 : _a22.now()) != null ? _b : Date.now();
 }
-/**
-* Notifies all provided callbacks with the given event in parallel.
-* Errors in callbacks do not break the generation flow.
-*/
 async function notify(options) {
 	await Promise.all(asArray(options.callbacks).map(async (callback) => {
 		try {
-			await callback?.(options.event);
-		} catch {}
+			await (callback == null ? void 0 : callback(options.event));
+		} catch (e) {}
 	}));
 }
 function getRetryDelayInMs({ error, exponentialBackoffDelay }) {
@@ -2586,20 +2177,15 @@ function getRetryDelayInMs({ error, exponentialBackoffDelay }) {
 		if (!Number.isNaN(timeoutSeconds)) ms = timeoutSeconds * 1e3;
 		else ms = Date.parse(retryAfter) - Date.now();
 	}
-	if (ms != null && !Number.isNaN(ms) && 0 <= ms && (ms < 6e4 || ms < exponentialBackoffDelay)) return ms;
+	if (ms != null && !Number.isNaN(ms) && 0 <= ms && (ms < 60 * 1e3 || ms < exponentialBackoffDelay)) return ms;
 	return exponentialBackoffDelay;
 }
-/**
-* The `retryWithExponentialBackoffRespectingRetryHeaders` strategy retries a failed API call with an exponential backoff,
-* while respecting rate limit headers (retry-after-ms and retry-after) if they are provided and reasonable (0-60 seconds).
-* You can configure the maximum number of retries, the initial delay, and the backoff factor.
-*/
-var retryWithExponentialBackoffRespectingRetryHeaders = ({ maxRetries = 2, initialDelayInMs = 2e3, backoffFactor = 2, abortSignal, additionalRetryableError } = {}) => retryWithExponentialBackoff({
+var retryWithExponentialBackoffRespectingRetryHeaders = ({ maxRetries = 2, initialDelayInMs = 2e3, backoffFactor = 2, abortSignal } = {}) => retryWithExponentialBackoff({
 	maxRetries,
 	initialDelayInMs,
 	backoffFactor,
 	abortSignal,
-	shouldRetry: async (error) => error instanceof Error && (APICallError.isInstance(error) && error.isRetryable === true || GatewayError.isInstance(error) && error.isRetryable === true) || additionalRetryableError != null && await additionalRetryableError(error),
+	shouldRetry: (error) => error instanceof Error && (APICallError.isInstance(error) && error.isRetryable === true || GatewayError.isInstance(error) && error.isRetryable === true),
 	getDelayInMs: ({ error, exponentialBackoffDelay }) => getRetryDelayInMs({
 		error,
 		exponentialBackoffDelay
@@ -2610,80 +2196,53 @@ var retryWithExponentialBackoffRespectingRetryHeaders = ({ maxRetries = 2, initi
 		errors
 	})
 });
-/**
-* Validate and prepare retries.
-*/
-function prepareRetries({ maxRetries, abortSignal, additionalRetryableError, parameter = "maxRetries", defaultMaxRetries = 2 }) {
+function prepareRetries({ maxRetries, abortSignal }) {
 	if (maxRetries != null) {
 		if (!Number.isInteger(maxRetries)) throw new InvalidArgumentError({
-			parameter,
+			parameter: "maxRetries",
 			value: maxRetries,
-			message: `${parameter} must be an integer`
+			message: "maxRetries must be an integer"
 		});
 		if (maxRetries < 0) throw new InvalidArgumentError({
-			parameter,
+			parameter: "maxRetries",
 			value: maxRetries,
-			message: `${parameter} must be >= 0`
+			message: "maxRetries must be >= 0"
 		});
 	}
-	const maxRetriesResult = maxRetries ?? defaultMaxRetries;
+	const maxRetriesResult = maxRetries != null ? maxRetries : 2;
 	return {
 		maxRetries: maxRetriesResult,
 		retry: retryWithExponentialBackoffRespectingRetryHeaders({
 			maxRetries: maxRetriesResult,
-			abortSignal,
-			additionalRetryableError
+			abortSignal
 		})
 	};
 }
-/**
-* Schedules a timeout that aborts the given controller with a `TimeoutError`
-* `DOMException`, matching the reason produced by `AbortSignal.timeout(ms)`.
-*
-* @param abortController - The controller to abort when the timeout elapses.
-* If undefined, no timeout is scheduled.
-* @param label - Human-readable label included in the error message
-* (e.g. "Step", "Chunk").
-* @param timeoutMs - Duration in milliseconds before the controller is aborted.
-* If undefined, no timeout is scheduled.
-* @returns The timeout id (suitable for passing to `clearTimeout`), or
-* `undefined` if no timeout was scheduled.
-*/
 function setAbortTimeout({ abortController, label, timeoutMs }) {
 	if (abortController == null || timeoutMs == null) return;
 	return setTimeout(() => abortController.abort(new DOMException(`${label} timeout of ${timeoutMs}ms exceeded`, "TimeoutError")), timeoutMs);
 }
-/**
-* Calculates a token rate in tokens per second.
-*
-* Returns 0 when the token count is unknown, the duration is unknown or 0, or
-* the computed rate cannot be represented as a finite JSON-safe number.
-*/
 function calculateTokensPerSecond({ tokens, durationMs }) {
-	const tokenRate = 1e3 * (tokens ?? 0) / (durationMs ?? 0);
+	const tokenRate = 1e3 * (tokens != null ? tokens : 0) / (durationMs != null ? durationMs : 0);
 	return Number.isFinite(tokenRate) ? tokenRate : 0;
 }
-/**
-* If the last message is a tool message, this function collects all tool approvals
-* from that message.
-*/
 function collectToolApprovals({ messages }) {
 	const lastMessage = messages.at(-1);
-	if (lastMessage?.role != "tool") return {
+	if ((lastMessage == null ? void 0 : lastMessage.role) != "tool") return {
 		approvedToolApprovals: [],
 		deniedToolApprovals: []
 	};
-	const toolCallsByToolCallId = Object.create(null);
+	const toolCallsByToolCallId = /* @__PURE__ */ Object.create(null);
 	for (const message of messages) if (message.role === "assistant" && typeof message.content !== "string") {
 		const content = message.content;
 		for (const part of content) if (part.type === "tool-call") toolCallsByToolCallId[part.toolCallId] = part;
 	}
-	const toolApprovalRequestsByApprovalId = Object.create(null);
+	const toolApprovalRequestsByApprovalId = /* @__PURE__ */ Object.create(null);
 	for (const message of messages) if (message.role === "assistant" && typeof message.content !== "string") {
 		const content = message.content;
 		for (const part of content) if (part.type === "tool-approval-request") toolApprovalRequestsByApprovalId[part.approvalId] = part;
 	}
-	const toolResults = Object.create(null);
+	const toolResults = /* @__PURE__ */ Object.create(null);
 	for (const part of lastMessage.content) if (part.type === "tool-result") toolResults[part.toolCallId] = part;
 	const approvedToolApprovals = [];
 	const deniedToolApprovals = [];
@@ -2712,336 +2271,6 @@ function collectToolApprovals({ messages }) {
 		deniedToolApprovals
 	};
 }
-var DefaultGeneratedFile = class {
-	constructor({ data, mediaType, providerMetadata }) {
-		const isUint8Array = data instanceof Uint8Array;
-		this.base64Data = isUint8Array ? void 0 : data;
-		this.uint8ArrayData = isUint8Array ? data : void 0;
-		this.mediaType = mediaType;
-		this.providerMetadata = providerMetadata;
-	}
-	get base64() {
-		if (this.base64Data == null) this.base64Data = convertUint8ArrayToBase64(this.uint8ArrayData);
-		return this.base64Data;
-	}
-	get uint8Array() {
-		if (this.uint8ArrayData == null) this.uint8ArrayData = convertBase64ToUint8Array(this.base64Data);
-		return this.uint8ArrayData;
-	}
-};
-var DefaultGeneratedFileWithType = class extends DefaultGeneratedFile {
-	constructor(..._args) {
-		super(..._args);
-		this.type = "file";
-	}
-};
-async function resolveGeneratedFileData({ data, abortSignal, cache }) {
-	if (data.type === "data") return data.data;
-	const cachedData = cache?.get(data);
-	if (cachedData != null) return cachedData;
-	const downloadedData = (await download({
-		url: data.url,
-		abortSignal
-	})).data;
-	cache?.set(data, downloadedData);
-	return downloadedData;
-}
-async function convertLanguageModelContent({ content, toolCalls, toolOutputs, toolApprovalRequests, toolApprovalResponses, tools, abortSignal, generatedFileDataCache }) {
-	const contentParts = [];
-	const toolOutputsWithApprovalResponses = [];
-	const toolOutputsWithoutApprovalResponses = [];
-	const toolCallIdsWithApprovalResponses = new Set(toolApprovalResponses.map((toolApprovalResponse) => toolApprovalResponse.toolCall.toolCallId));
-	for (const part of content) switch (part.type) {
-		case "text":
-		case "reasoning":
-		case "custom":
-		case "source":
-			contentParts.push(part);
-			break;
-		case "file":
-		case "reasoning-file":
-			contentParts.push({
-				type: part.type,
-				file: new DefaultGeneratedFile({
-					data: await resolveGeneratedFileData({
-						data: part.data,
-						abortSignal,
-						cache: generatedFileDataCache
-					}),
-					mediaType: part.mediaType
-				}),
-				...part.providerMetadata != null ? { providerMetadata: part.providerMetadata } : {}
-			});
-			break;
-		case "tool-call": {
-			const toolCall = toolCalls.find((toolCall) => toolCall.toolCallId === part.toolCallId);
-			if (toolCall == null) throw new Error(`Tool call ${part.toolCallId} not found.`);
-			contentParts.push(toolCall);
-			break;
-		}
-		case "tool-result": {
-			const toolCall = toolCalls.find((toolCall) => toolCall.toolCallId === part.toolCallId);
-			if (toolCall == null) {
-				const tool = getOwn(tools, part.toolName);
-				if (!(tool?.type === "provider" && tool.supportsDeferredResults)) throw new Error(`Tool call ${part.toolCallId} not found.`);
-				if (part.isError) contentParts.push({
-					type: "tool-error",
-					toolCallId: part.toolCallId,
-					toolName: part.toolName,
-					input: void 0,
-					error: part.result,
-					providerExecuted: true,
-					dynamic: part.dynamic,
-					...part.providerMetadata != null ? { providerMetadata: part.providerMetadata } : {},
-					...tool?.metadata != null ? { toolMetadata: tool.metadata } : {}
-				});
-				else contentParts.push({
-					type: "tool-result",
-					toolCallId: part.toolCallId,
-					toolName: part.toolName,
-					input: void 0,
-					output: part.result,
-					providerExecuted: true,
-					dynamic: part.dynamic,
-					...part.providerMetadata != null ? { providerMetadata: part.providerMetadata } : {},
-					...tool?.metadata != null ? { toolMetadata: tool.metadata } : {}
-				});
-				break;
-			}
-			if (part.isError) contentParts.push({
-				type: "tool-error",
-				toolCallId: part.toolCallId,
-				toolName: part.toolName,
-				input: toolCall.input,
-				error: part.result,
-				providerExecuted: true,
-				dynamic: toolCall.dynamic,
-				...part.providerMetadata != null ? { providerMetadata: part.providerMetadata } : {},
-				...toolCall.toolMetadata != null ? { toolMetadata: toolCall.toolMetadata } : {}
-			});
-			else contentParts.push({
-				type: "tool-result",
-				toolCallId: part.toolCallId,
-				toolName: part.toolName,
-				input: toolCall.input,
-				output: part.result,
-				providerExecuted: true,
-				dynamic: toolCall.dynamic,
-				...part.providerMetadata != null ? { providerMetadata: part.providerMetadata } : {},
-				...toolCall.toolMetadata != null ? { toolMetadata: toolCall.toolMetadata } : {}
-			});
-			break;
-		}
-		case "tool-approval-request": {
-			const toolCall = toolCalls.find((toolCall) => toolCall.toolCallId === part.toolCallId);
-			if (toolCall == null) throw new ToolCallNotFoundForApprovalError({
-				toolCallId: part.toolCallId,
-				approvalId: part.approvalId
-			});
-			contentParts.push({
-				type: "tool-approval-request",
-				approvalId: part.approvalId,
-				toolCall
-			});
-			break;
-		}
-	}
-	for (const toolOutput of toolOutputs) if (toolCallIdsWithApprovalResponses.has(toolOutput.toolCallId)) toolOutputsWithApprovalResponses.push(toolOutput);
-	else toolOutputsWithoutApprovalResponses.push(toolOutput);
-	return [
-		...contentParts,
-		...toolOutputsWithoutApprovalResponses,
-		...toolApprovalRequests,
-		...toolApprovalResponses,
-		...toolOutputsWithApprovalResponses
-	];
-}
-function resolveToolCallerConfiguration({ tools, toolCallers }) {
-	if (tools == null || toolCallers == null) return;
-	const resolved = {};
-	for (const [toolName, callers] of Object.entries(toolCallers)) {
-		if (!Object.prototype.hasOwnProperty.call(tools, toolName)) throw new InvalidArgumentError({
-			parameter: "experimental_toolCallers",
-			value: toolCallers,
-			message: `unknown tool "${toolName}".`
-		});
-		if (!Array.isArray(callers)) throw new InvalidArgumentError({
-			parameter: "experimental_toolCallers",
-			value: toolCallers,
-			message: `callers for tool "${toolName}" must be an array.`
-		});
-		resolved[toolName] = callers.map((caller) => {
-			if (caller === "AI_SDK_DIRECT_TOOL_CALL") return caller;
-			if (typeof caller !== "string" || !Object.prototype.hasOwnProperty.call(tools, caller) || getToolCaller(tools[caller]) == null) throw new InvalidArgumentError({
-				parameter: "experimental_toolCallers",
-				value: toolCallers,
-				message: `tool "${toolName}" contains an invalid caller.`
-			});
-			return caller;
-		});
-	}
-	return resolved;
-}
-function prepareToolsForToolCallers({ tools, toolCallers }) {
-	if (tools == null || toolCallers == null) return {
-		executionTools: tools,
-		modelTools: tools,
-		toolCallerMessages: []
-	};
-	const executionTools = { ...tools };
-	const modelTools = { ...tools };
-	const localToolsByCaller = /* @__PURE__ */ new Map();
-	const toolCallerMessages = [];
-	for (const [toolName, callerNames] of Object.entries(toolCallers)) {
-		const tool = executionTools[toolName];
-		if (tool == null) continue;
-		let availableDirectly = false;
-		let availableToProvider = false;
-		let preparedTool = tool;
-		for (const callerName of callerNames) {
-			if (callerName === "AI_SDK_DIRECT_TOOL_CALL") {
-				availableDirectly = true;
-				continue;
-			}
-			const caller = getToolCaller(executionTools[callerName]);
-			if (caller == null) continue;
-			if (caller.type === "provider") {
-				availableToProvider = true;
-				preparedTool = {
-					...preparedTool,
-					providerOptions: caller.prepareProviderOptions(preparedTool.providerOptions)
-				};
-			} else {
-				const localTools = localToolsByCaller.get(callerName) ?? {};
-				localTools[toolName] = preparedTool;
-				localToolsByCaller.set(callerName, localTools);
-			}
-		}
-		executionTools[toolName] = preparedTool;
-		if (availableDirectly || availableToProvider) modelTools[toolName] = preparedTool;
-		else delete modelTools[toolName];
-	}
-	for (const [callerName, callerTool] of Object.entries(executionTools)) {
-		const caller = getToolCaller(callerTool);
-		if (caller?.type !== "local") continue;
-		const callerTools = localToolsByCaller.get(callerName) ?? {};
-		const boundCaller = caller.bind(callerTools);
-		executionTools[callerName] = boundCaller;
-		if (Object.prototype.hasOwnProperty.call(modelTools, callerName)) {
-			if (caller.prepareModelMessage == null) modelTools[callerName] = boundCaller;
-			else {
-				const content = caller.prepareModelMessage(callerTools);
-				if (content != null) toolCallerMessages.push({
-					role: "user",
-					content
-				});
-			}
-		}
-	}
-	return {
-		executionTools,
-		modelTools,
-		toolCallerMessages
-	};
-}
-function appendToolCallerMessages({ messages, toolCallerMessages }) {
-	if (toolCallerMessages.length === 0) return messages;
-	const latestUserText = messages.findLast((message) => message.role === "user" && typeof message.content === "string")?.content;
-	const existingUserText = new Set(latestUserText == null ? [] : [latestUserText]);
-	const additions = toolCallerMessages.filter((message) => {
-		if (typeof message.content !== "string" || existingUserText.has(message.content)) return false;
-		existingUserText.add(message.content);
-		return true;
-	});
-	return additions.length === 0 ? messages : [...messages, ...additions];
-}
-var toolSearchSymbol = Symbol.for("vercel.ai.toolSearch");
-var toolSearchFunctionSymbol = Symbol.for("vercel.ai.toolSearch.search");
-var toolSearchMaxResultsSymbol = Symbol.for("vercel.ai.toolSearch.maxResults");
-function getToolSearchMaxResults(tool) {
-	return tool[toolSearchMaxResultsSymbol] ?? 5;
-}
-function getToolSearchFunction(tool) {
-	return tool[toolSearchFunctionSymbol];
-}
-function isToolSearch(tool) {
-	return tool[toolSearchSymbol] === true;
-}
-/** Create discovery state for one generation, never for a shared tool instance. */
-function createToolSearchState({ tools, toolCallers }) {
-	const searchTools = Object.entries(tools ?? {}).filter(([, tool]) => tool.deferLoading || isToolSearch(tool));
-	if (searchTools.length === 0) return (activeTools) => activeTools;
-	const discovered = /* @__PURE__ */ new Set();
-	const getCallers = (name) => getOwn(toolCallers, name) ?? ["AI_SDK_DIRECT_TOOL_CALL"];
-	for (const [name, tool] of searchTools) if (getCallers(name).some((name) => {
-		if (name === "AI_SDK_DIRECT_TOOL_CALL") return false;
-		const caller = getToolCaller(tools?.[name]);
-		return caller?.type !== "local" || caller.prepareModelMessage == null;
-	}) || isToolSearch(tool) && tool.deferLoading) throw new InvalidArgumentError({
-		parameter: "tools",
-		value: name,
-		message: `tool "${name}" must be callable directly or through code mode with toolDiscovery: 'conversation'. The search tool itself must not defer loading.`
-	});
-	return (activeTools, { toolsContext = {}, experimental_sandbox } = {}) => {
-		if (activeTools == null) return;
-		const entries = Object.entries(activeTools);
-		return Object.fromEntries(entries.filter(([name, tool]) => !tool.deferLoading || discovered.has(name)).map(([searchName, tool]) => {
-			if (!isToolSearch(tool)) return [searchName, tool];
-			const callers = getCallers(searchName).filter((name) => name === "AI_SDK_DIRECT_TOOL_CALL" || Object.hasOwn(activeTools, name));
-			const candidates = entries.filter(([name, candidate]) => candidate.deferLoading && !isToolSearch(candidate) && callers.some((caller) => getCallers(name).includes(caller)));
-			return [searchName, {
-				...tool,
-				execute: async ({ query }) => {
-					const availableTools = candidates.map(([name, candidate]) => {
-						const description = resolveToolDescription({
-							tool: candidate,
-							toolName: name,
-							toolsContext,
-							experimental_sandbox
-						});
-						return {
-							name,
-							...description == null ? {} : { description }
-						};
-					});
-					const toolsByName = new Map(availableTools.map((tool) => [tool.name, tool]));
-					const customSearch = getToolSearchFunction(tool);
-					const terms = [...new Set(tokenize(query))];
-					const rankedNames = customSearch ? await customSearch({
-						query,
-						tools: availableTools.map((tool) => ({ ...tool }))
-					}) : availableTools.map(({ name, description }) => {
-						const nameTerms = tokenize(name);
-						const descriptionTerms = tokenize(description ?? "");
-						return {
-							name,
-							score: terms.reduce((score, term) => score + (nameTerms.includes(term) ? 2 : 0) + (descriptionTerms.includes(term) ? 1 : 0), 0)
-						};
-					}).filter((match) => match.score > 0).sort((a, b) => b.score - a.score).map((match) => match.name);
-					const matches = [...new Set(rankedNames)].flatMap((name) => {
-						const match = toolsByName.get(name);
-						return match == null ? [] : [match];
-					}).slice(0, getToolSearchMaxResults(tool));
-					for (const { name } of matches) discovered.add(name);
-					return { tools: matches };
-				}
-			}];
-		}));
-	};
-}
-function tokenize(text) {
-	return text.replace(/([a-z\d])([A-Z])/g, "$1 $2").toLowerCase().match(/[\p{L}\p{N}]+/gu) ?? [];
-}
-/**
-* Validates a tool context value against the tool's optional context schema.
-*
-* When no context schema is defined, the original context value is returned as-is.
-* Otherwise, the context is validated and normalized through the schema before
-* being passed into tool execution and approval hooks.
-*
-* @throws {TypeValidationError} When the provided tool context does not match
-* the tool's declared `contextSchema`.
-*/
 async function validateToolContext({ toolName, context, contextSchema }) {
 	if (contextSchema == null) return context;
 	return await validateTypes({
@@ -3053,25 +2282,14 @@ async function validateToolContext({ toolName, context, contextSchema }) {
 		}
 	});
 }
-/**
-* Executes a single tool call and manages its lifecycle callbacks.
-*
-* This function handles the complete tool execution flow:
-* 1. Invokes `onToolExecutionStart` callback before execution
-* 2. Executes the tool's `execute` function with proper context
-* 3. Handles streaming outputs via `onPreliminaryToolResult`
-* 4. Invokes `onToolExecutionEnd` callback with success or error result
-*
-* @returns The tool output with performance metrics, or undefined if the tool has no execute function.
-*/
 async function executeToolCall({ toolCall, tools, toolsContext, callId, messages, abortSignal, timeout, experimental_sandbox: sandbox, onPreliminaryToolResult, onToolExecutionStart, onToolExecutionEnd, executeToolInTelemetryContext = async ({ execute }) => await execute(), runInTracingChannelSpan = async ({ execute }) => await execute() }) {
 	const { toolName, toolCallId, input } = toolCall;
-	const tool = getOwn(tools, toolName);
-	if (!isExecutableTool(tool)) return;
+	const tool2 = getOwn(tools, toolName);
+	if (!isExecutableTool(tool2)) return;
 	const context = await validateToolContext({
 		toolName,
 		context: getOwn(toolsContext, toolName),
-		contextSchema: tool.contextSchema
+		contextSchema: tool2.contextSchema
 	});
 	const toolExecutionContext = {
 		toolCall,
@@ -3102,7 +2320,7 @@ async function executeToolCall({ toolCall, tools, toolsContext, callId, messages
 						const startTime = now();
 						try {
 							const stream = executeTool({
-								tool,
+								tool: tool2,
 								input,
 								options: {
 									toolCallId,
@@ -3131,7 +2349,7 @@ async function executeToolCall({ toolCall, tools, toolsContext, callId, messages
 					toolName,
 					input,
 					error,
-					dynamic: tool.type === "dynamic",
+					dynamic: tool2.type === "dynamic",
 					...toolCall.providerMetadata != null ? { providerMetadata: toolCall.providerMetadata } : {},
 					...toolCall.toolMetadata != null ? { toolMetadata: toolCall.toolMetadata } : {}
 				};
@@ -3154,7 +2372,7 @@ async function executeToolCall({ toolCall, tools, toolsContext, callId, messages
 				toolName,
 				input,
 				output,
-				dynamic: tool.type === "dynamic",
+				dynamic: tool2.type === "dynamic",
 				...toolCall.providerMetadata != null ? { providerMetadata: toolCall.providerMetadata } : {},
 				...toolCall.toolMetadata != null ? { toolMetadata: toolCall.toolMetadata } : {}
 			};
@@ -3173,133 +2391,39 @@ async function executeToolCall({ toolCall, tools, toolsContext, callId, messages
 		}
 	});
 }
-/**
-* Filters the tools to only include the active tools.
-* When activeTools is provided, we only include the tools that are in the list.
-*
-* @param tools - The tools to filter.
-* @param activeTools - The active tools to include.
-* @returns The filtered tools.
-*/
 function filterActiveTools({ tools, activeTools }) {
 	if (tools == null || activeTools == null) return tools;
-	return Object.fromEntries(Object.entries(tools).filter(([name]) => activeTools.includes(name)));
+	return Object.fromEntries(Object.entries(tools).filter(([name22]) => activeTools.includes(name22)));
 }
-function unwrapReasoningFileData(data) {
-	if (typeof data === "object" && data !== null && "type" in data) return data.type === "data" ? data.data : data.url;
-	return data;
-}
-function convertFromReasoningOutputs(parts) {
-	return parts.map((part) => {
-		if (part.type === "reasoning") return {
-			type: "reasoning",
-			text: part.text,
-			...part.providerMetadata != null ? { providerOptions: part.providerMetadata } : {}
-		};
-		return {
-			type: "reasoning-file",
-			data: part.file.base64,
-			mediaType: part.file.mediaType,
-			...part.providerMetadata != null ? { providerOptions: part.providerMetadata } : {}
-		};
-	});
-}
-function convertToReasoningOutputs(parts) {
-	return parts.map((part) => {
-		if (part.type === "reasoning") return {
-			type: "reasoning",
-			text: part.text,
-			...part.providerOptions != null ? { providerMetadata: part.providerOptions } : {}
-		};
-		const rawData = unwrapReasoningFileData(part.data);
-		return {
-			type: "reasoning-file",
-			file: new DefaultGeneratedFile({
-				data: rawData instanceof ArrayBuffer ? new Uint8Array(rawData) : rawData instanceof URL ? rawData.toString() : rawData,
-				mediaType: part.mediaType
-			}),
-			...part.providerOptions != null ? { providerMetadata: part.providerOptions } : {}
-		};
-	});
-}
-var DefaultGenerateTextResult = class {
-	constructor(options) {
-		this.initialResponseMessages = options.initialResponseMessages;
-		this.steps = options.steps;
-		this._output = options.output;
-		this.totalUsage = options.totalUsage;
+var DefaultGeneratedFile = class {
+	constructor({ data, mediaType }) {
+		const isUint8Array = data instanceof Uint8Array;
+		this.base64Data = isUint8Array ? void 0 : data;
+		this.uint8ArrayData = isUint8Array ? data : void 0;
+		this.mediaType = mediaType;
 	}
-	get finalStep() {
-		return this.steps.at(-1);
+	get base64() {
+		if (this.base64Data == null) this.base64Data = convertUint8ArrayToBase64(this.uint8ArrayData);
+		return this.base64Data;
 	}
-	get content() {
-		return this.steps.flatMap((step) => step.content);
-	}
-	get text() {
-		return this.finalStep.text;
-	}
-	get files() {
-		return this.steps.flatMap((step) => step.files);
-	}
-	get reasoningText() {
-		return this.finalStep.reasoningText;
-	}
-	get reasoning() {
-		return convertToReasoningOutputs(this.finalStep.reasoning);
-	}
-	get toolCalls() {
-		return this.steps.flatMap((step) => step.toolCalls);
-	}
-	get staticToolCalls() {
-		return this.steps.flatMap((step) => step.staticToolCalls);
-	}
-	get dynamicToolCalls() {
-		return this.steps.flatMap((step) => step.dynamicToolCalls);
-	}
-	get toolResults() {
-		return this.steps.flatMap((step) => step.toolResults);
-	}
-	get staticToolResults() {
-		return this.steps.flatMap((step) => step.staticToolResults);
-	}
-	get dynamicToolResults() {
-		return this.steps.flatMap((step) => step.dynamicToolResults);
-	}
-	get sources() {
-		return this.steps.flatMap((step) => step.sources);
-	}
-	get finishReason() {
-		return this.finalStep.finishReason;
-	}
-	get rawFinishReason() {
-		return this.finalStep.rawFinishReason;
-	}
-	get warnings() {
-		return this.steps.flatMap((step) => step.warnings ?? []);
-	}
-	get providerMetadata() {
-		return this.finalStep.providerMetadata;
-	}
-	get response() {
-		return this.finalStep.response;
-	}
-	get responseMessages() {
-		return [...this.initialResponseMessages, ...this.steps.flatMap((step) => step.response.messages)];
-	}
-	get request() {
-		return this.finalStep.request;
-	}
-	get usage() {
-		return this.totalUsage;
-	}
-	get output() {
-		if (this._output == null) throw new NoOutputGeneratedError();
-		return this._output;
+	get uint8Array() {
+		if (this.uint8ArrayData == null) this.uint8ArrayData = convertBase64ToUint8Array(this.base64Data);
+		return this.uint8ArrayData;
 	}
 };
-function isToolExecutionAllowedFinishReason(finishReason) {
-	return finishReason === "stop" || finishReason === "tool-calls";
-}
+var DefaultGeneratedFileWithType = class extends DefaultGeneratedFile {
+	constructor(options) {
+		super(options);
+		this.type = "file";
+	}
+};
+__export({}, {
+	array: () => array,
+	choice: () => choice,
+	json: () => json,
+	object: () => object,
+	text: () => text
+});
 function fixJson(input) {
 	const stack = ["ROOT"];
 	let lastValidIndex = -1;
@@ -3356,6 +2480,7 @@ function fixJson(input) {
 				stack.pop();
 				stack.push(swapState);
 				stack.push("INSIDE_ARRAY_START");
+				break;
 		}
 	}
 	function processAfterObjectValue(char, i) {
@@ -3367,6 +2492,7 @@ function fixJson(input) {
 			case "}":
 				lastValidIndex = i;
 				stack.pop();
+				break;
 		}
 	}
 	function processAfterArrayValue(char, i) {
@@ -3378,6 +2504,7 @@ function fixJson(input) {
 			case "]":
 				lastValidIndex = i;
 				stack.pop();
+				break;
 		}
 	}
 	for (let i = 0; i < input.length; i++) {
@@ -3395,6 +2522,7 @@ function fixJson(input) {
 					case "}":
 						lastValidIndex = i;
 						stack.pop();
+						break;
 				}
 				break;
 			case "INSIDE_OBJECT_AFTER_COMMA":
@@ -3402,6 +2530,7 @@ function fixJson(input) {
 					case "\"":
 						stack.pop();
 						stack.push("INSIDE_OBJECT_KEY");
+						break;
 				}
 				break;
 			case "INSIDE_OBJECT_KEY":
@@ -3409,6 +2538,7 @@ function fixJson(input) {
 					case "\"":
 						stack.pop();
 						stack.push("INSIDE_OBJECT_AFTER_KEY");
+						break;
 				}
 				break;
 			case "INSIDE_OBJECT_AFTER_KEY":
@@ -3416,6 +2546,7 @@ function fixJson(input) {
 					case ":":
 						stack.pop();
 						stack.push("INSIDE_OBJECT_BEFORE_VALUE");
+						break;
 				}
 				break;
 			case "INSIDE_OBJECT_BEFORE_VALUE":
@@ -3445,6 +2576,7 @@ function fixJson(input) {
 					default:
 						lastValidIndex = i;
 						processValueStart(char, i, "INSIDE_ARRAY_AFTER_VALUE");
+						break;
 				}
 				break;
 			case "INSIDE_ARRAY_AFTER_VALUE":
@@ -3457,7 +2589,9 @@ function fixJson(input) {
 						lastValidIndex = i;
 						stack.pop();
 						break;
-					default: lastValidIndex = i;
+					default:
+						lastValidIndex = i;
+						break;
 				}
 				break;
 			case "INSIDE_ARRAY_AFTER_COMMA":
@@ -3510,7 +2644,9 @@ function fixJson(input) {
 						stack.pop();
 						if (stack[stack.length - 1] === "INSIDE_ARRAY_AFTER_VALUE") processAfterArrayValue(char, i);
 						break;
-					default: stack.pop();
+					default:
+						stack.pop();
+						break;
 				}
 				break;
 			case "INSIDE_LITERAL": {
@@ -3571,32 +2707,248 @@ async function parsePartialJson(jsonText) {
 		state: "failed-parse"
 	};
 }
-/**
-* Output specification for text generation.
-* This is the default output mode that generates plain text.
-*
-* @returns An output specification for generating text.
-*/
 var text = () => ({
 	name: "text",
 	responseFormat: Promise.resolve({ type: "text" }),
-	async parseCompleteOutput({ text }) {
-		return text;
+	async parseCompleteOutput({ text: text2 }) {
+		return text2;
 	},
-	async parsePartialOutput({ text }) {
-		return { partial: text };
+	async parsePartialOutput({ text: text2 }) {
+		return { partial: text2 };
 	},
 	createElementStreamTransform() {}
 });
-var inputSchemaInputSymbol = Symbol("ai-sdk-tool-call-input-schema-input");
-function setToolCallInputSchemaInput(toolCall, inputSchemaInput) {
-	Object.defineProperty(toolCall, inputSchemaInputSymbol, { value: inputSchemaInput });
-	return toolCall;
-}
-function getToolCallInputSchemaInput(toolCall) {
-	return inputSchemaInputSymbol in toolCall ? { value: toolCall[inputSchemaInputSymbol] } : void 0;
-}
-async function parseToolCall({ toolCall, tools, repairToolCall, refineToolInput, messages, instructions, abortSignal }) {
+var object = ({ schema: inputSchema, name: name22, description }) => {
+	const schema = asSchema(inputSchema);
+	return {
+		name: "object",
+		responseFormat: resolve(schema.jsonSchema).then((jsonSchema2) => ({
+			type: "json",
+			schema: jsonSchema2,
+			...name22 != null && { name: name22 },
+			...description != null && { description }
+		})),
+		async parseCompleteOutput({ text: text2 }, context) {
+			const parseResult = await safeParseJSON({ text: text2 });
+			if (!parseResult.success) throw new NoObjectGeneratedError({
+				message: "No object generated: could not parse the response.",
+				cause: parseResult.error,
+				text: text2,
+				response: context.response,
+				usage: context.usage,
+				finishReason: context.finishReason
+			});
+			const validationResult = await safeValidateTypes({
+				value: parseResult.value,
+				schema
+			});
+			if (!validationResult.success) throw new NoObjectGeneratedError({
+				message: "No object generated: response did not match schema.",
+				cause: validationResult.error,
+				text: text2,
+				response: context.response,
+				usage: context.usage,
+				finishReason: context.finishReason
+			});
+			return validationResult.value;
+		},
+		async parsePartialOutput({ text: text2 }) {
+			const result = await parsePartialJson(text2);
+			switch (result.state) {
+				case "failed-parse":
+				case "undefined-input": return;
+				case "repaired-parse":
+				case "successful-parse": return { partial: result.value };
+			}
+		},
+		createElementStreamTransform() {}
+	};
+};
+var array = ({ element: inputElementSchema, name: name22, description }) => {
+	const elementSchema = asSchema(inputElementSchema);
+	return {
+		name: "array",
+		responseFormat: resolve(elementSchema.jsonSchema).then((jsonSchema2) => {
+			const { $schema: _$schema, ...itemSchema } = jsonSchema2;
+			return {
+				type: "json",
+				schema: {
+					$schema: "http://json-schema.org/draft-07/schema#",
+					type: "object",
+					properties: { elements: {
+						type: "array",
+						items: itemSchema
+					} },
+					required: ["elements"],
+					additionalProperties: false
+				},
+				...name22 != null && { name: name22 },
+				...description != null && { description }
+			};
+		}),
+		async parseCompleteOutput({ text: text2 }, context) {
+			const parseResult = await safeParseJSON({ text: text2 });
+			if (!parseResult.success) throw new NoObjectGeneratedError({
+				message: "No object generated: could not parse the response.",
+				cause: parseResult.error,
+				text: text2,
+				response: context.response,
+				usage: context.usage,
+				finishReason: context.finishReason
+			});
+			const outerValue = parseResult.value;
+			if (outerValue == null || typeof outerValue !== "object" || !("elements" in outerValue) || !Array.isArray(outerValue.elements)) throw new NoObjectGeneratedError({
+				message: "No object generated: response did not match schema.",
+				cause: new TypeValidationError({
+					value: outerValue,
+					cause: "response must be an object with an elements array"
+				}),
+				text: text2,
+				response: context.response,
+				usage: context.usage,
+				finishReason: context.finishReason
+			});
+			const validatedElements = [];
+			for (const element of outerValue.elements) {
+				const validationResult = await safeValidateTypes({
+					value: element,
+					schema: elementSchema
+				});
+				if (!validationResult.success) throw new NoObjectGeneratedError({
+					message: "No object generated: response did not match schema.",
+					cause: validationResult.error,
+					text: text2,
+					response: context.response,
+					usage: context.usage,
+					finishReason: context.finishReason
+				});
+				validatedElements.push(validationResult.value);
+			}
+			return validatedElements;
+		},
+		async parsePartialOutput({ text: text2 }) {
+			const result = await parsePartialJson(text2);
+			switch (result.state) {
+				case "failed-parse":
+				case "undefined-input": return;
+				case "repaired-parse":
+				case "successful-parse": {
+					const outerValue = result.value;
+					if (outerValue == null || typeof outerValue !== "object" || !("elements" in outerValue) || !Array.isArray(outerValue.elements)) return;
+					const rawElements = result.state === "repaired-parse" && outerValue.elements.length > 0 ? outerValue.elements.slice(0, -1) : outerValue.elements;
+					const parsedElements = [];
+					for (const rawElement of rawElements) {
+						const validationResult = await safeValidateTypes({
+							value: rawElement,
+							schema: elementSchema
+						});
+						if (validationResult.success) parsedElements.push(validationResult.value);
+					}
+					return { partial: parsedElements };
+				}
+			}
+		},
+		createElementStreamTransform() {
+			let publishedElements = 0;
+			return new TransformStream({ transform({ partialOutput }, controller) {
+				if (partialOutput != null) for (; publishedElements < partialOutput.length; publishedElements++) controller.enqueue(partialOutput[publishedElements]);
+			} });
+		}
+	};
+};
+var choice = ({ options: choiceOptions, name: name22, description }) => {
+	return {
+		name: "choice",
+		responseFormat: Promise.resolve({
+			type: "json",
+			schema: {
+				$schema: "http://json-schema.org/draft-07/schema#",
+				type: "object",
+				properties: { result: {
+					type: "string",
+					enum: choiceOptions
+				} },
+				required: ["result"],
+				additionalProperties: false
+			},
+			...name22 != null && { name: name22 },
+			...description != null && { description }
+		}),
+		async parseCompleteOutput({ text: text2 }, context) {
+			const parseResult = await safeParseJSON({ text: text2 });
+			if (!parseResult.success) throw new NoObjectGeneratedError({
+				message: "No object generated: could not parse the response.",
+				cause: parseResult.error,
+				text: text2,
+				response: context.response,
+				usage: context.usage,
+				finishReason: context.finishReason
+			});
+			const outerValue = parseResult.value;
+			if (outerValue == null || typeof outerValue !== "object" || !("result" in outerValue) || typeof outerValue.result !== "string" || !choiceOptions.includes(outerValue.result)) throw new NoObjectGeneratedError({
+				message: "No object generated: response did not match schema.",
+				cause: new TypeValidationError({
+					value: outerValue,
+					cause: "response must be an object that contains a choice value."
+				}),
+				text: text2,
+				response: context.response,
+				usage: context.usage,
+				finishReason: context.finishReason
+			});
+			return outerValue.result;
+		},
+		async parsePartialOutput({ text: text2 }) {
+			const result = await parsePartialJson(text2);
+			switch (result.state) {
+				case "failed-parse":
+				case "undefined-input": return;
+				case "repaired-parse":
+				case "successful-parse": {
+					const outerValue = result.value;
+					if (outerValue == null || typeof outerValue !== "object" || !("result" in outerValue) || typeof outerValue.result !== "string") return;
+					const potentialMatches = choiceOptions.filter((choiceOption) => choiceOption.startsWith(outerValue.result));
+					if (result.state === "successful-parse") return potentialMatches.includes(outerValue.result) ? { partial: outerValue.result } : void 0;
+					else return potentialMatches.length === 1 ? { partial: potentialMatches[0] } : void 0;
+				}
+			}
+		},
+		createElementStreamTransform() {}
+	};
+};
+var json = ({ name: name22, description } = {}) => {
+	return {
+		name: "json",
+		responseFormat: Promise.resolve({
+			type: "json",
+			...name22 != null && { name: name22 },
+			...description != null && { description }
+		}),
+		async parseCompleteOutput({ text: text2 }, context) {
+			const parseResult = await safeParseJSON({ text: text2 });
+			if (!parseResult.success) throw new NoObjectGeneratedError({
+				message: "No object generated: could not parse the response.",
+				cause: parseResult.error,
+				text: text2,
+				response: context.response,
+				usage: context.usage,
+				finishReason: context.finishReason
+			});
+			return parseResult.value;
+		},
+		async parsePartialOutput({ text: text2 }) {
+			const result = await parsePartialJson(text2);
+			switch (result.state) {
+				case "failed-parse":
+				case "undefined-input": return;
+				case "repaired-parse":
+				case "successful-parse": return result.value === void 0 ? void 0 : { partial: result.value };
+			}
+		},
+		createElementStreamTransform() {}
+	};
+};
+async function parseToolCall({ toolCall, tools, repairToolCall, refineToolInput, messages, instructions }) {
 	try {
 		if (tools == null) {
 			if (toolCall.providerExecuted && toolCall.dynamic) return await refineParsedToolCallInput({
@@ -3617,46 +2969,37 @@ async function parseToolCall({ toolCall, tools, repairToolCall, refineToolInput,
 			if (repairToolCall == null || !(NoSuchToolError.isInstance(error) || InvalidToolInputError.isInstance(error))) throw error;
 			let repairedToolCall = null;
 			try {
-				abortSignal?.throwIfAborted();
-				repairedToolCall = await waitForPromiseWithAbortSignal({
-					promise: repairToolCall({
-						toolCall,
-						tools,
-						inputSchema: async ({ toolName }) => {
-							const inputSchema = getOwn(tools, toolName)?.inputSchema;
-							return await asSchema(inputSchema).jsonSchema;
-						},
-						instructions,
-						system: instructions,
-						messages,
-						error,
-						abortSignal
-					}),
-					abortSignal
+				repairedToolCall = await repairToolCall({
+					toolCall,
+					tools,
+					inputSchema: async ({ toolName }) => {
+						var _a22;
+						return await asSchema((_a22 = getOwn(tools, toolName)) == null ? void 0 : _a22.inputSchema).jsonSchema;
+					},
+					instructions,
+					system: instructions,
+					messages,
+					error
 				});
 			} catch (repairError) {
-				abortSignal?.throwIfAborted();
 				throw new ToolCallRepairError({
 					cause: repairError,
 					originalError: error
 				});
 			}
 			if (repairedToolCall == null) throw error;
-			const parsedRepairedToolCall = await refineParsedToolCallInput({
+			return await refineParsedToolCallInput({
 				toolCall: await doParseToolCall({
 					toolCall: repairedToolCall,
 					tools
 				}),
 				refineToolInput
 			});
-			abortSignal?.throwIfAborted();
-			return parsedRepairedToolCall;
 		}
 	} catch (error) {
-		abortSignal?.throwIfAborted();
 		const parsedInput = await safeParseJSON({ text: toolCall.input });
 		const input = parsedInput.success ? parsedInput.value : toolCall.input;
-		const tool = getOwn(tools, toolCall.toolName);
+		const tool2 = getOwn(tools, toolCall.toolName);
 		return {
 			type: "tool-call",
 			toolCallId: toolCall.toolCallId,
@@ -3665,43 +3008,20 @@ async function parseToolCall({ toolCall, tools, repairToolCall, refineToolInput,
 			dynamic: true,
 			invalid: true,
 			error,
-			title: tool?.title,
+			title: tool2 == null ? void 0 : tool2.title,
 			providerExecuted: toolCall.providerExecuted,
 			providerMetadata: toolCall.providerMetadata,
-			...tool?.metadata != null ? { toolMetadata: tool.metadata } : {}
+			...(tool2 == null ? void 0 : tool2.metadata) != null ? { toolMetadata: tool2.metadata } : {}
 		};
 	}
-}
-async function waitForPromiseWithAbortSignal({ promise, abortSignal }) {
-	if (abortSignal == null) return await promise;
-	return await new Promise((resolve, reject) => {
-		const cleanup = () => {
-			abortSignal.removeEventListener("abort", onAbort);
-		};
-		const onAbort = () => {
-			cleanup();
-			reject(abortSignal.reason);
-		};
-		Promise.resolve(promise).then((value) => {
-			cleanup();
-			resolve(value);
-		}).catch((error) => {
-			cleanup();
-			reject(error);
-		});
-		abortSignal.addEventListener("abort", onAbort, { once: true });
-		if (abortSignal.aborted) onAbort();
-	});
 }
 async function refineParsedToolCallInput({ toolCall, refineToolInput }) {
 	const refine = getOwn(refineToolInput, toolCall.toolName);
 	if (refine == null) return toolCall;
-	const refinedToolCall = {
+	return {
 		...toolCall,
 		input: await refine(toolCall.input)
 	};
-	const inputSchemaInput = getToolCallInputSchemaInput(toolCall);
-	return inputSchemaInput == null ? refinedToolCall : setToolCallInputSchemaInput(refinedToolCall, inputSchemaInput.value);
 }
 async function parseProviderExecutedDynamicToolCall(toolCall) {
 	const parseResult = toolCall.input.trim() === "" ? {
@@ -3725,15 +3045,15 @@ async function parseProviderExecutedDynamicToolCall(toolCall) {
 }
 async function doParseToolCall({ toolCall, tools }) {
 	const toolName = toolCall.toolName;
-	const tool = getOwn(tools, toolName);
-	if (tool == null) {
+	const tool2 = getOwn(tools, toolName);
+	if (tool2 == null) {
 		if (toolCall.providerExecuted && toolCall.dynamic) return await parseProviderExecutedDynamicToolCall(toolCall);
 		throw new NoSuchToolError({
 			toolName: toolCall.toolName,
 			availableTools: Object.keys(tools)
 		});
 	}
-	const schema = asSchema(tool.inputSchema);
+	const schema = asSchema(tool2.inputSchema);
 	const parseResult = toolCall.input.trim() === "" ? await safeValidateTypes({
 		value: {},
 		schema
@@ -3746,16 +3066,16 @@ async function doParseToolCall({ toolCall, tools }) {
 		toolInput: toolCall.input,
 		cause: parseResult.error
 	});
-	return setToolCallInputSchemaInput(tool.type === "dynamic" ? {
+	return tool2.type === "dynamic" ? {
 		type: "tool-call",
 		toolCallId: toolCall.toolCallId,
 		toolName: toolCall.toolName,
 		input: parseResult.value,
 		providerExecuted: toolCall.providerExecuted,
 		providerMetadata: toolCall.providerMetadata,
-		...tool.metadata != null ? { toolMetadata: tool.metadata } : {},
+		...tool2.metadata != null ? { toolMetadata: tool2.metadata } : {},
 		dynamic: true,
-		title: tool.title
+		title: tool2.title
 	} : {
 		type: "tool-call",
 		toolCallId: toolCall.toolCallId,
@@ -3763,35 +3083,47 @@ async function doParseToolCall({ toolCall, tools }) {
 		input: parseResult.value,
 		providerExecuted: toolCall.providerExecuted,
 		providerMetadata: toolCall.providerMetadata,
-		...tool.metadata != null ? { toolMetadata: tool.metadata } : {},
-		title: tool.title
-	}, parseResult.rawValue);
+		...tool2.metadata != null ? { toolMetadata: tool2.metadata } : {},
+		title: tool2.title
+	};
 }
-/**
-* Resolves model call settings for a single step.
-*
-* Undefined step settings intentionally fall back to the outer call settings,
-* while defined falsy values such as `temperature: 0` and `seed: 0` are kept.
-*/
-function prepareStepCallSettings({ callSettings, stepSettings }) {
-	return prepareLanguageModelCallOptions({
-		maxOutputTokens: stepSettings?.maxOutputTokens ?? callSettings.maxOutputTokens,
-		temperature: stepSettings?.temperature ?? callSettings.temperature,
-		topP: stepSettings?.topP ?? callSettings.topP,
-		topK: stepSettings?.topK ?? callSettings.topK,
-		presencePenalty: stepSettings?.presencePenalty ?? callSettings.presencePenalty,
-		frequencyPenalty: stepSettings?.frequencyPenalty ?? callSettings.frequencyPenalty,
-		stopSequences: stepSettings?.stopSequences ?? callSettings.stopSequences,
-		seed: stepSettings?.seed ?? callSettings.seed,
-		reasoning: stepSettings?.reasoning ?? callSettings.reasoning
+function unwrapReasoningFileData(data) {
+	if (typeof data === "object" && data !== null && "type" in data) return data.type === "data" ? data.data : data.url;
+	return data;
+}
+function convertFromReasoningOutputs(parts) {
+	return parts.map((part) => {
+		if (part.type === "reasoning") return {
+			type: "reasoning",
+			text: part.text,
+			...part.providerMetadata != null ? { providerOptions: part.providerMetadata } : {}
+		};
+		return {
+			type: "reasoning-file",
+			data: part.file.base64,
+			mediaType: part.file.mediaType,
+			...part.providerMetadata != null ? { providerOptions: part.providerMetadata } : {}
+		};
 	});
 }
-/**
-* Resolves the approval state for a tool call by checking user-supplied and tool-defined
-* approval settings, and normalizes the result to the object status shape.
-* User-defined approval settings take precedence over tool-defined settings.
-* If no approval settings are provided, the tool call does not require approval.
-*/
+function convertToReasoningOutputs(parts) {
+	return parts.map((part) => {
+		if (part.type === "reasoning") return {
+			type: "reasoning",
+			text: part.text,
+			...part.providerOptions != null ? { providerMetadata: part.providerOptions } : {}
+		};
+		const rawData = unwrapReasoningFileData(part.data);
+		return {
+			type: "reasoning-file",
+			file: new DefaultGeneratedFile({
+				data: rawData instanceof ArrayBuffer ? new Uint8Array(rawData) : rawData instanceof URL ? rawData.toString() : rawData,
+				mediaType: part.mediaType
+			}),
+			...part.providerOptions != null ? { providerMetadata: part.providerOptions } : {}
+		};
+	});
+}
 async function resolveToolApproval({ tools, toolCall, toolApproval, messages, toolsContext, runtimeContext }) {
 	if (toolApproval != null && typeof toolApproval === "function") return normalizeToolApprovalStatus(await toolApproval({
 		toolCall,
@@ -3801,7 +3133,7 @@ async function resolveToolApproval({ tools, toolCall, toolApproval, messages, to
 		runtimeContext
 	}));
 	const toolName = toolCall.toolName;
-	const tool = getOwn(tools, toolName);
+	const tool2 = getOwn(tools, toolName);
 	const input = toolCall.input;
 	const userDefinedToolApprovalStatus = getOwn(toolApproval, toolName);
 	if (userDefinedToolApprovalStatus != null) return normalizeToolApprovalStatus(typeof userDefinedToolApprovalStatus === "function" ? await userDefinedToolApprovalStatus(input, {
@@ -3810,98 +3142,55 @@ async function resolveToolApproval({ tools, toolCall, toolApproval, messages, to
 		toolContext: await validateToolContext({
 			toolName,
 			context: getOwn(toolsContext, toolName),
-			contextSchema: tool?.contextSchema
+			contextSchema: tool2 == null ? void 0 : tool2.contextSchema
 		}),
 		runtimeContext
 	}) : userDefinedToolApprovalStatus);
-	if (tool?.needsApproval == null) return { type: "not-applicable" };
-	return (typeof tool.needsApproval === "function" ? await tool.needsApproval(input, {
+	if ((tool2 == null ? void 0 : tool2.needsApproval) == null) return { type: "not-applicable" };
+	return (typeof tool2.needsApproval === "function" ? await tool2.needsApproval(input, {
 		toolCallId: toolCall.toolCallId,
 		messages,
 		context: await validateToolContext({
 			toolName,
 			context: getOwn(toolsContext, toolName),
-			contextSchema: tool?.contextSchema
+			contextSchema: tool2 == null ? void 0 : tool2.contextSchema
 		})
-	}) : tool.needsApproval) ? { type: "user-approval" } : { type: "not-applicable" };
+	}) : tool2.needsApproval) ? { type: "user-approval" } : { type: "not-applicable" };
 }
 function normalizeToolApprovalStatus(status) {
 	return status === void 0 ? { type: "not-applicable" } : typeof status === "string" ? { type: status } : status;
 }
-/**
-* Returns a shallow copy of the runtime context with only top-level
-* properties marked for telemetry inclusion.
-*/
-function filterIncludedContext({ context, includeContext }) {
-	if (context == null) return {};
-	return Object.fromEntries(Object.entries(context).filter(([key]) => includeContext?.[key] === true));
-}
-function filterToolsContext({ toolsContext, includeToolsContext }) {
-	if (includeToolsContext == null) return {};
-	return Object.fromEntries(Object.entries(toolsContext).map(([toolName, toolContext]) => [toolName, filterToolContext({
-		toolName,
-		toolContext,
-		includeToolsContext
-	})]));
-}
-function filterToolContext({ toolName, toolContext, includeToolsContext }) {
-	const includeToolContext = includeToolsContext?.[toolName];
-	return filterIncludedContext({
-		context: toolContext,
-		includeContext: includeToolContext
-	});
-}
-/**
-* Creates an async callback that invokes the provided callbacks in parallel.
-* Undefined callbacks are skipped, and thrown or rejected callback errors are
-* ignored.
-*
-* @param callbacks The callbacks to invoke for each event.
-* @returns A callback that forwards each event to all callbacks and waits for
-* them to settle.
-*/
 function mergeCallbacks(...callbacks) {
 	return async (event) => {
 		await Promise.allSettled(callbacks.map(async (callback) => {
-			await callback?.(event);
+			await (callback == null ? void 0 : callback(event));
 		}));
 	};
 }
 var AI_SDK_TELEMETRY_TRACING_CHANNEL = "ai:telemetry";
 function isNodeRuntime() {
-	return typeof process !== "undefined" && process.release?.name === "node";
+	var _a22;
+	return typeof process !== "undefined" && ((_a22 = process.release) == null ? void 0 : _a22.name) === "node";
 }
 var diagnosticsChannelPromise;
-/**
-* Loads Node's diagnostics channel module only when the current runtime supports
-* it. Unsupported runtimes and failed imports intentionally resolve to
-* undefined so telemetry tracing never crashes user code.
-*/
 async function loadDiagnosticsChannel() {
 	if (!isNodeRuntime()) return;
 	if (diagnosticsChannelPromise == null) diagnosticsChannelPromise = Promise.resolve(loadBuiltinModule("node:diagnostics_channel"));
 	return diagnosticsChannelPromise;
 }
 function loadBuiltinModule(id) {
+	var _a22;
 	const processWithBuiltins = globalThis.process;
 	try {
-		return processWithBuiltins?.getBuiltinModule?.(id);
-	} catch {
+		return (_a22 = processWithBuiltins == null ? void 0 : processWithBuiltins.getBuiltinModule) == null ? void 0 : _a22.call(processWithBuiltins, id);
+	} catch (e) {
 		return;
 	}
 }
-/**
-* Runs an async operation inside the AI SDK telemetry tracing channel when
-* tracing subscribers may exist. Without Node diagnostics-channel support,
-* without tracingChannel support, or when the runtime reports no subscribers,
-* this is a direct pass-through.
-*
-* The execution bookkeeping preserves the original model/tool result or error
-* if tracing itself throws, and prevents falling back by calling `execute` a
-* second time.
-*/
 async function runWithTracingChannelSpan(message, execute) {
-	const tracingChannel = (await loadDiagnosticsChannel())?.tracingChannel?.(AI_SDK_TELEMETRY_TRACING_CHANNEL);
+	var _a22;
+	const diagnosticsChannel = await loadDiagnosticsChannel();
+	const tracingChannel = (_a22 = diagnosticsChannel == null ? void 0 : diagnosticsChannel.tracingChannel) == null ? void 0 : _a22.call(diagnosticsChannel, AI_SDK_TELEMETRY_TRACING_CHANNEL);
 	if (tracingChannel == null || tracingChannel.hasSubscribers === false) return await execute();
 	let executePromise;
 	let executionResult;
@@ -3927,25 +3216,19 @@ async function runWithTracingChannelSpan(message, execute) {
 	};
 	try {
 		return await tracingChannel.tracePromise(tracedExecute, message);
-	} catch {
+	} catch (e) {
 		if (hasExecutionError) throw executionError;
 		if (hasExecutionResult) return executionResult;
 		if (executePromise != null) return await executePromise;
 		return await execute();
 	}
 }
-/**
-* Opens a long-lived tracing-channel span context and returns a runner that can
-* re-enter that context later without changing stream setup timing.
-*/
 function openTelemetryChannelSpanContext({ message, completion }) {
-	if (!isNodeRuntime()) {
-		Promise.resolve(completion).catch(() => {});
-		return;
-	}
+	var _a22;
+	if (!isNodeRuntime()) return;
 	const diagnosticsChannel = loadBuiltinModule("node:diagnostics_channel");
 	const asyncHooks = loadBuiltinModule("node:async_hooks");
-	const tracingChannel = diagnosticsChannel?.tracingChannel?.(AI_SDK_TELEMETRY_TRACING_CHANNEL);
+	const tracingChannel = (_a22 = diagnosticsChannel == null ? void 0 : diagnosticsChannel.tracingChannel) == null ? void 0 : _a22.call(diagnosticsChannel, AI_SDK_TELEMETRY_TRACING_CHANNEL);
 	if (tracingChannel == null || tracingChannel.hasSubscribers === false || asyncHooks == null) {
 		Promise.resolve(completion).catch(() => {});
 		return;
@@ -3956,7 +3239,7 @@ function openTelemetryChannelSpanContext({ message, completion }) {
 	const safePublish = (publish) => {
 		try {
 			publish();
-		} catch {}
+		} catch (e) {}
 	};
 	const publishAsyncEnd = ({ result, error }) => {
 		if (asyncEndPublished) return;
@@ -3978,79 +3261,47 @@ function openTelemetryChannelSpanContext({ message, completion }) {
 	return { run: (execute) => asyncResource == null ? execute() : asyncResource.runInAsyncScope(execute) };
 }
 function getGlobalTelemetryIntegrations() {
-	return globalThis.AI_SDK_TELEMETRY_INTEGRATIONS ?? [];
+	var _a22;
+	return (_a22 = globalThis.AI_SDK_TELEMETRY_INTEGRATIONS) != null ? _a22 : [];
 }
-function augmentEvent(event, telemetry, filterContext = false) {
-	const augmentedEvent = Object.assign(Object.create(Object.getPrototypeOf(event)), event, {
-		recordInputs: telemetry.recordInputs,
-		recordOutputs: telemetry.recordOutputs,
-		functionId: telemetry.functionId
-	});
-	if (filterContext && event != null && typeof event === "object" && "runtimeContext" in event) augmentedEvent.runtimeContext = filterIncludedContext({
-		context: event.runtimeContext,
-		includeContext: telemetry.includeRuntimeContext
-	});
-	if (filterContext && event != null && typeof event === "object") {
-		if ("toolsContext" in event) augmentedEvent.toolsContext = filterToolsContext({
-			toolsContext: event.toolsContext,
-			includeToolsContext: telemetry.includeToolsContext
-		});
-		else if ("toolContext" in event && event.toolContext != null && "toolCall" in event && event.toolCall != null && typeof event.toolCall === "object" && "toolName" in event.toolCall) augmentedEvent.toolContext = filterToolContext({
-			toolName: event.toolCall.toolName,
-			toolContext: event.toolContext,
-			includeToolsContext: telemetry.includeToolsContext
-		});
-	}
-	return augmentedEvent;
+function augmentEvent(event, telemetry) {
+	return Object.assign(Object.create(Object.getPrototypeOf(event)), event, telemetry);
 }
-/**
-* Creates a telemetry dispatcher that sends telemetry events
-* to the resolved set of integrations.
-*
-* When per-call integrations are provided, they take precedence over the globally
-* registered integrations for that call. When no per-call integrations are
-* provided, the globally registered integrations are used.
-*
-* @param args.telemetry - Optional per-call telemetry settings and integrations.
-*
-* @returns A telemetry dispatcher that fans out lifecycle events to the
-* resolved set of integrations.
-*/
 function createTelemetryDispatcher({ telemetry }) {
-	if (telemetry?.isEnabled === false) return {};
-	const localIntegrations = telemetry?.integrations;
+	if ((telemetry == null ? void 0 : telemetry.isEnabled) === false) return {};
+	const localIntegrations = telemetry == null ? void 0 : telemetry.integrations;
 	const integrations = localIntegrations != null ? asArray(localIntegrations) : getGlobalTelemetryIntegrations();
 	const telemetryMetadata = {
-		recordInputs: telemetry?.recordInputs,
-		recordOutputs: telemetry?.recordOutputs,
-		functionId: telemetry?.functionId,
-		includeRuntimeContext: telemetry?.includeRuntimeContext,
-		includeToolsContext: telemetry?.includeToolsContext
+		recordInputs: telemetry == null ? void 0 : telemetry.recordInputs,
+		recordOutputs: telemetry == null ? void 0 : telemetry.recordOutputs,
+		functionId: telemetry == null ? void 0 : telemetry.functionId
 	};
-	const mergeTelemetryCallback = (key, deprecatedKey) => {
-		const integrationCallbacks = integrations.map((integration) => {
-			const callback = integration[key] ?? (deprecatedKey == null ? void 0 : integration[deprecatedKey]);
-			return typeof callback === "function" ? callback.bind(integration) : void 0;
-		}).filter(Boolean).map((callback) => ((event) => callback(augmentEvent(event, telemetryMetadata))));
-		if (integrationCallbacks.length === 0) return;
-		const mergedIntegrationCallback = mergeCallbacks(...integrationCallbacks);
+	const mergeTelemetryCallback = (key) => {
+		const mergedIntegrationCallback = mergeCallbacks(...integrations.map((integration) => {
+			var _a22;
+			return (_a22 = integration[key]) == null ? void 0 : _a22.bind(integration);
+		}).filter(Boolean).map((callback) => (event) => callback(augmentEvent(event, telemetryMetadata))));
 		return async (event) => {
 			await mergedIntegrationCallback(event);
 		};
 	};
-	const onStepEnd = mergeTelemetryCallback("onStepEnd");
-	const onStepFinish = mergeTelemetryCallback("onStepFinish");
-	const executeLanguageModelCallWrappers = integrations.map((integration) => integration.executeLanguageModelCall?.bind(integration)).filter(Boolean);
-	const executeToolWrappers = integrations.map((integration) => integration.executeTool?.bind(integration)).filter(Boolean);
+	const executeLanguageModelCallWrappers = integrations.map((integration) => {
+		var _a22;
+		return (_a22 = integration.executeLanguageModelCall) == null ? void 0 : _a22.bind(integration);
+	}).filter(Boolean);
+	const executeToolWrappers = integrations.map((integration) => {
+		var _a22;
+		return (_a22 = integration.executeTool) == null ? void 0 : _a22.bind(integration);
+	}).filter(Boolean);
 	return {
 		runInTracingChannelSpan: async ({ type, event, execute }) => await runWithTracingChannelSpan({
 			type,
-			event: augmentEvent(event, telemetryMetadata, true)
+			event: augmentEvent(event, telemetryMetadata)
 		}, execute),
 		startTracingChannelContext: ({ type, event, completion }) => openTelemetryChannelSpanContext({
 			message: {
 				type,
-				event: augmentEvent(event, telemetryMetadata, true)
+				event: augmentEvent(event, telemetryMetadata)
 			},
 			completion
 		}),
@@ -4060,19 +3311,13 @@ function createTelemetryDispatcher({ telemetry }) {
 		onLanguageModelCallEnd: mergeTelemetryCallback("onLanguageModelCallEnd"),
 		onToolExecutionStart: mergeTelemetryCallback("onToolExecutionStart"),
 		onToolExecutionEnd: mergeTelemetryCallback("onToolExecutionEnd"),
-		onStepEnd: onStepEnd == null && onStepFinish == null ? void 0 : mergeCallbacks(onStepEnd, onStepFinish),
+		onStepEnd: mergeCallbacks(mergeTelemetryCallback("onStepEnd"), mergeTelemetryCallback("onStepFinish")),
 		onObjectStepStart: mergeTelemetryCallback("onObjectStepStart"),
 		onObjectStepEnd: mergeTelemetryCallback("onObjectStepEnd"),
 		onEmbedStart: mergeTelemetryCallback("onEmbedStart"),
 		onEmbedEnd: mergeTelemetryCallback("onEmbedEnd"),
 		onRerankStart: mergeTelemetryCallback("onRerankStart"),
 		onRerankEnd: mergeTelemetryCallback("onRerankEnd"),
-		experimental_onDecideStart: mergeTelemetryCallback("experimental_onDecideStart", "experimental_onEvaluateStart"),
-		experimental_onDecisionModelCallStart: mergeTelemetryCallback("experimental_onDecisionModelCallStart", "experimental_onEvaluationModelCallStart"),
-		experimental_onDecisionModelCallEnd: mergeTelemetryCallback("experimental_onDecisionModelCallEnd", "experimental_onEvaluationModelCallEnd"),
-		experimental_onDecideEnd: mergeTelemetryCallback("experimental_onDecideEnd", "experimental_onEvaluateEnd"),
-		experimental_onStreamTranscriptionStart: mergeTelemetryCallback("experimental_onStreamTranscriptionStart"),
-		experimental_onStreamTranscriptionEnd: mergeTelemetryCallback("experimental_onStreamTranscriptionEnd"),
 		onEnd: mergeTelemetryCallback("onEnd"),
 		onAbort: mergeTelemetryCallback("onAbort"),
 		onError: mergeTelemetryCallback("onError"),
@@ -4173,10 +3418,10 @@ var DefaultStepResult = class {
 		return this.toolResults.filter((toolResult) => toolResult.dynamic === true);
 	}
 };
-/**
-* Creates a copy of a step result whose runtime context only contains
-* top-level properties marked for telemetry inclusion.
-*/
+function filterIncludedContext({ context, includeContext }) {
+	if (context == null) return {};
+	return Object.fromEntries(Object.entries(context).filter(([key]) => (includeContext == null ? void 0 : includeContext[key]) === true));
+}
 function restrictStepResult({ step, includeRuntimeContext, includeToolsContext }) {
 	return new DefaultStepResult({
 		callId: step.callId,
@@ -4202,153 +3447,139 @@ function restrictStepResult({ step, includeRuntimeContext, includeToolsContext }
 		providerMetadata: step.providerMetadata
 	});
 }
-/**
-* Creates a telemetry dispatcher that only includes configured runtime context
-* properties in text-generation lifecycle events before dispatching them.
-*/
-function createRestrictedTelemetryDispatcher$3({ telemetry, includeRuntimeContext, includeToolsContext }) {
+function filterToolsContext({ toolsContext, includeToolsContext }) {
+	if (includeToolsContext == null) return {};
+	return Object.fromEntries(Object.entries(toolsContext).map(([toolName, toolContext]) => [toolName, filterToolContext({
+		toolName,
+		toolContext,
+		includeToolsContext
+	})]));
+}
+function filterToolContext({ toolName, toolContext, includeToolsContext }) {
+	return filterIncludedContext({
+		context: toolContext,
+		includeContext: includeToolsContext == null ? void 0 : includeToolsContext[toolName]
+	});
+}
+function createRestrictedTelemetryDispatcher({ telemetry, includeRuntimeContext, includeToolsContext }) {
 	const telemetryDispatcher = createTelemetryDispatcher({ telemetry });
 	return {
 		...telemetryDispatcher,
-		onStart: (event) => telemetryDispatcher.onStart?.({
-			...event,
-			runtimeContext: filterIncludedContext({
-				context: event.runtimeContext,
-				includeContext: includeRuntimeContext
-			}),
-			toolsContext: filterToolsContext({
-				toolsContext: event.toolsContext,
-				includeToolsContext
-			})
-		}),
-		onStepStart: (event) => telemetryDispatcher.onStepStart?.({
-			...event,
-			runtimeContext: filterIncludedContext({
-				context: event.runtimeContext,
-				includeContext: includeRuntimeContext
-			}),
-			steps: event.steps.map((step) => restrictStepResult({
-				step,
-				includeRuntimeContext,
-				includeToolsContext
-			})),
-			toolsContext: filterToolsContext({
-				toolsContext: event.toolsContext,
-				includeToolsContext
-			})
-		}),
-		onStepEnd: (event) => telemetryDispatcher.onStepEnd?.(restrictStepResult({
-			step: event,
-			includeRuntimeContext,
-			includeToolsContext
-		})),
-		onStepFinish: (event) => telemetryDispatcher.onStepEnd?.(restrictStepResult({
-			step: event,
-			includeRuntimeContext,
-			includeToolsContext
-		})),
-		onEnd: (event) => telemetryDispatcher.onEnd?.(((restrictedSteps) => {
-			return {
+		onStart: (event) => {
+			var _a22;
+			return (_a22 = telemetryDispatcher.onStart) == null ? void 0 : _a22.call(telemetryDispatcher, {
 				...event,
 				runtimeContext: filterIncludedContext({
 					context: event.runtimeContext,
 					includeContext: includeRuntimeContext
 				}),
-				steps: restrictedSteps,
-				finalStep: restrictedSteps.at(-1),
 				toolsContext: filterToolsContext({
 					toolsContext: event.toolsContext,
 					includeToolsContext
 				})
-			};
-		})(event.steps.map((step) => restrictStepResult({
-			step,
-			includeRuntimeContext,
-			includeToolsContext
-		})))),
-		onAbort: (event) => telemetryDispatcher.onAbort?.({
-			...event,
-			steps: event.steps.map((step) => restrictStepResult({
+			});
+		},
+		onStepStart: (event) => {
+			var _a22;
+			return (_a22 = telemetryDispatcher.onStepStart) == null ? void 0 : _a22.call(telemetryDispatcher, {
+				...event,
+				runtimeContext: filterIncludedContext({
+					context: event.runtimeContext,
+					includeContext: includeRuntimeContext
+				}),
+				steps: event.steps.map((step) => restrictStepResult({
+					step,
+					includeRuntimeContext,
+					includeToolsContext
+				})),
+				toolsContext: filterToolsContext({
+					toolsContext: event.toolsContext,
+					includeToolsContext
+				})
+			});
+		},
+		onStepEnd: (event) => {
+			var _a22;
+			return (_a22 = telemetryDispatcher.onStepEnd) == null ? void 0 : _a22.call(telemetryDispatcher, restrictStepResult({
+				step: event,
+				includeRuntimeContext,
+				includeToolsContext
+			}));
+		},
+		onStepFinish: (event) => {
+			var _a22;
+			return (_a22 = telemetryDispatcher.onStepEnd) == null ? void 0 : _a22.call(telemetryDispatcher, restrictStepResult({
+				step: event,
+				includeRuntimeContext,
+				includeToolsContext
+			}));
+		},
+		onEnd: (event) => {
+			var _a22;
+			return (_a22 = telemetryDispatcher.onEnd) == null ? void 0 : _a22.call(telemetryDispatcher, ((restrictedSteps) => {
+				return {
+					...event,
+					runtimeContext: filterIncludedContext({
+						context: event.runtimeContext,
+						includeContext: includeRuntimeContext
+					}),
+					steps: restrictedSteps,
+					finalStep: restrictedSteps.at(-1),
+					toolsContext: filterToolsContext({
+						toolsContext: event.toolsContext,
+						includeToolsContext
+					})
+				};
+			})(event.steps.map((step) => restrictStepResult({
 				step,
 				includeRuntimeContext,
 				includeToolsContext
-			}))
-		}),
-		onToolExecutionStart: (event) => telemetryDispatcher.onToolExecutionStart?.({
-			...event,
-			toolContext: filterToolContext({
-				toolName: event.toolCall.toolName,
-				toolContext: event.toolContext,
-				includeToolsContext
-			})
-		}),
-		onToolExecutionEnd: (event) => telemetryDispatcher.onToolExecutionEnd?.({
-			...event,
-			toolContext: filterToolContext({
-				toolName: event.toolCall.toolName,
-				toolContext: event.toolContext,
-				includeToolsContext
-			})
-		})
+			}))));
+		},
+		onAbort: (event) => {
+			var _a22;
+			return (_a22 = telemetryDispatcher.onAbort) == null ? void 0 : _a22.call(telemetryDispatcher, {
+				...event,
+				steps: event.steps.map((step) => restrictStepResult({
+					step,
+					includeRuntimeContext,
+					includeToolsContext
+				}))
+			});
+		},
+		onToolExecutionStart: (event) => {
+			var _a22;
+			return (_a22 = telemetryDispatcher.onToolExecutionStart) == null ? void 0 : _a22.call(telemetryDispatcher, {
+				...event,
+				toolContext: filterToolContext({
+					toolName: event.toolCall.toolName,
+					toolContext: event.toolContext,
+					includeToolsContext
+				})
+			});
+		},
+		onToolExecutionEnd: (event) => {
+			var _a22;
+			return (_a22 = telemetryDispatcher.onToolExecutionEnd) == null ? void 0 : _a22.call(telemetryDispatcher, {
+				...event,
+				toolContext: filterToolContext({
+					toolName: event.toolCall.toolName,
+					toolContext: event.toolContext,
+					includeToolsContext
+				})
+			});
+		}
 	};
 }
-/**
-* Creates a stop condition that returns `true` when the number of completed
-* steps equals `stepCount`.
-*
-* @param stepCount - The number of steps to allow before stopping.
-*/
 function isStepCount(stepCount) {
 	return ({ steps }) => steps.length === stepCount;
 }
-/**
-* Evaluates the provided stop conditions for the current list of steps.
-*
-* Returns `true` as soon as any stop condition is met.
-*
-* @param stopConditions - The stop conditions to evaluate.
-* @param steps - The completed steps accumulated so far.
-*/
 async function isStopConditionMet({ stopConditions, steps }) {
 	return (await Promise.all(stopConditions.map((condition) => condition({ steps })))).some((result) => result);
 }
-/**
-* Adds token counts while preserving an unknown total when both counts are
-* unknown.
-*/
 function sumTokenCounts(tokenCount1, tokenCount2) {
-	return tokenCount1 == null && tokenCount2 == null ? void 0 : (tokenCount1 ?? 0) + (tokenCount2 ?? 0);
+	return tokenCount1 == null && tokenCount2 == null ? void 0 : (tokenCount1 != null ? tokenCount1 : 0) + (tokenCount2 != null ? tokenCount2 : 0);
 }
-/**
-* Performs a deep-equal comparison of two parsed JSON objects.
-*
-* @param {any} obj1 - The first object to compare.
-* @param {any} obj2 - The second object to compare.
-* @returns {boolean} - Returns true if the two objects are deeply equal, false otherwise.
-*/
-function isDeepEqualData(obj1, obj2) {
-	if (obj1 === obj2) return true;
-	if (obj1 == null || obj2 == null) return false;
-	if (typeof obj1 !== "object" && typeof obj2 !== "object") return obj1 === obj2;
-	if (obj1.constructor !== obj2.constructor) return false;
-	if (obj1 instanceof Date && obj2 instanceof Date) return obj1.getTime() === obj2.getTime();
-	if (Array.isArray(obj1)) {
-		if (obj1.length !== obj2.length) return false;
-		for (let i = 0; i < obj1.length; i++) if (!isDeepEqualData(obj1[i], obj2[i])) return false;
-		return true;
-	}
-	const keys1 = Object.keys(obj1);
-	const keys2 = Object.keys(obj2);
-	if (keys1.length !== keys2.length) return false;
-	for (const key of keys1) {
-		if (!keys2.includes(key)) return false;
-		if (!isDeepEqualData(obj1[key], obj2[key])) return false;
-	}
-	return true;
-}
-/**
-* Converts the result of a `generateText` or `streamText` call to a list of response messages.
-*/
 async function toResponseMessages({ content: inputContent, tools }) {
 	const responseMessages = [];
 	const toolCallOrder = /* @__PURE__ */ new Map();
@@ -4441,16 +3672,14 @@ async function toResponseMessages({ content: inputContent, tools }) {
 				break;
 			}
 			case "tool-approval-request":
-				const inputSchemaInput = getToolCallInputSchemaInput(part.toolCall);
 				content.push({
 					type: "tool-approval-request",
 					approvalId: part.approvalId,
 					toolCallId: part.toolCall.toolCallId,
-					...part.reason != null ? { reason: part.reason } : {},
 					isAutomatic: part.isAutomatic,
-					...part.signature != null ? { signature: part.signature } : {},
-					...inputSchemaInput != null && !isDeepEqualData(inputSchemaInput.value, part.toolCall.input) ? { inputSchemaInput: inputSchemaInput.value } : {}
+					...part.signature != null ? { signature: part.signature } : {}
 				});
+				break;
 		}
 	}
 	if (content.length > 0) responseMessages.push({
@@ -4519,41 +3748,33 @@ function sortToolResultContentByToolCallOrder({ toolResultContent, toolCallOrder
 	let toolResultIndex = 0;
 	return toolResultContent.map((part) => part.type === "tool-result" ? sortedToolResults[toolResultIndex++] : part);
 }
-var encoder$1 = new TextEncoder();
-/**
-* Deterministic JSON serialization: object keys are sorted so that two
-* structurally-equal values always produce the same string regardless of key
-* insertion order. Used as the input to content hashing.
-*/
+var encoder = new TextEncoder();
 function canonicalJSON(value) {
 	if (value === null || value === void 0) return JSON.stringify(value);
 	if (typeof value !== "object") return JSON.stringify(value);
-	if (Array.isArray(value)) return `[${value.map((element) => element === void 0 ? "null" : canonicalJSON(element)).join(",")}]`;
+	if (Array.isArray(value)) return `[${value.map(canonicalJSON).join(",")}]`;
 	return `{${Object.keys(value).sort().map((k) => `${JSON.stringify(k)}:${canonicalJSON(value[k])}`).join(",")}}`;
 }
 function toBase64url(bytes) {
 	return convertUint8ArrayToBase64(bytes).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, "");
 }
-/**
-* Canonical SHA-256 digest (base64url) of an arbitrary JSON-serializable value.
-*/
 async function hashCanonical(value) {
-	const digest = await crypto.subtle.digest("SHA-256", encoder$1.encode(canonicalJSON(value)));
+	const digest = await crypto.subtle.digest("SHA-256", encoder.encode(canonicalJSON(value)));
 	return toBase64url(new Uint8Array(digest));
 }
-var encoder = new TextEncoder();
+var encoder2 = new TextEncoder();
 function fromBase64url(str) {
 	return convertBase64ToUint8Array(str);
 }
 async function importKey(secret) {
-	const keyData = typeof secret === "string" ? encoder.encode(secret) : secret;
+	const keyData = typeof secret === "string" ? encoder2.encode(secret) : secret;
 	return crypto.subtle.importKey("raw", keyData, {
 		name: "HMAC",
 		hash: "SHA-256"
 	}, false, ["sign", "verify"]);
 }
 function buildPayload(approvalId, toolCallId, toolName, inputDigest) {
-	return encoder.encode(JSON.stringify([
+	return encoder2.encode(JSON.stringify([
 		"ai-sdk-tool-approval-v1",
 		approvalId,
 		toolCallId,
@@ -4562,7 +3783,10 @@ function buildPayload(approvalId, toolCallId, toolName, inputDigest) {
 	]));
 }
 function buildLegacyPayload(approvalId, toolCallId, toolName, inputDigest) {
-	return encoder.encode(`${approvalId}\n${toolCallId}\n${toolName}\n${inputDigest}`);
+	return encoder2.encode(`${approvalId}
+${toolCallId}
+${toolName}
+${inputDigest}`);
 }
 async function signToolApproval({ secret, approvalId, toolCallId, toolName, input }) {
 	const key = await importKey(secret);
@@ -4592,18 +3816,13 @@ async function maybeSignApproval({ secret, approvalId, toolCallId, toolName, inp
 		input
 	});
 }
-/**
-* Re-validates approved tool approvals reconstructed from client-supplied
-* message history before they are executed. Checks HMAC signature (when
-* configured), input schema, and approval policy.
-*/
-async function validateApprovedToolApprovals({ approvedToolApprovals, tools, toolApproval, messages, toolsContext, runtimeContext, toolApprovalSecret, refineToolInput }) {
+async function validateApprovedToolApprovals({ approvedToolApprovals, tools, toolApproval, messages, toolsContext, runtimeContext, toolApprovalSecret }) {
+	var _a22;
 	const approved = [];
 	const denied = [];
-	const invalid = [];
 	for (const approval of approvedToolApprovals) {
-		const { approvalRequest, toolCall } = approval;
-		const tool = getOwn(tools, toolCall.toolName);
+		const { toolCall, approvalRequest } = approval;
+		const tool2 = getOwn(tools, toolCall.toolName);
 		if (toolApprovalSecret != null) {
 			if (approvalRequest.signature == null) throw new InvalidToolApprovalSignatureError({
 				approvalId: approvalRequest.approvalId,
@@ -4623,37 +3842,16 @@ async function validateApprovedToolApprovals({ approvedToolApprovals, tools, too
 				reason: "invalid signature"
 			});
 		}
-		if (isExecutableTool(tool) && tool.inputSchema != null) {
-			const hasInputSchemaInput = Object.prototype.hasOwnProperty.call(approvalRequest, "inputSchemaInput");
+		if (isExecutableTool(tool2) && tool2.inputSchema != null) {
 			const validation = await safeValidateTypes({
-				value: hasInputSchemaInput ? approvalRequest.inputSchemaInput : toolCall.input,
-				schema: asSchema(tool.inputSchema)
+				value: toolCall.input,
+				schema: asSchema(tool2.inputSchema)
 			});
-			let validationError;
-			if (!validation.success) validationError = validation.error;
-			else try {
-				const revalidatedToolCall = await refineParsedToolCallInput({
-					toolCall: {
-						...toolCall,
-						input: validation.value
-					},
-					refineToolInput
-				});
-				if (!isDeepEqualData(structuredClone(revalidatedToolCall.input), structuredClone(toolCall.input))) validationError = /* @__PURE__ */ new Error("Approved tool input does not match the validated schema output.");
-			} catch (error) {
-				validationError = error;
-			}
-			if (validationError != null) {
-				invalid.push({
-					...approval,
-					error: new InvalidToolInputError({
-						toolName: toolCall.toolName,
-						toolInput: JSON.stringify(toolCall.input),
-						cause: validationError
-					})
-				});
-				continue;
-			}
+			if (!validation.success) throw new InvalidToolInputError({
+				toolName: toolCall.toolName,
+				toolInput: JSON.stringify(toolCall.input),
+				cause: validation.error
+			});
 		}
 		const approvalStatus = await resolveToolApproval({
 			tools,
@@ -4668,141 +3866,50 @@ async function validateApprovedToolApprovals({ approvedToolApprovals, tools, too
 			approvalResponse: {
 				...approval.approvalResponse,
 				approved: false,
-				reason: approvalStatus.reason ?? approval.approvalResponse.reason
+				reason: (_a22 = approvalStatus.reason) != null ? _a22 : approval.approvalResponse.reason
 			}
 		});
 		else approved.push(approval);
 	}
 	return {
 		approvedToolApprovals: approved,
-		deniedToolApprovals: denied,
-		invalidToolApprovals: invalid
+		deniedToolApprovals: denied
 	};
 }
-var originalGenerateId$4 = createIdGenerator({
+var originalGenerateId = createIdGenerator({
 	prefix: "aitxt",
 	size: 24
 });
-var originalGenerateCallId$9 = createIdGenerator({
+var originalGenerateCallId = createIdGenerator({
 	prefix: "call",
 	size: 24
 });
-/**
-* Generate a text and call tools for a given prompt using a language model.
-*
-* This function does not stream the output. If you want to stream the output, use `streamText` instead.
-*
-* @param model - The language model to use.
-*
-* @param tools - Tools that are accessible to and can be called by the model. The model needs to support calling tools.
-* @param toolChoice - The tool choice strategy. Default: 'auto'.
-* @param toolOrder - Controls the order in which tools are sent to the provider. Tools not listed are appended alphabetically.
-*
-* @param system - A system message that will be part of the prompt.
-* @param prompt - A simple text prompt. You can either use `prompt` or `messages` but not both.
-* @param messages - A list of messages. You can either use `prompt` or `messages` but not both.
-* @param allowSystemInMessages - Whether system messages are allowed in the `prompt` or `messages` fields. Default: false.
-*
-* @param maxOutputTokens - Maximum number of tokens to generate.
-* @param temperature - Temperature setting.
-* The value is passed through to the provider. The range depends on the provider and model.
-* It is recommended to set either `temperature` or `topP`, but not both.
-* @param topP - Nucleus sampling.
-* The value is passed through to the provider. The range depends on the provider and model.
-* It is recommended to set either `temperature` or `topP`, but not both.
-* @param topK - Only sample from the top K options for each subsequent token.
-* Used to remove "long tail" low probability responses.
-* Recommended for advanced use cases only. You usually only need to use temperature.
-* @param presencePenalty - Presence penalty setting.
-* It affects the likelihood of the model to repeat information that is already in the prompt.
-* The value is passed through to the provider. The range depends on the provider and model.
-* @param frequencyPenalty - Frequency penalty setting.
-* It affects the likelihood of the model to repeatedly use the same words or phrases.
-* The value is passed through to the provider. The range depends on the provider and model.
-* @param stopSequences - Stop sequences.
-* If set, the model will stop generating text when one of the stop sequences is generated.
-* @param seed - The seed (integer) to use for random sampling.
-* If set and supported by the model, calls will generate deterministic results.
-*
-* @param maxRetries - Maximum number of retries. Set to 0 to disable retries. Default: 2.
-* @param abortSignal - An optional abort signal that can be used to cancel the call.
-* @param timeout - An optional timeout in milliseconds. The call will be aborted if it takes longer than the specified timeout.
-* @param headers - Additional HTTP headers to be sent with the request. Only applicable for HTTP-based providers.
-*
-* @param experimental_sandbox - The sandbox environment that is passed through to tool execution.
-* @param runtimeContext - User-defined runtime context that flows through the entire generation lifecycle.
-* @param experimental_refineToolInput - Optional mapping of tool names to functions that refine parsed tool inputs before tools are executed and before outputs, callbacks, and telemetry are recorded.
-* @param onStart - Callback invoked when generation begins, before any LLM calls.
-* @param experimental_onStart - Deprecated alias for `onStart`.
-* @param onStepStart - Callback invoked when each step begins, before the provider is called.
-* @param experimental_onStepStart - Deprecated alias for `onStepStart`.
-* Receives step number, messages (in ModelMessage format), tools, and runtimeContext.
-* @param onLanguageModelCallStart - Callback invoked immediately before each provider model call begins.
-* @param experimental_onLanguageModelCallStart - Deprecated alias for `onLanguageModelCallStart`.
-* @param onLanguageModelCallEnd - Callback invoked after each provider model call response is normalized and parsed.
-* @param experimental_onLanguageModelCallEnd - Deprecated alias for `onLanguageModelCallEnd`.
-* @param onToolExecutionStart - Callback invoked before each tool execution begins.
-* Receives tool name, call ID, input, and context.
-* @param experimental_onToolCallStart - Deprecated alias for `onToolExecutionStart`.
-* @param onToolExecutionEnd - Callback invoked after each tool execution completes.
-* Uses a discriminated union: check `success` to determine if `output` or `error` is present.
-* @param experimental_onToolCallFinish - Deprecated alias for `onToolExecutionEnd`.
-* @param onStepFinish - Callback that is called when each step (LLM call) is finished, including intermediate steps.
-* @param onEnd - Callback that is called when all steps are finished and the response is complete.
-* @param onFinish - Deprecated alias for `onEnd`.
-*
-* @returns
-* A result object that contains the generated text, the results of the tool calls, and additional information.
-*/
-async function generateText({ model: modelArg, tools, toolChoice, instructions, system, prompt, messages, allowSystemInMessages, maxRetries: maxRetriesArg, abortSignal, timeout, headers, stopWhen = isStepCount(1), experimental_sandbox: sandbox, output, toolApproval, experimental_toolCallers, experimental_toolApprovalSecret, experimental_telemetry, telemetry = experimental_telemetry, providerOptions, activeTools, toolOrder, prepareStep, experimental_repairToolCall, repairToolCall = experimental_repairToolCall, experimental_refineToolInput: refineToolInput, experimental_download: download, runtimeContext = {}, toolsContext = {}, experimental_include, include = experimental_include, _internal: { generateId = originalGenerateId$4, generateCallId = originalGenerateCallId$9, now: now$4 = now } = {}, onStart, experimental_onStart, onStepStart, experimental_onStepStart, onLanguageModelCallStart, experimental_onLanguageModelCallStart, onLanguageModelCallEnd, experimental_onLanguageModelCallEnd, onToolExecutionStart, onToolExecutionEnd, experimental_onToolCallStart, experimental_onToolCallFinish, onStepEnd, onStepFinish, onFinish, onEnd = onFinish, ...settings }) {
+async function generateText({ model: modelArg, tools, toolChoice, instructions, system, prompt, messages, allowSystemInMessages, maxRetries: maxRetriesArg, abortSignal, timeout, headers, stopWhen = isStepCount(1), experimental_sandbox: sandbox, output, toolApproval, experimental_toolApprovalSecret, experimental_telemetry, telemetry = experimental_telemetry, providerOptions, activeTools, toolOrder, prepareStep, experimental_repairToolCall, repairToolCall = experimental_repairToolCall, experimental_refineToolInput: refineToolInput, experimental_download: download2, runtimeContext = {}, toolsContext = {}, experimental_include, include = experimental_include, _internal: { generateId: generateId2 = originalGenerateId, generateCallId = originalGenerateCallId, now: now2 = now } = {}, onStart, experimental_onStart, onStepStart, experimental_onStepStart, onLanguageModelCallStart, experimental_onLanguageModelCallStart, onLanguageModelCallEnd, experimental_onLanguageModelCallEnd, onToolExecutionStart, onToolExecutionEnd, experimental_onToolCallStart, experimental_onToolCallFinish, onStepEnd, onStepFinish, onFinish, onEnd = onFinish, ...settings }) {
+	var _a22, _b, _c, _d;
 	include = {
-		requestBody: include?.requestBody ?? false,
-		requestMessages: include?.requestMessages ?? false,
-		responseBody: include?.responseBody ?? false
+		requestBody: (_a22 = include == null ? void 0 : include.requestBody) != null ? _a22 : false,
+		requestMessages: (_b = include == null ? void 0 : include.requestMessages) != null ? _b : false,
+		responseBody: (_c = include == null ? void 0 : include.responseBody) != null ? _c : false
 	};
 	const model = resolveLanguageModel(modelArg);
-	const resolvedToolCallers = resolveToolCallerConfiguration({
-		tools,
-		toolCallers: experimental_toolCallers
-	});
-	const prepareToolSearch = createToolSearchState({
-		tools,
-		toolCallers: resolvedToolCallers
-	});
 	const stopConditions = asArray(stopWhen);
-	const resolvedOnStart = onStart ?? experimental_onStart;
-	const resolvedOnStepStart = onStepStart ?? experimental_onStepStart;
-	const resolvedOnLanguageModelCallStart = onLanguageModelCallStart ?? experimental_onLanguageModelCallStart;
-	const resolvedOnLanguageModelCallEnd = onLanguageModelCallEnd ?? experimental_onLanguageModelCallEnd;
-	const resolvedOnToolExecutionStart = onToolExecutionStart ?? experimental_onToolCallStart;
-	const resolvedOnToolExecutionEnd = onToolExecutionEnd ?? experimental_onToolCallFinish;
-	const resolvedOnStepEnd = onStepEnd ?? onStepFinish;
-	const unsupportedTimeoutWarnings = [];
-	if (getFirstChunkTimeoutMs(timeout) != null) unsupportedTimeoutWarnings.push({
-		type: "unsupported",
-		feature: "timeout.firstChunkMs",
-		details: "The firstChunkMs timeout is only supported by streaming functions."
-	});
-	if (getChunkTimeoutMs(timeout) != null) unsupportedTimeoutWarnings.push({
-		type: "unsupported",
-		feature: "timeout.chunkMs",
-		details: "The chunkMs timeout is only supported by streaming functions."
-	});
-	if (unsupportedTimeoutWarnings.length > 0) logWarnings({
-		warnings: unsupportedTimeoutWarnings,
-		provider: model.provider,
-		model: model.modelId
-	});
+	const resolvedOnStart = onStart != null ? onStart : experimental_onStart;
+	const resolvedOnStepStart = onStepStart != null ? onStepStart : experimental_onStepStart;
+	const resolvedOnLanguageModelCallStart = onLanguageModelCallStart != null ? onLanguageModelCallStart : experimental_onLanguageModelCallStart;
+	const resolvedOnLanguageModelCallEnd = onLanguageModelCallEnd != null ? onLanguageModelCallEnd : experimental_onLanguageModelCallEnd;
+	const resolvedOnToolExecutionStart = onToolExecutionStart != null ? onToolExecutionStart : experimental_onToolCallStart;
+	const resolvedOnToolExecutionEnd = onToolExecutionEnd != null ? onToolExecutionEnd : experimental_onToolCallFinish;
+	const resolvedOnStepEnd = onStepEnd != null ? onStepEnd : onStepFinish;
 	const totalTimeoutMs = getTotalTimeoutMs(timeout);
 	const stepTimeoutMs = getStepTimeoutMs(timeout);
 	const stepAbortController = stepTimeoutMs != null ? new AbortController() : void 0;
-	const mergedAbortSignal = mergeAbortSignals(abortSignal, totalTimeoutMs, stepAbortController?.signal);
+	const mergedAbortSignal = mergeAbortSignals(abortSignal, totalTimeoutMs, stepAbortController == null ? void 0 : stepAbortController.signal);
 	const { maxRetries, retry } = prepareRetries({
 		maxRetries: maxRetriesArg,
 		abortSignal: mergedAbortSignal
 	});
 	const callSettings = prepareLanguageModelCallOptions(settings);
-	const headersWithUserAgent = withUserAgentSuffix(headers ?? {}, `ai/${VERSION}`);
+	const headersWithUserAgent = withUserAgentSuffix(headers != null ? headers : {}, `ai/${VERSION}`);
 	const initialPrompt = await standardizePrompt({
 		instructions,
 		system,
@@ -4811,12 +3918,12 @@ async function generateText({ model: modelArg, tools, toolChoice, instructions, 
 		allowSystemInMessages
 	});
 	const callId = generateCallId();
-	const telemetryDispatcher = createRestrictedTelemetryDispatcher$3({
+	const telemetryDispatcher = createRestrictedTelemetryDispatcher({
 		telemetry,
-		includeRuntimeContext: telemetry?.includeRuntimeContext,
-		includeToolsContext: telemetry?.includeToolsContext
+		includeRuntimeContext: telemetry == null ? void 0 : telemetry.includeRuntimeContext,
+		includeToolsContext: telemetry == null ? void 0 : telemetry.includeToolsContext
 	});
-	const runInTracingChannelSpan = telemetryDispatcher.runInTracingChannelSpan ?? (async ({ execute }) => await execute());
+	const runInTracingChannelSpan = (_d = telemetryDispatcher.runInTracingChannelSpan) != null ? _d : async ({ execute }) => await execute();
 	const generateTextStartEvent = {
 		callId,
 		operationId: "ai.generateText",
@@ -4846,6 +3953,7 @@ async function generateText({ model: modelArg, tools, toolChoice, instructions, 
 		toolsContext
 	};
 	const executeGenerateText = async () => {
+		var _a23;
 		await notify({
 			event: generateTextStartEvent,
 			callbacks: [resolvedOnStart, telemetryDispatcher.onStart]
@@ -4854,20 +3962,19 @@ async function generateText({ model: modelArg, tools, toolChoice, instructions, 
 			const initialMessages = initialPrompt.messages;
 			const initialResponseMessages = [];
 			const { approvedToolApprovals, deniedToolApprovals: collectedDeniedToolApprovals } = collectToolApprovals({ messages: initialMessages });
-			const { approvedToolApprovals: localApprovedToolApprovals, deniedToolApprovals: revalidationDeniedToolApprovals, invalidToolApprovals } = await validateApprovedToolApprovals({
-				approvedToolApprovals: approvedToolApprovals.filter((toolApproval) => !toolApproval.toolCall.providerExecuted),
+			const { approvedToolApprovals: localApprovedToolApprovals, deniedToolApprovals: revalidationDeniedToolApprovals } = await validateApprovedToolApprovals({
+				approvedToolApprovals: approvedToolApprovals.filter((toolApproval2) => !toolApproval2.toolCall.providerExecuted),
 				tools,
 				toolApproval,
 				messages: initialMessages,
 				toolsContext,
 				runtimeContext,
-				toolApprovalSecret: experimental_toolApprovalSecret,
-				refineToolInput
+				toolApprovalSecret: experimental_toolApprovalSecret
 			});
-			const deniedToolApprovalsWithoutResults = [...collectedDeniedToolApprovals, ...revalidationDeniedToolApprovals].filter((toolApproval) => toolApproval.existingToolResult == null);
-			if (deniedToolApprovalsWithoutResults.length > 0 || localApprovedToolApprovals.length > 0 || invalidToolApprovals.length > 0) {
-				const toolResults = await executeTools({
-					toolCalls: localApprovedToolApprovals.map((toolApproval) => toolApproval.toolCall),
+			const deniedToolApprovalsWithoutResults = [...collectedDeniedToolApprovals, ...revalidationDeniedToolApprovals].filter((toolApproval2) => toolApproval2.existingToolResult == null);
+			if (deniedToolApprovalsWithoutResults.length > 0 || localApprovedToolApprovals.length > 0) {
+				const toolResults2 = await executeTools({
+					toolCalls: localApprovedToolApprovals.map((toolApproval2) => toolApproval2.toolCall),
 					tools,
 					callId,
 					messages: initialMessages,
@@ -4887,42 +3994,30 @@ async function generateText({ model: modelArg, tools, toolChoice, instructions, 
 					runInTracingChannelSpan
 				});
 				const toolContent = [];
-				for (const result of toolResults) {
-					const output = result.output;
+				for (const result of toolResults2) {
+					const output2 = result.output;
 					const modelOutput = await createToolModelOutput({
-						toolCallId: output.toolCallId,
-						input: output.input,
-						tool: getOwn(tools, output.toolName),
-						output: output.type === "tool-result" ? output.output : output.error,
-						errorMode: output.type === "tool-error" ? "text" : "none"
+						toolCallId: output2.toolCallId,
+						input: output2.input,
+						tool: getOwn(tools, output2.toolName),
+						output: output2.type === "tool-result" ? output2.output : output2.error,
+						errorMode: output2.type === "tool-error" ? "text" : "none"
 					});
 					toolContent.push({
 						type: "tool-result",
-						toolCallId: output.toolCallId,
-						toolName: output.toolName,
+						toolCallId: output2.toolCallId,
+						toolName: output2.toolName,
 						output: modelOutput
 					});
 				}
-				for (const toolApproval of invalidToolApprovals) toolContent.push({
+				for (const toolApproval2 of deniedToolApprovalsWithoutResults) toolContent.push({
 					type: "tool-result",
-					toolCallId: toolApproval.toolCall.toolCallId,
-					toolName: toolApproval.toolCall.toolName,
-					output: await createToolModelOutput({
-						toolCallId: toolApproval.toolCall.toolCallId,
-						input: toolApproval.toolCall.input,
-						tool: getOwn(tools, toolApproval.toolCall.toolName),
-						output: toolApproval.error,
-						errorMode: "text"
-					})
-				});
-				for (const toolApproval of deniedToolApprovalsWithoutResults) toolContent.push({
-					type: "tool-result",
-					toolCallId: toolApproval.toolCall.toolCallId,
-					toolName: toolApproval.toolCall.toolName,
+					toolCallId: toolApproval2.toolCall.toolCallId,
+					toolName: toolApproval2.toolCall.toolName,
 					output: {
 						type: "execution-denied",
-						reason: toolApproval.approvalResponse.reason,
-						...toolApproval.toolCall.providerExecuted && { providerOptions: { openai: { approvalId: toolApproval.approvalResponse.approvalId } } }
+						reason: toolApproval2.approvalResponse.reason,
+						...toolApproval2.toolCall.providerExecuted && { providerOptions: { openai: { approvalId: toolApproval2.approvalResponse.approvalId } } }
 					}
 				});
 				initialResponseMessages.push({
@@ -4930,7 +4025,7 @@ async function generateText({ model: modelArg, tools, toolChoice, instructions, 
 					content: toolContent
 				});
 			}
-			const callSettings = prepareLanguageModelCallOptions(settings);
+			const callSettings2 = prepareLanguageModelCallOptions(settings);
 			let currentModelResponse;
 			let clientToolCalls = [];
 			let clientToolOutputs = [];
@@ -4956,9 +4051,10 @@ async function generateText({ model: modelArg, tools, toolChoice, instructions, 
 							stepNumber
 						},
 						execute: async () => {
+							var _a24, _b2, _c2, _d2, _e, _f, _g, _h, _i, _j, _k, _l, _m, _n, _o, _p, _q;
 							const accumulatedResponseMessages = [...initialResponseMessages, ...steps.flatMap((step) => step.response.messages)];
 							const stepInputMessages = messagesForNextStep;
-							const prepareStepResult = await prepareStep?.({
+							const prepareStepResult = await (prepareStep == null ? void 0 : prepareStep({
 								model,
 								steps,
 								stepNumber: steps.length,
@@ -4970,50 +4066,35 @@ async function generateText({ model: modelArg, tools, toolChoice, instructions, 
 								runtimeContext,
 								toolsContext,
 								experimental_sandbox: sandbox
+							}));
+							const stepSandbox = (_a24 = prepareStepResult == null ? void 0 : prepareStepResult.experimental_sandbox) != null ? _a24 : sandbox;
+							const stepModel = resolveLanguageModel((_b2 = prepareStepResult == null ? void 0 : prepareStepResult.model) != null ? _b2 : model);
+							const stepInstructions = (_d2 = (_c2 = prepareStepResult == null ? void 0 : prepareStepResult.instructions) != null ? _c2 : prepareStepResult == null ? void 0 : prepareStepResult.system) != null ? _d2 : instructionsForNextStep;
+							const promptMessages = await convertToLanguageModelPrompt({
+								prompt: {
+									instructions: stepInstructions,
+									messages: (_e = prepareStepResult == null ? void 0 : prepareStepResult.messages) != null ? _e : stepInputMessages
+								},
+								supportedUrls: await stepModel.supportedUrls,
+								download: download2,
+								provider: stepModel.provider.split(".")[0]
 							});
-							const stepSandbox = prepareStepResult?.experimental_sandbox ?? sandbox;
-							const stepModel = resolveLanguageModel(prepareStepResult?.model ?? model);
-							const stepInstructions = prepareStepResult?.instructions ?? prepareStepResult?.system ?? instructionsForNextStep;
-							runtimeContext = prepareStepResult?.runtimeContext ?? runtimeContext;
-							toolsContext = prepareStepResult?.toolsContext ?? toolsContext;
+							runtimeContext = (_f = prepareStepResult == null ? void 0 : prepareStepResult.runtimeContext) != null ? _f : runtimeContext;
+							toolsContext = (_g = prepareStepResult == null ? void 0 : prepareStepResult.toolsContext) != null ? _g : toolsContext;
 							const stepActiveTools = filterActiveTools({
 								tools,
-								activeTools: prepareStepResult?.activeTools ?? activeTools
+								activeTools: (_h = prepareStepResult == null ? void 0 : prepareStepResult.activeTools) != null ? _h : activeTools
 							});
-							const { executionTools: stepExecutionTools, modelTools: stepModelTools, toolCallerMessages } = prepareToolsForToolCallers({
-								tools: prepareToolSearch(stepActiveTools, {
-									toolsContext,
-									experimental_sandbox: stepSandbox
-								}),
-								toolCallers: resolvedToolCallers
-							});
-							const stepToolOrder = prepareStepResult?.toolOrder ?? toolOrder;
+							const stepToolOrder = (_i = prepareStepResult == null ? void 0 : prepareStepResult.toolOrder) != null ? _i : toolOrder;
 							const stepTools = await prepareTools({
-								tools: stepModelTools,
+								tools: stepActiveTools,
 								toolOrder: stepToolOrder,
 								toolsContext,
 								experimental_sandbox: stepSandbox
 							});
-							const stepToolChoice = prepareToolChoice({ toolChoice: prepareStepResult?.toolChoice ?? toolChoice });
-							const stepMessages = appendToolCallerMessages({
-								messages: prepareStepResult?.messages ?? stepInputMessages,
-								toolCallerMessages
-							});
-							const promptMessages = await convertToLanguageModelPrompt({
-								prompt: {
-									instructions: stepInstructions,
-									messages: stepMessages
-								},
-								supportedUrls: await stepModel.supportedUrls,
-								download,
-								abortSignal: mergedAbortSignal,
-								provider: stepModel.provider.split(".")[0]
-							});
-							const stepProviderOptions = mergeObjects(providerOptions, prepareStepResult?.providerOptions);
-							const stepCallSettings = prepareStepCallSettings({
-								callSettings,
-								stepSettings: prepareStepResult
-							});
+							const stepToolChoice = prepareToolChoice({ toolChoice: (_j = prepareStepResult == null ? void 0 : prepareStepResult.toolChoice) != null ? _j : toolChoice });
+							const stepMessages = (_k = prepareStepResult == null ? void 0 : prepareStepResult.messages) != null ? _k : stepInputMessages;
+							const stepProviderOptions = mergeObjects(providerOptions, prepareStepResult == null ? void 0 : prepareStepResult.providerOptions);
 							await notify({
 								event: {
 									callId,
@@ -5023,8 +4104,8 @@ async function generateText({ model: modelArg, tools, toolChoice, instructions, 
 									instructions: stepInstructions,
 									messages: stepMessages,
 									tools,
-									toolChoice: prepareStepResult?.toolChoice ?? toolChoice,
-									activeTools: prepareStepResult?.activeTools ?? activeTools,
+									toolChoice: (_l = prepareStepResult == null ? void 0 : prepareStepResult.toolChoice) != null ? _l : toolChoice,
+									activeTools: (_m = prepareStepResult == null ? void 0 : prepareStepResult.activeTools) != null ? _m : activeTools,
 									toolOrder: stepToolOrder,
 									steps: [...steps],
 									providerOptions: stepProviderOptions,
@@ -5037,32 +4118,30 @@ async function generateText({ model: modelArg, tools, toolChoice, instructions, 
 								},
 								callbacks: [resolvedOnStepStart, telemetryDispatcher.onStepStart]
 							});
-							const languageModelCallContext = {
+							const languageModelCallStartEvent = {
+								callId,
 								provider: stepModel.provider,
 								modelId: stepModel.modelId,
 								instructions: stepInstructions,
 								messages: stepMessages,
 								tools: stepTools,
-								...stepCallSettings
+								...callSettings2
 							};
-							const languageModelCallStartEvent = {
-								callId,
-								...languageModelCallContext
-							};
-							const stepStartTimestampMs = now$4();
+							const stepStartTimestampMs = now2();
 							await notify({
 								event: languageModelCallStartEvent,
 								callbacks: [resolvedOnLanguageModelCallStart, telemetryDispatcher.onLanguageModelCallStart]
 							});
-							const executeLanguageModelCallInTelemetryContext = telemetryDispatcher.executeLanguageModelCall ?? (async ({ execute }) => await execute());
+							const executeLanguageModelCallInTelemetryContext = (_n = telemetryDispatcher.executeLanguageModelCall) != null ? _n : async ({ execute }) => await execute();
 							currentModelResponse = await retry(async () => {
+								var _a25, _b3, _c3, _d3, _e2, _f2, _g2, _h2;
 								const result = await executeLanguageModelCallInTelemetryContext({
 									...languageModelCallStartEvent,
 									execute: async () => await stepModel.doGenerate({
-										...stepCallSettings,
+										...callSettings2,
 										tools: stepTools,
 										toolChoice: stepToolChoice,
-										responseFormat: await output?.responseFormat,
+										responseFormat: await (output == null ? void 0 : output.responseFormat),
 										prompt: promptMessages,
 										providerOptions: stepProviderOptions,
 										abortSignal: mergedAbortSignal,
@@ -5070,52 +4149,47 @@ async function generateText({ model: modelArg, tools, toolChoice, instructions, 
 									})
 								});
 								const responseData = {
-									id: result.response?.id ?? generateId(),
-									timestamp: result.response?.timestamp ?? /* @__PURE__ */ new Date(),
-									modelId: result.response?.modelId ?? stepModel.modelId,
-									headers: result.response?.headers,
-									body: result.response?.body
+									id: (_b3 = (_a25 = result.response) == null ? void 0 : _a25.id) != null ? _b3 : generateId2(),
+									timestamp: (_d3 = (_c3 = result.response) == null ? void 0 : _c3.timestamp) != null ? _d3 : /* @__PURE__ */ new Date(),
+									modelId: (_f2 = (_e2 = result.response) == null ? void 0 : _e2.modelId) != null ? _f2 : stepModel.modelId,
+									headers: (_g2 = result.response) == null ? void 0 : _g2.headers,
+									body: (_h2 = result.response) == null ? void 0 : _h2.body
 								};
 								return {
 									...result,
 									response: responseData
 								};
 							});
-							const responseTimeMs = now$4() - stepStartTimestampMs;
+							const responseTimeMs = now2() - stepStartTimestampMs;
 							const stepUsage = asLanguageModelUsage(currentModelResponse.usage);
 							const stepToolCalls = await Promise.all(currentModelResponse.content.filter((part) => part.type === "tool-call").map((toolCall) => parseToolCall({
 								toolCall,
-								tools: stepModelTools,
+								tools,
 								repairToolCall,
 								refineToolInput,
 								instructions: stepInstructions,
-								messages: stepMessages,
-								abortSignal: mergedAbortSignal
+								messages: stepMessages
 							})));
 							const toolApprovalRequests = {};
 							const stepToolApprovalResponses = {};
 							const blockedToolCallIds = /* @__PURE__ */ new Set();
-							const generatedFileDataCache = /* @__PURE__ */ new WeakMap();
-							const modelCallContent = await convertLanguageModelContent({
+							const modelCallContent = asContent({
 								content: currentModelResponse.content,
 								toolCalls: stepToolCalls,
 								toolOutputs: [],
 								toolApprovalRequests: [],
 								toolApprovalResponses: [],
-								tools,
-								abortSignal: mergedAbortSignal,
-								generatedFileDataCache
+								tools
 							});
 							await notify({
 								event: {
 									callId,
 									provider: stepModel.provider,
-									modelId: currentModelResponse.response.modelId,
+									modelId: stepModel.modelId,
 									finishReason: currentModelResponse.finishReason.unified,
 									usage: stepUsage,
 									content: modelCallContent,
 									responseId: currentModelResponse.response.id,
-									...currentModelResponse.providerMetadata != null ? { providerMetadata: currentModelResponse.providerMetadata } : {},
 									performance: {
 										responseTimeMs,
 										effectiveOutputTokensPerSecond: calculateTokensPerSecond({
@@ -5133,40 +4207,25 @@ async function generateText({ model: modelArg, tools, toolChoice, instructions, 
 								},
 								callbacks: [resolvedOnLanguageModelCallEnd, telemetryDispatcher.onLanguageModelCallEnd]
 							});
-							const enforcedToolChoice = stepToolChoice.type === "required" || stepToolChoice.type === "tool" ? stepToolChoice : void 0;
-							if (enforcedToolChoice != null && !stepToolCalls.some((toolCall) => enforcedToolChoice.type === "required" || toolCall.toolName === enforcedToolChoice.toolName)) throw new ToolChoiceViolationError({
-								toolChoice: enforcedToolChoice,
-								finishReason: currentModelResponse.finishReason.unified,
-								provider: stepModel.provider,
-								modelId: stepModel.modelId,
-								content: currentModelResponse.content
-							});
 							for (const toolCall of stepToolCalls) {
 								if (toolCall.invalid) continue;
-								const tool = getOwn(stepExecutionTools, toolCall.toolName);
-								if (tool == null) continue;
-								if (tool.onInputStart != null || tool.onInputAvailable != null) {
-									const context = await validateToolContext({
-										toolName: toolCall.toolName,
-										context: getOwn(toolsContext, toolCall.toolName),
-										contextSchema: tool.contextSchema
-									});
-									if (tool.onInputStart != null) await tool.onInputStart({
-										toolCallId: toolCall.toolCallId,
-										messages: stepMessages,
-										abortSignal: mergedAbortSignal,
-										context
-									});
-									if (tool.onInputAvailable != null) await tool.onInputAvailable({
-										input: toolCall.input,
-										toolCallId: toolCall.toolCallId,
-										messages: stepMessages,
-										abortSignal: mergedAbortSignal,
-										context
-									});
-								}
+								const tool2 = getOwn(tools, toolCall.toolName);
+								if (tool2 == null) continue;
+								if (tool2.onInputStart != null) await tool2.onInputStart({
+									toolCallId: toolCall.toolCallId,
+									messages: stepMessages,
+									abortSignal: mergedAbortSignal,
+									context: runtimeContext
+								});
+								if ((tool2 == null ? void 0 : tool2.onInputAvailable) != null) await tool2.onInputAvailable({
+									input: toolCall.input,
+									toolCallId: toolCall.toolCallId,
+									messages: stepMessages,
+									abortSignal: mergedAbortSignal,
+									context: runtimeContext
+								});
 								const toolApprovalStatus = await resolveToolApproval({
-									tools: stepExecutionTools,
+									tools,
 									toolApproval,
 									toolCall,
 									messages: stepMessages,
@@ -5174,7 +4233,7 @@ async function generateText({ model: modelArg, tools, toolChoice, instructions, 
 									runtimeContext
 								});
 								if (toolApprovalStatus.type === "not-applicable") continue;
-								const approvalId = generateId();
+								const approvalId = generateId2();
 								const signature = await maybeSignApproval({
 									secret: experimental_toolApprovalSecret,
 									approvalId,
@@ -5188,7 +4247,6 @@ async function generateText({ model: modelArg, tools, toolChoice, instructions, 
 											type: "tool-approval-request",
 											approvalId,
 											toolCall,
-											...toolApprovalStatus.reason != null ? { reason: toolApprovalStatus.reason } : {},
 											...signature != null ? { signature } : {}
 										};
 										blockedToolCallIds.add(toolCall.toolCallId);
@@ -5227,9 +4285,10 @@ async function generateText({ model: modelArg, tools, toolChoice, instructions, 
 											providerExecuted: toolCall.providerExecuted
 										};
 										blockedToolCallIds.add(toolCall.toolCallId);
+										break;
 								}
 							}
-							const invalidToolCalls = stepToolCalls.filter((toolCall) => toolCall.invalid && toolCall.dynamic && !toolCall.providerExecuted);
+							const invalidToolCalls = stepToolCalls.filter((toolCall) => toolCall.invalid && toolCall.dynamic);
 							clientToolOutputs = [];
 							for (const toolCall of invalidToolCalls) clientToolOutputs.push({
 								type: "tool-error",
@@ -5243,10 +4302,10 @@ async function generateText({ model: modelArg, tools, toolChoice, instructions, 
 							toolApprovalResponses = Object.values(stepToolApprovalResponses);
 							deniedToolApprovalResponses = toolApprovalResponses.filter((toolApprovalResponse) => toolApprovalResponse.approved === false);
 							const toolExecutionMs = {};
-							if (stepExecutionTools != null && isToolExecutionAllowedFinishReason(currentModelResponse.finishReason.unified)) {
+							if (tools != null) {
 								const toolExecutionResults = await executeTools({
 									toolCalls: clientToolCalls.filter((toolCall) => !toolCall.invalid && !blockedToolCallIds.has(toolCall.toolCallId)),
-									tools: stepExecutionTools,
+									tools,
 									callId,
 									messages: stepMessages,
 									abortSignal: mergedAbortSignal,
@@ -5269,7 +4328,7 @@ async function generateText({ model: modelArg, tools, toolChoice, instructions, 
 									clientToolOutputs.push(result.output);
 								}
 							}
-							const stepTimeMs = now$4() - stepStartTimestampMs;
+							const stepTimeMs = now2() - stepStartTimestampMs;
 							const stepPerformance = {
 								effectiveOutputTokensPerSecond: calculateTokensPerSecond({
 									tokens: stepUsage.outputTokens,
@@ -5288,21 +4347,19 @@ async function generateText({ model: modelArg, tools, toolChoice, instructions, 
 							};
 							for (const toolCall of stepToolCalls) {
 								if (!toolCall.providerExecuted) continue;
-								const tool = getOwn(stepExecutionTools, toolCall.toolName);
-								if (tool?.type === "provider" && tool.supportsDeferredResults) {
+								const tool2 = getOwn(tools, toolCall.toolName);
+								if ((tool2 == null ? void 0 : tool2.type) === "provider" && tool2.supportsDeferredResults) {
 									if (!currentModelResponse.content.some((part) => part.type === "tool-result" && part.toolCallId === toolCall.toolCallId)) pendingDeferredToolCalls.set(toolCall.toolCallId, { toolName: toolCall.toolName });
 								}
 							}
 							for (const part of currentModelResponse.content) if (part.type === "tool-result") pendingDeferredToolCalls.delete(part.toolCallId);
-							const stepContent = await convertLanguageModelContent({
+							const stepContent = asContent({
 								content: currentModelResponse.content,
 								toolCalls: stepToolCalls,
 								toolOutputs: clientToolOutputs,
 								toolApprovalRequests: Object.values(toolApprovalRequests),
 								toolApprovalResponses,
-								tools,
-								abortSignal: mergedAbortSignal,
-								generatedFileDataCache
+								tools
 							});
 							const stepResponseMessages = await toResponseMessages({
 								content: stepContent,
@@ -5310,13 +4367,13 @@ async function generateText({ model: modelArg, tools, toolChoice, instructions, 
 							});
 							const stepRequest = {
 								...currentModelResponse.request,
-								body: include.requestBody ? currentModelResponse.request?.body : void 0,
+								body: include.requestBody ? (_o = currentModelResponse.request) == null ? void 0 : _o.body : void 0,
 								messages: include.requestMessages ? cloneModelMessages(stepMessages) : void 0
 							};
 							const stepResponse = {
 								...currentModelResponse.response,
 								messages: cloneModelMessages(stepResponseMessages),
-								body: include.responseBody ? currentModelResponse.response?.body : void 0
+								body: include.responseBody ? (_p = currentModelResponse.response) == null ? void 0 : _p.body : void 0
 							};
 							const currentStepResult = new DefaultStepResult({
 								callId,
@@ -5336,7 +4393,7 @@ async function generateText({ model: modelArg, tools, toolChoice, instructions, 
 								toolsContext
 							});
 							logWarnings({
-								warnings: currentModelResponse.warnings ?? [],
+								warnings: (_q = currentModelResponse.warnings) != null ? _q : [],
 								provider: stepModel.provider,
 								model: stepModel.modelId
 							});
@@ -5353,13 +4410,13 @@ async function generateText({ model: modelArg, tools, toolChoice, instructions, 
 				} finally {
 					if (stepTimeoutId != null) clearTimeout(stepTimeoutId);
 				}
-			} while (clientToolOutputs.length + deniedToolApprovalResponses.length === clientToolCalls.length && (clientToolCalls.length > 0 || pendingDeferredToolCalls.size > 0) && !await isStopConditionMet({
+			} while ((clientToolCalls.length > 0 && clientToolOutputs.length + deniedToolApprovalResponses.length === clientToolCalls.length || pendingDeferredToolCalls.size > 0) && !await isStopConditionMet({
 				stopConditions,
 				steps
 			}));
 			const lastStep = steps[steps.length - 1];
-			const totalUsage = steps.reduce((totalUsage, step) => {
-				return addLanguageModelUsage(totalUsage, step.usage);
+			const totalUsage = steps.reduce((totalUsage2, step) => {
+				return addLanguageModelUsage(totalUsage2, step.usage);
 			}, {
 				inputTokens: void 0,
 				inputTokenDetails: {
@@ -5382,7 +4439,10 @@ async function generateText({ model: modelArg, tools, toolChoice, instructions, 
 			const toolResults = steps.flatMap((step) => step.toolResults);
 			const staticToolResults = steps.flatMap((step) => step.staticToolResults);
 			const dynamicToolResults = steps.flatMap((step) => step.dynamicToolResults);
-			const warnings = steps.flatMap((step) => step.warnings ?? []);
+			const warnings = steps.flatMap((step) => {
+				var _a24;
+				return (_a24 = step.warnings) != null ? _a24 : [];
+			});
 			await notify({
 				event: {
 					callId,
@@ -5417,7 +4477,7 @@ async function generateText({ model: modelArg, tools, toolChoice, instructions, 
 				callbacks: [onEnd, telemetryDispatcher.onEnd]
 			});
 			let resolvedOutput;
-			if (lastStep.finishReason === "stop" || lastStep.finishReason !== "tool-calls" && lastStep.text.length > 0) resolvedOutput = await (output ?? text()).parseCompleteOutput({ text: lastStep.text }, {
+			if (lastStep.finishReason === "stop") resolvedOutput = await (output != null ? output : text()).parseCompleteOutput({ text: lastStep.text }, {
 				response: lastStep.response,
 				usage: lastStep.usage,
 				finishReason: lastStep.finishReason
@@ -5429,10 +4489,10 @@ async function generateText({ model: modelArg, tools, toolChoice, instructions, 
 				output: resolvedOutput
 			});
 		} catch (error) {
-			await telemetryDispatcher.onError?.({
+			await ((_a23 = telemetryDispatcher.onError) == null ? void 0 : _a23.call(telemetryDispatcher, {
 				callId,
 				error
-			});
+			}));
 			throw wrapGatewayError(error);
 		}
 	};
@@ -5458,163 +4518,245 @@ async function executeTools({ toolCalls, tools, callId, messages, abortSignal, t
 		runInTracingChannelSpan
 	})))).filter((result) => result != null);
 }
+var DefaultGenerateTextResult = class {
+	constructor(options) {
+		this.initialResponseMessages = options.initialResponseMessages;
+		this.steps = options.steps;
+		this._output = options.output;
+		this.totalUsage = options.totalUsage;
+	}
+	get finalStep() {
+		return this.steps.at(-1);
+	}
+	get content() {
+		return this.steps.flatMap((step) => step.content);
+	}
+	get text() {
+		return this.finalStep.text;
+	}
+	get files() {
+		return this.steps.flatMap((step) => step.files);
+	}
+	get reasoningText() {
+		return this.finalStep.reasoningText;
+	}
+	get reasoning() {
+		return convertToReasoningOutputs(this.finalStep.reasoning);
+	}
+	get toolCalls() {
+		return this.steps.flatMap((step) => step.toolCalls);
+	}
+	get staticToolCalls() {
+		return this.steps.flatMap((step) => step.staticToolCalls);
+	}
+	get dynamicToolCalls() {
+		return this.steps.flatMap((step) => step.dynamicToolCalls);
+	}
+	get toolResults() {
+		return this.steps.flatMap((step) => step.toolResults);
+	}
+	get staticToolResults() {
+		return this.steps.flatMap((step) => step.staticToolResults);
+	}
+	get dynamicToolResults() {
+		return this.steps.flatMap((step) => step.dynamicToolResults);
+	}
+	get sources() {
+		return this.steps.flatMap((step) => step.sources);
+	}
+	get finishReason() {
+		return this.finalStep.finishReason;
+	}
+	get rawFinishReason() {
+		return this.finalStep.rawFinishReason;
+	}
+	get warnings() {
+		return this.steps.flatMap((step) => {
+			var _a22;
+			return (_a22 = step.warnings) != null ? _a22 : [];
+		});
+	}
+	get providerMetadata() {
+		return this.finalStep.providerMetadata;
+	}
+	get response() {
+		return this.finalStep.response;
+	}
+	get responseMessages() {
+		return [...this.initialResponseMessages, ...this.steps.flatMap((step) => step.response.messages)];
+	}
+	get request() {
+		return this.finalStep.request;
+	}
+	get usage() {
+		return this.totalUsage;
+	}
+	get output() {
+		if (this._output == null) throw new NoOutputGeneratedError();
+		return this._output;
+	}
+};
+function asContent({ content, toolCalls, toolOutputs, toolApprovalRequests, toolApprovalResponses, tools }) {
+	const contentParts = [];
+	const toolOutputsWithApprovalResponses = [];
+	const toolOutputsWithoutApprovalResponses = [];
+	const toolCallIdsWithApprovalResponses = new Set(toolApprovalResponses.map((toolApprovalResponse) => toolApprovalResponse.toolCall.toolCallId));
+	for (const part of content) switch (part.type) {
+		case "text":
+		case "reasoning":
+		case "custom":
+		case "source":
+			contentParts.push(part);
+			break;
+		case "file":
+		case "reasoning-file":
+			contentParts.push({
+				type: part.type,
+				file: new DefaultGeneratedFile({
+					data: part.data.type === "data" ? part.data.data : part.data.url.toString(),
+					mediaType: part.mediaType
+				}),
+				...part.providerMetadata != null ? { providerMetadata: part.providerMetadata } : {}
+			});
+			break;
+		case "tool-call":
+			contentParts.push(toolCalls.find((toolCall) => toolCall.toolCallId === part.toolCallId));
+			break;
+		case "tool-result": {
+			const toolCall = toolCalls.find((toolCall2) => toolCall2.toolCallId === part.toolCallId);
+			if (toolCall == null) {
+				const tool2 = getOwn(tools, part.toolName);
+				if (!((tool2 == null ? void 0 : tool2.type) === "provider" && tool2.supportsDeferredResults)) throw new Error(`Tool call ${part.toolCallId} not found.`);
+				if (part.isError) contentParts.push({
+					type: "tool-error",
+					toolCallId: part.toolCallId,
+					toolName: part.toolName,
+					input: void 0,
+					error: part.result,
+					providerExecuted: true,
+					dynamic: part.dynamic,
+					...part.providerMetadata != null ? { providerMetadata: part.providerMetadata } : {},
+					...(tool2 == null ? void 0 : tool2.metadata) != null ? { toolMetadata: tool2.metadata } : {}
+				});
+				else contentParts.push({
+					type: "tool-result",
+					toolCallId: part.toolCallId,
+					toolName: part.toolName,
+					input: void 0,
+					output: part.result,
+					providerExecuted: true,
+					dynamic: part.dynamic,
+					...part.providerMetadata != null ? { providerMetadata: part.providerMetadata } : {},
+					...(tool2 == null ? void 0 : tool2.metadata) != null ? { toolMetadata: tool2.metadata } : {}
+				});
+				break;
+			}
+			if (part.isError) contentParts.push({
+				type: "tool-error",
+				toolCallId: part.toolCallId,
+				toolName: part.toolName,
+				input: toolCall.input,
+				error: part.result,
+				providerExecuted: true,
+				dynamic: toolCall.dynamic,
+				...part.providerMetadata != null ? { providerMetadata: part.providerMetadata } : {},
+				...toolCall.toolMetadata != null ? { toolMetadata: toolCall.toolMetadata } : {}
+			});
+			else contentParts.push({
+				type: "tool-result",
+				toolCallId: part.toolCallId,
+				toolName: part.toolName,
+				input: toolCall.input,
+				output: part.result,
+				providerExecuted: true,
+				dynamic: toolCall.dynamic,
+				...part.providerMetadata != null ? { providerMetadata: part.providerMetadata } : {},
+				...toolCall.toolMetadata != null ? { toolMetadata: toolCall.toolMetadata } : {}
+			});
+			break;
+		}
+		case "tool-approval-request": {
+			const toolCall = toolCalls.find((toolCall2) => toolCall2.toolCallId === part.toolCallId);
+			if (toolCall == null) throw new ToolCallNotFoundForApprovalError({
+				toolCallId: part.toolCallId,
+				approvalId: part.approvalId
+			});
+			contentParts.push({
+				type: "tool-approval-request",
+				approvalId: part.approvalId,
+				toolCall
+			});
+			break;
+		}
+	}
+	for (const toolOutput of toolOutputs) if (toolCallIdsWithApprovalResponses.has(toolOutput.toolCallId)) toolOutputsWithApprovalResponses.push(toolOutput);
+	else toolOutputsWithoutApprovalResponses.push(toolOutput);
+	return [
+		...contentParts,
+		...toolOutputsWithoutApprovalResponses,
+		...toolApprovalRequests,
+		...toolApprovalResponses,
+		...toolOutputsWithApprovalResponses
+	];
+}
 function prepareHeaders(headers, defaultHeaders) {
-	const responseHeaders = new Headers(headers ?? {});
+	const responseHeaders = new Headers(headers != null ? headers : {});
 	for (const [key, value] of Object.entries(defaultHeaders)) if (!responseHeaders.has(key)) responseHeaders.set(key, value);
 	return responseHeaders;
 }
-/**
-* Creates a Response object from a text stream.
-* Each text chunk is encoded as UTF-8 and sent as a separate chunk.
-* Sets a `Content-Type` header to `text/plain; charset=utf-8`.
-*
-* @param options - The options for creating the response.
-* @param options.status - Optional HTTP status code (default: 200).
-* @param options.statusText - Optional HTTP status text.
-* @param options.headers - Optional response headers.
-* @param options.stream - The text stream to send.
-* @returns A Response object with the text stream body.
-*/
 function createTextStreamResponse({ status, statusText, headers, stream }) {
 	return new Response(stream.pipeThrough(new TextEncoderStream()), {
-		status: status ?? 200,
+		status: status != null ? status : 200,
 		statusText,
 		headers: prepareHeaders(headers, { "content-type": "text/plain; charset=utf-8" })
 	});
 }
-/**
-* Writes the content of a stream to a server response.
-*
-* When the client disconnects before the stream has been fully written
-* (premature `close`), the stream is cancelled so that upstream resources
-* can be released, and no further chunks are written.
-*/
 function writeToServerResponse({ response, status, statusText, headers, stream }) {
-	const statusCode = status ?? 200;
-	if (headers != null) response.setHeaders(headers);
-	if (statusText !== void 0) response.writeHead(statusCode, statusText);
-	else response.writeHead(statusCode);
+	const statusCode = status != null ? status : 200;
+	if (statusText !== void 0) response.writeHead(statusCode, statusText, headers);
+	else response.writeHead(statusCode, headers);
 	const reader = stream.getReader();
-	let clientDisconnected = false;
-	let onDisconnect;
-	const handleClose = () => {
-		if (response.writableFinished) return;
-		clientDisconnected = true;
-		onDisconnect?.();
-		reader.cancel(/* @__PURE__ */ new Error("Client disconnected.")).catch(() => {});
-	};
-	response.once("close", handleClose);
-	if (response.destroyed) handleClose();
 	const read = async () => {
 		try {
 			while (true) {
 				const { done, value } = await reader.read();
-				if (done || clientDisconnected || response.destroyed) break;
+				if (done) break;
 				const canContinue = response.write(value);
 				const flush = response.flush;
 				if (typeof flush === "function") flush.call(response);
-				if (!canContinue) {
-					await new Promise((resolve) => {
-						onDisconnect = resolve;
-						response.once("drain", resolve);
-					});
-					onDisconnect = void 0;
-				}
+				if (!canContinue) await new Promise((resolve3) => {
+					response.once("drain", resolve3);
+				});
 			}
+		} catch (error) {
+			throw error;
 		} finally {
-			response.off("close", handleClose);
-			if (clientDisconnected || response.destroyed) reader.cancel().catch(() => {});
-			else response.end();
+			response.end();
 		}
 	};
 	return read();
 }
-/**
-* Writes a text stream to a Node.js ServerResponse object.
-* Each text chunk is encoded as UTF-8 and written as a separate chunk.
-* Sets a `Content-Type` header to `text/plain; charset=utf-8`.
-*
-* @param options - The options for piping the stream.
-* @param options.response - The Node.js ServerResponse to write to.
-* @param options.status - Optional HTTP status code.
-* @param options.statusText - Optional HTTP status text.
-* @param options.headers - Optional response headers.
-* @param options.stream - The text stream to pipe.
-* @returns A promise that resolves when the stream has been written.
-*/
 function pipeTextStreamToResponse({ response, status, statusText, headers, stream }) {
 	return writeToServerResponse({
 		response,
 		status,
 		statusText,
-		headers: prepareHeaders(headers, { "content-type": "text/plain; charset=utf-8" }),
+		headers: Object.fromEntries(prepareHeaders(headers, { "content-type": "text/plain; charset=utf-8" }).entries()),
 		stream: stream.pipeThrough(new TextEncoderStream())
 	});
 }
-/**
-* Converts a stream of `TextStreamPart` chunks into a stream of text deltas.
-*/
 function toTextStream({ stream }) {
 	return stream.pipeThrough(new TransformStream({ transform(part, controller) {
 		if (part.type === "text-delta") controller.enqueue(part.text);
 	} }));
 }
-var STREAM_OPEN_COMMENT = ": stream-open\n\n";
-var KEEP_ALIVE_COMMENT = ": keep-alive\n\n";
-function createSseStreamWithKeepAlive({ stream, keepAliveMs }) {
-	if (keepAliveMs == null) return stream;
-	if (!Number.isFinite(keepAliveMs) || keepAliveMs <= 0 || keepAliveMs > 2147483647) throw new Error("keepAliveMs must be a positive finite timer duration no greater than 2147483647");
-	const reader = stream.getReader();
-	let keepAliveTimeout;
-	let isCancelled = false;
-	const clearKeepAliveTimeout = () => {
-		clearTimeout(keepAliveTimeout);
-		keepAliveTimeout = void 0;
-	};
-	const scheduleKeepAlive = (controller) => {
-		clearKeepAliveTimeout();
-		keepAliveTimeout = setTimeout(() => {
-			if (isCancelled) return;
-			if (controller.desiredSize != null && controller.desiredSize > 0) controller.enqueue(KEEP_ALIVE_COMMENT);
-			scheduleKeepAlive(controller);
-		}, keepAliveMs);
-	};
-	return new ReadableStream({
-		start(controller) {
-			controller.enqueue(STREAM_OPEN_COMMENT);
-			scheduleKeepAlive(controller);
-		},
-		pull(controller) {
-			return reader.read().then((result) => {
-				clearKeepAliveTimeout();
-				if (isCancelled) return;
-				if (result.done) controller.close();
-				else {
-					controller.enqueue(result.value);
-					scheduleKeepAlive(controller);
-				}
-			}, (error) => {
-				clearKeepAliveTimeout();
-				if (!isCancelled) throw error;
-			});
-		},
-		async cancel(reason) {
-			isCancelled = true;
-			clearKeepAliveTimeout();
-			await reader.cancel(reason);
-		}
-	});
-}
-/**
-* A TransformStream that converts JSON objects to Server-Sent Events (SSE) format.
-* Each object is serialized to JSON and wrapped in `data: ...\n\n` format.
-* When the stream ends, a `data: [DONE]\n\n` message is sent.
-*/
 var JsonToSseTransformStream = class extends TransformStream {
 	constructor() {
 		super({
 			transform(part, controller) {
-				controller.enqueue(`data: ${JSON.stringify(part)}\n\n`);
+				controller.enqueue(`data: ${JSON.stringify(part)}
+
+`);
 			},
 			flush(controller) {
 				controller.enqueue("data: [DONE]\n\n");
@@ -5629,24 +4771,8 @@ var UI_MESSAGE_STREAM_HEADERS = {
 	"x-vercel-ai-ui-message-stream": "v1",
 	"x-accel-buffering": "no"
 };
-/**
-* Creates a Response object from a UI message stream.
-* The stream is transformed to Server-Sent Events (SSE) format.
-*
-* @param options.status - The HTTP status code for the response.
-* @param options.statusText - The HTTP status text for the response.
-* @param options.headers - Additional HTTP headers to include in the response.
-* @param options.stream - The UI message chunk stream to send.
-* @param options.keepAliveMs - Optional interval for sending SSE keep-alive comments.
-* @param options.consumeSseStream - Optional callback to consume a copy of the SSE stream independently.
-*
-* @returns A `Response` object with the UI message stream as the body.
-*/
-function createUIMessageStreamResponse({ status, statusText, headers, stream, keepAliveMs, consumeSseStream }) {
-	let sseStream = createSseStreamWithKeepAlive({
-		stream: stream.pipeThrough(new JsonToSseTransformStream()),
-		keepAliveMs
-	});
+function createUIMessageStreamResponse({ status, statusText, headers, stream, consumeSseStream }) {
+	let sseStream = stream.pipeThrough(new JsonToSseTransformStream());
 	if (consumeSseStream) {
 		const [stream1, stream2] = sseStream.tee();
 		sseStream = stream1;
@@ -5658,24 +4784,8 @@ function createUIMessageStreamResponse({ status, statusText, headers, stream, ke
 		headers: prepareHeaders(headers, UI_MESSAGE_STREAM_HEADERS)
 	});
 }
-/**
-* Pipes a UI message stream to a Node.js ServerResponse object.
-* The stream is transformed to Server-Sent Events (SSE) format.
-*
-* @param options.response - The Node.js ServerResponse object to write to.
-* @param options.status - The HTTP status code for the response.
-* @param options.statusText - The HTTP status text for the response.
-* @param options.headers - Additional HTTP headers to include in the response.
-* @param options.stream - The UI message chunk stream to send.
-* @param options.keepAliveMs - Optional interval for sending SSE keep-alive comments.
-* @param options.consumeSseStream - Optional callback to consume a copy of the SSE stream independently.
-* @returns A promise that resolves when the stream has been written.
-*/
-function pipeUIMessageStreamToResponse({ response, status, statusText, headers, stream, keepAliveMs, consumeSseStream }) {
-	let sseStream = createSseStreamWithKeepAlive({
-		stream: stream.pipeThrough(new JsonToSseTransformStream()),
-		keepAliveMs
-	});
+function pipeUIMessageStreamToResponse({ response, status, statusText, headers, stream, consumeSseStream }) {
+	let sseStream = stream.pipeThrough(new JsonToSseTransformStream());
 	if (consumeSseStream) {
 		const [stream1, stream2] = sseStream.tee();
 		sseStream = stream1;
@@ -5685,192 +4795,177 @@ function pipeUIMessageStreamToResponse({ response, status, statusText, headers, 
 		response,
 		status,
 		statusText,
-		headers: prepareHeaders(headers, UI_MESSAGE_STREAM_HEADERS),
+		headers: Object.fromEntries(prepareHeaders(headers, UI_MESSAGE_STREAM_HEADERS).entries()),
 		stream: sseStream.pipeThrough(new TextEncoderStream())
 	});
 }
-/**
-* Determines the message ID to use for a response message.
-* If the last message is an assistant message, its ID is reused (continuation).
-* Otherwise, a new ID is generated or the provided ID is used.
-*
-* @param options.originalMessages - The original messages. If not provided, returns `undefined`
-*   since client-side ID generation is used in non-persistence mode.
-* @param options.responseMessageId - The response message ID or an ID generator function.
-*
-* @returns The message ID to use, or `undefined` if no persistence mode.
-*/
 function getResponseUIMessageId({ originalMessages, responseMessageId }) {
 	if (originalMessages == null) return;
 	const lastMessage = originalMessages[originalMessages.length - 1];
-	return lastMessage?.role === "assistant" ? lastMessage.id : typeof responseMessageId === "function" ? responseMessageId() : responseMessageId;
+	return (lastMessage == null ? void 0 : lastMessage.role) === "assistant" ? lastMessage.id : typeof responseMessageId === "function" ? responseMessageId() : responseMessageId;
 }
-var toolMetadataSchema$1 = z.record(z.string(), jsonValueSchema.optional());
-var uiMessageChunkSchema = lazySchema(() => zodSchema(z.union([
-	z.looseObject({
-		type: z.literal("text-start"),
-		id: z.string(),
+var toolMetadataSchema = record(string(), jsonValueSchema.optional());
+var uiMessageChunkSchema = lazySchema(() => zodSchema(union([
+	looseObject({
+		type: literal("text-start"),
+		id: string(),
 		providerMetadata: providerMetadataSchema.optional()
 	}),
-	z.looseObject({
-		type: z.literal("text-delta"),
-		id: z.string(),
-		delta: z.string(),
+	looseObject({
+		type: literal("text-delta"),
+		id: string(),
+		delta: string(),
 		providerMetadata: providerMetadataSchema.optional()
 	}),
-	z.looseObject({
-		type: z.literal("text-end"),
-		id: z.string(),
+	looseObject({
+		type: literal("text-end"),
+		id: string(),
 		providerMetadata: providerMetadataSchema.optional()
 	}),
-	z.looseObject({
-		type: z.literal("error"),
-		errorText: z.string()
+	looseObject({
+		type: literal("error"),
+		errorText: string()
 	}),
-	z.looseObject({
-		type: z.literal("tool-input-start"),
-		toolCallId: z.string(),
-		toolName: z.string(),
-		providerExecuted: z.boolean().optional(),
+	looseObject({
+		type: literal("tool-input-start"),
+		toolCallId: string(),
+		toolName: string(),
+		providerExecuted: boolean().optional(),
 		providerMetadata: providerMetadataSchema.optional(),
-		toolMetadata: toolMetadataSchema$1.optional(),
-		dynamic: z.boolean().optional(),
-		title: z.string().optional()
+		toolMetadata: toolMetadataSchema.optional(),
+		dynamic: boolean().optional(),
+		title: string().optional()
 	}),
-	z.looseObject({
-		type: z.literal("tool-input-delta"),
-		toolCallId: z.string(),
-		inputTextDelta: z.string()
+	looseObject({
+		type: literal("tool-input-delta"),
+		toolCallId: string(),
+		inputTextDelta: string()
 	}),
-	z.looseObject({
-		type: z.literal("tool-input-available"),
-		toolCallId: z.string(),
-		toolName: z.string(),
-		input: z.unknown(),
-		providerExecuted: z.boolean().optional(),
+	looseObject({
+		type: literal("tool-input-available"),
+		toolCallId: string(),
+		toolName: string(),
+		input: unknown(),
+		providerExecuted: boolean().optional(),
 		providerMetadata: providerMetadataSchema.optional(),
-		toolMetadata: toolMetadataSchema$1.optional(),
-		dynamic: z.boolean().optional(),
-		title: z.string().optional()
+		toolMetadata: toolMetadataSchema.optional(),
+		dynamic: boolean().optional(),
+		title: string().optional()
 	}),
-	z.looseObject({
-		type: z.literal("tool-input-error"),
-		toolCallId: z.string(),
-		toolName: z.string(),
-		input: z.unknown(),
-		providerExecuted: z.boolean().optional(),
+	looseObject({
+		type: literal("tool-input-error"),
+		toolCallId: string(),
+		toolName: string(),
+		input: unknown(),
+		providerExecuted: boolean().optional(),
 		providerMetadata: providerMetadataSchema.optional(),
-		toolMetadata: toolMetadataSchema$1.optional(),
-		dynamic: z.boolean().optional(),
-		errorText: z.string(),
-		title: z.string().optional()
+		toolMetadata: toolMetadataSchema.optional(),
+		dynamic: boolean().optional(),
+		errorText: string(),
+		title: string().optional()
 	}),
-	z.looseObject({
-		type: z.literal("tool-approval-request"),
-		approvalId: z.string(),
-		toolCallId: z.string(),
-		approvalDescriptor: z.unknown().optional(),
-		inputSchemaInput: z.unknown().optional(),
-		reason: z.string().optional(),
-		isAutomatic: z.boolean().optional(),
-		signature: z.string().optional()
+	looseObject({
+		type: literal("tool-approval-request"),
+		approvalId: string(),
+		toolCallId: string(),
+		isAutomatic: boolean().optional(),
+		signature: string().optional()
 	}),
-	z.looseObject({
-		type: z.literal("tool-approval-response"),
-		approvalId: z.string(),
-		approved: z.boolean(),
-		reason: z.string().optional(),
-		providerExecuted: z.boolean().optional(),
+	looseObject({
+		type: literal("tool-approval-response"),
+		approvalId: string(),
+		approved: boolean(),
+		reason: string().optional(),
+		providerExecuted: boolean().optional(),
 		providerMetadata: providerMetadataSchema.optional()
 	}),
-	z.looseObject({
-		type: z.literal("tool-output-available"),
-		toolCallId: z.string(),
-		output: z.unknown(),
-		providerExecuted: z.boolean().optional(),
+	looseObject({
+		type: literal("tool-output-available"),
+		toolCallId: string(),
+		output: unknown(),
+		providerExecuted: boolean().optional(),
 		providerMetadata: providerMetadataSchema.optional(),
-		toolMetadata: toolMetadataSchema$1.optional(),
-		dynamic: z.boolean().optional(),
-		preliminary: z.boolean().optional()
+		toolMetadata: toolMetadataSchema.optional(),
+		dynamic: boolean().optional(),
+		preliminary: boolean().optional()
 	}),
-	z.looseObject({
-		type: z.literal("tool-output-error"),
-		toolCallId: z.string(),
-		errorText: z.string(),
-		providerExecuted: z.boolean().optional(),
+	looseObject({
+		type: literal("tool-output-error"),
+		toolCallId: string(),
+		errorText: string(),
+		providerExecuted: boolean().optional(),
 		providerMetadata: providerMetadataSchema.optional(),
-		toolMetadata: toolMetadataSchema$1.optional(),
-		dynamic: z.boolean().optional()
+		toolMetadata: toolMetadataSchema.optional(),
+		dynamic: boolean().optional()
 	}),
-	z.looseObject({
-		type: z.literal("tool-output-denied"),
-		toolCallId: z.string()
+	looseObject({
+		type: literal("tool-output-denied"),
+		toolCallId: string()
 	}),
-	z.looseObject({
-		type: z.literal("reasoning-start"),
-		id: z.string(),
+	looseObject({
+		type: literal("reasoning-start"),
+		id: string(),
 		providerMetadata: providerMetadataSchema.optional()
 	}),
-	z.looseObject({
-		type: z.literal("reasoning-delta"),
-		id: z.string(),
-		delta: z.string(),
+	looseObject({
+		type: literal("reasoning-delta"),
+		id: string(),
+		delta: string(),
 		providerMetadata: providerMetadataSchema.optional()
 	}),
-	z.looseObject({
-		type: z.literal("reasoning-end"),
-		id: z.string(),
+	looseObject({
+		type: literal("reasoning-end"),
+		id: string(),
 		providerMetadata: providerMetadataSchema.optional()
 	}),
-	z.looseObject({
-		type: z.literal("custom"),
-		kind: z.string().transform((value) => value),
+	looseObject({
+		type: literal("custom"),
+		kind: string().transform((value) => value),
 		providerMetadata: providerMetadataSchema.optional()
 	}),
-	z.looseObject({
-		type: z.literal("source-url"),
-		sourceId: z.string(),
-		url: z.string(),
-		title: z.string().optional(),
+	looseObject({
+		type: literal("source-url"),
+		sourceId: string(),
+		url: string(),
+		title: string().optional(),
 		providerMetadata: providerMetadataSchema.optional()
 	}),
-	z.looseObject({
-		type: z.literal("source-document"),
-		sourceId: z.string(),
-		mediaType: z.string(),
-		title: z.string(),
-		filename: z.string().optional(),
+	looseObject({
+		type: literal("source-document"),
+		sourceId: string(),
+		mediaType: string(),
+		title: string(),
+		filename: string().optional(),
 		providerMetadata: providerMetadataSchema.optional()
 	}),
-	z.looseObject({
-		type: z.literal("file"),
-		url: z.string(),
-		mediaType: z.string(),
+	looseObject({
+		type: literal("file"),
+		url: string(),
+		mediaType: string(),
 		providerMetadata: providerMetadataSchema.optional()
 	}),
-	z.looseObject({
-		type: z.literal("reasoning-file"),
-		url: z.string(),
-		mediaType: z.string(),
+	looseObject({
+		type: literal("reasoning-file"),
+		url: string(),
+		mediaType: string(),
 		providerMetadata: providerMetadataSchema.optional()
 	}),
-	z.looseObject({
-		type: z.custom((value) => typeof value === "string" && value.startsWith("data-"), { message: "Type must start with \"data-\"" }),
-		id: z.string().optional(),
-		data: z.unknown(),
-		transient: z.boolean().optional()
+	looseObject({
+		type: custom((value) => typeof value === "string" && value.startsWith("data-"), { message: "Type must start with \"data-\"" }),
+		id: string().optional(),
+		data: unknown(),
+		transient: boolean().optional()
 	}),
-	z.looseObject({ type: z.literal("start-step") }),
-	z.looseObject({ type: z.literal("finish-step") }),
-	z.looseObject({ type: z.literal("reset-step") }),
-	z.looseObject({
-		type: z.literal("start"),
-		messageId: z.string().optional(),
-		messageMetadata: z.unknown().optional()
+	looseObject({ type: literal("start-step") }),
+	looseObject({ type: literal("finish-step") }),
+	looseObject({
+		type: literal("start"),
+		messageId: string().optional(),
+		messageMetadata: unknown().optional()
 	}),
-	z.looseObject({
-		type: z.literal("finish"),
-		finishReason: z.enum([
+	looseObject({
+		type: literal("finish"),
+		finishReason: _enum([
 			"stop",
 			"length",
 			"content-filter",
@@ -5878,144 +4973,73 @@ var uiMessageChunkSchema = lazySchema(() => zodSchema(z.union([
 			"error",
 			"other"
 		]).optional(),
-		messageMetadata: z.unknown().optional()
+		messageMetadata: unknown().optional()
 	}),
-	z.looseObject({
-		type: z.literal("abort"),
-		reason: z.string().optional()
+	looseObject({
+		type: literal("abort"),
+		reason: string().optional()
 	}),
-	z.looseObject({
-		type: z.literal("message-metadata"),
-		messageMetadata: z.unknown()
+	looseObject({
+		type: literal("message-metadata"),
+		messageMetadata: unknown()
 	})
 ])));
 function isDataUIMessageChunk(chunk) {
 	return chunk.type.startsWith("data-");
 }
-/**
-* Creates a string-keyed map without an object prototype.
-*
-* Use this for lookup tables keyed by IDs or names that may come from outside
-* the SDK, such as streamed chunk IDs or tool call IDs. Unlike `{}`, these maps
-* do not inherit `__proto__`, `constructor`, or other Object prototype members,
-* so a missing untrusted key cannot resolve to a shared prototype object.
-*/
 function createIdMap() {
-	return Object.create(null);
+	return /* @__PURE__ */ Object.create(null);
 }
-/**
-* Check if a message part is a data part.
-*/
 function isDataUIPart(part) {
 	return part.type.startsWith("data-");
 }
-/**
-* Type guard to check if a message part is a text part.
-*/
 function isTextUIPart(part) {
 	return part.type === "text";
 }
-/**
-* Type guard to check if a message part is a custom part.
-*/
 function isCustomContentUIPart(part) {
 	return part.type === "custom";
 }
-/**
-* Type guard to check if a message part is a file part.
-*/
 function isFileUIPart(part) {
 	return part.type === "file";
 }
-/**
-* Type guard to check if a message part is a reasoning file part.
-*/
 function isReasoningFileUIPart(part) {
 	return part.type === "reasoning-file";
 }
-/**
-* Type guard to check if a message part is a reasoning part.
-*/
 function isReasoningUIPart(part) {
 	return part.type === "reasoning";
 }
-/**
-* Check if a message part is a static tool part.
-*
-* Static tools are tools for which the types are known at development time.
-*/
 function isStaticToolUIPart(part) {
 	return part.type.startsWith("tool-");
 }
-/**
-* Check if a message part is a dynamic tool part.
-*
-* Dynamic tools are tools for which the input and output types are unknown.
-*/
 function isDynamicToolUIPart(part) {
 	return part.type === "dynamic-tool";
 }
-/**
-* Check if a message part is a tool part.
-*
-* Tool parts are either static or dynamic tools.
-*
-* Use `isStaticToolUIPart` or `isDynamicToolUIPart` to check the type of the tool.
-*/
 function isToolUIPart(part) {
 	return isStaticToolUIPart(part) || isDynamicToolUIPart(part);
 }
-/**
-* Returns the name of the static tool.
-*
-* The possible values are the keys of the tool set.
-*/
 function getStaticToolName(part) {
 	return part.type.split("-").slice(1).join("-");
 }
-/**
-* Returns the name of the tool (static or dynamic).
-*
-* This function will not restrict the name to the keys of the tool set.
-* If you need to restrict the name to the keys of the tool set, use `getStaticToolName` instead.
-*/
 function getToolName(part) {
 	return isDynamicToolUIPart(part) ? part.toolName : getStaticToolName(part);
 }
 function createStreamingUIMessageState({ lastMessage, messageId }) {
-	const message = lastMessage?.role === "assistant" ? lastMessage : {
-		id: messageId,
-		metadata: void 0,
-		role: "assistant",
-		parts: []
-	};
-	const partialToolCalls = createIdMap();
-	const lastStepStartIndex = message.parts.findLastIndex((part) => part.type === "step-start");
-	let staticToolIndex = 0;
-	for (const part of message.parts.slice(lastStepStartIndex + 1)) {
-		if (!isToolUIPart(part)) continue;
-		const index = staticToolIndex;
-		if (isStaticToolUIPart(part)) staticToolIndex++;
-		if (part.state !== "input-streaming") continue;
-		partialToolCalls[part.toolCallId] = {
-			text: part.rawInput ?? "",
-			index,
-			toolName: part.type === "dynamic-tool" ? part.toolName : getStaticToolName(part),
-			dynamic: part.type === "dynamic-tool",
-			title: part.title,
-			toolMetadata: part.toolMetadata
-		};
-	}
 	return {
-		message,
+		message: (lastMessage == null ? void 0 : lastMessage.role) === "assistant" ? lastMessage : {
+			id: messageId,
+			metadata: void 0,
+			role: "assistant",
+			parts: []
+		},
 		activeTextParts: createIdMap(),
 		activeReasoningParts: createIdMap(),
-		partialToolCalls
+		partialToolCalls: createIdMap()
 	};
 }
-function processUIMessageStream({ stream, messageMetadataSchema, dataPartSchemas, runUpdateMessageJob, onError, onToolCall, onData, resetStateOnMessageIdChange = false, resetStateOnFirstMessageStart = false }) {
+function processUIMessageStream({ stream, messageMetadataSchema, dataPartSchemas, runUpdateMessageJob, onError, onToolCall, onData }) {
 	return stream.pipeThrough(new TransformStream({ async transform(chunk, controller) {
 		await runUpdateMessageJob(async ({ state, write }) => {
+			var _a22, _b, _c, _d;
 			function getCurrentStepParts() {
 				const parts = state.message.parts;
 				let currentStepStartIndex = parts.length - 1;
@@ -6045,7 +5069,10 @@ function processUIMessageStream({ stream, messageMetadataSchema, dataPartSchemas
 				return toolInvocation;
 			}
 			function getToolInvocationByApprovalId(approvalId) {
-				const toolInvocation = state.message.parts.filter(isToolUIPart).find((invocation) => invocation.approval?.id === approvalId);
+				const toolInvocation = state.message.parts.filter(isToolUIPart).find((invocation) => {
+					var _a23;
+					return ((_a23 = invocation.approval) == null ? void 0 : _a23.id) === approvalId;
+				});
 				if (toolInvocation == null) throw new UIMessageStreamError({
 					chunkType: "tool-approval-response",
 					chunkId: approvalId,
@@ -6054,7 +5081,8 @@ function processUIMessageStream({ stream, messageMetadataSchema, dataPartSchemas
 				return toolInvocation;
 			}
 			function updateToolPart(options, existingPart) {
-				const part = existingPart ?? getCurrentStepParts().find((part) => isStaticToolUIPart(part) && part.toolCallId === options.toolCallId);
+				var _a23;
+				const part = existingPart != null ? existingPart : getCurrentStepParts().find((part2) => isStaticToolUIPart(part2) && part2.toolCallId === options.toolCallId);
 				const anyOptions = options;
 				const anyPart = part;
 				if (part != null) {
@@ -6066,14 +5094,12 @@ function processUIMessageStream({ stream, messageMetadataSchema, dataPartSchemas
 					anyPart.preliminary = anyOptions.preliminary;
 					if (options.title !== void 0) anyPart.title = options.title;
 					if (options.toolMetadata !== void 0) anyPart.toolMetadata = options.toolMetadata;
-					anyPart.providerExecuted = anyOptions.providerExecuted ?? part.providerExecuted;
+					anyPart.providerExecuted = (_a23 = anyOptions.providerExecuted) != null ? _a23 : part.providerExecuted;
 					const providerMetadata = anyOptions.providerMetadata;
-					if (providerMetadata != null) {
-						if (options.state === "output-available" || options.state === "output-error") {
-							const resultPart = part;
-							resultPart.resultProviderMetadata = providerMetadata;
-						} else part.callProviderMetadata = providerMetadata;
-					}
+					if (providerMetadata != null) if (options.state === "output-available" || options.state === "output-error") {
+						const resultPart = part;
+						resultPart.resultProviderMetadata = providerMetadata;
+					} else part.callProviderMetadata = providerMetadata;
 				} else state.message.parts.push({
 					type: `tool-${options.toolName}`,
 					toolCallId: options.toolCallId,
@@ -6091,7 +5117,8 @@ function processUIMessageStream({ stream, messageMetadataSchema, dataPartSchemas
 				});
 			}
 			function updateDynamicToolPart(options, existingPart) {
-				const part = existingPart ?? getCurrentStepParts().find((part) => part.type === "dynamic-tool" && part.toolCallId === options.toolCallId);
+				var _a23, _b2;
+				const part = existingPart != null ? existingPart : getCurrentStepParts().find((part2) => part2.type === "dynamic-tool" && part2.toolCallId === options.toolCallId);
 				const anyOptions = options;
 				const anyPart = part;
 				if (part != null) {
@@ -6100,18 +5127,16 @@ function processUIMessageStream({ stream, messageMetadataSchema, dataPartSchemas
 					anyPart.input = anyOptions.input;
 					anyPart.output = anyOptions.output;
 					anyPart.errorText = anyOptions.errorText;
-					anyPart.rawInput = anyOptions.rawInput;
+					anyPart.rawInput = (_a23 = anyOptions.rawInput) != null ? _a23 : anyPart.rawInput;
 					anyPart.preliminary = anyOptions.preliminary;
 					if (options.title !== void 0) anyPart.title = options.title;
 					if (options.toolMetadata !== void 0) anyPart.toolMetadata = options.toolMetadata;
-					anyPart.providerExecuted = anyOptions.providerExecuted ?? part.providerExecuted;
+					anyPart.providerExecuted = (_b2 = anyOptions.providerExecuted) != null ? _b2 : part.providerExecuted;
 					const providerMetadata = anyOptions.providerMetadata;
-					if (providerMetadata != null) {
-						if (options.state === "output-available" || options.state === "output-error") {
-							const resultPart = part;
-							resultPart.resultProviderMetadata = providerMetadata;
-						} else part.callProviderMetadata = providerMetadata;
-					}
+					if (providerMetadata != null) if (options.state === "output-available" || options.state === "output-error") {
+						const resultPart = part;
+						resultPart.resultProviderMetadata = providerMetadata;
+					} else part.callProviderMetadata = providerMetadata;
 				} else state.message.parts.push({
 					type: "dynamic-tool",
 					toolName: options.toolName,
@@ -6163,7 +5188,7 @@ function processUIMessageStream({ stream, messageMetadataSchema, dataPartSchemas
 						message: `Received text-delta for missing text part with ID "${chunk.id}". Ensure a "text-start" chunk is sent before any "text-delta" chunks.`
 					});
 					textPart.text += chunk.delta;
-					textPart.providerMetadata = chunk.providerMetadata ?? textPart.providerMetadata;
+					textPart.providerMetadata = (_a22 = chunk.providerMetadata) != null ? _a22 : textPart.providerMetadata;
 					write();
 					break;
 				}
@@ -6175,7 +5200,7 @@ function processUIMessageStream({ stream, messageMetadataSchema, dataPartSchemas
 						message: `Received text-end for missing text part with ID "${chunk.id}". Ensure a "text-start" chunk is sent before any "text-end" chunks.`
 					});
 					textPart.state = "done";
-					textPart.providerMetadata = chunk.providerMetadata ?? textPart.providerMetadata;
+					textPart.providerMetadata = (_b = chunk.providerMetadata) != null ? _b : textPart.providerMetadata;
 					delete state.activeTextParts[chunk.id];
 					write();
 					break;
@@ -6193,7 +5218,6 @@ function processUIMessageStream({ stream, messageMetadataSchema, dataPartSchemas
 				case "reasoning-start": {
 					const reasoningPart = {
 						type: "reasoning",
-						id: chunk.id,
 						text: "",
 						providerMetadata: chunk.providerMetadata,
 						state: "streaming"
@@ -6211,7 +5235,7 @@ function processUIMessageStream({ stream, messageMetadataSchema, dataPartSchemas
 						message: `Received reasoning-delta for missing reasoning part with ID "${chunk.id}". Ensure a "reasoning-start" chunk is sent before any "reasoning-delta" chunks.`
 					});
 					reasoningPart.text += chunk.delta;
-					reasoningPart.providerMetadata = chunk.providerMetadata ?? reasoningPart.providerMetadata;
+					reasoningPart.providerMetadata = (_c = chunk.providerMetadata) != null ? _c : reasoningPart.providerMetadata;
 					write();
 					break;
 				}
@@ -6222,7 +5246,7 @@ function processUIMessageStream({ stream, messageMetadataSchema, dataPartSchemas
 						chunkId: chunk.id,
 						message: `Received reasoning-end for missing reasoning part with ID "${chunk.id}". Ensure a "reasoning-start" chunk is sent before any "reasoning-end" chunks.`
 					});
-					reasoningPart.providerMetadata = chunk.providerMetadata ?? reasoningPart.providerMetadata;
+					reasoningPart.providerMetadata = (_d = chunk.providerMetadata) != null ? _d : reasoningPart.providerMetadata;
 					reasoningPart.state = "done";
 					delete state.activeReasoningParts[chunk.id];
 					write();
@@ -6306,7 +5330,6 @@ function processUIMessageStream({ stream, messageMetadataSchema, dataPartSchemas
 						toolName: partialToolCall.toolName,
 						state: "input-streaming",
 						input: partialArgs,
-						rawInput: partialToolCall.text,
 						title: partialToolCall.title,
 						toolMetadata: partialToolCall.toolMetadata
 					});
@@ -6315,7 +5338,6 @@ function processUIMessageStream({ stream, messageMetadataSchema, dataPartSchemas
 						toolName: partialToolCall.toolName,
 						state: "input-streaming",
 						input: partialArgs,
-						rawInput: partialToolCall.text,
 						title: partialToolCall.title,
 						toolMetadata: partialToolCall.toolMetadata
 					});
@@ -6362,7 +5384,8 @@ function processUIMessageStream({ stream, messageMetadataSchema, dataPartSchemas
 						toolCallId: chunk.toolCallId,
 						toolName: chunk.toolName,
 						state: "output-error",
-						input: chunk.input,
+						input: void 0,
+						rawInput: chunk.input,
 						errorText: chunk.errorText,
 						providerExecuted: chunk.providerExecuted,
 						providerMetadata: chunk.providerMetadata,
@@ -6376,9 +5399,6 @@ function processUIMessageStream({ stream, messageMetadataSchema, dataPartSchemas
 					toolInvocation.state = "approval-requested";
 					toolInvocation.approval = {
 						id: chunk.approvalId,
-						...chunk.approvalDescriptor != null ? { descriptor: chunk.approvalDescriptor } : {},
-						...Object.prototype.hasOwnProperty.call(chunk, "inputSchemaInput") ? { inputSchemaInput: chunk.inputSchemaInput } : {},
-						...chunk.reason != null ? { requestReason: chunk.reason } : {},
 						...chunk.isAutomatic === true ? { isAutomatic: true } : {},
 						...chunk.signature != null ? { signature: chunk.signature } : {}
 					};
@@ -6390,10 +5410,11 @@ function processUIMessageStream({ stream, messageMetadataSchema, dataPartSchemas
 					const approval = toolInvocation.approval == null ? { id: chunk.approvalId } : toolInvocation.approval;
 					toolInvocation.state = "approval-responded";
 					toolInvocation.approval = {
-						...approval,
 						id: chunk.approvalId,
 						approved: chunk.approved,
-						...chunk.reason != null ? { reason: chunk.reason } : {}
+						...chunk.reason != null ? { reason: chunk.reason } : {},
+						...approval.isAutomatic === true ? { isAutomatic: true } : {},
+						...approval.signature != null ? { signature: approval.signature } : {}
 					};
 					if (chunk.providerExecuted != null) toolInvocation.providerExecuted = chunk.providerExecuted;
 					if (chunk.providerMetadata != null) toolInvocation.callProviderMetadata = chunk.providerMetadata;
@@ -6418,7 +5439,7 @@ function processUIMessageStream({ stream, messageMetadataSchema, dataPartSchemas
 						providerExecuted: chunk.providerExecuted,
 						providerMetadata: chunk.providerMetadata,
 						title: toolInvocation.title,
-						toolMetadata: chunk.toolMetadata ?? toolInvocation.toolMetadata
+						toolMetadata: toolInvocation.toolMetadata
 					}, toolInvocation);
 					else updateToolPart({
 						toolCallId: chunk.toolCallId,
@@ -6430,7 +5451,7 @@ function processUIMessageStream({ stream, messageMetadataSchema, dataPartSchemas
 						preliminary: chunk.preliminary,
 						providerMetadata: chunk.providerMetadata,
 						title: toolInvocation.title,
-						toolMetadata: chunk.toolMetadata ?? toolInvocation.toolMetadata
+						toolMetadata: toolInvocation.toolMetadata
 					}, toolInvocation);
 					write();
 					break;
@@ -6446,7 +5467,7 @@ function processUIMessageStream({ stream, messageMetadataSchema, dataPartSchemas
 						providerExecuted: chunk.providerExecuted,
 						providerMetadata: chunk.providerMetadata,
 						title: toolInvocation.title,
-						toolMetadata: chunk.toolMetadata ?? toolInvocation.toolMetadata
+						toolMetadata: toolInvocation.toolMetadata
 					}, toolInvocation);
 					else updateToolPart({
 						toolCallId: chunk.toolCallId,
@@ -6458,7 +5479,7 @@ function processUIMessageStream({ stream, messageMetadataSchema, dataPartSchemas
 						providerExecuted: chunk.providerExecuted,
 						providerMetadata: chunk.providerMetadata,
 						title: toolInvocation.title,
-						toolMetadata: chunk.toolMetadata ?? toolInvocation.toolMetadata
+						toolMetadata: toolInvocation.toolMetadata
 					}, toolInvocation);
 					write();
 					break;
@@ -6466,26 +5487,14 @@ function processUIMessageStream({ stream, messageMetadataSchema, dataPartSchemas
 				case "start-step":
 					state.message.parts.push({ type: "step-start" });
 					break;
-				case "finish-step": break;
-				case "reset-step": {
-					const currentStepParts = getCurrentStepParts();
+				case "finish-step":
 					state.activeTextParts = createIdMap();
 					state.activeReasoningParts = createIdMap();
-					state.partialToolCalls = createIdMap();
-					if (currentStepParts.length > 0) {
-						state.message.parts.splice(state.message.parts.length - currentStepParts.length, currentStepParts.length);
-						write();
-					}
 					break;
-				}
 				case "start":
-					if (chunk.messageId != null && (resetStateOnFirstMessageStart || resetStateOnMessageIdChange && chunk.messageId !== state.message.id)) Object.assign(state, createStreamingUIMessageState({
-						lastMessage: void 0,
-						messageId: chunk.messageId
-					}), { finishReason: void 0 });
 					if (chunk.messageId != null) state.message.id = chunk.messageId;
 					await updateMessageMetadata(chunk.messageMetadata);
-					if (chunk.messageId != null || chunk.messageMetadata != null) write({ updateStatus: false });
+					if (chunk.messageId != null || chunk.messageMetadata != null) write();
 					break;
 				case "finish":
 					if (chunk.finishReason != null) state.finishReason = chunk.finishReason;
@@ -6500,7 +5509,7 @@ function processUIMessageStream({ stream, messageMetadataSchema, dataPartSchemas
 					onError?.(new Error(chunk.errorText));
 					break;
 				default: if (isDataUIMessageChunk(chunk)) {
-					if (dataPartSchemas?.[chunk.type] != null) {
+					if ((dataPartSchemas == null ? void 0 : dataPartSchemas[chunk.type]) != null) {
 						const partIdx = state.message.parts.findIndex((p) => "id" in p && "data" in p && p.id === chunk.id && p.type === chunk.type);
 						const actualPartIdx = partIdx >= 0 ? partIdx : state.message.parts.length;
 						await validateTypes({
@@ -6529,68 +5538,40 @@ function processUIMessageStream({ stream, messageMetadataSchema, dataPartSchemas
 		});
 	} }));
 }
-function handleUIMessageStreamFinish({ messageId, originalMessages = [], onStepEnd, onStepFinish, onEnd, onFinish, onError, stream, getOutcome }) {
-	let lastMessage = originalMessages?.[originalMessages.length - 1];
-	if (lastMessage?.role !== "assistant") lastMessage = void 0;
+function handleUIMessageStreamFinish({ messageId, originalMessages = [], onStepEnd, onStepFinish, onEnd, onFinish, onError, stream }) {
+	let lastMessage = originalMessages == null ? void 0 : originalMessages[originalMessages.length - 1];
+	if ((lastMessage == null ? void 0 : lastMessage.role) !== "assistant") lastMessage = void 0;
 	else messageId = lastMessage.id;
 	let isAborted = false;
-	let hasProcessingFailure = false;
-	let processingError;
-	const recordProcessingFailure = (error) => {
-		hasProcessingFailure = true;
-		processingError = error;
-	};
 	const idInjectedStream = stream.pipeThrough(new TransformStream({ transform(chunk, controller) {
-		try {
-			let outputChunk = chunk;
-			if (chunk.type === "start") {
-				const startChunk = chunk;
-				if (startChunk.messageId == null && messageId != null) outputChunk = {
-					...startChunk,
-					messageId
-				};
-			}
-			if (chunk.type === "abort") isAborted = true;
-			controller.enqueue(outputChunk);
-		} catch (error) {
-			recordProcessingFailure(error);
-			throw error;
+		if (chunk.type === "start") {
+			const startChunk = chunk;
+			if (startChunk.messageId == null && messageId != null) startChunk.messageId = messageId;
 		}
+		if (chunk.type === "abort") isAborted = true;
+		controller.enqueue(chunk);
 	} }));
-	const resolvedOnStepEnd = onStepEnd ?? onStepFinish;
-	const resolvedOnEnd = onEnd ?? onFinish;
+	const resolvedOnStepEnd = onStepEnd != null ? onStepEnd : onStepFinish;
+	const resolvedOnEnd = onEnd != null ? onEnd : onFinish;
 	if (resolvedOnEnd == null && resolvedOnStepEnd == null) return idInjectedStream;
 	const state = createStreamingUIMessageState({
 		lastMessage: lastMessage ? structuredClone(lastMessage) : void 0,
-		messageId: messageId ?? ""
+		messageId: messageId != null ? messageId : ""
 	});
 	const runUpdateMessageJob = async (job) => {
-		try {
-			await job({
-				state,
-				write: () => {}
-			});
-		} catch (error) {
-			recordProcessingFailure(error);
-			throw error;
-		}
+		await job({
+			state,
+			write: () => {}
+		});
 	};
 	let finishCalled = false;
-	const callOnEnd = async ({ isCancelled }) => {
+	const callOnEnd = async () => {
 		if (finishCalled || !resolvedOnEnd) return;
 		finishCalled = true;
-		const isContinuation = state.message.id === lastMessage?.id;
-		const declaredOutcome = getOutcome?.() ?? { status: "unknown" };
-		const outcome = hasProcessingFailure ? {
-			status: "failed",
-			error: processingError
-		} : declaredOutcome.status === "unknown" && isAborted ? { status: "aborted" } : declaredOutcome;
-		const isConsumerCancellation = isCancelled && outcome.status === "unknown";
+		const isContinuation = state.message.id === (lastMessage == null ? void 0 : lastMessage.id);
 		await resolvedOnEnd({
-			isAborted: isAborted || outcome.status === "aborted",
-			...isConsumerCancellation ? { isCancelled: true } : {},
+			isAborted,
 			isContinuation,
-			outcome,
 			responseMessage: state.message,
 			messages: [...isContinuation ? originalMessages.slice(0, -1) : originalMessages, state.message],
 			finishReason: state.finishReason
@@ -6598,7 +5579,7 @@ function handleUIMessageStreamFinish({ messageId, originalMessages = [], onStepE
 	};
 	const callOnStepFinish = async () => {
 		if (!resolvedOnStepEnd) return;
-		const isContinuation = state.message.id === lastMessage?.id;
+		const isContinuation = state.message.id === (lastMessage == null ? void 0 : lastMessage.id);
 		try {
 			await resolvedOnStepEnd({
 				isContinuation,
@@ -6619,24 +5600,18 @@ function handleUIMessageStreamFinish({ messageId, originalMessages = [], onStepE
 			controller.enqueue(chunk);
 		},
 		async cancel() {
-			await callOnEnd({ isCancelled: true });
+			await callOnEnd();
 		},
 		async flush() {
-			await callOnEnd({ isCancelled: false });
+			await callOnEnd();
 		}
 	}));
 }
-/**
-* Converts a single `TextStreamPart` (as emitted by `streamText`'s
-* `stream`) into a `UIMessageChunk`.
-*
-* Returns `undefined` for stream parts that do not produce UI message chunks.
-*/
 function toUIMessageChunk(part, { tools, sendReasoning = true, sendSources = false, sendStart = true, sendFinish = true, onError = () => "An error occurred.", messageMetadata, responseMessageId } = {}) {
 	const isDynamic = (toolPart) => {
-		const tool = tools?.[toolPart.toolName];
-		if (tool == null) return toolPart.dynamic;
-		return tool?.type === "dynamic" ? true : void 0;
+		const tool2 = tools == null ? void 0 : tools[toolPart.toolName];
+		if (tool2 == null) return toolPart.dynamic;
+		return (tool2 == null ? void 0 : tool2.type) === "dynamic" ? true : void 0;
 	};
 	const partType = part.type;
 	switch (partType) {
@@ -6748,18 +5723,13 @@ function toUIMessageChunk(part, { tools, sendReasoning = true, sendSources = fal
 				...part.title != null ? { title: part.title } : {}
 			};
 		}
-		case "tool-approval-request": {
-			const inputSchemaInput = getToolCallInputSchemaInput(part.toolCall);
-			return {
-				type: "tool-approval-request",
-				approvalId: part.approvalId,
-				toolCallId: part.toolCall.toolCallId,
-				...inputSchemaInput != null && !isDeepEqualData(inputSchemaInput.value, part.toolCall.input) ? { inputSchemaInput: inputSchemaInput.value } : {},
-				...part.reason != null ? { reason: part.reason } : {},
-				...part.isAutomatic != null ? { isAutomatic: part.isAutomatic } : {},
-				...part.signature != null ? { signature: part.signature } : {}
-			};
-		}
+		case "tool-approval-request": return {
+			type: "tool-approval-request",
+			approvalId: part.approvalId,
+			toolCallId: part.toolCall.toolCallId,
+			...part.isAutomatic != null ? { isAutomatic: part.isAutomatic } : {},
+			...part.signature != null ? { signature: part.signature } : {}
+		};
 		case "tool-approval-response": return {
 			type: "tool-approval-response",
 			approvalId: part.approvalId,
@@ -6822,150 +5792,53 @@ function toUIMessageChunk(part, { tools, sendReasoning = true, sendSources = fal
 		default: throw new Error(`Unknown chunk type: ${partType}`);
 	}
 }
-/**
-* Converts a stream of `TextStreamPart<TOOLS>` chunks (as emitted by
-* `streamText`'s `stream`) into a stream of `UIMessageChunk`s suitable for
-* UI message streaming, including response message ID injection and
-* step and stream end callbacks.
-*/
-function toUIMessageStream({ stream, tools, sendReasoning = true, sendSources = false, sendStart = true, sendFinish = true, onError = () => "An error occurred.", messageMetadata, originalMessages, generateMessageId, onStepEnd, onStepFinish, onEnd, onFinish }) {
-	let outcome = { status: "unknown" };
-	let hasFatalFailure = false;
-	const setSourceOutcome = (newOutcome) => {
-		if (!hasFatalFailure && outcome.status !== "completed" && outcome.status !== "aborted" && newOutcome.status !== "unknown" && (outcome.status === "unknown" || newOutcome.status !== "failed")) outcome = newOutcome;
-	};
-	const failOutcome = (error) => {
-		hasFatalFailure = true;
-		outcome = {
-			status: "failed",
-			error
-		};
-	};
+function toUIMessageStream({ stream, tools, sendReasoning = true, sendSources = false, sendStart = true, sendFinish = true, onError = () => "An error occurred.", messageMetadata, originalMessages, generateMessageId, onEnd, onFinish }) {
 	const responseMessageId = generateMessageId != null ? getResponseUIMessageId({
 		originalMessages,
 		responseMessageId: generateMessageId
 	}) : void 0;
-	const sourceReader = stream.getReader();
-	let sourceReaderReleased = false;
-	let sourceStreamCancelled = false;
-	const releaseSourceReader = () => {
-		if (!sourceReaderReleased) {
-			sourceReader.releaseLock();
-			sourceReaderReleased = true;
-		}
-	};
 	return handleUIMessageStreamFinish({
-		stream: new ReadableStream({
-			async pull(controller) {
-				try {
-					const { done, value } = await sourceReader.read();
-					if (done) {
-						releaseSourceReader();
-						if (!sourceStreamCancelled) controller.close();
-					} else controller.enqueue(value);
-				} catch (error) {
-					releaseSourceReader();
-					if (!sourceStreamCancelled) {
-						failOutcome(error);
-						controller.error(error);
-					}
-				}
-			},
-			async cancel(reason) {
-				sourceStreamCancelled = true;
-				if (sourceReaderReleased) return;
-				try {
-					await sourceReader.cancel(reason);
-				} finally {
-					releaseSourceReader();
-				}
-			}
-		}).pipeThrough(new TransformStream({ transform: async (part, controller) => {
-			try {
-				const messageMetadataValue = messageMetadata?.({ part });
-				const uiMessageChunk = toUIMessageChunk(part, {
-					tools,
-					sendReasoning,
-					sendSources,
-					sendStart,
-					sendFinish,
-					onError,
-					messageMetadata: messageMetadataValue,
-					responseMessageId
-				});
-				if (uiMessageChunk != null && part.type !== "finish-step") controller.enqueue(uiMessageChunk);
-				if (messageMetadataValue != null && part.type !== "start" && part.type !== "finish") controller.enqueue({
-					type: "message-metadata",
-					messageMetadata: messageMetadataValue
-				});
-				if (uiMessageChunk != null && part.type === "finish-step") controller.enqueue(uiMessageChunk);
-				if (part.type === "finish") setSourceOutcome({ status: "completed" });
-				else if (part.type === "abort") setSourceOutcome({ status: "aborted" });
-				else if (part.type === "error") setSourceOutcome({
-					status: "failed",
-					error: part.error
-				});
-			} catch (error) {
-				failOutcome(error);
-				throw error;
-			}
+		stream: stream.pipeThrough(new TransformStream({ transform: async (part, controller) => {
+			const messageMetadataValue = messageMetadata == null ? void 0 : messageMetadata({ part });
+			const uiMessageChunk = toUIMessageChunk(part, {
+				tools,
+				sendReasoning,
+				sendSources,
+				sendStart,
+				sendFinish,
+				onError,
+				messageMetadata: messageMetadataValue,
+				responseMessageId
+			});
+			if (uiMessageChunk != null) controller.enqueue(uiMessageChunk);
+			if (messageMetadataValue != null && part.type !== "start" && part.type !== "finish") controller.enqueue({
+				type: "message-metadata",
+				messageMetadata: messageMetadataValue
+			});
 		} })),
-		messageId: responseMessageId ?? generateMessageId?.(),
+		messageId: responseMessageId != null ? responseMessageId : generateMessageId == null ? void 0 : generateMessageId(),
 		originalMessages,
-		onStepEnd: onStepEnd ?? onStepFinish,
-		onEnd: onEnd ?? onFinish,
-		onError,
-		getOutcome: () => outcome
+		onEnd: onEnd != null ? onEnd : onFinish,
+		onError
 	});
 }
-/**
-* Wraps a ReadableStream and returns an object that is both a ReadableStream and an AsyncIterable.
-* This enables consumption of the stream using for-await-of, with proper resource cleanup on early exit or error.
-*
-* @template T The type of the stream's chunks.
-* @param source The source ReadableStream to wrap.
-* @returns An AsyncIterableStream that can be used as both a ReadableStream and an AsyncIterable.
-*/
 function createAsyncIterableStream(source) {
 	return asAsyncIterableStream(source.pipeThrough(new TransformStream()));
 }
-/**
-* Attaches the async iterator protocol to an existing ReadableStream in place,
-* turning it into an AsyncIterableStream without piping through an additional
-* TransformStream.
-*
-* Use this when the stream is already known to be fresh and exclusively owned
-* (e.g. the readable side of a TransformStream created for this consumer).
-* Adding an extra `pipeThrough` in that situation creates a chain of two
-* transforms fed by an active upstream pipe, which can surface a spurious
-* unhandled `undefined` rejection when the consumer cancels early (observed on
-* Node.js 26). {@link createAsyncIterableStream} wraps this after adding a
-* fresh transform for callers that may pass shared or locked streams.
-*
-* @template T The type of the stream's chunks.
-* @param stream The ReadableStream to augment. It must be fresh and unlocked.
-* @returns The same stream, augmented with the async iterator protocol.
-*/
 function asAsyncIterableStream(stream) {
-	/**
-	* Implements the async iterator protocol for the stream.
-	* Ensures proper cleanup (cancelling and releasing the reader) on completion, early exit, or error.
-	*/
 	stream[Symbol.asyncIterator] = function() {
 		const reader = this.getReader();
 		let finished = false;
-		/**
-		* Cleans up the reader by cancelling and releasing the lock.
-		*/
 		async function cleanup(cancelStream) {
+			var _a22;
 			if (finished) return;
 			finished = true;
 			try {
-				if (cancelStream) await reader.cancel?.();
+				if (cancelStream) await ((_a22 = reader.cancel) == null ? void 0 : _a22.call(reader));
 			} finally {
 				try {
 					reader.releaseLock();
-				} catch {}
+				} catch (e) {}
 			}
 		}
 		return {
@@ -6978,14 +5851,7 @@ function asAsyncIterableStream(stream) {
 					done: true,
 					value: void 0
 				};
-				let result;
-				try {
-					result = await reader.read();
-				} catch (error) {
-					await cleanup(false);
-					throw error;
-				}
-				const { done, value } = result;
+				const { done, value } = await reader.read();
 				if (done) {
 					await cleanup(true);
 					return {
@@ -7024,25 +5890,8 @@ function asAsyncIterableStream(stream) {
 	};
 	return stream;
 }
-/**
-* Consumes a ReadableStream until it's fully read.
-*
-* This function reads the stream chunk by chunk until the stream is exhausted.
-* It doesn't process or return the data from the stream; it simply ensures
-* that the entire stream is read.
-*
-* @param options - The options for consuming the stream.
-* @param options.stream - The ReadableStream to be consumed.
-* @param options.onError - Optional callback to handle errors that occur during consumption.
-* @returns A promise that resolves when the stream is fully consumed.
-*/
-async function consumeStream({ stream, onError, abortSignal }) {
+async function consumeStream({ stream, onError }) {
 	const reader = stream.getReader();
-	const cancelOnAbort = () => {
-		reader.cancel().catch(() => {});
-	};
-	if (abortSignal?.aborted) cancelOnAbort();
-	else abortSignal?.addEventListener("abort", cancelOnAbort, { once: true });
 	try {
 		while (true) {
 			const { done } = await reader.read();
@@ -7051,45 +5900,27 @@ async function consumeStream({ stream, onError, abortSignal }) {
 	} catch (error) {
 		onError?.(error);
 	} finally {
-		abortSignal?.removeEventListener("abort", cancelOnAbort);
 		reader.releaseLock();
 	}
 }
-/**
-* Creates a Promise with externally accessible resolve and reject functions.
-*
-* @template T - The type of the value that the Promise will resolve to.
-* @returns An object containing:
-*   - promise: A Promise that can be resolved or rejected externally.
-*   - resolve: A function to resolve the Promise with a value of type T.
-*   - reject: A function to reject the Promise with an error.
-*/
 function createResolvablePromise() {
-	let resolve;
+	let resolve3;
 	let reject;
 	return {
 		promise: new Promise((res, rej) => {
-			resolve = res;
+			resolve3 = res;
 			reject = rej;
 		}),
-		resolve,
+		resolve: resolve3,
 		reject
 	};
 }
-/**
-* Creates a stitchable stream that can pipe one stream at a time.
-*
-* @template T - The type of values emitted by the streams.
-* @returns {Object} An object containing the stitchable stream and control methods.
-*/
 function createStitchableStream() {
 	let innerStreams = [];
 	let controller = null;
 	let isClosed = false;
-	let isCancelled = false;
 	let waitForNewStream = createResolvablePromise();
 	const terminate = () => {
-		if (isCancelled) return;
 		isClosed = true;
 		waitForNewStream.resolve();
 		innerStreams.forEach(({ reader, onCancel }) => {
@@ -7100,7 +5931,7 @@ function createStitchableStream() {
 		controller?.close();
 	};
 	const processPull = async () => {
-		if (isCancelled) return;
+		var _a22;
 		if (isClosed && innerStreams.length === 0) {
 			controller?.close();
 			return;
@@ -7113,15 +5944,13 @@ function createStitchableStream() {
 		const currentStream = innerStreams[0];
 		try {
 			const { value, done } = await currentStream.reader.read();
-			if (isCancelled) return;
 			if (done) {
 				innerStreams.shift();
 				if (innerStreams.length === 0 && isClosed) controller?.close();
 				else await processPull();
 			} else controller?.enqueue(value);
 		} catch (error) {
-			if (isCancelled) return;
-			currentStream.onError?.(error);
+			(_a22 = currentStream.onError) == null || _a22.call(currentStream, error);
 			controller?.error(error);
 			innerStreams.shift();
 			terminate();
@@ -7134,22 +5963,15 @@ function createStitchableStream() {
 			},
 			pull: processPull,
 			async cancel() {
-				isCancelled = true;
-				isClosed = true;
-				waitForNewStream.resolve();
 				for (const { reader, onCancel } of innerStreams) {
 					onCancel?.();
 					await reader.cancel();
 				}
 				innerStreams = [];
+				isClosed = true;
 			}
 		}),
 		addStream: (innerStream, callbacks) => {
-			if (isCancelled) {
-				callbacks?.onCancel?.();
-				innerStream.cancel().catch(() => {});
-				return;
-			}
 			if (isClosed) throw new Error("Cannot add inner stream: outer stream is closed");
 			innerStreams.push({
 				reader: innerStream.getReader(),
@@ -7162,7 +5984,6 @@ function createStitchableStream() {
 		* finish processing and then close the outer stream.
 		*/
 		close: () => {
-			if (isCancelled) return;
 			isClosed = true;
 			waitForNewStream.resolve();
 			if (innerStreams.length === 0) controller?.close();
@@ -7174,29 +5995,15 @@ function createStitchableStream() {
 		terminate
 	};
 }
-var streamRetryAttemptBoundarySymbol = Symbol("streamRetryAttemptBoundary");
-function createStreamRetryAttemptBoundaryPart({ warnings }) {
-	return {
-		[streamRetryAttemptBoundarySymbol]: true,
-		warnings
-	};
-}
-function isStreamRetryAttemptBoundaryPart(part) {
-	return typeof part === "object" && part != null && streamRetryAttemptBoundarySymbol in part;
-}
-function executeToolsFromStream({ stream, tools, callId, messages, abortSignal, timeout, experimental_sandbox: sandbox, toolsContext, toolApproval, runtimeContext, toolApprovalSecret, generateId, onToolExecutionStart, onToolExecutionEnd, executeToolInTelemetryContext, runInTracingChannelSpan }) {
+function executeToolsFromStream({ stream, tools, callId, messages, abortSignal, timeout, experimental_sandbox: sandbox, toolsContext, toolApproval, runtimeContext, toolApprovalSecret, generateId: generateId2, onToolExecutionStart, onToolExecutionEnd, executeToolInTelemetryContext, runInTracingChannelSpan }) {
 	const toolCallsToExecute = [];
 	return stream.pipeThrough(new TransformStream({ async transform(chunk, controller) {
 		controller.enqueue(chunk);
-		if (isStreamRetryAttemptBoundaryPart(chunk)) {
-			toolCallsToExecute.length = 0;
-			return;
-		}
 		switch (chunk.type) {
 			case "tool-call": {
 				if (chunk.invalid) return;
-				const tool = getOwn(tools, chunk.toolName);
-				if (tool == null) return;
+				const tool2 = getOwn(tools, chunk.toolName);
+				if (tool2 == null) return;
 				const toolApprovalStatus = await resolveToolApproval({
 					tools,
 					toolCall: chunk,
@@ -7206,10 +6013,10 @@ function executeToolsFromStream({ stream, tools, callId, messages, abortSignal, 
 					runtimeContext
 				});
 				if (toolApprovalStatus.type === "not-applicable") {
-					if (tool.execute != null && chunk.providerExecuted !== true) toolCallsToExecute.push(chunk);
+					if (tool2.execute != null && chunk.providerExecuted !== true) toolCallsToExecute.push(chunk);
 					return;
 				}
-				const approvalId = generateId();
+				const approvalId = generateId2();
 				const signature = await maybeSignApproval({
 					secret: toolApprovalSecret,
 					approvalId,
@@ -7223,7 +6030,6 @@ function executeToolsFromStream({ stream, tools, callId, messages, abortSignal, 
 							type: "tool-approval-request",
 							approvalId,
 							toolCall: chunk,
-							...toolApprovalStatus.reason != null ? { reason: toolApprovalStatus.reason } : {},
 							...signature != null ? { signature } : {}
 						});
 						return;
@@ -7243,11 +6049,6 @@ function executeToolsFromStream({ stream, tools, callId, messages, abortSignal, 
 							reason: toolApprovalStatus.reason,
 							providerExecuted: chunk.providerExecuted
 						});
-						controller.enqueue({
-							type: "tool-output-denied",
-							toolCallId: chunk.toolCallId,
-							toolName: chunk.toolName
-						});
 						return;
 					case "approved":
 						controller.enqueue({
@@ -7265,12 +6066,12 @@ function executeToolsFromStream({ stream, tools, callId, messages, abortSignal, 
 							reason: toolApprovalStatus.reason,
 							providerExecuted: chunk.providerExecuted
 						});
+						break;
 				}
-				if (tool.execute != null && chunk.providerExecuted !== true) toolCallsToExecute.push(chunk);
+				if (tool2.execute != null && chunk.providerExecuted !== true) toolCallsToExecute.push(chunk);
 				return;
 			}
 			case "model-call-end":
-				if (!isToolExecutionAllowedFinishReason(chunk.finishReason)) return;
 				await Promise.all(toolCallsToExecute.map(async (toolCall) => {
 					try {
 						const result = await executeToolCall({
@@ -7286,8 +6087,8 @@ function executeToolsFromStream({ stream, tools, callId, messages, abortSignal, 
 							onToolExecutionEnd,
 							executeToolInTelemetryContext,
 							runInTracingChannelSpan,
-							onPreliminaryToolResult: (result) => {
-								controller.enqueue(result);
+							onPreliminaryToolResult: (result2) => {
+								controller.enqueue(result2);
 							}
 						});
 						if (result != null) {
@@ -7305,212 +6106,65 @@ function executeToolsFromStream({ stream, tools, callId, messages, abortSignal, 
 						});
 					}
 				}));
+				return;
 		}
 	} }));
 }
-function invokeToolCallbacksFromStream({ stream, tools, stepInputMessages, abortSignal, toolsContext }) {
+function invokeToolCallbacksFromStream({ stream, tools, stepInputMessages, abortSignal, runtimeContext }) {
 	if (tools == null) return stream;
-	let ongoingToolCalls = createIdMap();
-	const getValidatedContext = ({ toolCallId, toolName }) => {
-		const ongoingToolCall = ongoingToolCalls[toolCallId];
-		const validatedContext = ongoingToolCall?.validatedContexts[toolName];
-		if (validatedContext != null) return validatedContext;
-		const tool = getOwn(tools, toolName);
-		const newValidatedContext = validateToolContext({
-			toolName,
-			context: getOwn(toolsContext, toolName),
-			contextSchema: tool?.contextSchema
-		});
-		if (ongoingToolCall != null) ongoingToolCall.validatedContexts[toolName] = newValidatedContext;
-		return newValidatedContext;
-	};
+	const ongoingToolCallToolNames = createIdMap();
 	return stream.pipeThrough(new TransformStream({ async transform(chunk, controller) {
 		controller.enqueue(chunk);
-		if (isStreamRetryAttemptBoundaryPart(chunk)) {
-			ongoingToolCalls = createIdMap();
-			return;
-		}
 		switch (chunk.type) {
 			case "tool-input-start": {
-				ongoingToolCalls[chunk.id] = {
-					toolName: chunk.toolName,
-					validatedContexts: createIdMap()
-				};
-				const tool = getOwn(tools, chunk.toolName);
-				if (tool?.onInputStart != null) await tool.onInputStart({
+				ongoingToolCallToolNames[chunk.id] = chunk.toolName;
+				const tool2 = getOwn(tools, chunk.toolName);
+				if ((tool2 == null ? void 0 : tool2.onInputStart) != null) await tool2.onInputStart({
 					toolCallId: chunk.id,
 					messages: stepInputMessages,
 					abortSignal,
-					context: await getValidatedContext({
-						toolCallId: chunk.id,
-						toolName: chunk.toolName
-					})
+					context: runtimeContext
 				});
 				break;
 			}
 			case "tool-input-delta": {
-				const toolName = ongoingToolCalls[chunk.id]?.toolName;
-				const tool = getOwn(tools, toolName);
-				if (tool?.onInputDelta != null) await tool.onInputDelta({
+				const toolName = ongoingToolCallToolNames[chunk.id];
+				const tool2 = getOwn(tools, toolName);
+				if ((tool2 == null ? void 0 : tool2.onInputDelta) != null) await tool2.onInputDelta({
 					inputTextDelta: chunk.delta,
 					toolCallId: chunk.id,
 					messages: stepInputMessages,
 					abortSignal,
-					context: await getValidatedContext({
-						toolCallId: chunk.id,
-						toolName
-					})
+					context: runtimeContext
 				});
 				break;
 			}
 			case "tool-call": {
-				const toolName = chunk.toolName;
-				const tool = getOwn(tools, toolName);
-				if (!chunk.invalid && tool?.onInputAvailable != null) {
-					const validatedContext = getValidatedContext({
-						toolCallId: chunk.toolCallId,
-						toolName
-					});
-					delete ongoingToolCalls[chunk.toolCallId];
-					await tool.onInputAvailable({
-						input: chunk.input,
-						toolCallId: chunk.toolCallId,
-						messages: stepInputMessages,
-						abortSignal,
-						context: await validatedContext
-					});
-				} else delete ongoingToolCalls[chunk.toolCallId];
+				const toolName = ongoingToolCallToolNames[chunk.toolCallId];
+				const tool2 = getOwn(tools, toolName);
+				delete ongoingToolCallToolNames[chunk.toolCallId];
+				if ((tool2 == null ? void 0 : tool2.onInputAvailable) != null) await tool2.onInputAvailable({
+					input: chunk.input,
+					toolCallId: chunk.toolCallId,
+					messages: stepInputMessages,
+					abortSignal,
+					context: runtimeContext
+				});
 			}
 		}
 	} }));
 }
-/**
-* Normalizes well-formed provider error payloads without changing existing
-* Error instances or malformed/unknown values.
-*/
-function normalizeStreamProviderError(error) {
-	if (isError(error) || AISDKError.isInstance(error) || StreamProviderError.isInstance(error)) return error;
-	const outer = asRecord(error);
-	if (outer == null) return error;
-	const providerStreamError = isProviderStreamError(error);
-	const details = providerStreamError ? outer : asRecord(asRecord(outer.response)?.error) ?? asRecord(outer.error) ?? outer;
-	if (typeof details.message !== "string") return error;
-	const type = getString(details.type) ?? getString(outer.type);
-	const code = getStringOrNumber(details.code) ?? getStringOrNumber(outer.code);
-	const explicitStatusCode = getHttpStatusCode(details.statusCode) ?? getHttpStatusCode(outer.statusCode) ?? getHttpStatusCode(details.status_code) ?? getHttpStatusCode(outer.status_code) ?? getHttpStatusCode(details.status) ?? getHttpStatusCode(outer.status) ?? getHttpStatusCode(details.code) ?? getHttpStatusCode(outer.code);
-	const messageMetadata = inferExactMessageMetadata(details.message);
-	const statusCode = explicitStatusCode ?? messageMetadata?.statusCode;
-	const explicitRetryability = getBoolean(details.isRetryable) ?? getBoolean(outer.isRetryable) ?? getBoolean(details.is_retryable) ?? getBoolean(outer.is_retryable);
-	return new StreamProviderError({
-		message: details.message,
-		type,
-		code,
-		statusCode,
-		isRetryable: explicitRetryability ?? messageMetadata?.isRetryable ?? isRetryableStatusCode(statusCode),
-		data: providerStreamError ? error.data : error
-	});
-}
-function inferExactMessageMetadata(message) {
-	switch (message.trim().toLowerCase()) {
-		case "overloaded":
-		case "overloaded error":
-		case "model overloaded": return {
-			statusCode: 503,
-			isRetryable: true
-		};
-		case "internal server error": return {
-			statusCode: 500,
-			isRetryable: true
-		};
-		case "service unavailable": return {
-			statusCode: 503,
-			isRetryable: true
-		};
-		default: return;
-	}
-}
-function isRetryableStatusCode(statusCode) {
-	return statusCode != null && (statusCode === 408 || statusCode === 409 || statusCode === 429 || statusCode >= 500);
-}
-function asRecord(value) {
-	return typeof value === "object" && value != null ? value : void 0;
-}
-function isError(value) {
-	return value instanceof Error || Object.prototype.toString.call(value) === "[object Error]";
-}
-function getString(value) {
-	return typeof value === "string" ? value : void 0;
-}
-function getStringOrNumber(value) {
-	return typeof value === "string" || typeof value === "number" ? value : void 0;
-}
-function getBoolean(value) {
-	return typeof value === "boolean" ? value : void 0;
-}
-function getHttpStatusCode(value) {
-	const statusCode = typeof value === "string" && /^\d{3}$/.test(value) ? Number(value) : value;
-	return typeof statusCode === "number" && Number.isInteger(statusCode) && statusCode >= 400 && statusCode <= 599 ? statusCode : void 0;
-}
-var originalGenerateId$3 = createIdGenerator({
+var originalGenerateId2 = createIdGenerator({
 	prefix: "aitxt",
 	size: 24
 });
-var originalGenerateCallId$8 = createIdGenerator({
+var originalGenerateCallId2 = createIdGenerator({
 	prefix: "call",
 	size: 24
 });
-/**
-* Streams a single language model call after standardizing the prompt and tools.
-*
-* The returned stream emits model call parts together with request and response
-* metadata when available.
-*
-* @param model - The language model to use.
-* @param tools - Tools that are accessible to and can be called by the model. The model needs to support calling tools.
-* @param output - Output configuration that controls the response format requested from the model.
-* @param toolChoice - The tool choice strategy for the model call.
-*
-* @param system - A system message that will be part of the prompt.
-* @param prompt - A simple text prompt. You can either use `prompt` or `messages` but not both.
-* @param messages - A list of messages. You can either use `prompt` or `messages` but not both.
-* @param allowSystemInMessages - Whether system messages are allowed in the `prompt` or `messages` fields. Default: false.
-*
-* @param maxOutputTokens - Maximum number of tokens to generate.
-* @param temperature - Temperature setting.
-* The value is passed through to the provider. The range depends on the provider and model.
-* It is recommended to set either `temperature` or `topP`, but not both.
-* @param topP - Nucleus sampling.
-* The value is passed through to the provider. The range depends on the provider and model.
-* It is recommended to set either `temperature` or `topP`, but not both.
-* @param topK - Only sample from the top K options for each subsequent token.
-* Used to remove "long tail" low probability responses.
-* Recommended for advanced use cases only. You usually only need to use temperature.
-* @param presencePenalty - Presence penalty setting.
-* It affects the likelihood of the model to repeat information that is already in the prompt.
-* The value is passed through to the provider. The range depends on the provider and model.
-* @param frequencyPenalty - Frequency penalty setting.
-* It affects the likelihood of the model to repeatedly use the same words or phrases.
-* The value is passed through to the provider. The range depends on the provider and model.
-* @param stopSequences - Stop sequences.
-* If set, the model will stop generating text when one of the stop sequences is generated.
-* @param seed - The seed (integer) to use for random sampling.
-* If set and supported by the model, calls will generate deterministic results.
-* @param reasoning - Reasoning configuration for the model call.
-*
-* @param download - A function that downloads URLs as part of prompt conversion.
-* @param abortSignal - An optional abort signal that can be used to cancel the call.
-* @param headers - Additional HTTP headers to be sent with the request.
-* @param includeRawChunks - Whether to include raw provider stream chunks in the model stream.
-* @param providerOptions - Additional provider-specific options.
-* @param repairToolCall - A function that can repair invalid tool calls before they are emitted.
-* @param refineToolInput - Optional mapping of tool names to functions that refine parsed tool inputs before they are emitted, used for telemetry, or executed.
-* @param onStart - A callback that receives the fully converted prompt before the model call starts.
-*
-* @returns A stream of model call parts together with request and response metadata when available.
-*/
-async function streamLanguageModelCall({ model, tools, toolOrder, output, toolChoice, prompt, system, instructions, messages, allowSystemInMessages, download, abortSignal, headers, includeRawChunks, providerOptions, repairToolCall, refineToolInput, executeLanguageModelCallInTelemetryContext = async ({ execute }) => await execute(), callId, toolsContext, experimental_sandbox: sandbox, _internal: { generateId = originalGenerateId$3, generateCallId = originalGenerateCallId$8, now: now$3 = now } = {}, onStart, onLanguageModelCallStart, onLanguageModelCallEnd, ...callSettings }) {
+async function streamLanguageModelCall({ model, tools, toolOrder, output, toolChoice, prompt, system, instructions, messages, allowSystemInMessages, download: download2, abortSignal, headers, includeRawChunks, providerOptions, repairToolCall, refineToolInput, executeLanguageModelCallInTelemetryContext = async ({ execute }) => await execute(), callId, toolsContext, experimental_sandbox: sandbox, _internal: { generateId: generateId2 = originalGenerateId2, generateCallId = originalGenerateCallId2, now: now2 = now } = {}, onStart, onLanguageModelCallStart, onLanguageModelCallEnd, ...callSettings }) {
 	const resolvedModel = resolveLanguageModel(model);
-	const effectiveCallId = callId ?? generateCallId();
+	const effectiveCallId = callId != null ? callId : generateCallId();
 	const standardizedPrompt = await standardizePrompt({
 		instructions,
 		system,
@@ -7524,8 +6178,7 @@ async function streamLanguageModelCall({ model, tools, toolOrder, output, toolCh
 			messages: standardizedPrompt.messages
 		},
 		supportedUrls: await resolvedModel.supportedUrls,
-		download,
-		abortSignal,
+		download: download2,
 		provider: resolvedModel.provider.split(".")[0]
 	});
 	const stepTools = await prepareTools({
@@ -7552,14 +6205,14 @@ async function streamLanguageModelCall({ model, tools, toolOrder, output, toolCh
 		event: languageModelCallStartEvent,
 		callbacks: onLanguageModelCallStart
 	});
-	const callStartTimestampMs = now$3();
+	const callStartTimestampMs = now2();
 	const { stream: languageModelStream, response, request } = await executeLanguageModelCallInTelemetryContext({
 		...languageModelCallStartEvent,
 		execute: async () => await resolvedModel.doStream({
 			...callSettings,
 			tools: stepTools,
 			toolChoice: stepToolChoice,
-			responseFormat: await output?.responseFormat,
+			responseFormat: await (output == null ? void 0 : output.responseFormat),
 			prompt: promptMessages,
 			providerOptions,
 			abortSignal,
@@ -7574,13 +6227,11 @@ async function streamLanguageModelCall({ model, tools, toolOrder, output, toolCh
 			messages: standardizedPrompt.messages,
 			repairToolCall,
 			refineToolInput,
-			abortSignal,
 			callId: effectiveCallId,
 			provider: resolvedModel.provider,
 			modelId: resolvedModel.modelId,
-			toolChoice: stepToolChoice,
-			generateId,
-			now: now$3,
+			generateId: generateId2,
+			now: now2,
 			callStartTimestampMs,
 			onLanguageModelCallEnd
 		}))),
@@ -7588,39 +6239,28 @@ async function streamLanguageModelCall({ model, tools, toolOrder, output, toolCh
 		request
 	};
 }
-function createLanguageModelV4StreamPartToLanguageModelStreamPartTransform({ tools, instructions, messages, repairToolCall, refineToolInput, abortSignal, callId, provider, modelId, toolChoice, generateId, now, callStartTimestampMs, onLanguageModelCallEnd }) {
+function createLanguageModelV4StreamPartToLanguageModelStreamPartTransform({ tools, instructions, messages, repairToolCall, refineToolInput, callId, provider, modelId, generateId: generateId2, now: now2, callStartTimestampMs, onLanguageModelCallEnd }) {
 	const toolCallsByToolCallId = /* @__PURE__ */ new Map();
 	const modelCallContent = [];
-	const rawModelCallContent = [];
 	const textPartIndexes = /* @__PURE__ */ new Map();
 	const reasoningPartIndexes = /* @__PURE__ */ new Map();
-	const rawTextPartIndexes = /* @__PURE__ */ new Map();
-	const rawReasoningPartIndexes = /* @__PURE__ */ new Map();
-	let responseId = generateId();
-	let responseModelId = modelId;
+	let responseId = generateId2();
 	let timeToFirstOutputMs;
 	let previousOutputChunkTimestampMs;
 	const timeBetweenOutputChunksMs = [];
 	return new TransformStream({ async transform(chunk, controller) {
-		if (isOutputChunk$1(chunk)) {
-			const outputChunkTimestampMs = now();
+		var _a22, _b;
+		if (isOutputChunk(chunk)) {
+			const outputChunkTimestampMs = now2();
 			if (timeToFirstOutputMs == null) timeToFirstOutputMs = outputChunkTimestampMs - callStartTimestampMs;
 			else if (previousOutputChunkTimestampMs != null) timeBetweenOutputChunksMs.push(outputChunkTimestampMs - previousOutputChunkTimestampMs);
 			previousOutputChunkTimestampMs = outputChunkTimestampMs;
 		}
 		switch (chunk.type) {
-			case "error":
-				controller.enqueue({
-					type: "error",
-					error: normalizeStreamProviderError(chunk.error)
-				});
-				break;
 			case "text-start":
 				upsertTextContentPart({
 					content: modelCallContent,
-					rawContent: rawModelCallContent,
 					partIndexes: textPartIndexes,
-					rawPartIndexes: rawTextPartIndexes,
 					id: chunk.id,
 					type: "text",
 					providerMetadata: chunk.providerMetadata
@@ -7630,9 +6270,7 @@ function createLanguageModelV4StreamPartToLanguageModelStreamPartTransform({ too
 			case "text-delta":
 				upsertTextContentPart({
 					content: modelCallContent,
-					rawContent: rawModelCallContent,
 					partIndexes: textPartIndexes,
-					rawPartIndexes: rawTextPartIndexes,
 					id: chunk.id,
 					type: "text",
 					textDelta: chunk.delta,
@@ -7648,23 +6286,18 @@ function createLanguageModelV4StreamPartToLanguageModelStreamPartTransform({ too
 			case "text-end":
 				upsertTextContentPart({
 					content: modelCallContent,
-					rawContent: rawModelCallContent,
 					partIndexes: textPartIndexes,
-					rawPartIndexes: rawTextPartIndexes,
 					id: chunk.id,
 					type: "text",
 					providerMetadata: chunk.providerMetadata
 				});
 				textPartIndexes.delete(chunk.id);
-				rawTextPartIndexes.delete(chunk.id);
 				controller.enqueue(chunk);
 				break;
 			case "reasoning-start":
 				upsertTextContentPart({
 					content: modelCallContent,
-					rawContent: rawModelCallContent,
 					partIndexes: reasoningPartIndexes,
-					rawPartIndexes: rawReasoningPartIndexes,
 					id: chunk.id,
 					type: "reasoning",
 					providerMetadata: chunk.providerMetadata
@@ -7674,9 +6307,7 @@ function createLanguageModelV4StreamPartToLanguageModelStreamPartTransform({ too
 			case "reasoning-delta":
 				upsertTextContentPart({
 					content: modelCallContent,
-					rawContent: rawModelCallContent,
 					partIndexes: reasoningPartIndexes,
-					rawPartIndexes: rawReasoningPartIndexes,
 					id: chunk.id,
 					type: "reasoning",
 					textDelta: chunk.delta,
@@ -7692,24 +6323,18 @@ function createLanguageModelV4StreamPartToLanguageModelStreamPartTransform({ too
 			case "reasoning-end":
 				upsertTextContentPart({
 					content: modelCallContent,
-					rawContent: rawModelCallContent,
 					partIndexes: reasoningPartIndexes,
-					rawPartIndexes: rawReasoningPartIndexes,
 					id: chunk.id,
 					type: "reasoning",
 					providerMetadata: chunk.providerMetadata
 				});
 				reasoningPartIndexes.delete(chunk.id);
-				rawReasoningPartIndexes.delete(chunk.id);
 				controller.enqueue(chunk);
 				break;
 			case "file":
 			case "reasoning-file": {
 				const file = new DefaultGeneratedFileWithType({
-					data: await resolveGeneratedFileData({
-						data: chunk.data,
-						abortSignal
-					}),
+					data: chunk.data.type === "data" ? chunk.data.data : chunk.data.url.toString(),
 					mediaType: chunk.mediaType
 				});
 				modelCallContent.push({
@@ -7717,7 +6342,6 @@ function createLanguageModelV4StreamPartToLanguageModelStreamPartTransform({ too
 					file,
 					...chunk.providerMetadata != null ? { providerMetadata: chunk.providerMetadata } : {}
 				});
-				rawModelCallContent.push(chunk);
 				controller.enqueue({
 					type: chunk.type,
 					file,
@@ -7727,7 +6351,7 @@ function createLanguageModelV4StreamPartToLanguageModelStreamPartTransform({ too
 			}
 			case "finish": {
 				const usage = asLanguageModelUsage(chunk.usage);
-				const responseTimeMs = now() - callStartTimestampMs;
+				const responseTimeMs = now2() - callStartTimestampMs;
 				const performance = {
 					responseTimeMs,
 					effectiveOutputTokensPerSecond: calculateTokensPerSecond({
@@ -7753,43 +6377,26 @@ function createLanguageModelV4StreamPartToLanguageModelStreamPartTransform({ too
 					event: {
 						callId,
 						provider,
-						modelId: responseModelId,
+						modelId,
 						finishReason: chunk.finishReason.unified,
 						usage,
 						content: modelCallContent,
 						responseId,
-						...chunk.providerMetadata != null ? { providerMetadata: chunk.providerMetadata } : {},
 						performance
 					},
 					callbacks: onLanguageModelCallEnd
 				});
-				const enforcedToolChoice = toolChoice.type === "required" || toolChoice.type === "tool" ? toolChoice : void 0;
-				const toolChoiceViolationError = enforcedToolChoice != null && ![...toolCallsByToolCallId.values()].some((toolCall) => enforcedToolChoice.type === "required" || toolCall.toolName === enforcedToolChoice.toolName) ? new ToolChoiceViolationError({
-					toolChoice: enforcedToolChoice,
-					finishReason: chunk.finishReason.unified,
-					provider,
-					modelId,
-					content: rawModelCallContent
-				}) : void 0;
 				controller.enqueue({
 					type: "model-call-end",
-					finishReason: toolChoiceViolationError == null ? chunk.finishReason.unified : "error",
+					finishReason: chunk.finishReason.unified,
 					rawFinishReason: chunk.finishReason.raw,
 					usage,
 					providerMetadata: chunk.providerMetadata,
 					performance
 				});
-				if (toolChoiceViolationError != null) {
-					controller.enqueue({
-						type: "error",
-						error: toolChoiceViolationError
-					});
-					break;
-				}
 				break;
 			}
 			case "tool-call":
-				rawModelCallContent.push(chunk);
 				try {
 					const toolCall = await parseToolCall({
 						toolCall: chunk,
@@ -7797,14 +6404,13 @@ function createLanguageModelV4StreamPartToLanguageModelStreamPartTransform({ too
 						repairToolCall,
 						refineToolInput,
 						instructions,
-						messages,
-						abortSignal
+						messages
 					});
 					toolCallsByToolCallId.set(toolCall.toolCallId, toolCall);
 					controller.enqueue(toolCall);
 					modelCallContent.push(toolCall);
 					if (toolCall.invalid) {
-						if (!toolCall.providerExecuted) controller.enqueue({
+						controller.enqueue({
 							type: "tool-error",
 							toolCallId: toolCall.toolCallId,
 							toolName: toolCall.toolName,
@@ -7824,7 +6430,6 @@ function createLanguageModelV4StreamPartToLanguageModelStreamPartTransform({ too
 				}
 				break;
 			case "tool-approval-request": {
-				rawModelCallContent.push(chunk);
 				const toolCall = toolCallsByToolCallId.get(chunk.toolCallId);
 				if (toolCall == null) {
 					controller.enqueue({
@@ -7846,41 +6451,40 @@ function createLanguageModelV4StreamPartToLanguageModelStreamPartTransform({ too
 				break;
 			}
 			case "tool-result": {
-				rawModelCallContent.push(chunk);
 				const toolName = chunk.toolName;
 				const toolCall = toolCallsByToolCallId.get(chunk.toolCallId);
 				const toolResultPart = chunk.isError ? {
 					type: "tool-error",
 					toolCallId: chunk.toolCallId,
 					toolName,
-					input: toolCall?.input,
+					input: toolCall == null ? void 0 : toolCall.input,
 					providerExecuted: true,
 					error: chunk.result,
 					dynamic: chunk.dynamic,
 					...chunk.providerMetadata != null ? { providerMetadata: chunk.providerMetadata } : {},
-					...toolCall?.toolMetadata != null ? { toolMetadata: toolCall.toolMetadata } : {}
+					...(toolCall == null ? void 0 : toolCall.toolMetadata) != null ? { toolMetadata: toolCall.toolMetadata } : {}
 				} : {
 					type: "tool-result",
 					toolCallId: chunk.toolCallId,
 					toolName,
-					input: toolCall?.input,
+					input: toolCall == null ? void 0 : toolCall.input,
 					output: chunk.result,
 					providerExecuted: true,
 					dynamic: chunk.dynamic,
 					...chunk.providerMetadata != null ? { providerMetadata: chunk.providerMetadata } : {},
-					...toolCall?.toolMetadata != null ? { toolMetadata: toolCall.toolMetadata } : {}
+					...(toolCall == null ? void 0 : toolCall.toolMetadata) != null ? { toolMetadata: toolCall.toolMetadata } : {}
 				};
 				controller.enqueue(toolResultPart);
 				modelCallContent.push(toolResultPart);
 				break;
 			}
 			case "tool-input-start": {
-				const tool = getOwn(tools, chunk.toolName);
+				const tool2 = getOwn(tools, chunk.toolName);
 				controller.enqueue({
 					...chunk,
-					dynamic: chunk.dynamic ?? tool?.type === "dynamic",
-					title: tool?.title,
-					...tool?.metadata != null ? { toolMetadata: tool.metadata } : {}
+					dynamic: (_a22 = chunk.dynamic) != null ? _a22 : (tool2 == null ? void 0 : tool2.type) === "dynamic",
+					title: tool2 == null ? void 0 : tool2.title,
+					...(tool2 == null ? void 0 : tool2.metadata) != null ? { toolMetadata: tool2.metadata } : {}
 				});
 				break;
 			}
@@ -7891,8 +6495,7 @@ function createLanguageModelV4StreamPartToLanguageModelStreamPartTransform({ too
 				});
 				break;
 			case "response-metadata":
-				responseId = chunk.id ?? responseId;
-				responseModelId = chunk.modelId ?? responseModelId;
+				responseId = (_b = chunk.id) != null ? _b : responseId;
 				controller.enqueue({
 					type: "model-call-response-metadata",
 					id: chunk.id,
@@ -7901,25 +6504,18 @@ function createLanguageModelV4StreamPartToLanguageModelStreamPartTransform({ too
 				});
 				break;
 			default:
-				if (chunk.type === "custom" || chunk.type === "source") {
-					modelCallContent.push(chunk);
-					rawModelCallContent.push(chunk);
-				}
+				if (chunk.type === "custom" || chunk.type === "source") modelCallContent.push(chunk);
 				controller.enqueue(chunk);
+				break;
 		}
 	} });
 }
-/**
-* Returns true for chunks that contain generated model output.
-* Used to measure time-to-first-output for text, reasoning, generated files,
-* and tool calls.
-*/
-function isOutputChunk$1(chunk) {
+function isOutputChunk(chunk) {
 	return chunk.type === "text-delta" && chunk.delta.length > 0 || chunk.type === "reasoning-delta" && chunk.delta.length > 0 || chunk.type === "tool-input-delta" && chunk.delta.length > 0 || chunk.type === "file" || chunk.type === "reasoning-file" || chunk.type === "tool-call";
 }
 function calculateOutputChunkTimingStats(timingsMs) {
 	const sortedTimingsMs = [...timingsMs].sort((a, b) => a - b);
-	const sum = timingsMs.reduce((sum, timingMs) => sum + timingMs, 0);
+	const sum = timingsMs.reduce((sum2, timingMs) => sum2 + timingMs, 0);
 	return {
 		min: sortedTimingsMs[0],
 		p10: calculateNearestRankPercentile(sortedTimingsMs, .1),
@@ -7932,10 +6528,7 @@ function calculateOutputChunkTimingStats(timingsMs) {
 function calculateNearestRankPercentile(sortedValues, percentile) {
 	return sortedValues[Math.ceil(percentile * sortedValues.length) - 1];
 }
-/**
-* Appends a text or reasoning content part into the content array and updates the part indexes.
-*/
-function upsertTextContentPart({ content, rawContent, partIndexes, rawPartIndexes, id, type, textDelta, providerMetadata }) {
+function upsertTextContentPart({ content, partIndexes, id, type, textDelta, providerMetadata }) {
 	let partIndex = partIndexes.get(id);
 	if (partIndex == null) {
 		partIndex = content.push({
@@ -7945,31 +6538,15 @@ function upsertTextContentPart({ content, rawContent, partIndexes, rawPartIndexe
 		}) - 1;
 		partIndexes.set(id, partIndex);
 	}
-	let rawPartIndex = rawPartIndexes.get(id);
-	if (rawPartIndex == null) {
-		rawPartIndex = rawContent.push({
-			type,
-			text: "",
-			...providerMetadata != null ? { providerMetadata } : {}
-		}) - 1;
-		rawPartIndexes.set(id, rawPartIndex);
-	}
 	const part = content[partIndex];
-	const rawPart = rawContent[rawPartIndex];
-	if (textDelta != null) {
-		part.text += textDelta;
-		rawPart.text += textDelta;
-	}
-	if (providerMetadata != null) {
-		part.providerMetadata = providerMetadata;
-		rawPart.providerMetadata = providerMetadata;
-	}
+	if (textDelta != null) part.text += textDelta;
+	if (providerMetadata != null) part.providerMetadata = providerMetadata;
 }
-var originalGenerateId$2 = createIdGenerator({
+var originalGenerateId3 = createIdGenerator({
 	prefix: "aitxt",
 	size: 24
 });
-var originalGenerateCallId$7 = createIdGenerator({
+var originalGenerateCallId3 = createIdGenerator({
 	prefix: "call",
 	size: 24
 });
@@ -7992,7 +6569,6 @@ var isOutputChunkType = {
 	"tool-call": true,
 	"tool-result": false,
 	"tool-error": false,
-	"tool-output-denied": false,
 	"tool-execution-end": false,
 	"model-call-start": false,
 	"model-call-response-metadata": false,
@@ -8000,7 +6576,7 @@ var isOutputChunkType = {
 	error: false,
 	raw: false
 };
-function isOutputChunk(chunk) {
+function isOutputChunk2(chunk) {
 	if (!isOutputChunkType[chunk.type]) return false;
 	switch (chunk.type) {
 		case "text-delta":
@@ -8012,74 +6588,10 @@ function isOutputChunk(chunk) {
 		default: return false;
 	}
 }
-/**
-* Generate a text and call tools for a given prompt using a language model.
-*
-* This function streams the output. If you do not want to stream the output, use `generateText` instead.
-*
-* @param model - The language model to use.
-* @param tools - Tools that are accessible to and can be called by the model. The model needs to support calling tools.
-* @param toolOrder - Controls the order in which tools are sent to the provider. Tools not listed are appended alphabetically.
-*
-* @param system - A system message that will be part of the prompt.
-* @param prompt - A simple text prompt. You can either use `prompt` or `messages` but not both.
-* @param messages - A list of messages. You can either use `prompt` or `messages` but not both.
-* @param allowSystemInMessages - Whether system messages are allowed in the `prompt` or `messages` fields. Default: false.
-*
-* @param maxOutputTokens - Maximum number of tokens to generate.
-* @param temperature - Temperature setting.
-* The value is passed through to the provider. The range depends on the provider and model.
-* It is recommended to set either `temperature` or `topP`, but not both.
-* @param topP - Nucleus sampling.
-* The value is passed through to the provider. The range depends on the provider and model.
-* It is recommended to set either `temperature` or `topP`, but not both.
-* @param topK - Only sample from the top K options for each subsequent token.
-* Used to remove "long tail" low probability responses.
-* Recommended for advanced use cases only. You usually only need to use temperature.
-* @param presencePenalty - Presence penalty setting.
-* It affects the likelihood of the model to repeat information that is already in the prompt.
-* The value is passed through to the provider. The range depends on the provider and model.
-* @param frequencyPenalty - Frequency penalty setting.
-* It affects the likelihood of the model to repeatedly use the same words or phrases.
-* The value is passed through to the provider. The range depends on the provider and model.
-* @param stopSequences - Stop sequences.
-* If set, the model will stop generating text when one of the stop sequences is generated.
-* @param seed - The seed (integer) to use for random sampling.
-* If set and supported by the model, calls will generate deterministic results.
-*
-* @param maxRetries - Maximum number of retries. Set to 0 to disable retries. Default: 2.
-* @param streamRetries - Maximum number of retries for provider errors received after streaming starts. Set to 0 to disable automatic stream retries while allowing `onError` to request retries. Omit to disable all stream retry behavior. Default: 0.
-* @param abortSignal - An optional abort signal that can be used to cancel the call.
-* @param timeout - An optional timeout in milliseconds. The call will be aborted if it takes longer than the specified timeout.
-* @param headers - Additional HTTP headers to be sent with the request. Only applicable for HTTP-based providers.
-*
-* @param experimental_sandbox - The sandbox environment that is passed through to tool execution.
-* @param runtimeContext - User-defined runtime context that flows through the entire generation lifecycle.
-* @param experimental_refineToolInput - Optional mapping of tool names to functions that refine parsed tool inputs before tools are executed and before outputs, callbacks, and telemetry are recorded.
-*
-* @param onChunk - Callback that is called for each chunk of the stream. The stream processing will pause until the callback promise is resolved.
-* @param onError - Callback that is called when an error occurs during streaming. You can use it to log errors.
-* @param onStart - Callback invoked when generation begins, before any LLM calls.
-* @param experimental_onStart - Deprecated alias for `onStart`.
-* @param onStepStart - Callback invoked when each step begins, before the provider is called.
-* @param experimental_onStepStart - Deprecated alias for `onStepStart`.
-* @param onLanguageModelCallStart - Callback invoked immediately before each provider model call begins.
-* @param experimental_onLanguageModelCallStart - Deprecated alias for `onLanguageModelCallStart`.
-* @param onLanguageModelCallEnd - Callback invoked after each provider model call response is normalized and parsed.
-* @param experimental_onLanguageModelCallEnd - Deprecated alias for `onLanguageModelCallEnd`.
-* @param onToolExecutionStart - Callback invoked before each tool execution begins.
-* @param experimental_onToolCallStart - Deprecated alias for `onToolExecutionStart`.
-* @param onToolExecutionEnd - Callback invoked after each tool execution completes.
-* @param experimental_onToolCallFinish - Deprecated alias for `onToolExecutionEnd`.
-* @param onStepEnd - Callback that is called when each step (LLM call) ends, including intermediate steps.
-* @param onStepFinish - Deprecated alias for `onStepEnd`.
-* @param onEnd - Callback that is called when all steps are finished and the response is complete.
-* @param onFinish - Deprecated alias for `onEnd`.
-*
-* @returns
-* A result object for accessing different stream types and additional information.
-*/
-function streamText({ model, tools, toolChoice, instructions, system, prompt, messages, allowSystemInMessages, maxRetries, streamRetries, abortSignal, timeout, headers, stopWhen = isStepCount(1), experimental_sandbox: sandbox, output, toolApproval, experimental_toolCallers, experimental_toolApprovalSecret, experimental_telemetry, telemetry = experimental_telemetry, prepareStep, providerOptions, activeTools, toolOrder, experimental_repairToolCall, repairToolCall = experimental_repairToolCall, experimental_refineToolInput: refineToolInput, experimental_transform: transform, experimental_download: download, includeRawChunks, onChunk, onError: onErrorArg, onFinish, onEnd = onFinish, onAbort, onStepEnd, onStepFinish, onStart, experimental_onStart, onStepStart, experimental_onStepStart, onLanguageModelCallStart, experimental_onLanguageModelCallStart, onLanguageModelCallEnd, experimental_onLanguageModelCallEnd, onToolExecutionStart, onToolExecutionEnd, experimental_onToolCallStart, experimental_onToolCallFinish, runtimeContext = {}, toolsContext = {}, experimental_include, include = experimental_include, _internal: { now: now$2 = now, generateId = originalGenerateId$2, generateCallId = originalGenerateCallId$7 } = {}, ...settings }) {
+function streamText({ model, tools, toolChoice, instructions, system, prompt, messages, allowSystemInMessages, maxRetries, abortSignal, timeout, headers, stopWhen = isStepCount(1), experimental_sandbox: sandbox, output, toolApproval, experimental_toolApprovalSecret, experimental_telemetry, telemetry = experimental_telemetry, prepareStep, providerOptions, activeTools, toolOrder, experimental_repairToolCall, repairToolCall = experimental_repairToolCall, experimental_refineToolInput: refineToolInput, experimental_transform: transform, experimental_download: download2, includeRawChunks, onChunk, onError = ({ error }) => {
+	console.error(error);
+}, onFinish, onEnd = onFinish, onAbort, onStepEnd, onStepFinish, onStart, experimental_onStart, onStepStart, experimental_onStepStart, onLanguageModelCallStart, experimental_onLanguageModelCallStart, onLanguageModelCallEnd, experimental_onLanguageModelCallEnd, onToolExecutionStart, onToolExecutionEnd, experimental_onToolCallStart, experimental_onToolCallFinish, runtimeContext = {}, toolsContext = {}, experimental_include, include = experimental_include, _internal: { now: now2 = now, generateId: generateId2 = originalGenerateId3, generateCallId = originalGenerateCallId3 } = {}, ...settings }) {
+	var _a22, _b, _c, _d;
 	const totalTimeoutMs = getTotalTimeoutMs(timeout);
 	const stepTimeoutMs = getStepTimeoutMs(timeout);
 	const firstChunkTimeoutMs = getFirstChunkTimeoutMs(timeout);
@@ -8087,24 +6599,20 @@ function streamText({ model, tools, toolChoice, instructions, system, prompt, me
 	const stepAbortController = stepTimeoutMs != null ? new AbortController() : void 0;
 	const firstChunkAbortController = firstChunkTimeoutMs != null ? new AbortController() : void 0;
 	const chunkAbortController = chunkTimeoutMs != null ? new AbortController() : void 0;
-	const onError = onErrorArg ?? (({ error }) => {
-		console.error(error);
-	});
-	const resolvedOnStart = onStart ?? experimental_onStart;
-	const resolvedOnStepStart = onStepStart ?? experimental_onStepStart;
-	const resolvedOnLanguageModelCallStart = onLanguageModelCallStart ?? experimental_onLanguageModelCallStart;
-	const resolvedOnLanguageModelCallEnd = onLanguageModelCallEnd ?? experimental_onLanguageModelCallEnd;
-	const resolvedOnToolExecutionStart = onToolExecutionStart ?? experimental_onToolCallStart;
-	const resolvedOnToolExecutionEnd = onToolExecutionEnd ?? experimental_onToolCallFinish;
-	const resolvedOnStepEnd = onStepEnd ?? onStepFinish;
+	const resolvedOnStart = onStart != null ? onStart : experimental_onStart;
+	const resolvedOnStepStart = onStepStart != null ? onStepStart : experimental_onStepStart;
+	const resolvedOnLanguageModelCallStart = onLanguageModelCallStart != null ? onLanguageModelCallStart : experimental_onLanguageModelCallStart;
+	const resolvedOnLanguageModelCallEnd = onLanguageModelCallEnd != null ? onLanguageModelCallEnd : experimental_onLanguageModelCallEnd;
+	const resolvedOnToolExecutionStart = onToolExecutionStart != null ? onToolExecutionStart : experimental_onToolCallStart;
+	const resolvedOnToolExecutionEnd = onToolExecutionEnd != null ? onToolExecutionEnd : experimental_onToolCallFinish;
+	const resolvedOnStepEnd = onStepEnd != null ? onStepEnd : onStepFinish;
 	return new DefaultStreamTextResult({
 		model: resolveLanguageModel(model),
 		telemetry,
 		headers,
 		settings,
 		maxRetries,
-		streamRetries,
-		abortSignal: mergeAbortSignals(abortSignal, totalTimeoutMs, stepAbortController?.signal, firstChunkAbortController?.signal, chunkAbortController?.signal),
+		abortSignal: mergeAbortSignals(abortSignal, totalTimeoutMs, stepAbortController == null ? void 0 : stepAbortController.signal, firstChunkAbortController == null ? void 0 : firstChunkAbortController.signal, chunkAbortController == null ? void 0 : chunkAbortController.signal),
 		stepTimeoutMs,
 		stepAbortController,
 		firstChunkTimeoutMs,
@@ -8129,14 +6637,12 @@ function streamText({ model, tools, toolChoice, instructions, system, prompt, me
 		stopConditions: asArray(stopWhen),
 		output,
 		toolApproval,
-		experimental_toolCallers,
 		experimental_toolApprovalSecret,
 		providerOptions,
 		prepareStep,
 		timeout,
 		onChunk,
 		onError,
-		canRetryStreamViaOnError: streamRetries !== void 0 && onErrorArg != null,
 		onEnd,
 		onAbort,
 		onStepFinish: resolvedOnStepEnd,
@@ -8146,191 +6652,91 @@ function streamText({ model, tools, toolChoice, instructions, system, prompt, me
 		onLanguageModelCallEnd: resolvedOnLanguageModelCallEnd,
 		onToolExecutionStart: resolvedOnToolExecutionStart,
 		onToolExecutionEnd: resolvedOnToolExecutionEnd,
-		now: now$2,
-		generateId,
+		now: now2,
+		generateId: generateId2,
 		generateCallId,
-		download,
+		download: download2,
 		include: {
-			requestBody: include?.requestBody ?? false,
-			requestMessages: include?.requestMessages ?? false,
-			rawChunks: include?.rawChunks ?? includeRawChunks ?? false
+			requestBody: (_a22 = include == null ? void 0 : include.requestBody) != null ? _a22 : false,
+			requestMessages: (_b = include == null ? void 0 : include.requestMessages) != null ? _b : false,
+			rawChunks: (_d = (_c = include == null ? void 0 : include.rawChunks) != null ? _c : includeRawChunks) != null ? _d : false
 		}
 	});
 }
-var streamRetryBoundarySymbol = Symbol("streamRetryBoundary");
-function isStreamRetryBoundaryPart(part) {
-	return streamRetryBoundarySymbol in part;
-}
-async function markPromiseAsHandled$1(promise) {
+async function markPromiseAsHandled(promise) {
 	try {
 		await promise;
-	} catch {}
+	} catch (e) {}
 }
 function createOutputTransformStream(output) {
 	let firstTextChunkId = void 0;
-	let text = "";
+	let text2 = "";
 	let textChunk = "";
 	let textProviderMetadata = void 0;
-	let lastPublishedValue = void 0;
-	let hasPublishedValue = false;
-	function resetOutputState() {
-		firstTextChunkId = void 0;
-		text = "";
-		textChunk = "";
-		textProviderMetadata = void 0;
-		lastPublishedValue = void 0;
-		hasPublishedValue = false;
-	}
-	function enqueueChunk({ controller, chunk }) {
-		controller.enqueue(chunk);
-	}
+	let lastPublishedValue = "";
 	function publishTextChunk({ controller, partialOutput = void 0 }) {
-		enqueueChunk({
-			controller,
-			chunk: {
-				part: {
-					type: "text-delta",
-					id: firstTextChunkId,
-					text: textChunk,
-					providerMetadata: textProviderMetadata
-				},
-				partialOutput
-			}
+		controller.enqueue({
+			part: {
+				type: "text-delta",
+				id: firstTextChunkId,
+				text: textChunk,
+				providerMetadata: textProviderMetadata
+			},
+			partialOutput
 		});
 		textChunk = "";
 	}
 	return new TransformStream({ async transform(chunk, controller) {
-		if (isStreamRetryBoundaryPart(chunk)) {
-			resetOutputState();
-			controller.enqueue(chunk);
-			return;
-		}
-		if (chunk.type === "start-step") resetOutputState();
+		var _a22;
 		if (chunk.type === "finish-step" && textChunk.length > 0) publishTextChunk({ controller });
 		if (chunk.type !== "text-delta" && chunk.type !== "text-start" && chunk.type !== "text-end") {
-			enqueueChunk({
-				controller,
-				chunk: {
-					part: chunk,
-					partialOutput: void 0
-				}
+			controller.enqueue({
+				part: chunk,
+				partialOutput: void 0
 			});
 			return;
 		}
 		if (firstTextChunkId == null) firstTextChunkId = chunk.id;
 		else if (chunk.id !== firstTextChunkId) {
-			enqueueChunk({
-				controller,
-				chunk: {
-					part: chunk,
-					partialOutput: void 0
-				}
+			controller.enqueue({
+				part: chunk,
+				partialOutput: void 0
 			});
 			return;
 		}
 		if (chunk.type === "text-start") {
-			enqueueChunk({
-				controller,
-				chunk: {
-					part: chunk,
-					partialOutput: void 0
-				}
+			controller.enqueue({
+				part: chunk,
+				partialOutput: void 0
 			});
 			return;
 		}
 		if (chunk.type === "text-end") {
 			if (textChunk.length > 0) publishTextChunk({ controller });
-			enqueueChunk({
-				controller,
-				chunk: {
-					part: chunk,
-					partialOutput: void 0
-				}
+			controller.enqueue({
+				part: chunk,
+				partialOutput: void 0
 			});
 			return;
 		}
-		text += chunk.text;
+		text2 += chunk.text;
 		textChunk += chunk.text;
-		textProviderMetadata = chunk.providerMetadata ?? textProviderMetadata;
-		if (chunk.text.length === 0 && chunk.providerMetadata != null) {
-			enqueueChunk({
-				controller,
-				chunk: {
-					part: chunk,
-					partialOutput: void 0
-				}
-			});
-			return;
-		}
-		const result = await output.parsePartialOutput({ text });
+		textProviderMetadata = (_a22 = chunk.providerMetadata) != null ? _a22 : textProviderMetadata;
+		const result = await output.parsePartialOutput({ text: text2 });
 		if (result !== void 0) {
 			const currentValue = typeof result.partial === "string" ? result.partial : JSON.stringify(result.partial);
-			if (!hasPublishedValue || currentValue !== lastPublishedValue) {
+			if (currentValue !== lastPublishedValue) {
 				publishTextChunk({
 					controller,
 					partialOutput: result.partial
 				});
 				lastPublishedValue = currentValue;
-				hasPublishedValue = true;
 			}
 		}
 	} });
 }
-function applyStreamTextTransforms({ stream, transforms, tools, stopStream }) {
-	const sourceReader = stream.getReader();
-	let sourceDone = false;
-	let pendingBoundary;
-	let transformedSegmentReader;
-	const createTransformedSegmentReader = () => {
-		let segment = new ReadableStream({
-			async pull(controller) {
-				const { done, value } = await sourceReader.read();
-				if (done) {
-					sourceDone = true;
-					controller.close();
-					return;
-				}
-				if (isStreamRetryBoundaryPart(value)) {
-					pendingBoundary = value;
-					controller.close();
-					return;
-				}
-				controller.enqueue(value);
-			},
-			cancel(reason) {
-				return sourceReader.cancel(reason);
-			}
-		}, { highWaterMark: 0 });
-		for (const transform of transforms) segment = segment.pipeThrough(transform({
-			tools,
-			stopStream
-		}));
-		return segment.getReader();
-	};
-	return new ReadableStream({
-		async pull(controller) {
-			transformedSegmentReader ??= createTransformedSegmentReader();
-			const { done, value } = await transformedSegmentReader.read();
-			if (!done) {
-				controller.enqueue(value);
-				return;
-			}
-			transformedSegmentReader = void 0;
-			if (pendingBoundary != null) {
-				controller.enqueue(pendingBoundary);
-				pendingBoundary = void 0;
-				return;
-			}
-			if (sourceDone) controller.close();
-		},
-		async cancel(reason) {
-			await transformedSegmentReader?.cancel(reason);
-			await sourceReader.cancel(reason);
-		}
-	});
-}
 var DefaultStreamTextResult = class {
-	constructor({ model, telemetry, headers, settings, maxRetries: maxRetriesArg, streamRetries: streamRetriesArg, abortSignal, stepTimeoutMs, stepAbortController, firstChunkTimeoutMs, firstChunkAbortController, chunkTimeoutMs, chunkAbortController, instructions, system, prompt, messages, allowSystemInMessages, experimental_sandbox: sandbox, tools, toolChoice, transforms, activeTools, toolOrder, repairToolCall, refineToolInput, stopConditions, output, toolApproval, experimental_toolCallers, experimental_toolApprovalSecret, providerOptions, prepareStep, now, generateId, generateCallId, timeout, onChunk, onError, canRetryStreamViaOnError, onEnd, onAbort, onStepFinish, onStart, onStepStart, onLanguageModelCallStart, onLanguageModelCallEnd, onToolExecutionStart, onToolExecutionEnd, runtimeContext, toolsContext, download, include }) {
+	constructor({ model, telemetry, headers, settings, maxRetries: maxRetriesArg, abortSignal, stepTimeoutMs, stepAbortController, firstChunkTimeoutMs, firstChunkAbortController, chunkTimeoutMs, chunkAbortController, instructions, system, prompt, messages, allowSystemInMessages, experimental_sandbox: sandbox, tools, toolChoice, transforms, activeTools, toolOrder, repairToolCall, refineToolInput, stopConditions, output, toolApproval, experimental_toolApprovalSecret, providerOptions, prepareStep, now: now2, generateId: generateId2, generateCallId, timeout, onChunk, onError, onEnd, onAbort, onStepFinish, onStart, onStepStart, onLanguageModelCallStart, onLanguageModelCallEnd, onToolExecutionStart, onToolExecutionEnd, runtimeContext, toolsContext, download: download2, include }) {
 		this._totalUsage = new DelayedPromise();
 		this._finishReason = new DelayedPromise();
 		this._rawFinishReason = new DelayedPromise();
@@ -8338,18 +6744,10 @@ var DefaultStreamTextResult = class {
 		this._initialResponseMessages = new DelayedPromise();
 		this.outputSpecification = output;
 		this.tools = tools;
-		const resolvedToolCallers = resolveToolCallerConfiguration({
-			tools,
-			toolCallers: experimental_toolCallers
-		});
-		const prepareToolSearch = createToolSearchState({
-			tools,
-			toolCallers: resolvedToolCallers
-		});
-		const telemetryDispatcher = createRestrictedTelemetryDispatcher$3({
+		const telemetryDispatcher = createRestrictedTelemetryDispatcher({
 			telemetry,
-			includeRuntimeContext: telemetry?.includeRuntimeContext,
-			includeToolsContext: telemetry?.includeToolsContext
+			includeRuntimeContext: telemetry == null ? void 0 : telemetry.includeRuntimeContext,
+			includeToolsContext: telemetry == null ? void 0 : telemetry.includeToolsContext
 		});
 		let stepFinish;
 		let recordedContent = [];
@@ -8363,59 +6761,20 @@ var DefaultStreamTextResult = class {
 		const initialResponseMessages = [];
 		let stepMessagesForNextStep;
 		let currentStepMessages = [];
-		let isAborted = false;
-		let currentStepModel = model;
-		const createPartIdReserver = () => {
-			const usedIds = /* @__PURE__ */ new Set();
-			return (id) => {
-				if (!usedIds.has(id)) {
-					usedIds.add(id);
-					return id;
-				}
-				const generatedId = generateId();
-				let uniqueId = generatedId;
-				let suffix = 0;
-				while (usedIds.has(uniqueId)) uniqueId = `${generatedId}-${++suffix}`;
-				usedIds.add(uniqueId);
-				return uniqueId;
-			};
-		};
-		const reserveTextPartId = createPartIdReserver();
-		const reserveReasoningPartId = createPartIdReserver();
 		const pendingDeferredToolCalls = /* @__PURE__ */ new Map();
 		let activeTextContent = createIdMap();
 		let activeReasoningContent = createIdMap();
 		let recordedNoOutputError;
-		const errorsHandledForStreamRetry = /* @__PURE__ */ new Set();
 		const eventProcessor = new TransformStream({
 			async transform(chunk, controller) {
-				if (isStreamRetryBoundaryPart(chunk)) {
-					const retryBoundary = chunk[streamRetryBoundarySymbol];
-					recordedContent = [];
-					activeReasoningContent = createIdMap();
-					activeTextContent = createIdMap();
-					recordedRequest = retryBoundary.request;
-					recordedRequestMessages = retryBoundary.request.messages ?? [];
-					recordedWarnings = retryBoundary.warnings;
-					return;
-				}
-				const { part } = chunk;
+				var _a22, _b, _c, _d;
 				controller.enqueue(chunk);
-				const callbacksHandledForStreamRetry = part.type === "error" && errorsHandledForStreamRetry.has(part.error);
-				if (!callbacksHandledForStreamRetry) await notify({
-					event: { chunk: part },
-					callbacks: onChunk
-				});
+				const { part } = chunk;
+				await (onChunk == null ? void 0 : onChunk({ chunk: part }));
 				if (part.type === "error") {
 					const error = wrapGatewayError(part.error);
 					if (NoOutputGeneratedError.isInstance(error)) recordedNoOutputError = error;
-					if (callbacksHandledForStreamRetry) errorsHandledForStreamRetry.delete(part.error);
-					else await notify({
-						event: { error },
-						callbacks: async (event) => {
-							await onError(event);
-						}
-					});
+					await onError({ error });
 				}
 				if (part.type === "custom" || part.type === "source" || part.type === "tool-call" || part.type === "tool-approval-request" || part.type === "tool-approval-response" || part.type === "tool-error") recordedContent.push(part);
 				if (part.type === "text-start") {
@@ -8439,7 +6798,7 @@ var DefaultStreamTextResult = class {
 						return;
 					}
 					activeText.text += part.text;
-					activeText.providerMetadata = part.providerMetadata ?? activeText.providerMetadata;
+					activeText.providerMetadata = (_a22 = part.providerMetadata) != null ? _a22 : activeText.providerMetadata;
 				}
 				if (part.type === "text-end") {
 					const activeText = activeTextContent[part.id];
@@ -8453,7 +6812,7 @@ var DefaultStreamTextResult = class {
 						});
 						return;
 					}
-					activeText.providerMetadata = part.providerMetadata ?? activeText.providerMetadata;
+					activeText.providerMetadata = (_b = part.providerMetadata) != null ? _b : activeText.providerMetadata;
 					delete activeTextContent[part.id];
 				}
 				if (part.type === "reasoning-start") {
@@ -8477,7 +6836,7 @@ var DefaultStreamTextResult = class {
 						return;
 					}
 					activeReasoning.text += part.text;
-					activeReasoning.providerMetadata = part.providerMetadata ?? activeReasoning.providerMetadata;
+					activeReasoning.providerMetadata = (_c = part.providerMetadata) != null ? _c : activeReasoning.providerMetadata;
 				}
 				if (part.type === "reasoning-end") {
 					const activeReasoning = activeReasoningContent[part.id];
@@ -8491,7 +6850,7 @@ var DefaultStreamTextResult = class {
 						});
 						return;
 					}
-					activeReasoning.providerMetadata = part.providerMetadata ?? activeReasoning.providerMetadata;
+					activeReasoning.providerMetadata = (_d = part.providerMetadata) != null ? _d : activeReasoning.providerMetadata;
 					delete activeReasoningContent[part.id];
 				}
 				if (part.type === "file" || part.type === "reasoning-file") recordedContent.push({
@@ -8515,8 +6874,8 @@ var DefaultStreamTextResult = class {
 					const currentStepResult = new DefaultStepResult({
 						callId,
 						stepNumber: recordedSteps.length,
-						provider: currentStepModel.provider,
-						modelId: currentStepModel.modelId,
+						provider: model.provider,
+						modelId: model.modelId,
 						runtimeContext,
 						toolsContext,
 						content: recordedContent,
@@ -8541,8 +6900,8 @@ var DefaultStreamTextResult = class {
 					});
 					logWarnings({
 						warnings: recordedWarnings,
-						provider: currentStepModel.provider,
-						model: currentStepModel.modelId
+						provider: model.provider,
+						model: model.modelId
 					});
 					recordedSteps.push(currentStepResult);
 					stepMessagesForNextStep = [...currentStepMessages, ...stepResponseMessages];
@@ -8557,17 +6916,16 @@ var DefaultStreamTextResult = class {
 			async flush(controller) {
 				try {
 					if (recordedSteps.length === 0 || recordedNoOutputError != null) {
-						const error = abortSignal?.aborted ? abortSignal.reason : recordedNoOutputError ?? new NoOutputGeneratedError({ message: "No output generated. Check the stream for errors." });
+						const error = (abortSignal == null ? void 0 : abortSignal.aborted) ? abortSignal.reason : recordedNoOutputError != null ? recordedNoOutputError : new NoOutputGeneratedError({ message: "No output generated. Check the stream for errors." });
 						self.rejectResultPromises(error);
 						return;
 					}
-					const finishReason = recordedFinishReason ?? "other";
-					const totalUsage = recordedTotalUsage ?? createNullLanguageModelUsage();
+					const finishReason = recordedFinishReason != null ? recordedFinishReason : "other";
+					const totalUsage = recordedTotalUsage != null ? recordedTotalUsage : createNullLanguageModelUsage();
 					self._finishReason.resolve(finishReason);
 					self._rawFinishReason.resolve(recordedRawFinishReason);
 					self._totalUsage.resolve(totalUsage);
 					self._steps.resolve(recordedSteps);
-					if (isAborted) return;
 					const finalStep = recordedSteps[recordedSteps.length - 1];
 					const content = recordedSteps.flatMap((step) => step.content);
 					const files = recordedSteps.flatMap((step) => step.files);
@@ -8578,51 +6936,43 @@ var DefaultStreamTextResult = class {
 					const toolResults = recordedSteps.flatMap((step) => step.toolResults);
 					const staticToolResults = recordedSteps.flatMap((step) => step.staticToolResults);
 					const dynamicToolResults = recordedSteps.flatMap((step) => step.dynamicToolResults);
-					const warnings = recordedSteps.flatMap((step) => step.warnings ?? []);
-					const onEndWithOutput = onEnd == null ? void 0 : async (event) => {
-						const parsedOutput = output == null ? void 0 : await self.getOutputPromise().catch(() => void 0);
-						await onEnd({
-							...event,
-							...output != null ? { output: parsedOutput } : {}
-						});
-					};
-					const onEndEvent = {
-						callId,
-						toolsContext: finalStep.toolsContext,
-						stepNumber: finalStep.stepNumber,
-						model: finalStep.model,
-						runtimeContext: finalStep.runtimeContext,
-						finishReason: finalStep.finishReason,
-						rawFinishReason: finalStep.rawFinishReason,
-						usage: totalUsage,
-						totalUsage,
-						content,
-						text: finalStep.text,
-						reasoning: finalStep.reasoning,
-						reasoningText: finalStep.reasoningText,
-						files,
-						sources,
-						toolCalls,
-						staticToolCalls,
-						dynamicToolCalls,
-						toolResults,
-						staticToolResults,
-						dynamicToolResults,
-						responseMessages: [...initialResponseMessages, ...recordedSteps.flatMap((step) => step.response.messages)],
-						warnings,
-						request: finalStep.request,
-						response: finalStep.response,
-						providerMetadata: finalStep.providerMetadata,
-						steps: recordedSteps,
-						finalStep
-					};
-					await Promise.all([notify({
-						event: onEndEvent,
-						callbacks: onEndWithOutput
-					}), notify({
-						event: onEndEvent,
-						callbacks: telemetryDispatcher.onEnd
-					})]);
+					const warnings = recordedSteps.flatMap((step) => {
+						var _a22;
+						return (_a22 = step.warnings) != null ? _a22 : [];
+					});
+					await notify({
+						event: {
+							callId,
+							toolsContext: finalStep.toolsContext,
+							stepNumber: finalStep.stepNumber,
+							model: finalStep.model,
+							runtimeContext: finalStep.runtimeContext,
+							finishReason: finalStep.finishReason,
+							rawFinishReason: finalStep.rawFinishReason,
+							usage: totalUsage,
+							totalUsage,
+							content,
+							text: finalStep.text,
+							reasoning: finalStep.reasoning,
+							reasoningText: finalStep.reasoningText,
+							files,
+							sources,
+							toolCalls,
+							staticToolCalls,
+							dynamicToolCalls,
+							toolResults,
+							staticToolResults,
+							dynamicToolResults,
+							responseMessages: [...initialResponseMessages, ...recordedSteps.flatMap((step) => step.response.messages)],
+							warnings,
+							request: finalStep.request,
+							response: finalStep.response,
+							providerMetadata: finalStep.providerMetadata,
+							steps: recordedSteps,
+							finalStep
+						},
+						callbacks: [onEnd, telemetryDispatcher.onEnd]
+					});
 				} catch (error) {
 					controller.error(error);
 				}
@@ -8632,92 +6982,67 @@ var DefaultStreamTextResult = class {
 		this.addStream = stitchableStream.addStream;
 		this.closeStream = stitchableStream.close;
 		const reader = stitchableStream.stream.getReader();
-		const cancelOnAbort = () => {
-			this.rejectResultPromises(abortSignal?.reason);
-			reader.cancel(abortSignal?.reason).catch(() => {});
-		};
-		const removeAbortListener = () => abortSignal?.removeEventListener("abort", cancelOnAbort);
 		let stream = new ReadableStream({
 			async start(controller) {
 				controller.enqueue({ type: "start" });
-				abortSignal?.addEventListener("abort", cancelOnAbort, { once: true });
-				if (abortSignal?.aborted) cancelOnAbort();
 			},
 			async pull(controller) {
 				async function abort() {
-					isAborted = true;
-					removeAbortListener();
 					await notify({
 						event: {
 							callId,
 							steps: recordedSteps,
-							...abortSignal?.reason !== void 0 ? { reason: abortSignal.reason } : {}
+							...(abortSignal == null ? void 0 : abortSignal.reason) !== void 0 ? { reason: abortSignal.reason } : {}
 						},
 						callbacks: [onAbort, telemetryDispatcher.onAbort]
 					});
 					controller.enqueue({
 						type: "abort",
-						...abortSignal?.reason !== void 0 ? { reason: getErrorMessage(abortSignal.reason) } : {}
+						...(abortSignal == null ? void 0 : abortSignal.reason) !== void 0 ? { reason: getErrorMessage(abortSignal.reason) } : {}
 					});
 					controller.close();
 				}
 				try {
 					const { done, value } = await reader.read();
-					if (abortSignal?.aborted) {
-						await abort();
+					if (done) {
+						controller.close();
 						return;
 					}
-					if (done) {
-						removeAbortListener();
-						controller.close();
+					if (abortSignal == null ? void 0 : abortSignal.aborted) {
+						await abort();
 						return;
 					}
 					controller.enqueue(value);
 				} catch (error) {
-					removeAbortListener();
-					if (isAbortError(error) && abortSignal?.aborted) await abort();
-					else {
-						await telemetryDispatcher.onError?.({
-							callId,
-							error
-						});
-						controller.error(error);
-					}
+					if (isAbortError(error) && (abortSignal == null ? void 0 : abortSignal.aborted)) await abort();
+					else controller.error(error);
 				}
 			},
 			cancel(reason) {
-				removeAbortListener();
-				return reader.cancel(reason);
+				return stitchableStream.stream.cancel(reason);
 			}
 		});
 		let isRunning = true;
 		stream = stream.pipeThrough(new TransformStream({ async transform(chunk, controller) {
 			if (isRunning) controller.enqueue(chunk);
 		} }));
-		stream = applyStreamTextTransforms({
-			stream,
-			transforms,
+		for (const transform of transforms) stream = stream.pipeThrough(transform({
 			tools,
 			stopStream() {
 				stitchableStream.terminate();
 				isRunning = false;
 			}
-		});
-		this.baseStream = stream.pipeThrough(createOutputTransformStream(output ?? text())).pipeThrough(eventProcessor);
+		}));
+		this.baseStream = stream.pipeThrough(createOutputTransformStream(output != null ? output : text())).pipeThrough(eventProcessor);
 		const { maxRetries } = prepareRetries({
 			maxRetries: maxRetriesArg,
 			abortSignal
-		});
-		const { maxRetries: streamRetries } = prepareRetries({
-			maxRetries: streamRetriesArg,
-			abortSignal,
-			parameter: "streamRetries",
-			defaultMaxRetries: 0
 		});
 		const callSettings = prepareLanguageModelCallOptions(settings);
 		const self = this;
 		const callId = generateCallId();
 		(async () => {
+			var _a22;
 			const initialPrompt = await standardizePrompt({
 				instructions,
 				system,
@@ -8753,12 +7078,15 @@ var DefaultStreamTextResult = class {
 				runtimeContext,
 				toolsContext
 			};
-			const streamTextTracingChannelContext = telemetryDispatcher.startTracingChannelContext?.({
+			const streamTextTracingChannelContext = (_a22 = telemetryDispatcher.startTracingChannelContext) == null ? void 0 : _a22.call(telemetryDispatcher, {
 				type: "streamText",
 				event: startEvent,
 				completion: self._totalUsage.promise.then(() => void 0)
 			});
-			const runInStreamTextTracingChannelContext = (execute) => streamTextTracingChannelContext?.run(execute) ?? execute();
+			const runInStreamTextTracingChannelContext = (execute) => {
+				var _a23;
+				return (_a23 = streamTextTracingChannelContext == null ? void 0 : streamTextTracingChannelContext.run(execute)) != null ? _a23 : execute();
+			};
 			const runInTracingChannelSpanInStreamText = telemetryDispatcher.runInTracingChannelSpan == null ? void 0 : (options) => runInStreamTextTracingChannelContext(() => telemetryDispatcher.runInTracingChannelSpan(options));
 			await notify({
 				event: startEvent,
@@ -8768,44 +7096,33 @@ var DefaultStreamTextResult = class {
 			let instructionsForNextStep = initialPrompt.instructions;
 			const { approvedToolApprovals, deniedToolApprovals } = collectToolApprovals({ messages: initialMessages });
 			if (deniedToolApprovals.length > 0 || approvedToolApprovals.length > 0) {
-				const { approvedToolApprovals: localApprovedToolApprovals, deniedToolApprovals: revalidationDeniedToolApprovals, invalidToolApprovals } = await validateApprovedToolApprovals({
-					approvedToolApprovals: approvedToolApprovals.filter((toolApproval) => !toolApproval.toolCall.providerExecuted),
+				const { approvedToolApprovals: localApprovedToolApprovals, deniedToolApprovals: revalidationDeniedToolApprovals } = await validateApprovedToolApprovals({
+					approvedToolApprovals: approvedToolApprovals.filter((toolApproval2) => !toolApproval2.toolCall.providerExecuted),
 					tools,
 					toolApproval,
 					messages: initialMessages,
 					toolsContext,
 					runtimeContext,
-					toolApprovalSecret: experimental_toolApprovalSecret,
-					refineToolInput
+					toolApprovalSecret: experimental_toolApprovalSecret
 				});
-				const localDeniedToolApprovals = [...deniedToolApprovals.filter((toolApproval) => !toolApproval.toolCall.providerExecuted), ...revalidationDeniedToolApprovals];
-				const localDeniedToolApprovalsWithoutResults = localDeniedToolApprovals.filter((toolApproval) => toolApproval.existingToolResult == null);
-				const deniedProviderExecutedToolApprovals = deniedToolApprovals.filter((toolApproval) => toolApproval.toolCall.providerExecuted);
+				const localDeniedToolApprovals = [...deniedToolApprovals.filter((toolApproval2) => !toolApproval2.toolCall.providerExecuted), ...revalidationDeniedToolApprovals];
+				const localDeniedToolApprovalsWithoutResults = localDeniedToolApprovals.filter((toolApproval2) => toolApproval2.existingToolResult == null);
+				const deniedProviderExecutedToolApprovals = deniedToolApprovals.filter((toolApproval2) => toolApproval2.toolCall.providerExecuted);
 				let toolExecutionStepStreamController;
 				const toolExecutionStepStream = new ReadableStream({ start(controller) {
 					toolExecutionStepStreamController = controller;
 				} });
 				self.addStream(toolExecutionStepStream);
 				try {
-					for (const toolApproval of [...localDeniedToolApprovals, ...deniedProviderExecutedToolApprovals]) toolExecutionStepStreamController?.enqueue({
+					for (const toolApproval2 of [...localDeniedToolApprovals, ...deniedProviderExecutedToolApprovals]) toolExecutionStepStreamController?.enqueue({
 						type: "tool-output-denied",
-						toolCallId: toolApproval.toolCall.toolCallId,
-						toolName: toolApproval.toolCall.toolName
-					});
-					for (const toolApproval of invalidToolApprovals) toolExecutionStepStreamController?.enqueue({
-						type: "tool-error",
-						toolCallId: toolApproval.toolCall.toolCallId,
-						toolName: toolApproval.toolCall.toolName,
-						input: toolApproval.toolCall.input,
-						error: getErrorMessage(toolApproval.error),
-						title: toolApproval.toolCall.title,
-						...toolApproval.toolCall.dynamic === true ? { dynamic: true } : {},
-						...toolApproval.toolCall.toolMetadata != null ? { toolMetadata: toolApproval.toolCall.toolMetadata } : {}
+						toolCallId: toolApproval2.toolCall.toolCallId,
+						toolName: toolApproval2.toolCall.toolName
 					});
 					const toolOutputs = [];
-					await Promise.all(localApprovedToolApprovals.map(async (toolApproval) => {
+					await Promise.all(localApprovedToolApprovals.map(async (toolApproval2) => {
 						const result = await executeToolCall({
-							toolCall: toolApproval.toolCall,
+							toolCall: toolApproval2.toolCall,
 							tools,
 							callId,
 							messages: initialMessages,
@@ -8817,8 +7134,8 @@ var DefaultStreamTextResult = class {
 							onToolExecutionEnd: filterNullable(onToolExecutionEnd, telemetryDispatcher.onToolExecutionEnd),
 							executeToolInTelemetryContext: telemetryDispatcher.executeTool,
 							runInTracingChannelSpan: runInTracingChannelSpanInStreamText,
-							onPreliminaryToolResult: (result) => {
-								toolExecutionStepStreamController?.enqueue(result);
+							onPreliminaryToolResult: (result2) => {
+								toolExecutionStepStreamController?.enqueue(result2);
 							}
 						});
 						if (result != null) {
@@ -8826,39 +7143,27 @@ var DefaultStreamTextResult = class {
 							toolOutputs.push(result.output);
 						}
 					}));
-					if (toolOutputs.length > 0 || localDeniedToolApprovalsWithoutResults.length > 0 || invalidToolApprovals.length > 0) {
+					if (toolOutputs.length > 0 || localDeniedToolApprovalsWithoutResults.length > 0) {
 						const localToolContent = [];
-						for (const output of toolOutputs) localToolContent.push({
+						for (const output2 of toolOutputs) localToolContent.push({
 							type: "tool-result",
-							toolCallId: output.toolCallId,
-							toolName: output.toolName,
+							toolCallId: output2.toolCallId,
+							toolName: output2.toolName,
 							output: await createToolModelOutput({
-								toolCallId: output.toolCallId,
-								input: output.input,
-								tool: getOwn(tools, output.toolName),
-								output: output.type === "tool-result" ? output.output : output.error,
-								errorMode: output.type === "tool-error" ? "text" : "none"
+								toolCallId: output2.toolCallId,
+								input: output2.input,
+								tool: getOwn(tools, output2.toolName),
+								output: output2.type === "tool-result" ? output2.output : output2.error,
+								errorMode: output2.type === "tool-error" ? "text" : "none"
 							})
 						});
-						for (const toolApproval of invalidToolApprovals) localToolContent.push({
+						for (const toolApproval2 of localDeniedToolApprovalsWithoutResults) localToolContent.push({
 							type: "tool-result",
-							toolCallId: toolApproval.toolCall.toolCallId,
-							toolName: toolApproval.toolCall.toolName,
-							output: await createToolModelOutput({
-								toolCallId: toolApproval.toolCall.toolCallId,
-								input: toolApproval.toolCall.input,
-								tool: getOwn(tools, toolApproval.toolCall.toolName),
-								output: toolApproval.error,
-								errorMode: "text"
-							})
-						});
-						for (const toolApproval of localDeniedToolApprovalsWithoutResults) localToolContent.push({
-							type: "tool-result",
-							toolCallId: toolApproval.toolCall.toolCallId,
-							toolName: toolApproval.toolCall.toolName,
+							toolCallId: toolApproval2.toolCall.toolCallId,
+							toolName: toolApproval2.toolCall.toolName,
 							output: {
 								type: "execution-denied",
-								reason: toolApproval.approvalResponse.reason
+								reason: toolApproval2.approvalResponse.reason
 							}
 						});
 						initialResponseMessages.push({
@@ -8872,6 +7177,7 @@ var DefaultStreamTextResult = class {
 			}
 			self._initialResponseMessages.resolve(initialResponseMessages);
 			async function streamStep({ currentStep, usage }) {
+				var _a23, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l;
 				const stepTimeoutId = setAbortTimeout({
 					abortController: stepAbortController,
 					label: "Step",
@@ -8879,7 +7185,7 @@ var DefaultStreamTextResult = class {
 				});
 				let firstChunkTimeoutId = void 0;
 				function startFirstChunkTimeout() {
-					if (abortSignal?.aborted) return;
+					if (abortSignal == null ? void 0 : abortSignal.aborted) return;
 					firstChunkTimeoutId = setAbortTimeout({
 						abortController: firstChunkAbortController,
 						label: "First chunk",
@@ -8895,7 +7201,6 @@ var DefaultStreamTextResult = class {
 				let chunkTimeoutId = void 0;
 				function resetChunkTimeout() {
 					if (chunkTimeoutId != null) clearTimeout(chunkTimeoutId);
-					if (abortSignal?.aborted) return;
 					chunkTimeoutId = setAbortTimeout({
 						abortController: chunkAbortController,
 						label: "Chunk",
@@ -8908,16 +7213,13 @@ var DefaultStreamTextResult = class {
 						chunkTimeoutId = void 0;
 					}
 				}
-				function clearModelOutputTimeouts() {
-					clearFirstChunkTimeout();
-					clearChunkTimeout();
-				}
 				function clearStepTimeout() {
 					if (stepTimeoutId != null) clearTimeout(stepTimeoutId);
 				}
 				function clearStepTimeouts() {
 					clearStepTimeout();
-					clearModelOutputTimeouts();
+					clearFirstChunkTimeout();
+					clearChunkTimeout();
 				}
 				function cleanupStepTimeouts() {
 					abortSignal?.removeEventListener("abort", cleanupStepTimeouts);
@@ -8926,7 +7228,7 @@ var DefaultStreamTextResult = class {
 				abortSignal?.addEventListener("abort", cleanupStepTimeouts, { once: true });
 				try {
 					stepFinish = new DelayedPromise();
-					const stepTracingChannelContext = telemetryDispatcher.startTracingChannelContext?.({
+					const stepTracingChannelContext = (_a23 = telemetryDispatcher.startTracingChannelContext) == null ? void 0 : _a23.call(telemetryDispatcher, {
 						type: "step",
 						event: {
 							callId,
@@ -8934,11 +7236,14 @@ var DefaultStreamTextResult = class {
 						},
 						completion: stepFinish.promise
 					});
-					const runInStepTracingChannelContext = (execute) => stepTracingChannelContext?.run(execute) ?? execute();
+					const runInStepTracingChannelContext = (execute) => {
+						var _a24;
+						return (_a24 = stepTracingChannelContext == null ? void 0 : stepTracingChannelContext.run(execute)) != null ? _a24 : execute();
+					};
 					const responseMessagesFromPreviousSteps = recordedSteps.flatMap((step) => step.response.messages);
 					const accumulatedResponseMessages = [...initialResponseMessages, ...responseMessagesFromPreviousSteps];
-					const stepInputMessages = stepMessagesForNextStep ?? [...initialMessages, ...initialResponseMessages];
-					const prepareStepResult = await prepareStep?.({
+					const stepInputMessages = stepMessagesForNextStep != null ? stepMessagesForNextStep : [...initialMessages, ...initialResponseMessages];
+					const prepareStepResult = await (prepareStep == null ? void 0 : prepareStep({
 						model,
 						steps: recordedSteps,
 						stepNumber: recordedSteps.length,
@@ -8950,242 +7255,99 @@ var DefaultStreamTextResult = class {
 						toolsContext,
 						runtimeContext,
 						experimental_sandbox: sandbox
-					});
-					const stepSandbox = prepareStepResult?.experimental_sandbox ?? sandbox;
-					runtimeContext = prepareStepResult?.runtimeContext ?? runtimeContext;
-					toolsContext = prepareStepResult?.toolsContext ?? toolsContext;
-					const stepModel = resolveLanguageModel(prepareStepResult?.model ?? model);
-					currentStepModel = stepModel;
+					}));
+					const stepSandbox = (_b = prepareStepResult == null ? void 0 : prepareStepResult.experimental_sandbox) != null ? _b : sandbox;
+					runtimeContext = (_c = prepareStepResult == null ? void 0 : prepareStepResult.runtimeContext) != null ? _c : runtimeContext;
+					toolsContext = (_d = prepareStepResult == null ? void 0 : prepareStepResult.toolsContext) != null ? _d : toolsContext;
+					const stepModel = resolveLanguageModel((_e = prepareStepResult == null ? void 0 : prepareStepResult.model) != null ? _e : model);
 					const stepActiveTools = filterActiveTools({
 						tools,
-						activeTools: prepareStepResult?.activeTools ?? activeTools
+						activeTools: (_f = prepareStepResult == null ? void 0 : prepareStepResult.activeTools) != null ? _f : activeTools
 					});
-					const { executionTools: stepExecutionTools, modelTools: stepModelTools, toolCallerMessages } = prepareToolsForToolCallers({
-						tools: prepareToolSearch(stepActiveTools, {
-							toolsContext,
-							experimental_sandbox: stepSandbox
-						}),
-						toolCallers: resolvedToolCallers
-					});
-					const stepToolOrder = prepareStepResult?.toolOrder ?? toolOrder;
+					const stepToolOrder = (_g = prepareStepResult == null ? void 0 : prepareStepResult.toolOrder) != null ? _g : toolOrder;
 					const stepTools = await prepareTools({
-						tools: stepModelTools,
+						tools: stepActiveTools,
 						toolOrder: stepToolOrder,
 						toolsContext,
 						experimental_sandbox: stepSandbox
 					});
-					const stepToolChoice = prepareToolChoice({ toolChoice: prepareStepResult?.toolChoice ?? toolChoice });
-					const stepMessages = appendToolCallerMessages({
-						messages: prepareStepResult?.messages ?? stepInputMessages,
-						toolCallerMessages
-					});
+					const stepToolChoice = prepareToolChoice({ toolChoice: (_h = prepareStepResult == null ? void 0 : prepareStepResult.toolChoice) != null ? _h : toolChoice });
+					const stepMessages = (_i = prepareStepResult == null ? void 0 : prepareStepResult.messages) != null ? _i : stepInputMessages;
 					currentStepMessages = stepMessages;
-					const stepInstructions = prepareStepResult?.instructions ?? prepareStepResult?.system ?? instructionsForNextStep;
+					const stepInstructions = (_k = (_j = prepareStepResult == null ? void 0 : prepareStepResult.instructions) != null ? _j : prepareStepResult == null ? void 0 : prepareStepResult.system) != null ? _k : instructionsForNextStep;
 					instructionsForNextStep = stepInstructions;
-					const stepProviderOptions = mergeObjects(providerOptions, prepareStepResult?.providerOptions);
-					const stepCallSettings = prepareStepCallSettings({
-						callSettings,
-						stepSettings: prepareStepResult
-					});
-					const stepStartTimestampMs = now();
+					const stepProviderOptions = mergeObjects(providerOptions, prepareStepResult == null ? void 0 : prepareStepResult.providerOptions);
+					const stepStartTimestampMs = now2();
 					const { retry } = prepareRetries({
 						maxRetries,
 						abortSignal
 					});
-					let hasNotifiedStepStart = false;
-					const callLanguageModel = () => runInStepTracingChannelContext(() => retry(async () => streamLanguageModelCall({
-						model: prepareStepResult?.model ?? model,
-						tools: stepModelTools,
-						toolOrder: stepToolOrder,
-						toolChoice: prepareStepResult?.toolChoice ?? toolChoice,
-						instructions: stepInstructions,
-						messages: stepMessages,
-						allowSystemInMessages,
-						repairToolCall,
-						refineToolInput,
-						abortSignal,
-						headers,
-						includeRawChunks: include.rawChunks,
-						providerOptions: stepProviderOptions,
-						download,
-						output,
-						callId,
-						executeLanguageModelCallInTelemetryContext: telemetryDispatcher.executeLanguageModelCall,
-						toolsContext,
-						experimental_sandbox: stepSandbox,
-						onLanguageModelCallStart: filterNullable(onLanguageModelCallStart, telemetryDispatcher.onLanguageModelCallStart),
-						onLanguageModelCallEnd: filterNullable(onLanguageModelCallEnd, telemetryDispatcher.onLanguageModelCallEnd),
-						onStart: async ({ promptMessages }) => {
-							if (hasNotifiedStepStart) return;
-							hasNotifiedStepStart = true;
-							await notify({
-								event: {
-									callId,
-									provider: stepModel.provider,
-									modelId: stepModel.modelId,
-									stepNumber: recordedSteps.length,
-									instructions: stepInstructions,
-									messages: stepMessages,
-									tools,
-									toolChoice: prepareStepResult?.toolChoice ?? toolChoice,
-									activeTools: prepareStepResult?.activeTools ?? activeTools,
-									toolOrder: stepToolOrder,
-									steps: [...recordedSteps],
-									providerOptions: stepProviderOptions,
-									runtimeContext,
-									toolsContext,
-									output,
-									promptMessages,
-									stepTools,
-									stepToolChoice
-								},
-								callbacks: [onStepStart, telemetryDispatcher.onStepStart]
-							});
-						},
-						_internal: { now },
-						...stepCallSettings
-					})));
-					const initialLanguageModelCall = await callLanguageModel();
-					let request = initialLanguageModelCall.request;
-					let response = initialLanguageModelCall.response;
-					let languageModelStreamReader = initialLanguageModelCall.stream.getReader();
-					let automaticStreamRetryCount = 0;
-					let callbackStreamRetryCount = 0;
-					let bufferedAttemptParts = [];
-					const openTextParts = /* @__PURE__ */ new Set();
-					const openReasoningParts = /* @__PURE__ */ new Set();
-					let enqueueStreamRetryAttemptBoundary = false;
-					const shouldBufferToolParts = streamRetries > 0 || canRetryStreamViaOnError;
-					const languageModelStream = new ReadableStream({
-						async pull(controller) {
-							const enqueueAttemptPart = (part) => {
-								switch (part.type) {
-									case "text-start":
-										openTextParts.add(part.id);
-										break;
-									case "text-end":
-										openTextParts.delete(part.id);
-										break;
-									case "reasoning-start":
-										openReasoningParts.add(part.id);
-										break;
-									case "reasoning-end": openReasoningParts.delete(part.id);
-								}
-								controller.enqueue(part);
-							};
-							const flushBufferedAttemptParts = () => {
-								for (const part of bufferedAttemptParts) enqueueAttemptPart(part);
-								bufferedAttemptParts = [];
-							};
-							const closeOpenAttemptParts = () => {
-								for (const id of openTextParts) controller.enqueue({
-									type: "text-end",
-									id
-								});
-								openTextParts.clear();
-								for (const id of openReasoningParts) controller.enqueue({
-									type: "reasoning-end",
-									id
-								});
-								openReasoningParts.clear();
-							};
-							while (true) {
-								let result;
-								try {
-									result = await languageModelStreamReader.read();
-								} catch (error) {
-									clearModelOutputTimeouts();
-									throw error;
-								}
-								const { done, value } = result;
-								if (enqueueStreamRetryAttemptBoundary) {
-									controller.enqueue(createStreamRetryAttemptBoundaryPart({ warnings: !done && value.type === "model-call-start" ? value.warnings : [] }));
-									enqueueStreamRetryAttemptBoundary = false;
-								}
-								if (done) {
-									clearModelOutputTimeouts();
-									flushBufferedAttemptParts();
-									controller.close();
-									return;
-								}
-								const isToolPart = value.type === "tool-input-start" || value.type === "tool-input-delta" || value.type === "tool-input-end" || value.type === "tool-call" || value.type === "tool-approval-request" || value.type === "tool-approval-response" || value.type === "tool-result" || value.type === "tool-error";
-								if (value.type === "model-call-end") {
-									clearModelOutputTimeouts();
-									flushBufferedAttemptParts();
-									enqueueAttemptPart(value);
-									return;
-								}
-								if (isOutputChunk(value)) {
-									clearFirstChunkTimeout();
-									resetChunkTimeout();
-								}
-								if (shouldBufferToolParts && value.type !== "error" && (isToolPart || bufferedAttemptParts.length > 0)) {
-									bufferedAttemptParts.push(value);
-									continue;
-								}
-								if (value.type !== "error") {
-									enqueueAttemptPart(value);
-									return;
-								}
-								clearModelOutputTimeouts();
+					const { stream: languageModelStream, request, response } = await runInStepTracingChannelContext(() => retry(async () => {
+						var _a24, _b2;
+						return streamLanguageModelCall({
+							model: (_a24 = prepareStepResult == null ? void 0 : prepareStepResult.model) != null ? _a24 : model,
+							tools: stepActiveTools,
+							toolOrder: stepToolOrder,
+							toolChoice: (_b2 = prepareStepResult == null ? void 0 : prepareStepResult.toolChoice) != null ? _b2 : toolChoice,
+							instructions: stepInstructions,
+							messages: stepMessages,
+							allowSystemInMessages,
+							repairToolCall,
+							refineToolInput,
+							abortSignal,
+							headers,
+							includeRawChunks: include.rawChunks,
+							providerOptions: stepProviderOptions,
+							download: download2,
+							output,
+							callId,
+							executeLanguageModelCallInTelemetryContext: telemetryDispatcher.executeLanguageModelCall,
+							toolsContext,
+							experimental_sandbox: stepSandbox,
+							onLanguageModelCallStart: filterNullable(onLanguageModelCallStart, telemetryDispatcher.onLanguageModelCallStart),
+							onLanguageModelCallEnd: filterNullable(onLanguageModelCallEnd, telemetryDispatcher.onLanguageModelCallEnd),
+							onStart: async ({ promptMessages }) => {
+								var _a25, _b3;
 								await notify({
-									event: { chunk: value },
-									callbacks: onChunk
+									event: {
+										callId,
+										provider: stepModel.provider,
+										modelId: stepModel.modelId,
+										stepNumber: recordedSteps.length,
+										instructions: stepInstructions,
+										messages: stepMessages,
+										tools,
+										toolChoice: (_a25 = prepareStepResult == null ? void 0 : prepareStepResult.toolChoice) != null ? _a25 : toolChoice,
+										activeTools: (_b3 = prepareStepResult == null ? void 0 : prepareStepResult.activeTools) != null ? _b3 : activeTools,
+										toolOrder: stepToolOrder,
+										steps: [...recordedSteps],
+										providerOptions: stepProviderOptions,
+										runtimeContext,
+										toolsContext,
+										output,
+										promptMessages,
+										stepTools,
+										stepToolChoice
+									},
+									callbacks: [onStepStart, telemetryDispatcher.onStepStart]
 								});
-								const error = wrapGatewayError(value.error);
-								const isToolChoiceViolation = ToolChoiceViolationError.isInstance(error);
-								let onErrorResult;
-								try {
-									onErrorResult = await onError({ error });
-								} catch {}
-								const callbackRequestedRetry = canRetryStreamViaOnError && typeof onErrorResult === "object" && onErrorResult != null && "retry" in onErrorResult && onErrorResult.retry === true;
-								const automaticRetry = !isToolChoiceViolation && automaticStreamRetryCount < streamRetries;
-								if (!automaticRetry && !(!isToolChoiceViolation && !automaticRetry && callbackRequestedRetry && callbackStreamRetryCount < 1)) {
-									flushBufferedAttemptParts();
-									errorsHandledForStreamRetry.add(value.error);
-									controller.enqueue(value);
-									return;
-								}
-								if (automaticRetry) automaticStreamRetryCount++;
-								else callbackStreamRetryCount++;
-								await languageModelStreamReader.cancel(error);
-								bufferedAttemptParts = [];
-								closeOpenAttemptParts();
-								let retryLanguageModelCall;
-								try {
-									retryLanguageModelCall = await callLanguageModel();
-								} catch (retryError) {
-									controller.enqueue({
-										type: "error",
-										error: retryError
-									});
-									controller.close();
-									return;
-								}
-								request = retryLanguageModelCall.request;
-								response = retryLanguageModelCall.response;
-								languageModelStreamReader = retryLanguageModelCall.stream.getReader();
-								startFirstChunkTimeout();
-								enqueueStreamRetryAttemptBoundary = true;
-							}
-						},
-						cancel(reason) {
-							clearModelOutputTimeouts();
-							return languageModelStreamReader.cancel(reason);
-						}
-					});
+							},
+							_internal: { now: now2 },
+							...callSettings
+						});
+					}));
 					startFirstChunkTimeout();
 					const streamAfterToolCallbackInvocation = invokeToolCallbacksFromStream({
 						stream: languageModelStream,
-						tools: stepExecutionTools,
+						tools,
 						stepInputMessages: stepMessages,
 						abortSignal,
-						toolsContext
+						runtimeContext
 					});
 					const runInTracingChannelSpanInStep = telemetryDispatcher.runInTracingChannelSpan == null ? void 0 : (options) => runInStepTracingChannelContext(() => telemetryDispatcher.runInTracingChannelSpan(options));
 					const streamWithToolResults = executeToolsFromStream({
 						stream: streamAfterToolCallbackInvocation,
-						tools: stepExecutionTools,
+						tools,
 						callId,
 						messages: stepMessages,
 						abortSignal,
@@ -9195,18 +7357,18 @@ var DefaultStreamTextResult = class {
 						toolApproval,
 						runtimeContext,
 						toolApprovalSecret: experimental_toolApprovalSecret,
-						generateId,
+						generateId: generateId2,
 						onToolExecutionStart: filterNullable(onToolExecutionStart, telemetryDispatcher.onToolExecutionStart),
 						onToolExecutionEnd: filterNullable(onToolExecutionEnd, telemetryDispatcher.onToolExecutionEnd),
 						executeToolInTelemetryContext: telemetryDispatcher.executeTool,
 						runInTracingChannelSpan: runInTracingChannelSpanInStep
 					});
-					const getStepRequest = () => ({
+					const stepRequest = {
 						...request,
-						body: include.requestBody ? request?.body : void 0,
+						body: include.requestBody ? request == null ? void 0 : request.body : void 0,
 						messages: include.requestMessages ? cloneModelMessages(stepMessages) : void 0
-					});
-					recordedRequestMessages = getStepRequest().messages ?? [];
+					};
+					recordedRequestMessages = (_l = stepRequest.messages) != null ? _l : [];
 					const stepToolCalls = [];
 					const stepToolOutputs = [];
 					const stepToolApprovalResponses = [];
@@ -9218,7 +7380,7 @@ var DefaultStreamTextResult = class {
 					let stepUsage = createNullLanguageModelUsage();
 					let stepProviderMetadata;
 					let stepFirstChunk = true;
-					const createModelCallPerformance = () => ({
+					let modelCallPerformance = {
 						responseTimeMs: 0,
 						effectiveOutputTokensPerSecond: 0,
 						outputTokensPerSecond: void 0,
@@ -9226,124 +7388,67 @@ var DefaultStreamTextResult = class {
 						effectiveTotalTokensPerSecond: 0,
 						timeToFirstOutputMs: void 0,
 						timeBetweenOutputChunksMs: void 0
-					});
-					let modelCallPerformance = createModelCallPerformance();
+					};
 					const toolExecutionMs = {};
-					const createStepResponse = () => ({
-						id: generateId(),
+					let stepResponse = {
+						id: generateId2(),
 						timestamp: /* @__PURE__ */ new Date(),
-						modelId: stepModel.modelId
-					});
-					let stepResponse = createStepResponse();
-					const textPartIds = /* @__PURE__ */ new Map();
-					const reasoningPartIds = /* @__PURE__ */ new Map();
-					const enqueueStepPart = (controller, part) => {
-						controller.enqueue(part);
+						modelId: model.modelId
 					};
 					self.addStream(streamWithToolResults.pipeThrough(new TransformStream({
 						async transform(chunk, controller) {
-							if (isStreamRetryAttemptBoundaryPart(chunk)) {
-								warnings = chunk.warnings;
-								stepFinishReason = "other";
-								stepRawFinishReason = void 0;
-								hasReceivedTerminalChunk = false;
-								hasReceivedOutputChunk = false;
-								stepUsage = createNullLanguageModelUsage();
-								stepProviderMetadata = void 0;
-								modelCallPerformance = createModelCallPerformance();
-								stepResponse = createStepResponse();
-								textPartIds.clear();
-								reasoningPartIds.clear();
-								controller.enqueue({ [streamRetryBoundarySymbol]: {
-									request: getStepRequest(),
-									warnings
-								} });
-								return;
-							}
+							var _a24, _b2, _c2;
 							if (chunk.type === "model-call-start") {
 								warnings = chunk.warnings;
 								return;
 							}
 							if (stepFirstChunk) {
 								stepFirstChunk = false;
-								enqueueStepPart(controller, {
+								controller.enqueue({
 									type: "start-step",
-									request: getStepRequest(),
-									warnings: warnings ?? []
+									request: stepRequest,
+									warnings: warnings != null ? warnings : []
 								});
 							}
 							const chunkType = chunk.type;
-							if (isOutputChunk(chunk)) hasReceivedOutputChunk = true;
+							if (isOutputChunk2(chunk)) {
+								if (!hasReceivedOutputChunk) clearFirstChunkTimeout();
+								hasReceivedOutputChunk = true;
+								resetChunkTimeout();
+							}
 							switch (chunkType) {
 								case "file":
 								case "custom":
 								case "source":
+								case "text-start":
+								case "text-end":
+								case "reasoning-start":
+								case "reasoning-end":
+								case "reasoning-delta":
 								case "reasoning-file":
 								case "tool-input-start":
 								case "tool-input-end":
 								case "tool-input-delta":
 								case "tool-approval-request":
-								case "tool-output-denied":
-									enqueueStepPart(controller, chunk);
+									controller.enqueue(chunk);
 									break;
-								case "text-start": {
-									const id = reserveTextPartId(chunk.id);
-									textPartIds.set(chunk.id, id);
-									enqueueStepPart(controller, {
-										...chunk,
-										id
-									});
-									break;
-								}
 								case "text-delta":
-									if (chunk.text.length > 0 || chunk.providerMetadata != null) enqueueStepPart(controller, {
-										...chunk,
-										id: textPartIds.get(chunk.id) ?? chunk.id
-									});
-									break;
-								case "text-end":
-									enqueueStepPart(controller, {
-										...chunk,
-										id: textPartIds.get(chunk.id) ?? chunk.id
-									});
-									textPartIds.delete(chunk.id);
-									break;
-								case "reasoning-start": {
-									const id = reserveReasoningPartId(chunk.id);
-									reasoningPartIds.set(chunk.id, id);
-									enqueueStepPart(controller, {
-										...chunk,
-										id
-									});
-									break;
-								}
-								case "reasoning-delta":
-									enqueueStepPart(controller, {
-										...chunk,
-										id: reasoningPartIds.get(chunk.id) ?? chunk.id
-									});
-									break;
-								case "reasoning-end":
-									enqueueStepPart(controller, {
-										...chunk,
-										id: reasoningPartIds.get(chunk.id) ?? chunk.id
-									});
-									reasoningPartIds.delete(chunk.id);
+									if (chunk.text.length > 0) controller.enqueue(chunk);
 									break;
 								case "tool-call":
-									enqueueStepPart(controller, chunk);
+									controller.enqueue(chunk);
 									stepToolCalls.push(chunk);
 									break;
 								case "tool-approval-response":
-									enqueueStepPart(controller, chunk);
+									controller.enqueue(chunk);
 									stepToolApprovalResponses.push(chunk);
 									break;
 								case "tool-result":
-									enqueueStepPart(controller, chunk);
+									controller.enqueue(chunk);
 									if (!chunk.preliminary) stepToolOutputs.push(chunk);
 									break;
 								case "tool-error":
-									enqueueStepPart(controller, chunk);
+									controller.enqueue(chunk);
 									stepToolOutputs.push(chunk);
 									break;
 								case "tool-execution-end":
@@ -9351,9 +7456,9 @@ var DefaultStreamTextResult = class {
 									break;
 								case "model-call-response-metadata":
 									stepResponse = {
-										id: chunk.id ?? stepResponse.id,
-										timestamp: chunk.timestamp ?? stepResponse.timestamp,
-										modelId: chunk.modelId ?? stepResponse.modelId
+										id: (_a24 = chunk.id) != null ? _a24 : stepResponse.id,
+										timestamp: (_b2 = chunk.timestamp) != null ? _b2 : stepResponse.timestamp,
+										modelId: (_c2 = chunk.modelId) != null ? _c2 : stepResponse.modelId
 									};
 									break;
 								case "model-call-end":
@@ -9366,18 +7471,18 @@ var DefaultStreamTextResult = class {
 									break;
 								case "error":
 									hasReceivedTerminalChunk = true;
-									enqueueStepPart(controller, chunk);
+									controller.enqueue(chunk);
 									stepFinishReason = "error";
 									break;
 								case "raw":
-									if (include.rawChunks) enqueueStepPart(controller, chunk);
+									if (include.rawChunks) controller.enqueue(chunk);
 									break;
 								default: throw new Error(`Unknown chunk type: ${chunkType}`);
 							}
 						},
 						async flush(controller) {
 							if (!hasReceivedTerminalChunk && !hasReceivedOutputChunk) {
-								enqueueStepPart(controller, {
+								controller.enqueue({
 									type: "error",
 									error: new NoOutputGeneratedError({ message: "No output generated. The model stream ended without a finish chunk." })
 								});
@@ -9385,7 +7490,7 @@ var DefaultStreamTextResult = class {
 								self.closeStream();
 								return;
 							}
-							const stepTimeMs = now() - stepStartTimestampMs;
+							const stepTimeMs = now2() - stepStartTimestampMs;
 							const finishStepPart = {
 								type: "finish-step",
 								finishReason: stepFinishReason,
@@ -9399,10 +7504,10 @@ var DefaultStreamTextResult = class {
 								providerMetadata: stepProviderMetadata,
 								response: {
 									...stepResponse,
-									headers: response?.headers
+									headers: response == null ? void 0 : response.headers
 								}
 							};
-							enqueueStepPart(controller, finishStepPart);
+							controller.enqueue(finishStepPart);
 							const combinedUsage = addLanguageModelUsage(usage, stepUsage);
 							await stepFinish.promise;
 							const clientToolCalls = stepToolCalls.filter((toolCall) => toolCall.providerExecuted !== true);
@@ -9410,14 +7515,14 @@ var DefaultStreamTextResult = class {
 							const deniedToolApprovalResponses = stepToolApprovalResponses.filter((toolApprovalResponse) => toolApprovalResponse.approved === false);
 							for (const toolCall of stepToolCalls) {
 								if (toolCall.providerExecuted !== true) continue;
-								const tool = getOwn(stepExecutionTools, toolCall.toolName);
-								if (tool?.type === "provider" && tool.supportsDeferredResults) {
-									if (!stepToolOutputs.some((output) => (output.type === "tool-result" || output.type === "tool-error") && output.toolCallId === toolCall.toolCallId)) pendingDeferredToolCalls.set(toolCall.toolCallId, { toolName: toolCall.toolName });
+								const tool2 = getOwn(tools, toolCall.toolName);
+								if ((tool2 == null ? void 0 : tool2.type) === "provider" && tool2.supportsDeferredResults) {
+									if (!stepToolOutputs.some((output2) => (output2.type === "tool-result" || output2.type === "tool-error") && output2.toolCallId === toolCall.toolCallId)) pendingDeferredToolCalls.set(toolCall.toolCallId, { toolName: toolCall.toolName });
 								}
 							}
-							for (const output of stepToolOutputs) if (output.type === "tool-result" || output.type === "tool-error") pendingDeferredToolCalls.delete(output.toolCallId);
+							for (const output2 of stepToolOutputs) if (output2.type === "tool-result" || output2.type === "tool-error") pendingDeferredToolCalls.delete(output2.toolCallId);
 							cleanupStepTimeouts();
-							if (clientToolCalls.length === clientToolOutputs.length + deniedToolApprovalResponses.length && (clientToolCalls.length > 0 || pendingDeferredToolCalls.size > 0) && !await isStopConditionMet({
+							if ((clientToolCalls.length > 0 && clientToolCalls.length === clientToolOutputs.length + deniedToolApprovalResponses.length || pendingDeferredToolCalls.size > 0) && !await isStopConditionMet({
 								stopConditions,
 								steps: recordedSteps
 							})) try {
@@ -9426,14 +7531,14 @@ var DefaultStreamTextResult = class {
 									usage: combinedUsage
 								}));
 							} catch (error) {
-								enqueueStepPart(controller, {
+								controller.enqueue({
 									type: "error",
 									error
 								});
 								self.closeStream();
 							}
 							else {
-								enqueueStepPart(controller, {
+								controller.enqueue({
 									type: "finish",
 									finishReason: stepFinishReason,
 									rawFinishReason: stepRawFinishReason,
@@ -9456,12 +7561,13 @@ var DefaultStreamTextResult = class {
 				usage: createNullLanguageModelUsage()
 			}));
 		})().catch(async (error) => {
-			await telemetryDispatcher.onError?.({
+			var _a22;
+			await ((_a22 = telemetryDispatcher.onError) == null ? void 0 : _a22.call(telemetryDispatcher, {
 				callId,
 				error
-			});
+			}));
 			self._initialResponseMessages.reject(error);
-			markPromiseAsHandled$1(self._initialResponseMessages.promise);
+			markPromiseAsHandled(self._initialResponseMessages.promise);
 			self.addStream(new ReadableStream({ start(controller) {
 				controller.enqueue({
 					type: "error",
@@ -9483,7 +7589,10 @@ var DefaultStreamTextResult = class {
 		return this.steps.then((steps) => steps.flatMap((step) => step.content));
 	}
 	get warnings() {
-		return this.steps.then((steps) => steps.flatMap((step) => step.warnings ?? []));
+		return this.steps.then((steps) => steps.flatMap((step) => {
+			var _a22;
+			return (_a22 = step.warnings) != null ? _a22 : [];
+		}));
 	}
 	get providerMetadata() {
 		return this.finalStep.then((step) => step.providerMetadata);
@@ -9594,21 +7703,23 @@ var DefaultStreamTextResult = class {
 	rejectResultPromise({ delayedPromise, error }) {
 		if (delayedPromise.isPending()) {
 			delayedPromise.reject(error);
-			markPromiseAsHandled$1(delayedPromise.promise);
+			markPromiseAsHandled(delayedPromise.promise);
 		}
 	}
 	async consumeStream(options) {
+		var _a22;
 		try {
 			await consumeStream({
 				stream: this.stream,
 				onError: (error) => {
+					var _a23;
 					this.rejectResultPromises(error);
-					options?.onError?.(error);
+					(_a23 = options == null ? void 0 : options.onError) == null || _a23.call(options, error);
 				}
 			});
 		} catch (error) {
 			this.rejectResultPromises(error);
-			options?.onError?.(error);
+			(_a22 = options == null ? void 0 : options.onError) == null || _a22.call(options, error);
 		}
 	}
 	get experimental_partialOutputStream() {
@@ -9616,35 +7727,32 @@ var DefaultStreamTextResult = class {
 	}
 	get partialOutputStream() {
 		return createAsyncIterableStream(this.teeStream().pipeThrough(new TransformStream({ transform({ partialOutput }, controller) {
-			if (partialOutput !== void 0) controller.enqueue(partialOutput);
+			if (partialOutput != null) controller.enqueue(partialOutput);
 		} })));
 	}
 	get elementStream() {
-		const transform = this.outputSpecification?.createElementStreamTransform();
-		if (transform == null) throw new UnsupportedFunctionalityError({ functionality: `element streams in ${this.outputSpecification?.name ?? "text"} mode` });
+		var _a22, _b, _c;
+		const transform = (_a22 = this.outputSpecification) == null ? void 0 : _a22.createElementStreamTransform();
+		if (transform == null) throw new UnsupportedFunctionalityError({ functionality: `element streams in ${(_c = (_b = this.outputSpecification) == null ? void 0 : _b.name) != null ? _c : "text"} mode` });
 		return createAsyncIterableStream(this.teeStream().pipeThrough(transform));
 	}
-	getOutputPromise() {
-		if (this.outputPromise == null) this.outputPromise = this.finalStep.then((step) => {
-			return (this.outputSpecification ?? text()).parseCompleteOutput({ text: step.text }, {
+	get output() {
+		return this.finalStep.then((step) => {
+			var _a22;
+			return ((_a22 = this.outputSpecification) != null ? _a22 : text()).parseCompleteOutput({ text: step.text }, {
 				response: step.response,
 				usage: step.usage,
 				finishReason: step.finishReason
 			});
 		});
-		return this.outputPromise;
 	}
-	get output() {
-		return this.getOutputPromise();
-	}
-	toUIMessageStream({ originalMessages, generateMessageId, onStepEnd, onStepFinish, onEnd, onFinish, messageMetadata, sendReasoning, sendSources, sendStart, sendFinish, onError } = {}) {
+	toUIMessageStream({ originalMessages, generateMessageId, onEnd, onFinish, messageMetadata, sendReasoning, sendSources, sendStart, sendFinish, onError } = {}) {
 		return createAsyncIterableStream(toUIMessageStream({
 			stream: this.stream,
 			tools: this.tools,
 			originalMessages,
 			generateMessageId,
-			onStepEnd: onStepEnd ?? onStepFinish,
-			onEnd: onEnd ?? onFinish,
+			onEnd: onEnd != null ? onEnd : onFinish,
 			messageMetadata,
 			sendReasoning,
 			sendSources,
@@ -9653,14 +7761,13 @@ var DefaultStreamTextResult = class {
 			onError
 		}));
 	}
-	pipeUIMessageStreamToResponse(response, { originalMessages, generateMessageId, onStepEnd, onStepFinish, onEnd, onFinish, messageMetadata, sendReasoning, sendSources, sendFinish, sendStart, onError, ...init } = {}) {
+	pipeUIMessageStreamToResponse(response, { originalMessages, generateMessageId, onEnd, onFinish, messageMetadata, sendReasoning, sendSources, sendFinish, sendStart, onError, ...init } = {}) {
 		return pipeUIMessageStreamToResponse({
 			response,
 			stream: this.toUIMessageStream({
 				originalMessages,
 				generateMessageId,
-				onStepEnd: onStepEnd ?? onStepFinish,
-				onEnd: onEnd ?? onFinish,
+				onEnd: onEnd != null ? onEnd : onFinish,
 				messageMetadata,
 				sendReasoning,
 				sendSources,
@@ -9678,13 +7785,12 @@ var DefaultStreamTextResult = class {
 			...init
 		});
 	}
-	toUIMessageStreamResponse({ originalMessages, generateMessageId, onStepEnd, onStepFinish, onEnd, onFinish, messageMetadata, sendReasoning, sendSources, sendFinish, sendStart, onError, ...init } = {}) {
+	toUIMessageStreamResponse({ originalMessages, generateMessageId, onEnd, onFinish, messageMetadata, sendReasoning, sendSources, sendFinish, sendStart, onError, ...init } = {}) {
 		return createUIMessageStreamResponse({
 			stream: this.toUIMessageStream({
 				originalMessages,
 				generateMessageId,
-				onStepEnd: onStepEnd ?? onStepFinish,
-				onEnd: onEnd ?? onFinish,
+				onEnd: onEnd != null ? onEnd : onFinish,
 				messageMetadata,
 				sendReasoning,
 				sendSources,
@@ -9702,50 +7808,12 @@ var DefaultStreamTextResult = class {
 		});
 	}
 };
-function isToolPartFromUnavailableTool(part) {
-	return part.type === "dynamic-tool" && part.dynamic === false;
-}
-var rawInputDeprecationWarning = {
-	type: "deprecated",
-	setting: "rawInput in output-error UI message parts",
-	message: "Use the \"input\" field instead. The \"rawInput\" field will be removed in the next major version."
-};
-function warnIfUIMessageHasDeprecatedRawInput(messages) {
-	if (messages.some((message) => message.parts.some((part) => part != null && typeof part === "object" && "type" in part && typeof part.type === "string" && (part.type === "dynamic-tool" || part.type.startsWith("tool-")) && "state" in part && part.state === "output-error" && Object.prototype.hasOwnProperty.call(part, "rawInput") && "rawInput" in part && part.rawInput !== void 0))) logWarnings({ warnings: [rawInputDeprecationWarning] });
-}
-/**
-* Converts an array of UI messages from useChat into an array of ModelMessages that can be used
-* with the AI functions (e.g. `streamText`, `generateText`).
-*
-* @param messages - The UI messages to convert.
-* @param options.tools - The tools to use.
-* @param options.ignoreIncompleteToolCalls - Whether to ignore incomplete tool calls. Default is `false`.
-* @param options.convertDataPart - Optional function to convert data parts to text or file model message parts. Returns `undefined` if the part should be ignored.
-*
-* @returns An array of ModelMessages.
-*/
 async function convertToModelMessages(messages, options) {
 	const modelMessages = [];
-	warnIfUIMessageHasDeprecatedRawInput(messages);
-	const lastUserMessageIndex = messages.reduce((lastIndex, message, index) => message.role === "user" ? index : lastIndex, -1);
-	if (options?.ignoreIncompleteToolCalls || lastUserMessageIndex > 0) messages = messages.map((message, messageIndex) => ({
+	if (options == null ? void 0 : options.ignoreIncompleteToolCalls) messages = messages.map((message) => ({
 		...message,
-		parts: message.parts.filter((part) => !isToolUIPart(part) || (part.state !== "approval-requested" || messageIndex >= lastUserMessageIndex) && (!options?.ignoreIncompleteToolCalls || part.state === "approval-responded" || part.state === "output-available" && part.preliminary !== true || part.state === "output-error" || part.state === "output-denied"))
+		parts: message.parts.filter((part) => !isToolUIPart(part) || part.state !== "input-streaming" && part.state !== "input-available")
 	}));
-	async function createModelOutput({ toolPart, toolName, output, errorMode }) {
-		const tool = getOwn(options?.tools, toolName);
-		if (errorMode === "none" && tool == null && isToolPartFromUnavailableTool(toolPart)) return {
-			type: "text",
-			value: "Tool output omitted because the tool is no longer available."
-		};
-		return createToolModelOutput({
-			toolCallId: toolPart.toolCallId,
-			input: toolPart.input,
-			output,
-			tool,
-			errorMode
-		});
-	}
 	for (const message of messages) switch (message.role) {
 		case "system": {
 			const textParts = message.parts.filter((part) => part.type === "text");
@@ -9767,6 +7835,7 @@ async function convertToModelMessages(messages, options) {
 			modelMessages.push({
 				role: "user",
 				content: message.parts.map((part) => {
+					var _a22;
 					if (isTextUIPart(part)) return {
 						type: "text",
 						text: part.text,
@@ -9785,7 +7854,7 @@ async function convertToModelMessages(messages, options) {
 						},
 						...part.providerMetadata != null ? { providerOptions: part.providerMetadata } : {}
 					};
-					if (isDataUIPart(part)) return options?.convertDataPart?.(part);
+					if (isDataUIPart(part)) return (_a22 = options == null ? void 0 : options.convertDataPart) == null ? void 0 : _a22.call(options, part);
 				}).filter(isNonNullable)
 			});
 			break;
@@ -9793,6 +7862,7 @@ async function convertToModelMessages(messages, options) {
 			if (message.parts != null) {
 				let block = [];
 				async function processBlock() {
+					var _a22, _b, _c, _d, _e, _f, _g;
 					if (block.length === 0) return;
 					const content = [];
 					for (const part of block) if (isTextUIPart(part)) content.push({
@@ -9835,34 +7905,32 @@ async function convertToModelMessages(messages, options) {
 					else if (isToolUIPart(part)) {
 						const toolName = getToolName(part);
 						if (part.state !== "input-streaming") {
-							const callProviderMetadata = part.callProviderMetadata ?? (part.state === "output-error" ? part.resultProviderMetadata : void 0);
 							content.push({
 								type: "tool-call",
 								toolCallId: part.toolCallId,
 								toolName,
-								input: part.state === "output-error" ? part.input ?? ("rawInput" in part ? part.rawInput : void 0) : part.input,
+								input: part.state === "output-error" ? (_a22 = part.input) != null ? _a22 : "rawInput" in part ? part.rawInput : void 0 : part.input,
 								providerExecuted: part.providerExecuted,
-								...callProviderMetadata != null ? { providerOptions: callProviderMetadata } : {}
+								...part.callProviderMetadata != null ? { providerOptions: part.callProviderMetadata } : {}
 							});
 							if (part.approval != null) content.push({
 								type: "tool-approval-request",
 								approvalId: part.approval.id,
 								toolCallId: part.toolCallId,
 								isAutomatic: part.approval.isAutomatic,
-								...part.approval.requestReason != null ? { reason: part.approval.requestReason } : {},
-								...Object.prototype.hasOwnProperty.call(part.approval, "inputSchemaInput") ? { inputSchemaInput: part.approval.inputSchemaInput } : {},
 								...part.approval.signature != null ? { signature: part.approval.signature } : {}
 							});
 							if (part.providerExecuted === true && part.state !== "approval-responded" && (part.state === "output-available" || part.state === "output-error")) {
-								const resultProviderMetadata = part.resultProviderMetadata ?? part.callProviderMetadata;
+								const resultProviderMetadata = (_b = part.resultProviderMetadata) != null ? _b : part.callProviderMetadata;
 								content.push({
 									type: "tool-result",
 									toolCallId: part.toolCallId,
 									toolName,
-									output: await createModelOutput({
-										toolPart: part,
-										toolName,
+									output: await createToolModelOutput({
+										toolCallId: part.toolCallId,
+										input: part.input,
 										output: part.state === "output-error" ? part.errorText : part.output,
+										tool: getOwn(options == null ? void 0 : options.tools, toolName),
 										errorMode: part.state === "output-error" ? "json" : "none"
 									}),
 									...resultProviderMetadata != null ? { providerOptions: resultProviderMetadata } : {}
@@ -9870,25 +7938,28 @@ async function convertToModelMessages(messages, options) {
 							}
 						}
 					} else if (isDataUIPart(part)) {
-						const dataPart = options?.convertDataPart?.(part);
+						const dataPart = (_c = options == null ? void 0 : options.convertDataPart) == null ? void 0 : _c.call(options, part);
 						if (dataPart != null) content.push(dataPart);
 					} else throw new Error(`Unsupported part: ${part}`);
 					if (content.length > 0) modelMessages.push({
 						role: "assistant",
 						content
 					});
-					const toolParts = block.filter((part) => isToolUIPart(part) && (part.providerExecuted !== true || part.approval?.approved != null));
+					const toolParts = block.filter((part) => {
+						var _a23;
+						return isToolUIPart(part) && (part.providerExecuted !== true || ((_a23 = part.approval) == null ? void 0 : _a23.approved) != null);
+					});
 					if (toolParts.length > 0) {
-						const content = [];
+						const content2 = [];
 						for (const toolPart of toolParts) {
-							if (toolPart.approval?.approved != null) content.push({
+							if (((_d = toolPart.approval) == null ? void 0 : _d.approved) != null) content2.push({
 								type: "tool-approval-response",
 								approvalId: toolPart.approval.id,
 								approved: toolPart.approval.approved,
 								reason: toolPart.approval.reason,
 								providerExecuted: toolPart.providerExecuted
 							});
-							if (toolPart.state === "approval-responded" && toolPart.approval?.approved === false) content.push({
+							if (toolPart.state === "approval-responded" && ((_e = toolPart.approval) == null ? void 0 : _e.approved) === false) content2.push({
 								type: "tool-result",
 								toolCallId: toolPart.toolCallId,
 								toolName: getToolName(toolPart),
@@ -9901,13 +7972,13 @@ async function convertToModelMessages(messages, options) {
 							if (toolPart.providerExecuted === true) continue;
 							switch (toolPart.state) {
 								case "output-denied":
-									content.push({
+									content2.push({
 										type: "tool-result",
 										toolCallId: toolPart.toolCallId,
 										toolName: getToolName(toolPart),
 										output: {
 											type: "error-text",
-											value: toolPart.approval?.reason ?? "Tool call execution denied."
+											value: (_g = (_f = toolPart.approval) == null ? void 0 : _f.reason) != null ? _g : "Tool call execution denied."
 										},
 										...toolPart.callProviderMetadata != null ? { providerOptions: toolPart.callProviderMetadata } : {}
 									});
@@ -9915,14 +7986,15 @@ async function convertToModelMessages(messages, options) {
 								case "output-error":
 								case "output-available": {
 									const toolName = getToolName(toolPart);
-									content.push({
+									content2.push({
 										type: "tool-result",
 										toolCallId: toolPart.toolCallId,
 										toolName,
-										output: await createModelOutput({
-											toolPart,
-											toolName,
+										output: await createToolModelOutput({
+											toolCallId: toolPart.toolCallId,
+											input: toolPart.input,
 											output: toolPart.state === "output-error" ? toolPart.errorText : toolPart.output,
+											tool: getOwn(options == null ? void 0 : options.tools, toolName),
 											errorMode: toolPart.state === "output-error" ? "text" : "none"
 										}),
 										...toolPart.callProviderMetadata != null ? { providerOptions: toolPart.callProviderMetadata } : {}
@@ -9931,9 +8003,9 @@ async function convertToModelMessages(messages, options) {
 								}
 							}
 						}
-						if (content.length > 0) modelMessages.push({
+						if (content2.length > 0) modelMessages.push({
 							role: "tool",
-							content
+							content: content2
 						});
 					}
 					block = [];
@@ -9954,315 +8026,328 @@ async function convertToModelMessages(messages, options) {
 	}
 	return modelMessages;
 }
-var toolMetadataSchema = z.record(z.string(), jsonValueSchema.optional());
-var providerReferenceSchema = z.record(z.string(), z.string());
-lazySchema(() => {
-	const approvalRequestedSchema = z.object({
-		id: z.string(),
-		approved: z.never().optional(),
-		descriptor: z.unknown().optional(),
-		requestReason: z.string().optional(),
-		reason: z.never().optional(),
-		isAutomatic: z.boolean().optional(),
-		signature: z.string().optional(),
-		inputSchemaInput: z.unknown().optional()
-	});
-	const approvalRespondedSchema = approvalRequestedSchema.extend({
-		approved: z.boolean(),
-		reason: z.string().optional()
-	});
-	const approvalGrantedSchema = approvalRespondedSchema.extend({ approved: z.literal(true) });
-	const approvalDeniedSchema = approvalRespondedSchema.extend({ approved: z.literal(false) });
-	return zodSchema(z.array(z.object({
-		id: z.string(),
-		role: z.enum([
-			"system",
-			"user",
-			"assistant"
-		]),
-		metadata: z.unknown().optional(),
-		parts: z.array(z.union([
-			z.object({
-				type: z.literal("text"),
-				text: z.string(),
-				state: z.enum(["streaming", "done"]).optional(),
-				providerMetadata: providerMetadataSchema.optional()
-			}),
-			z.object({
-				type: z.literal("reasoning"),
-				id: z.string().optional(),
-				text: z.string(),
-				state: z.enum(["streaming", "done"]).optional(),
-				providerMetadata: providerMetadataSchema.optional()
-			}),
-			z.object({
-				type: z.literal("custom"),
-				kind: z.string(),
-				providerMetadata: providerMetadataSchema.optional()
-			}),
-			z.object({
-				type: z.literal("source-url"),
-				sourceId: z.string(),
-				url: z.string(),
-				title: z.string().optional(),
-				providerMetadata: providerMetadataSchema.optional()
-			}),
-			z.object({
-				type: z.literal("source-document"),
-				sourceId: z.string(),
-				mediaType: z.string(),
-				title: z.string(),
-				filename: z.string().optional(),
-				providerMetadata: providerMetadataSchema.optional()
-			}),
-			z.object({
-				type: z.literal("file"),
-				mediaType: z.string(),
-				filename: z.string().optional(),
-				url: z.string(),
-				providerReference: providerReferenceSchema.optional(),
-				providerMetadata: providerMetadataSchema.optional()
-			}),
-			z.object({
-				type: z.literal("reasoning-file"),
-				mediaType: z.string(),
-				url: z.string(),
-				providerMetadata: providerMetadataSchema.optional()
-			}),
-			z.object({ type: z.literal("step-start") }),
-			z.object({
-				type: z.string().startsWith("data-"),
-				id: z.string().optional(),
-				data: z.unknown()
-			}),
-			z.object({
-				type: z.literal("dynamic-tool"),
-				dynamic: z.literal(false).optional(),
-				toolName: z.string(),
-				toolCallId: z.string(),
-				title: z.string().optional(),
-				toolMetadata: toolMetadataSchema.optional(),
-				state: z.literal("input-streaming"),
-				input: z.unknown().optional(),
-				rawInput: z.string().optional(),
-				providerExecuted: z.boolean().optional(),
-				callProviderMetadata: providerMetadataSchema.optional(),
-				output: z.never().optional(),
-				errorText: z.never().optional(),
-				approval: z.never().optional()
-			}),
-			z.object({
-				type: z.literal("dynamic-tool"),
-				dynamic: z.literal(false).optional(),
-				toolName: z.string(),
-				toolCallId: z.string(),
-				title: z.string().optional(),
-				toolMetadata: toolMetadataSchema.optional(),
-				state: z.literal("input-available"),
-				input: z.unknown(),
-				providerExecuted: z.boolean().optional(),
-				output: z.never().optional(),
-				errorText: z.never().optional(),
-				callProviderMetadata: providerMetadataSchema.optional(),
-				approval: z.never().optional()
-			}),
-			z.object({
-				type: z.literal("dynamic-tool"),
-				dynamic: z.literal(false).optional(),
-				toolName: z.string(),
-				toolCallId: z.string(),
-				title: z.string().optional(),
-				toolMetadata: toolMetadataSchema.optional(),
-				state: z.literal("approval-requested"),
-				input: z.unknown(),
-				providerExecuted: z.boolean().optional(),
-				output: z.never().optional(),
-				errorText: z.never().optional(),
-				callProviderMetadata: providerMetadataSchema.optional(),
-				approval: approvalRequestedSchema
-			}),
-			z.object({
-				type: z.literal("dynamic-tool"),
-				dynamic: z.literal(false).optional(),
-				toolName: z.string(),
-				toolCallId: z.string(),
-				title: z.string().optional(),
-				toolMetadata: toolMetadataSchema.optional(),
-				state: z.literal("approval-responded"),
-				input: z.unknown(),
-				providerExecuted: z.boolean().optional(),
-				output: z.never().optional(),
-				errorText: z.never().optional(),
-				callProviderMetadata: providerMetadataSchema.optional(),
-				approval: approvalRespondedSchema
-			}),
-			z.object({
-				type: z.literal("dynamic-tool"),
-				dynamic: z.literal(false).optional(),
-				toolName: z.string(),
-				toolCallId: z.string(),
-				title: z.string().optional(),
-				toolMetadata: toolMetadataSchema.optional(),
-				state: z.literal("output-available"),
-				input: z.unknown(),
-				providerExecuted: z.boolean().optional(),
-				output: z.unknown(),
-				errorText: z.never().optional(),
-				callProviderMetadata: providerMetadataSchema.optional(),
-				resultProviderMetadata: providerMetadataSchema.optional(),
-				preliminary: z.boolean().optional(),
-				approval: approvalGrantedSchema.optional()
-			}),
-			z.object({
-				type: z.literal("dynamic-tool"),
-				dynamic: z.literal(false).optional(),
-				toolName: z.string(),
-				toolCallId: z.string(),
-				title: z.string().optional(),
-				toolMetadata: toolMetadataSchema.optional(),
-				state: z.literal("output-error"),
-				input: z.unknown().optional(),
-				rawInput: z.unknown().optional(),
-				providerExecuted: z.boolean().optional(),
-				output: z.never().optional(),
-				errorText: z.string(),
-				callProviderMetadata: providerMetadataSchema.optional(),
-				resultProviderMetadata: providerMetadataSchema.optional(),
-				approval: approvalGrantedSchema.optional()
-			}),
-			z.object({
-				type: z.literal("dynamic-tool"),
-				dynamic: z.literal(false).optional(),
-				toolName: z.string(),
-				toolCallId: z.string(),
-				title: z.string().optional(),
-				toolMetadata: toolMetadataSchema.optional(),
-				state: z.literal("output-denied"),
-				input: z.unknown(),
-				providerExecuted: z.boolean().optional(),
-				output: z.never().optional(),
-				errorText: z.never().optional(),
-				callProviderMetadata: providerMetadataSchema.optional(),
-				approval: approvalDeniedSchema
-			}),
-			z.object({
-				type: z.string().startsWith("tool-"),
-				toolCallId: z.string(),
-				title: z.string().optional(),
-				toolMetadata: toolMetadataSchema.optional(),
-				state: z.literal("input-streaming"),
-				providerExecuted: z.boolean().optional(),
-				callProviderMetadata: providerMetadataSchema.optional(),
-				input: z.unknown().optional(),
-				rawInput: z.string().optional(),
-				output: z.never().optional(),
-				errorText: z.never().optional(),
-				approval: z.never().optional()
-			}),
-			z.object({
-				type: z.string().startsWith("tool-"),
-				toolCallId: z.string(),
-				title: z.string().optional(),
-				toolMetadata: toolMetadataSchema.optional(),
-				state: z.literal("input-available"),
-				providerExecuted: z.boolean().optional(),
-				input: z.unknown(),
-				output: z.never().optional(),
-				errorText: z.never().optional(),
-				callProviderMetadata: providerMetadataSchema.optional(),
-				approval: z.never().optional()
-			}),
-			z.object({
-				type: z.string().startsWith("tool-"),
-				toolCallId: z.string(),
-				title: z.string().optional(),
-				toolMetadata: toolMetadataSchema.optional(),
-				state: z.literal("approval-requested"),
-				input: z.unknown(),
-				providerExecuted: z.boolean().optional(),
-				output: z.never().optional(),
-				errorText: z.never().optional(),
-				callProviderMetadata: providerMetadataSchema.optional(),
-				approval: approvalRequestedSchema
-			}),
-			z.object({
-				type: z.string().startsWith("tool-"),
-				toolCallId: z.string(),
-				title: z.string().optional(),
-				toolMetadata: toolMetadataSchema.optional(),
-				state: z.literal("approval-responded"),
-				input: z.unknown(),
-				providerExecuted: z.boolean().optional(),
-				output: z.never().optional(),
-				errorText: z.never().optional(),
-				callProviderMetadata: providerMetadataSchema.optional(),
-				approval: approvalRespondedSchema
-			}),
-			z.object({
-				type: z.string().startsWith("tool-"),
-				toolCallId: z.string(),
-				title: z.string().optional(),
-				toolMetadata: toolMetadataSchema.optional(),
-				state: z.literal("output-available"),
-				providerExecuted: z.boolean().optional(),
-				input: z.unknown(),
-				output: z.unknown(),
-				errorText: z.never().optional(),
-				callProviderMetadata: providerMetadataSchema.optional(),
-				resultProviderMetadata: providerMetadataSchema.optional(),
-				preliminary: z.boolean().optional(),
-				approval: approvalGrantedSchema.optional()
-			}),
-			z.object({
-				type: z.string().startsWith("tool-"),
-				toolCallId: z.string(),
-				title: z.string().optional(),
-				toolMetadata: toolMetadataSchema.optional(),
-				state: z.literal("output-error"),
-				providerExecuted: z.boolean().optional(),
-				input: z.unknown().optional(),
-				rawInput: z.unknown().optional(),
-				output: z.never().optional(),
-				errorText: z.string(),
-				callProviderMetadata: providerMetadataSchema.optional(),
-				resultProviderMetadata: providerMetadataSchema.optional(),
-				approval: approvalGrantedSchema.optional()
-			}),
-			z.object({
-				type: z.string().startsWith("tool-"),
-				toolCallId: z.string(),
-				title: z.string().optional(),
-				toolMetadata: toolMetadataSchema.optional(),
-				state: z.literal("output-denied"),
-				providerExecuted: z.boolean().optional(),
-				input: z.unknown(),
-				output: z.never().optional(),
-				errorText: z.never().optional(),
-				callProviderMetadata: providerMetadataSchema.optional(),
-				approval: approvalDeniedSchema
+var toolMetadataSchema2 = record(string(), jsonValueSchema.optional());
+var providerReferenceSchema2 = record(string(), string());
+lazySchema(() => zodSchema(array$1(object$1({
+	id: string(),
+	role: _enum([
+		"system",
+		"user",
+		"assistant"
+	]),
+	metadata: unknown().optional(),
+	parts: array$1(union([
+		object$1({
+			type: literal("text"),
+			text: string(),
+			state: _enum(["streaming", "done"]).optional(),
+			providerMetadata: providerMetadataSchema.optional()
+		}),
+		object$1({
+			type: literal("reasoning"),
+			text: string(),
+			state: _enum(["streaming", "done"]).optional(),
+			providerMetadata: providerMetadataSchema.optional()
+		}),
+		object$1({
+			type: literal("custom"),
+			kind: string(),
+			providerMetadata: providerMetadataSchema.optional()
+		}),
+		object$1({
+			type: literal("source-url"),
+			sourceId: string(),
+			url: string(),
+			title: string().optional(),
+			providerMetadata: providerMetadataSchema.optional()
+		}),
+		object$1({
+			type: literal("source-document"),
+			sourceId: string(),
+			mediaType: string(),
+			title: string(),
+			filename: string().optional(),
+			providerMetadata: providerMetadataSchema.optional()
+		}),
+		object$1({
+			type: literal("file"),
+			mediaType: string(),
+			filename: string().optional(),
+			url: string(),
+			providerReference: providerReferenceSchema2.optional(),
+			providerMetadata: providerMetadataSchema.optional()
+		}),
+		object$1({
+			type: literal("reasoning-file"),
+			mediaType: string(),
+			url: string(),
+			providerMetadata: providerMetadataSchema.optional()
+		}),
+		object$1({ type: literal("step-start") }),
+		object$1({
+			type: string().startsWith("data-"),
+			id: string().optional(),
+			data: unknown()
+		}),
+		object$1({
+			type: literal("dynamic-tool"),
+			toolName: string(),
+			toolCallId: string(),
+			toolMetadata: toolMetadataSchema2.optional(),
+			state: literal("input-streaming"),
+			input: unknown().optional(),
+			providerExecuted: boolean().optional(),
+			callProviderMetadata: providerMetadataSchema.optional(),
+			output: never().optional(),
+			errorText: never().optional(),
+			approval: never().optional()
+		}),
+		object$1({
+			type: literal("dynamic-tool"),
+			toolName: string(),
+			toolCallId: string(),
+			toolMetadata: toolMetadataSchema2.optional(),
+			state: literal("input-available"),
+			input: unknown(),
+			providerExecuted: boolean().optional(),
+			output: never().optional(),
+			errorText: never().optional(),
+			callProviderMetadata: providerMetadataSchema.optional(),
+			approval: never().optional()
+		}),
+		object$1({
+			type: literal("dynamic-tool"),
+			toolName: string(),
+			toolCallId: string(),
+			toolMetadata: toolMetadataSchema2.optional(),
+			state: literal("approval-requested"),
+			input: unknown(),
+			providerExecuted: boolean().optional(),
+			output: never().optional(),
+			errorText: never().optional(),
+			callProviderMetadata: providerMetadataSchema.optional(),
+			approval: object$1({
+				id: string(),
+				approved: never().optional(),
+				reason: never().optional(),
+				isAutomatic: boolean().optional(),
+				signature: string().optional()
 			})
-		]))
-	}).superRefine((message, context) => {
-		if (message.role !== "assistant" && message.parts.length === 0) context.addIssue({
-			origin: "array",
-			code: "too_small",
-			minimum: 1,
-			inclusive: true,
-			input: message.parts,
-			path: ["parts"],
-			message: "Message must contain at least one part"
-		});
-	})).nonempty("Messages array must not be empty"));
-});
+		}),
+		object$1({
+			type: literal("dynamic-tool"),
+			toolName: string(),
+			toolCallId: string(),
+			toolMetadata: toolMetadataSchema2.optional(),
+			state: literal("approval-responded"),
+			input: unknown(),
+			providerExecuted: boolean().optional(),
+			output: never().optional(),
+			errorText: never().optional(),
+			callProviderMetadata: providerMetadataSchema.optional(),
+			approval: object$1({
+				id: string(),
+				approved: boolean(),
+				reason: string().optional(),
+				isAutomatic: boolean().optional(),
+				signature: string().optional()
+			})
+		}),
+		object$1({
+			type: literal("dynamic-tool"),
+			toolName: string(),
+			toolCallId: string(),
+			toolMetadata: toolMetadataSchema2.optional(),
+			state: literal("output-available"),
+			input: unknown(),
+			providerExecuted: boolean().optional(),
+			output: unknown(),
+			errorText: never().optional(),
+			callProviderMetadata: providerMetadataSchema.optional(),
+			resultProviderMetadata: providerMetadataSchema.optional(),
+			preliminary: boolean().optional(),
+			approval: object$1({
+				id: string(),
+				approved: literal(true),
+				reason: string().optional(),
+				isAutomatic: boolean().optional(),
+				signature: string().optional()
+			}).optional()
+		}),
+		object$1({
+			type: literal("dynamic-tool"),
+			toolName: string(),
+			toolCallId: string(),
+			toolMetadata: toolMetadataSchema2.optional(),
+			state: literal("output-error"),
+			input: unknown().optional(),
+			rawInput: unknown().optional(),
+			providerExecuted: boolean().optional(),
+			output: never().optional(),
+			errorText: string(),
+			callProviderMetadata: providerMetadataSchema.optional(),
+			resultProviderMetadata: providerMetadataSchema.optional(),
+			approval: object$1({
+				id: string(),
+				approved: literal(true),
+				reason: string().optional(),
+				isAutomatic: boolean().optional(),
+				signature: string().optional()
+			}).optional()
+		}),
+		object$1({
+			type: literal("dynamic-tool"),
+			toolName: string(),
+			toolCallId: string(),
+			toolMetadata: toolMetadataSchema2.optional(),
+			state: literal("output-denied"),
+			input: unknown(),
+			providerExecuted: boolean().optional(),
+			output: never().optional(),
+			errorText: never().optional(),
+			callProviderMetadata: providerMetadataSchema.optional(),
+			approval: object$1({
+				id: string(),
+				approved: literal(false),
+				reason: string().optional(),
+				isAutomatic: boolean().optional(),
+				signature: string().optional()
+			})
+		}),
+		object$1({
+			type: string().startsWith("tool-"),
+			toolCallId: string(),
+			toolMetadata: toolMetadataSchema2.optional(),
+			state: literal("input-streaming"),
+			providerExecuted: boolean().optional(),
+			callProviderMetadata: providerMetadataSchema.optional(),
+			input: unknown().optional(),
+			output: never().optional(),
+			errorText: never().optional(),
+			approval: never().optional()
+		}),
+		object$1({
+			type: string().startsWith("tool-"),
+			toolCallId: string(),
+			toolMetadata: toolMetadataSchema2.optional(),
+			state: literal("input-available"),
+			providerExecuted: boolean().optional(),
+			input: unknown(),
+			output: never().optional(),
+			errorText: never().optional(),
+			callProviderMetadata: providerMetadataSchema.optional(),
+			approval: never().optional()
+		}),
+		object$1({
+			type: string().startsWith("tool-"),
+			toolCallId: string(),
+			toolMetadata: toolMetadataSchema2.optional(),
+			state: literal("approval-requested"),
+			input: unknown(),
+			providerExecuted: boolean().optional(),
+			output: never().optional(),
+			errorText: never().optional(),
+			callProviderMetadata: providerMetadataSchema.optional(),
+			approval: object$1({
+				id: string(),
+				approved: never().optional(),
+				reason: never().optional(),
+				isAutomatic: boolean().optional(),
+				signature: string().optional()
+			})
+		}),
+		object$1({
+			type: string().startsWith("tool-"),
+			toolCallId: string(),
+			toolMetadata: toolMetadataSchema2.optional(),
+			state: literal("approval-responded"),
+			input: unknown(),
+			providerExecuted: boolean().optional(),
+			output: never().optional(),
+			errorText: never().optional(),
+			callProviderMetadata: providerMetadataSchema.optional(),
+			approval: object$1({
+				id: string(),
+				approved: boolean(),
+				reason: string().optional(),
+				isAutomatic: boolean().optional(),
+				signature: string().optional()
+			})
+		}),
+		object$1({
+			type: string().startsWith("tool-"),
+			toolCallId: string(),
+			toolMetadata: toolMetadataSchema2.optional(),
+			state: literal("output-available"),
+			providerExecuted: boolean().optional(),
+			input: unknown(),
+			output: unknown(),
+			errorText: never().optional(),
+			callProviderMetadata: providerMetadataSchema.optional(),
+			resultProviderMetadata: providerMetadataSchema.optional(),
+			preliminary: boolean().optional(),
+			approval: object$1({
+				id: string(),
+				approved: literal(true),
+				reason: string().optional(),
+				isAutomatic: boolean().optional(),
+				signature: string().optional()
+			}).optional()
+		}),
+		object$1({
+			type: string().startsWith("tool-"),
+			toolCallId: string(),
+			toolMetadata: toolMetadataSchema2.optional(),
+			state: literal("output-error"),
+			providerExecuted: boolean().optional(),
+			input: unknown().optional(),
+			rawInput: unknown().optional(),
+			output: never().optional(),
+			errorText: string(),
+			callProviderMetadata: providerMetadataSchema.optional(),
+			resultProviderMetadata: providerMetadataSchema.optional(),
+			approval: object$1({
+				id: string(),
+				approved: literal(true),
+				reason: string().optional(),
+				isAutomatic: boolean().optional(),
+				signature: string().optional()
+			}).optional()
+		}),
+		object$1({
+			type: string().startsWith("tool-"),
+			toolCallId: string(),
+			toolMetadata: toolMetadataSchema2.optional(),
+			state: literal("output-denied"),
+			providerExecuted: boolean().optional(),
+			input: unknown(),
+			output: never().optional(),
+			errorText: never().optional(),
+			callProviderMetadata: providerMetadataSchema.optional(),
+			approval: object$1({
+				id: string(),
+				approved: literal(false),
+				reason: string().optional(),
+				isAutomatic: boolean().optional(),
+				signature: string().optional()
+			})
+		})
+	]))
+}).superRefine((message, context) => {
+	if (message.role !== "assistant" && message.parts.length === 0) context.addIssue({
+		origin: "array",
+		code: "too_small",
+		minimum: 1,
+		inclusive: true,
+		input: message.parts,
+		path: ["parts"],
+		message: "Message must contain at least one part"
+	});
+})).nonempty("Messages array must not be empty")));
 createIdGenerator({
 	prefix: "call",
 	size: 24
 });
-createIdGenerator({
-	prefix: "call",
-	size: 24
-});
-new TextEncoder();
 createIdGenerator({
 	prefix: "call",
 	size: 24
@@ -10271,43 +8356,31 @@ createIdGenerator({
 	prefix: "aiobj",
 	size: 24
 });
-var { atob: atob$1 } = globalThis;
 var SerialJobExecutor = class {
 	constructor() {
 		this.queue = [];
 		this.isProcessing = false;
-		this.idleWaiters = [];
 	}
 	async processQueue() {
 		if (this.isProcessing) return;
 		this.isProcessing = true;
-		try {
-			while (this.queue.length > 0) {
-				await this.queue[0]();
-				this.queue.shift();
-			}
-		} finally {
-			this.isProcessing = false;
-			for (const resolve of this.idleWaiters.splice(0)) resolve();
+		while (this.queue.length > 0) {
+			await this.queue[0]();
+			this.queue.shift();
 		}
+		this.isProcessing = false;
 	}
 	async run(job) {
-		return new Promise((resolve, reject) => {
+		return new Promise((resolve3, reject) => {
 			this.queue.push(async () => {
 				try {
 					await job();
-					resolve();
+					resolve3();
 				} catch (error) {
 					reject(error);
 				}
 			});
 			this.processQueue();
-		});
-	}
-	async waitForIdle() {
-		if (!this.isProcessing && this.queue.length === 0) return;
-		await new Promise((resolve) => {
-			this.idleWaiters.push(resolve);
 		});
 	}
 };
@@ -10319,62 +8392,20 @@ createIdGenerator({
 	prefix: "call",
 	size: 24
 });
-z.object({
-	token: z.string().refine((value) => value.trim().length > 0),
-	url: z.string().refine((value) => {
-		try {
-			const url = new URL(value);
-			return (url.protocol === "ws:" || url.protocol === "wss:") && url.hostname !== "";
-		} catch {
-			return false;
-		}
-	}),
-	expiresAt: z.number().positive().max(Number.MAX_SAFE_INTEGER).optional(),
-	tools: z.array(z.object({
-		type: z.literal("function"),
-		name: z.string().min(1),
-		description: z.string().optional(),
-		parameters: z.record(z.string(), z.unknown())
-	})).optional()
-});
-createIdGenerator({
-	prefix: "call",
-	size: 24
-});
-createIdGenerator({
-	prefix: "call",
-	size: 24
-});
-createIdGenerator({
-	prefix: "call",
-	size: 24
-});
-async function createUIApiCallError({ response, url, fallbackMessage }) {
-	const responseBody = await response.text();
-	return new APICallError({
-		message: responseBody || fallbackMessage,
-		url,
-		requestBodyValues: void 0,
-		statusCode: response.status,
-		responseBody
-	});
-}
 async function convertFileListToFileUIParts(files) {
 	if (files == null) return [];
-	if (!globalThis.FileList || !(files instanceof globalThis.FileList)) throw new UnsupportedFunctionalityError({
-		functionality: "FileList",
-		message: "FileList is not supported in the current environment"
-	});
+	if (!globalThis.FileList || !(files instanceof globalThis.FileList)) throw new Error("FileList is not supported in the current environment");
 	return Promise.all(Array.from(files).map(async (file) => {
-		const { name, type } = file;
+		const { name: name22, type } = file;
 		return {
 			type: "file",
 			mediaType: type,
-			filename: name,
-			url: await new Promise((resolve, reject) => {
+			filename: name22,
+			url: await new Promise((resolve3, reject) => {
 				const reader = new FileReader();
 				reader.onload = (readerEvent) => {
-					resolve(readerEvent.target?.result);
+					var _a22;
+					resolve3((_a22 = readerEvent.target) == null ? void 0 : _a22.result);
 				};
 				reader.onerror = (error) => reject(error);
 				reader.readAsDataURL(file);
@@ -10382,23 +8413,18 @@ async function convertFileListToFileUIParts(files) {
 		};
 	}));
 }
-function appendPathToUrl(url, path) {
-	const queryOrFragmentStart = url.search(/[?#]/);
-	const urlPath = queryOrFragmentStart === -1 ? url : url.slice(0, queryOrFragmentStart);
-	const suffix = queryOrFragmentStart === -1 ? "" : url.slice(queryOrFragmentStart);
-	return `${urlPath.endsWith("/") && path.startsWith("/") ? urlPath.slice(0, -1) : urlPath}${path}${suffix}`;
-}
 var HttpChatTransport = class {
-	constructor({ api = "/api/chat", credentials, headers, body, fetch, prepareSendMessagesRequest, prepareReconnectToStreamRequest }) {
+	constructor({ api = "/api/chat", credentials, headers, body, fetch: fetch2, prepareSendMessagesRequest, prepareReconnectToStreamRequest }) {
 		this.api = api;
 		this.credentials = credentials;
 		this.headers = headers;
 		this.body = body;
-		this.fetch = fetch;
+		this.fetch = fetch2;
 		this.prepareSendMessagesRequest = prepareSendMessagesRequest;
 		this.prepareReconnectToStreamRequest = prepareReconnectToStreamRequest;
 	}
 	async sendMessages({ abortSignal, ...options }) {
+		var _a22, _b, _c, _d, _e;
 		const resolvedBody = await resolve(this.body);
 		const resolvedHeaders = await resolve(this.headers);
 		const resolvedCredentials = await resolve(this.credentials);
@@ -10406,7 +8432,7 @@ var HttpChatTransport = class {
 			...normalizeHeaders(resolvedHeaders),
 			...normalizeHeaders(options.headers)
 		};
-		const preparedRequest = await this.prepareSendMessagesRequest?.({
+		const preparedRequest = await ((_a22 = this.prepareSendMessagesRequest) == null ? void 0 : _a22.call(this, {
 			api: this.api,
 			id: options.chatId,
 			messages: options.messages,
@@ -10419,10 +8445,10 @@ var HttpChatTransport = class {
 			requestMetadata: options.metadata,
 			trigger: options.trigger,
 			messageId: options.messageId
-		});
-		const api = preparedRequest?.api ?? this.api;
-		const headers = preparedRequest?.headers !== void 0 ? normalizeHeaders(preparedRequest.headers) : baseHeaders;
-		const body = preparedRequest?.body !== void 0 ? preparedRequest.body : {
+		}));
+		const api = (_b = preparedRequest == null ? void 0 : preparedRequest.api) != null ? _b : this.api;
+		const headers = (preparedRequest == null ? void 0 : preparedRequest.headers) !== void 0 ? normalizeHeaders(preparedRequest.headers) : baseHeaders;
+		const body = (preparedRequest == null ? void 0 : preparedRequest.body) !== void 0 ? preparedRequest.body : {
 			...resolvedBody,
 			...options.body,
 			id: options.chatId,
@@ -10430,26 +8456,23 @@ var HttpChatTransport = class {
 			trigger: options.trigger,
 			messageId: options.messageId
 		};
-		const credentials = preparedRequest?.credentials ?? resolvedCredentials;
-		const response = await (this.fetch ?? globalThis.fetch)(api, {
+		const credentials = (_c = preparedRequest == null ? void 0 : preparedRequest.credentials) != null ? _c : resolvedCredentials;
+		const response = await ((_d = this.fetch) != null ? _d : globalThis.fetch)(api, {
 			method: "POST",
 			headers: {
-				"content-type": "application/json",
+				"Content-Type": "application/json",
 				...headers
 			},
 			body: JSON.stringify(body),
 			credentials,
 			signal: abortSignal
 		});
-		if (!response.ok) throw await createUIApiCallError({
-			response,
-			url: api,
-			fallbackMessage: "Failed to fetch the chat response."
-		});
-		if (!response.body) throw new EmptyResponseBodyError({ message: "The response body is empty." });
+		if (!response.ok) throw new Error((_e = await response.text()) != null ? _e : "Failed to fetch the chat response.");
+		if (!response.body) throw new Error("The response body is empty.");
 		return this.processResponseStream(response.body);
 	}
 	async reconnectToStream(options) {
+		var _a22, _b, _c, _d, _e;
 		const resolvedBody = await resolve(this.body);
 		const resolvedHeaders = await resolve(this.headers);
 		const resolvedCredentials = await resolve(this.credentials);
@@ -10457,7 +8480,7 @@ var HttpChatTransport = class {
 			...normalizeHeaders(resolvedHeaders),
 			...normalizeHeaders(options.headers)
 		};
-		const preparedRequest = await this.prepareReconnectToStreamRequest?.({
+		const preparedRequest = await ((_a22 = this.prepareReconnectToStreamRequest) == null ? void 0 : _a22.call(this, {
 			api: this.api,
 			id: options.chatId,
 			body: {
@@ -10467,31 +8490,18 @@ var HttpChatTransport = class {
 			headers: baseHeaders,
 			credentials: resolvedCredentials,
 			requestMetadata: options.metadata
-		});
-		let api = preparedRequest?.api;
-		if (api == null) {
-			if (options.chatId === "." || options.chatId === "..") throw new InvalidArgumentError({
-				parameter: "chatId",
-				value: options.chatId,
-				message: "Chat IDs must not be \".\" or \"..\" when using the default reconnect URL."
-			});
-			api = appendPathToUrl(this.api, `/${encodeURIComponent(options.chatId)}/stream`);
-		}
-		const headers = preparedRequest?.headers !== void 0 ? normalizeHeaders(preparedRequest.headers) : baseHeaders;
-		const credentials = preparedRequest?.credentials ?? resolvedCredentials;
-		const response = await (this.fetch ?? globalThis.fetch)(api, {
+		}));
+		const api = (_b = preparedRequest == null ? void 0 : preparedRequest.api) != null ? _b : `${this.api}/${options.chatId}/stream`;
+		const headers = (preparedRequest == null ? void 0 : preparedRequest.headers) !== void 0 ? normalizeHeaders(preparedRequest.headers) : baseHeaders;
+		const credentials = (_c = preparedRequest == null ? void 0 : preparedRequest.credentials) != null ? _c : resolvedCredentials;
+		const response = await ((_d = this.fetch) != null ? _d : globalThis.fetch)(api, {
 			method: "GET",
 			headers,
-			credentials,
-			signal: options.abortSignal
+			credentials
 		});
 		if (response.status === 204) return null;
-		if (!response.ok) throw await createUIApiCallError({
-			response,
-			url: api,
-			fallbackMessage: "Failed to fetch the chat response."
-		});
-		if (!response.body) throw new EmptyResponseBodyError({ message: "The response body is empty." });
+		if (!response.ok) throw new Error((_e = await response.text()) != null ? _e : "Failed to fetch the chat response.");
+		if (!response.body) throw new Error("The response body is empty.");
 		return this.processResponseStream(response.body);
 	}
 };
@@ -10510,74 +8520,46 @@ var DefaultChatTransport = class extends HttpChatTransport {
 	}
 };
 var AbstractChat = class {
-	constructor({ generateId: generateId$3 = generateId, id = generateId$3(), transport = new DefaultChatTransport(), messageMetadataSchema, dataPartSchemas, state, onError, onToolCall, onFinish, onData, sendAutomaticallyWhen }) {
-		this.pendingMessagePreparations = /* @__PURE__ */ new Set();
+	constructor({ generateId: generateId2 = generateId, id = generateId2(), transport = new DefaultChatTransport(), messageMetadataSchema, dataPartSchemas, state, onError, onToolCall, onFinish, onData, sendAutomaticallyWhen }) {
 		this.activeResponse = void 0;
-		this.activeResumeRequest = void 0;
-		this.resumableStreamState = void 0;
 		this.jobExecutor = new SerialJobExecutor();
-		this.activeStopCount = 0;
-		this.stopGeneration = 0;
+		/**
+		* Appends or replaces a user message to the chat list. This triggers the API call to fetch
+		* the assistant's response.
+		*
+		* If a messageId is provided, the message will be replaced.
+		*/
 		this.sendMessage = async (message, options) => {
+			var _a22, _b, _c, _d;
 			if (message == null) {
-				let messageId = this.pendingApprovalMessageId;
-				if (messageId == null) {
-					messageId = this.lastMessage?.id;
-					for (let i = this.state.messages.length - 1; i >= 0; i--) {
-						const candidate = this.state.messages[i];
-						if (candidate.role === "assistant" && candidate.parts.some((part) => isToolUIPart(part) && part.state === "approval-responded")) {
-							messageId = candidate.id;
-							break;
-						}
-					}
-				}
-				const pendingApprovalMessageIndex = messageId != null && messageId === this.pendingApprovalMessageId ? this.state.messages.findIndex((message) => message.id === messageId) : -1;
-				await this.makeRequestForToolApproval({
-					messageId,
-					messageIndex: pendingApprovalMessageIndex,
+				await this.makeRequest({
+					trigger: "submit-message",
+					messageId: (_a22 = this.lastMessage) == null ? void 0 : _a22.id,
 					...options
 				});
 				return;
 			}
 			let uiMessage;
-			if ("text" in message || "files" in message) {
-				const abortController = new AbortController();
-				this.pendingMessagePreparations.add(abortController);
-				let fileParts;
-				try {
-					fileParts = Array.isArray(message.files) ? message.files : await convertFileListToFileUIParts(message.files);
-				} finally {
-					this.pendingMessagePreparations.delete(abortController);
-				}
-				if (abortController.signal.aborted) return;
-				uiMessage = { parts: [...fileParts, ..."text" in message && message.text != null ? [{
-					type: "text",
-					text: message.text
-				}] : []] };
-			} else uiMessage = message;
+			if ("text" in message || "files" in message) uiMessage = { parts: [...Array.isArray(message.files) ? message.files : await convertFileListToFileUIParts(message.files), ..."text" in message && message.text != null ? [{
+				type: "text",
+				text: message.text
+			}] : []] };
+			else uiMessage = message;
 			if (message.messageId != null) {
 				const messageIndex = this.state.messages.findIndex((m) => m.id === message.messageId);
-				if (messageIndex === -1) throw new InvalidArgumentError({
-					parameter: "message.messageId",
-					value: message.messageId,
-					message: `message with id ${message.messageId} not found`
-				});
-				if (this.state.messages[messageIndex].role !== "user") throw new InvalidArgumentError({
-					parameter: "message.messageId",
-					value: message.messageId,
-					message: `message with id ${message.messageId} is not a user message`
-				});
+				if (messageIndex === -1) throw new Error(`message with id ${message.messageId} not found`);
+				if (this.state.messages[messageIndex].role !== "user") throw new Error(`message with id ${message.messageId} is not a user message`);
 				this.state.messages = this.state.messages.slice(0, messageIndex + 1);
 				this.state.replaceMessage(messageIndex, {
-					id: message.messageId,
 					...uiMessage,
-					role: uiMessage.role ?? "user",
+					id: message.messageId,
+					role: (_b = uiMessage.role) != null ? _b : "user",
 					metadata: message.metadata
 				});
 			} else this.state.pushMessage({
 				...uiMessage,
-				id: uiMessage.id ?? this.generateId(),
-				role: uiMessage.role ?? "user",
+				id: (_c = uiMessage.id) != null ? _c : this.generateId(),
+				role: (_d = uiMessage.role) != null ? _d : "user",
 				metadata: message.metadata
 			});
 			await this.makeRequest({
@@ -10586,13 +8568,13 @@ var AbstractChat = class {
 				...options
 			});
 		};
+		/**
+		* Regenerate the assistant message with the provided message id.
+		* If no message id is provided, the last assistant message will be regenerated.
+		*/
 		this.regenerate = async ({ messageId, ...options } = {}) => {
 			const messageIndex = messageId == null ? this.state.messages.length - 1 : this.state.messages.findIndex((message) => message.id === messageId);
-			if (messageIndex === -1) throw new InvalidArgumentError({
-				parameter: "messageId",
-				value: messageId,
-				message: `message ${messageId} not found`
-			});
+			if (messageIndex === -1) throw new Error(`message ${messageId} not found`);
 			this.state.messages = this.state.messages.slice(0, this.messages[messageIndex].role === "assistant" ? messageIndex : messageIndex + 1);
 			await this.makeRequest({
 				trigger: "regenerate-message",
@@ -10600,12 +8582,18 @@ var AbstractChat = class {
 				...options
 			});
 		};
+		/**
+		* Attempt to resume an ongoing streaming response.
+		*/
 		this.resumeStream = async (options = {}) => {
 			await this.makeRequest({
 				trigger: "resume-stream",
 				...options
 			});
 		};
+		/**
+		* Clear the error state and set the status to ready if the chat is in an error state.
+		*/
 		this.clearError = () => {
 			if (this.status === "error") {
 				this.state.error = void 0;
@@ -10614,6 +8602,7 @@ var AbstractChat = class {
 		};
 		this.addToolApprovalResponse = async ({ id, approved, reason, options }) => this.jobExecutor.run(async () => {
 			const messages = this.state.messages;
+			const lastMessage = messages[messages.length - 1];
 			const updatePart = (part) => isToolUIPart(part) && part.state === "approval-requested" && part.approval.id === id ? {
 				...part,
 				state: "approval-responded",
@@ -10624,91 +8613,56 @@ var AbstractChat = class {
 					reason
 				}
 			} : part;
-			const messageIndex = messages.findIndex((message) => message.parts.some((part) => isToolUIPart(part) && part.state === "approval-requested" && part.approval.id === id));
-			if (messageIndex !== -1) {
-				const message = messages[messageIndex];
-				this.state.replaceMessage(messageIndex, {
-					...message,
-					parts: message.parts.map(updatePart)
-				});
-				this.pendingApprovalMessageId = message.id;
-			}
-			if (this.activeResponse) this.activeResponse.state.message.parts = this.activeResponse.state.message.parts.map(updatePart);
-			if (messageIndex !== -1 && this.status !== "streaming" && this.status !== "submitted" && this.sendAutomaticallyWhen) {
-				const shouldSend = await this.shouldSendAutomatically();
-				if (shouldSend) this.runAutomaticRequest(() => {
-					const messageId = messageIndex === -1 ? this.lastMessage?.id : messages[messageIndex].id;
-					return this.makeRequestForToolApproval({
-						messageId,
-						messageIndex,
-						...options
-					});
-				}, shouldSend);
-			}
-		});
-		this.addToolOutput = async ({ state, toolCallId, output, errorText, options }) => this.jobExecutor.run(async () => {
-			const messages = this.state.messages;
-			const lastMessage = messages[messages.length - 1];
-			const updatePart = (part) => {
-				if (!isToolUIPart(part) || part.toolCallId !== toolCallId) return part;
-				const { approval: existingApproval, ...toolPart } = part;
-				const approval = existingApproval?.approved === true ? { approval: {
-					...existingApproval,
-					approved: existingApproval.approved
-				} } : {};
-				return state === "output-error" ? {
-					...toolPart,
-					...approval,
-					state,
-					input: part.input,
-					output: void 0,
-					errorText
-				} : {
-					...toolPart,
-					...approval,
-					state: "output-available",
-					input: part.input,
-					output,
-					errorText: void 0
-				};
-			};
 			this.state.replaceMessage(messages.length - 1, {
 				...lastMessage,
 				parts: lastMessage.parts.map(updatePart)
 			});
 			if (this.activeResponse) this.activeResponse.state.message.parts = this.activeResponse.state.message.parts.map(updatePart);
-			if (this.status !== "streaming" && this.status !== "submitted" && this.sendAutomaticallyWhen) {
-				const shouldSend = await this.shouldSendAutomatically();
-				if (shouldSend) this.runAutomaticRequest(() => this.makeRequest({
+			if (this.status !== "streaming" && this.status !== "submitted" && this.sendAutomaticallyWhen) this.shouldSendAutomatically().then((shouldSend) => {
+				var _a22;
+				if (shouldSend) this.makeRequest({
 					trigger: "submit-message",
-					messageId: this.lastMessage?.id,
+					messageId: (_a22 = this.lastMessage) == null ? void 0 : _a22.id,
 					...options
-				}), shouldSend);
-			}
+				});
+			});
 		});
+		this.addToolOutput = async ({ state = "output-available", toolCallId, output, errorText, options }) => this.jobExecutor.run(async () => {
+			const messages = this.state.messages;
+			const lastMessage = messages[messages.length - 1];
+			const updatePart = (part) => isToolUIPart(part) && part.toolCallId === toolCallId ? {
+				...part,
+				state,
+				output,
+				errorText
+			} : part;
+			this.state.replaceMessage(messages.length - 1, {
+				...lastMessage,
+				parts: lastMessage.parts.map(updatePart)
+			});
+			if (this.activeResponse) this.activeResponse.state.message.parts = this.activeResponse.state.message.parts.map(updatePart);
+			if (this.status !== "streaming" && this.status !== "submitted" && this.sendAutomaticallyWhen) this.shouldSendAutomatically().then((shouldSend) => {
+				var _a22;
+				if (shouldSend) this.makeRequest({
+					trigger: "submit-message",
+					messageId: (_a22 = this.lastMessage) == null ? void 0 : _a22.id,
+					...options
+				});
+			});
+		});
+		/** @deprecated Use addToolOutput */
 		this.addToolResult = this.addToolOutput;
+		/**
+		* Abort the current request immediately, keep the generated tokens if any.
+		*/
 		this.stop = async () => {
-			this.activeStopCount++;
-			this.stopGeneration++;
-			try {
-				const activeResumeRequest = this.activeResumeRequest;
-				const activeResponse = this.activeResponse;
-				for (const controller of this.pendingMessagePreparations) controller.abort();
-				activeResumeRequest?.abortController.abort();
-				activeResponse?.abortController.abort();
-				await Promise.all([activeResumeRequest?.completionPromise, activeResponse?.completionPromise]);
-				await this.jobExecutor.waitForIdle();
-			} finally {
-				this.activeStopCount--;
-			}
-		};
-		this.dispose = async () => {
-			await this.stop();
-			this.transport.close?.();
+			var _a22;
+			if (this.status !== "streaming" && this.status !== "submitted") return;
+			if ((_a22 = this.activeResponse) == null ? void 0 : _a22.abortController) this.activeResponse.abortController.abort();
 		};
 		this.id = id;
 		this.transport = transport;
-		this.generateId = generateId$3;
+		this.generateId = generateId2;
 		this.messageMetadataSchema = messageMetadataSchema;
 		this.dataPartSchemas = dataPartSchemas;
 		this.state = state;
@@ -10730,10 +8684,7 @@ var AbstractChat = class {
 		return this.state.status;
 	}
 	setStatus({ status, error }) {
-		if (this.status === status) {
-			if (this.error !== error) this.state.error = error;
-			return;
-		}
+		if (this.status === status) return;
 		this.state.status = status;
 		this.state.error = error;
 	}
@@ -10755,90 +8706,24 @@ var AbstractChat = class {
 		if (result && typeof result === "object" && "then" in result) return await result;
 		return result;
 	}
-	async runAutomaticRequest(request, shouldSend) {
-		const stopGeneration = this.stopGeneration;
-		const startedWhileStopping = this.activeStopCount > 0;
-		if (!(shouldSend ?? await this.shouldSendAutomatically())) return;
-		if (startedWhileStopping || stopGeneration !== this.stopGeneration || this.activeStopCount > 0) return;
-		await request();
-	}
-	async makeRequestForToolApproval({ messageId, messageIndex, ...options }) {
-		const consumesPendingApproval = messageId != null && messageId === this.pendingApprovalMessageId;
-		if (consumesPendingApproval) this.pendingApprovalMessageId = void 0;
-		await this.makeRequest({
-			trigger: "submit-message",
-			messageId,
-			...options
-		});
-		if (consumesPendingApproval && this.status === "error" && this.pendingApprovalMessageId == null) this.pendingApprovalMessageId = this.state.messages[messageIndex]?.id ?? messageId;
-	}
-	async makeRequest(options) {
-		const completion = createResolvablePromise();
-		try {
-			await this.makeRequestImpl({
-				...options,
-				completionPromise: completion.promise
-			});
-		} finally {
-			completion.resolve();
-		}
-	}
-	async makeRequestImpl({ trigger, metadata, headers, body, messageId, completionPromise }) {
-		if (trigger !== "resume-stream") this.resumableStreamState = void 0;
-		const abortController = new AbortController();
-		const activeResumeRequest = trigger === "resume-stream" ? {
-			abortController,
-			completionPromise
-		} : void 0;
-		if (activeResumeRequest) {
-			this.activeResumeRequest?.abortController.abort();
-			this.activeResumeRequest = activeResumeRequest;
-		}
-		const isCurrentRequest = () => activeResumeRequest == null || this.activeResumeRequest === activeResumeRequest;
-		const clearActiveResumeRequest = () => {
-			if (this.activeResumeRequest === activeResumeRequest) this.activeResumeRequest = void 0;
-		};
+	async makeRequest({ trigger, metadata, headers, body, messageId }) {
+		var _a22, _b;
 		let resumeStream;
 		if (trigger === "resume-stream") try {
 			const reconnect = await this.transport.reconnectToStream({
 				chatId: this.id,
-				abortSignal: abortController.signal,
 				metadata,
 				headers,
 				body
 			});
-			if (abortController.signal.aborted || !isCurrentRequest()) {
-				await reconnect?.cancel().catch(() => {});
-				if (isCurrentRequest()) {
-					this.setStatus({ status: "ready" });
-					this.resumableStreamState = void 0;
-				}
-				clearActiveResumeRequest();
-				return;
-			}
-			if (reconnect == null) {
-				this.setStatus({ status: "ready" });
-				this.resumableStreamState = void 0;
-				clearActiveResumeRequest();
-				return;
-			}
+			if (reconnect == null) return;
 			resumeStream = reconnect;
 		} catch (err) {
-			if (abortController.signal.aborted || err.name === "AbortError") {
-				if (isCurrentRequest()) {
-					this.setStatus({ status: "ready" });
-					this.resumableStreamState = void 0;
-				}
-				clearActiveResumeRequest();
-				return;
-			}
-			if (!isCurrentRequest()) return;
 			if (this.onError && err instanceof Error) this.onError(err);
 			this.setStatus({
 				status: "error",
 				error: err
 			});
-			clearActiveResumeRequest();
 			return;
 		}
 		this.setStatus({
@@ -10846,22 +8731,17 @@ var AbstractChat = class {
 			error: void 0
 		});
 		const lastMessage = this.lastMessage;
-		const responseMessageIndex = trigger === "submit-message" && messageId != null ? this.state.messages.findIndex((message) => message.id === messageId) : this.state.messages.length - 1;
-		const responseMessage = responseMessageIndex === -1 ? lastMessage : this.state.messages[responseMessageIndex];
-		const resumableResponseMessage = trigger === "resume-stream" && responseMessage?.role === "assistant" && responseMessage.parts.some((part) => isToolUIPart(part) && (part.state === "input-streaming" || part.state === "input-available" && part.providerExecuted || part.state === "approval-responded")) ? this.state.snapshot(responseMessage) : void 0;
-		const usesEarlierAssistantMessage = responseMessageIndex !== -1 && responseMessageIndex < this.state.messages.length - 1 && responseMessage?.role === "assistant";
 		let isAbort = false;
 		let isDisconnect = false;
 		let isError = false;
 		let activeResponse;
 		try {
 			const response = {
-				state: trigger === "resume-stream" && this.resumableStreamState != null ? this.resumableStreamState : createStreamingUIMessageState({
-					lastMessage: trigger === "resume-stream" ? resumableResponseMessage : trigger === "regenerate-message" ? void 0 : this.state.snapshot(responseMessage),
+				state: createStreamingUIMessageState({
+					lastMessage: this.state.snapshot(lastMessage),
 					messageId: this.generateId()
 				}),
-				abortController,
-				completionPromise
+				abortController: new AbortController()
 			};
 			activeResponse = response;
 			response.abortController.signal.addEventListener("abort", () => {
@@ -10880,24 +8760,18 @@ var AbstractChat = class {
 				trigger,
 				messageId
 			});
-			const runUpdateMessageJob = (job) => this.jobExecutor.run(() => {
-				if (response.abortController.signal.aborted) return Promise.resolve();
-				return job({
-					state: response.state,
-					write: ({ updateStatus = true } = {}) => {
-						if (response.abortController.signal.aborted) return;
-						if (updateStatus) this.setStatus({ status: "streaming" });
-						if (usesEarlierAssistantMessage) this.state.replaceMessage(responseMessageIndex, response.state.message);
-						else if (response.state.message.id === this.lastMessage?.id) this.state.replaceMessage(this.state.messages.length - 1, response.state.message);
-						else this.state.pushMessage(response.state.message);
-					}
-				});
-			});
+			const runUpdateMessageJob = (job) => this.jobExecutor.run(() => job({
+				state: response.state,
+				write: () => {
+					var _a23;
+					this.setStatus({ status: "streaming" });
+					if (response.state.message.id === ((_a23 = this.lastMessage) == null ? void 0 : _a23.id)) this.state.replaceMessage(this.state.messages.length - 1, response.state.message);
+					else this.state.pushMessage(response.state.message);
+				}
+			}));
 			await consumeStream({
 				stream: processUIMessageStream({
 					stream,
-					resetStateOnMessageIdChange: trigger === "resume-stream",
-					resetStateOnFirstMessageStart: trigger === "resume-stream" && this.transport.resumeStreamIsReplay,
 					onToolCall: this.onToolCall,
 					onData: this.onData,
 					messageMetadataSchema: this.messageMetadataSchema,
@@ -10907,39 +8781,19 @@ var AbstractChat = class {
 						throw error;
 					}
 				}),
-				abortSignal: response.abortController.signal,
 				onError: (error) => {
 					throw error;
 				}
 			});
-			if (isAbort) {
-				if (isCurrentRequest()) {
-					this.setStatus({ status: "ready" });
-					if (this.resumableStreamState === response.state) this.resumableStreamState = void 0;
-				}
-				return null;
-			}
-			if (isCurrentRequest()) {
-				this.setStatus({ status: "ready" });
-				if (this.resumableStreamState === response.state) this.resumableStreamState = void 0;
-			}
+			this.setStatus({ status: "ready" });
 		} catch (err) {
 			if (isAbort || err.name === "AbortError") {
 				isAbort = true;
-				if (isCurrentRequest()) {
-					this.setStatus({ status: "ready" });
-					if (this.resumableStreamState === activeResponse?.state) this.resumableStreamState = void 0;
-				}
+				this.setStatus({ status: "ready" });
 				return null;
 			}
-			if (!isCurrentRequest()) return null;
 			isError = true;
-			if (err instanceof TypeError) {
-				const message = err.message.toLowerCase();
-				isDisconnect = message.includes("fetch") || message.includes("network") || message === "load failed";
-			}
-			if (isDisconnect) this.resumableStreamState = activeResponse?.state;
-			else if (this.resumableStreamState === activeResponse?.state) this.resumableStreamState = void 0;
+			if (err instanceof TypeError && (err.message.toLowerCase().includes("fetch") || err.message.toLowerCase().includes("network"))) isDisconnect = true;
 			if (this.onError && err instanceof Error) this.onError(err);
 			this.setStatus({
 				status: "error",
@@ -10947,7 +8801,7 @@ var AbstractChat = class {
 			});
 		} finally {
 			try {
-				if (activeResponse) this.onFinish?.({
+				if (activeResponse) (_a22 = this.onFinish) == null || _a22.call(this, {
 					message: activeResponse.state.message,
 					messages: this.state.messages,
 					isAbort,
@@ -10955,18 +8809,18 @@ var AbstractChat = class {
 					isError,
 					finishReason: activeResponse.state.finishReason
 				});
-			} finally {
-				if (this.activeResponse === activeResponse) this.activeResponse = void 0;
-				clearActiveResumeRequest();
+			} catch (err) {
+				console.error(err);
 			}
+			if (this.activeResponse === activeResponse) this.activeResponse = void 0;
 		}
-		if (!isAbort && !isError) await this.runAutomaticRequest(() => this.makeRequest({
+		if (!isError && await this.shouldSendAutomatically()) await this.makeRequest({
 			trigger: "submit-message",
-			messageId: this.lastMessage?.id,
+			messageId: (_b = this.lastMessage) == null ? void 0 : _b.id,
 			metadata,
 			headers,
 			body
-		}));
+		});
 	}
 };
 //#endregion
@@ -10996,151 +8850,130 @@ var require_throttleit = /* @__PURE__ */ __commonJSMin(((exports, module) => {
 var import_react = /* @__PURE__ */ __toESM(require_react(), 1);
 var import_throttleit = /* @__PURE__ */ __toESM(require_throttleit(), 1);
 require_jsx_runtime();
+var __accessCheck = (obj, member, msg) => {
+	if (!member.has(obj)) throw TypeError("Cannot " + msg);
+};
+var __privateGet = (obj, member, getter) => {
+	__accessCheck(obj, member, "read from private field");
+	return getter ? getter.call(obj) : member.get(obj);
+};
+var __privateAdd = (obj, member, value) => {
+	if (member.has(obj)) throw TypeError("Cannot add the same private member more than once");
+	member instanceof WeakSet ? member.add(obj) : member.set(obj, value);
+};
+var __privateSet = (obj, member, value, setter) => {
+	__accessCheck(obj, member, "write to private field");
+	setter ? setter.call(obj, value) : member.set(obj, value);
+	return value;
+};
 function throttle(fn, waitMs) {
 	return waitMs != null ? (0, import_throttleit.default)(fn, waitMs) : fn;
 }
-function cloneMetadata(metadata) {
-	if (Array.isArray(metadata)) return [...metadata];
-	if (metadata != null && typeof metadata === "object" && (Object.getPrototypeOf(metadata) === Object.prototype || Object.getPrototypeOf(metadata) === null)) return { ...metadata };
-	return metadata;
-}
+var _messages, _status, _error, _messagesCallbacks, _statusCallbacks, _errorCallbacks, _callMessagesCallbacks, _callStatusCallbacks, _callErrorCallbacks;
 var ReactChatState = class {
-	#messages;
-	#status;
-	#error;
-	#messagesCallbacks;
-	#statusCallbacks;
-	#errorCallbacks;
 	constructor(initialMessages = []) {
-		this.#status = "ready";
-		this.#error = void 0;
-		this.#messagesCallbacks = /* @__PURE__ */ new Set();
-		this.#statusCallbacks = /* @__PURE__ */ new Set();
-		this.#errorCallbacks = /* @__PURE__ */ new Set();
+		__privateAdd(this, _messages, void 0);
+		__privateAdd(this, _status, "ready");
+		__privateAdd(this, _error, void 0);
+		__privateAdd(this, _messagesCallbacks, /* @__PURE__ */ new Set());
+		__privateAdd(this, _statusCallbacks, /* @__PURE__ */ new Set());
+		__privateAdd(this, _errorCallbacks, /* @__PURE__ */ new Set());
 		this.pushMessage = (message) => {
-			this.#messages = this.#messages.concat(message);
-			this.#callMessagesCallbacks();
+			__privateSet(this, _messages, __privateGet(this, _messages).concat(message));
+			__privateGet(this, _callMessagesCallbacks).call(this);
 		};
 		this.popMessage = () => {
-			this.#messages = this.#messages.slice(0, -1);
-			this.#callMessagesCallbacks();
+			__privateSet(this, _messages, __privateGet(this, _messages).slice(0, -1));
+			__privateGet(this, _callMessagesCallbacks).call(this);
 		};
 		this.replaceMessage = (index, message) => {
-			this.#messages = [
-				...this.#messages.slice(0, index),
+			__privateSet(this, _messages, [
+				...__privateGet(this, _messages).slice(0, index),
 				this.snapshot(message),
-				...this.#messages.slice(index + 1)
-			];
-			this.#callMessagesCallbacks();
+				...__privateGet(this, _messages).slice(index + 1)
+			]);
+			__privateGet(this, _callMessagesCallbacks).call(this);
 		};
-		this.snapshot = (value) => {
-			if (value == null || typeof value !== "object" || !("parts" in value) || !Array.isArray(value.parts)) return value;
-			const message = value;
-			const snapshot = {
-				...message,
-				parts: message.parts.map((part) => ({ ...part }))
-			};
-			if ("metadata" in message) snapshot.metadata = cloneMetadata(message.metadata);
-			return snapshot;
-		};
+		this.snapshot = (value) => structuredClone(value);
 		this["~registerMessagesCallback"] = (onChange, throttleWaitMs) => {
 			const callback = throttleWaitMs ? throttle(onChange, throttleWaitMs) : onChange;
-			this.#messagesCallbacks.add(callback);
+			__privateGet(this, _messagesCallbacks).add(callback);
 			return () => {
-				this.#messagesCallbacks.delete(callback);
+				__privateGet(this, _messagesCallbacks).delete(callback);
 			};
 		};
 		this["~registerStatusCallback"] = (onChange) => {
-			this.#statusCallbacks.add(onChange);
+			__privateGet(this, _statusCallbacks).add(onChange);
 			return () => {
-				this.#statusCallbacks.delete(onChange);
+				__privateGet(this, _statusCallbacks).delete(onChange);
 			};
 		};
 		this["~registerErrorCallback"] = (onChange) => {
-			this.#errorCallbacks.add(onChange);
+			__privateGet(this, _errorCallbacks).add(onChange);
 			return () => {
-				this.#errorCallbacks.delete(onChange);
+				__privateGet(this, _errorCallbacks).delete(onChange);
 			};
 		};
-		this.#callMessagesCallbacks = () => {
-			this.#messagesCallbacks.forEach((callback) => callback());
-		};
-		this.#callStatusCallbacks = () => {
-			this.#statusCallbacks.forEach((callback) => callback());
-		};
-		this.#callErrorCallbacks = () => {
-			this.#errorCallbacks.forEach((callback) => callback());
-		};
-		this.#messages = initialMessages;
+		__privateAdd(this, _callMessagesCallbacks, () => {
+			__privateGet(this, _messagesCallbacks).forEach((callback) => callback());
+		});
+		__privateAdd(this, _callStatusCallbacks, () => {
+			__privateGet(this, _statusCallbacks).forEach((callback) => callback());
+		});
+		__privateAdd(this, _callErrorCallbacks, () => {
+			__privateGet(this, _errorCallbacks).forEach((callback) => callback());
+		});
+		__privateSet(this, _messages, initialMessages);
 	}
 	get status() {
-		return this.#status;
+		return __privateGet(this, _status);
 	}
 	set status(newStatus) {
-		this.#status = newStatus;
-		this.#callStatusCallbacks();
+		__privateSet(this, _status, newStatus);
+		__privateGet(this, _callStatusCallbacks).call(this);
 	}
 	get error() {
-		return this.#error;
+		return __privateGet(this, _error);
 	}
 	set error(newError) {
-		this.#error = newError;
-		this.#callErrorCallbacks();
+		__privateSet(this, _error, newError);
+		__privateGet(this, _callErrorCallbacks).call(this);
 	}
 	get messages() {
-		return this.#messages;
+		return __privateGet(this, _messages);
 	}
 	set messages(newMessages) {
-		this.#messages = [...newMessages];
-		this.#callMessagesCallbacks();
+		__privateSet(this, _messages, [...newMessages]);
+		__privateGet(this, _callMessagesCallbacks).call(this);
 	}
-	#callMessagesCallbacks;
-	#callStatusCallbacks;
-	#callErrorCallbacks;
 };
+_messages = /* @__PURE__ */ new WeakMap();
+_status = /* @__PURE__ */ new WeakMap();
+_error = /* @__PURE__ */ new WeakMap();
+_messagesCallbacks = /* @__PURE__ */ new WeakMap();
+_statusCallbacks = /* @__PURE__ */ new WeakMap();
+_errorCallbacks = /* @__PURE__ */ new WeakMap();
+_callMessagesCallbacks = /* @__PURE__ */ new WeakMap();
+_callStatusCallbacks = /* @__PURE__ */ new WeakMap();
+_callErrorCallbacks = /* @__PURE__ */ new WeakMap();
+var _state;
 var Chat = class extends AbstractChat {
-	#state;
 	constructor({ messages, ...init }) {
 		const state = new ReactChatState(messages);
 		super({
 			...init,
 			state
 		});
-		this["~registerMessagesCallback"] = (onChange, throttleWaitMs) => this.#state["~registerMessagesCallback"](onChange, throttleWaitMs);
-		this["~registerStatusCallback"] = (onChange) => this.#state["~registerStatusCallback"](onChange);
-		this["~registerErrorCallback"] = (onChange) => this.#state["~registerErrorCallback"](onChange);
-		this.#state = state;
+		__privateAdd(this, _state, void 0);
+		this["~registerMessagesCallback"] = (onChange, throttleWaitMs) => __privateGet(this, _state)["~registerMessagesCallback"](onChange, throttleWaitMs);
+		this["~registerStatusCallback"] = (onChange) => __privateGet(this, _state)["~registerStatusCallback"](onChange);
+		this["~registerErrorCallback"] = (onChange) => __privateGet(this, _state)["~registerErrorCallback"](onChange);
+		__privateSet(this, _state, state);
 	}
 };
-var automaticResumeRegistrations = /* @__PURE__ */ new WeakMap();
-function registerAutomaticResume({ chat, registration }) {
-	let registrations = automaticResumeRegistrations.get(chat);
-	if (registrations == null) {
-		registrations = /* @__PURE__ */ new Set();
-		automaticResumeRegistrations.set(chat, registrations);
-	}
-	const shouldResume = registrations.size === 0;
-	registrations.add(registration);
-	if (shouldResume) chat.resumeStream();
-	return () => {
-		registrations.delete(registration);
-		if (registrations.size === 0) automaticResumeRegistrations.delete(chat);
-	};
-}
-function readChatSnapshot(chat) {
-	return {
-		chat,
-		messages: chat.messages,
-		status: chat.status,
-		error: chat.error
-	};
-}
-function equalChatSnapshots(current, next) {
-	return current.chat === next.chat && current.messages === next.messages && current.status === next.status && current.error === next.error;
-}
-function useChat({ throttle, experimental_throttle, resume = false, ...options } = {}) {
-	const throttleWaitMs = throttle ?? experimental_throttle;
-	const automaticResumeRegistration = (0, import_react.useRef)({});
+_state = /* @__PURE__ */ new WeakMap();
+function useChat({ throttle: throttle2, experimental_throttle, resume = false, ...options } = {}) {
+	const throttleWaitMs = throttle2 != null ? throttle2 : experimental_throttle;
 	const latestRef = (0, import_react.useRef)({});
 	if (!("chat" in options)) latestRef.current = {
 		onToolCall: options.onToolCall,
@@ -11151,79 +8984,66 @@ function useChat({ throttle, experimental_throttle, resume = false, ...options }
 		transport: options.transport
 	};
 	let defaultTransport;
-	const getTransport = () => latestRef.current.transport ?? (defaultTransport ??= new DefaultChatTransport());
+	const getTransport = () => {
+		var _a;
+		return (_a = latestRef.current.transport) != null ? _a : defaultTransport != null ? defaultTransport : defaultTransport = new DefaultChatTransport();
+	};
 	const chatOptions = {
 		...options,
 		transport: {
 			sendMessages: (sendOptions) => getTransport().sendMessages(sendOptions),
 			reconnectToStream: (reconnectOptions) => getTransport().reconnectToStream(reconnectOptions)
 		},
-		onToolCall: (arg) => latestRef.current.onToolCall?.(arg),
-		onData: (arg) => latestRef.current.onData?.(arg),
-		onFinish: (arg) => latestRef.current.onFinish?.(arg),
-		onError: (arg) => latestRef.current.onError?.(arg),
-		sendAutomaticallyWhen: (arg) => latestRef.current.sendAutomaticallyWhen?.(arg) ?? false
+		onToolCall: (arg) => {
+			var _a, _b;
+			return (_b = (_a = latestRef.current).onToolCall) == null ? void 0 : _b.call(_a, arg);
+		},
+		onData: (arg) => {
+			var _a, _b;
+			return (_b = (_a = latestRef.current).onData) == null ? void 0 : _b.call(_a, arg);
+		},
+		onFinish: (arg) => {
+			var _a, _b;
+			return (_b = (_a = latestRef.current).onFinish) == null ? void 0 : _b.call(_a, arg);
+		},
+		onError: (arg) => {
+			var _a, _b;
+			return (_b = (_a = latestRef.current).onError) == null ? void 0 : _b.call(_a, arg);
+		},
+		sendAutomaticallyWhen: (arg) => {
+			var _a, _b, _c;
+			return (_c = (_b = (_a = latestRef.current).sendAutomaticallyWhen) == null ? void 0 : _b.call(_a, arg)) != null ? _c : false;
+		}
 	};
-	const chatKey = "chat" in options ? options.chat : options.id;
-	const { chat, isExternallyManaged } = (0, import_react.useMemo)(() => ({
-		chat: "chat" in options ? options.chat : new Chat(chatOptions),
-		isExternallyManaged: "chat" in options
-	}), [chatKey]);
-	(0, import_react.useEffect)(() => {
-		if (isExternallyManaged) return;
-		return () => {
-			chat.stop();
-		};
-	}, [chat, isExternallyManaged]);
-	const [snapshot, setSnapshot] = (0, import_react.useState)(() => readChatSnapshot(chat));
-	if (snapshot.chat !== chat) setSnapshot(readChatSnapshot(chat));
-	(0, import_react.useEffect)(() => {
-		let isSubscribed = true;
-		const publishSnapshot = () => {
-			if (!isSubscribed) return;
-			const nextSnapshot = readChatSnapshot(chat);
-			setSnapshot((current) => current.chat !== chat || equalChatSnapshots(current, nextSnapshot) ? current : nextSnapshot);
-		};
-		const unsubscribes = [
-			chat["~registerMessagesCallback"](publishSnapshot, throttleWaitMs),
-			chat["~registerStatusCallback"](publishSnapshot),
-			chat["~registerErrorCallback"](publishSnapshot)
-		];
-		const nextSnapshot = readChatSnapshot(chat);
-		setSnapshot((current) => equalChatSnapshots(current, nextSnapshot) ? current : nextSnapshot);
-		return () => {
-			isSubscribed = false;
-			unsubscribes.forEach((unsubscribe) => unsubscribe());
-		};
-	}, [chat, throttleWaitMs]);
-	const { messages, status, error } = snapshot;
+	const chatRef = (0, import_react.useRef)("chat" in options ? options.chat : new Chat(chatOptions));
+	if ("chat" in options && options.chat !== chatRef.current || "id" in options && options.id != null && chatRef.current.id !== options.id) chatRef.current = "chat" in options ? options.chat : new Chat(chatOptions);
+	const messages = (0, import_react.useSyncExternalStore)((0, import_react.useCallback)((update) => chatRef.current["~registerMessagesCallback"](update, throttleWaitMs), [throttleWaitMs, chatRef.current.id]), () => chatRef.current.messages, () => chatRef.current.messages);
+	const status = (0, import_react.useSyncExternalStore)(chatRef.current["~registerStatusCallback"], () => chatRef.current.status, () => chatRef.current.status);
+	const error = (0, import_react.useSyncExternalStore)(chatRef.current["~registerErrorCallback"], () => chatRef.current.error, () => chatRef.current.error);
 	const setMessages = (0, import_react.useCallback)((messagesParam) => {
-		if (typeof messagesParam === "function") messagesParam = messagesParam(chat.messages);
-		chat.messages = messagesParam;
-	}, [chat]);
+		if (typeof messagesParam === "function") messagesParam = messagesParam(chatRef.current.messages);
+		chatRef.current.messages = messagesParam;
+	}, [chatRef]);
 	(0, import_react.useEffect)(() => {
-		if (resume) return registerAutomaticResume({
-			chat,
-			registration: automaticResumeRegistration.current
-		});
-	}, [resume, chat]);
+		if (resume) chatRef.current.resumeStream();
+	}, [resume, chatRef]);
 	return {
-		id: chat.id,
+		id: chatRef.current.id,
 		messages,
 		setMessages,
-		sendMessage: chat.sendMessage,
-		regenerate: chat.regenerate,
-		clearError: chat.clearError,
-		stop: chat.stop,
+		sendMessage: chatRef.current.sendMessage,
+		regenerate: chatRef.current.regenerate,
+		clearError: chatRef.current.clearError,
+		stop: chatRef.current.stop,
 		error,
-		resumeStream: chat.resumeStream,
+		resumeStream: chatRef.current.resumeStream,
 		status,
 		/**
 		* @deprecated Use `addToolOutput` instead.
 		*/
-		addToolResult: chat.addToolOutput,
-		addToolOutput: chat.addToolOutput,
-		addToolApprovalResponse: chat.addToolApprovalResponse
+		addToolResult: chatRef.current.addToolOutput,
+		addToolOutput: chatRef.current.addToolOutput,
+		addToolApprovalResponse: chatRef.current.addToolApprovalResponse
 	};
 }
 //#endregion

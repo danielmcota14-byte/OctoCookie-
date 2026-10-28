@@ -217,8 +217,6 @@ var serialize = (value, { json, lossy } = {}) => {
 * fallback to the polyfill if present.
 * @returns {Record[]}
 */
-var esm_default = typeof structuredClone === "function" ? 
-/* c8 ignore start */
-(any, options) => options && ("json" in options || "lossy" in options) ? deserialize(serialize(any, options)) : structuredClone(any) : (any, options) => deserialize(serialize(any, options));
+var esm_default = typeof structuredClone === "function" ? (any, options) => options && ("json" in options || "lossy" in options) ? deserialize(serialize(any, options)) : structuredClone(any) : (any, options) => deserialize(serialize(any, options));
 //#endregion
 export { esm_default as t };

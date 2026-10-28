@@ -11,8 +11,8 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/analyzer")({
   head: () => ({
     meta: [
-      { title: "Analisador de tokens — OctoCookie" },
-      { name: "description", content: "Analise educacional de tokens cripto com dados de mercado e contexto didático." },
+      { title: "Analisador de Ações — OctoCookie" },
+      { name: "description", content: "Análise educacional de ações com dados de mercado e contexto didático." },
     ],
   }),
   component: AnalyzerPage,
@@ -20,11 +20,11 @@ export const Route = createFileRoute("/analyzer")({
 
 type Result = Awaited<ReturnType<typeof analyzeToken>>;
 
-const SUGGESTIONS = ["bitcoin", "ethereum", "solana", "cardano", "chainlink", "arbitrum"];
+const SUGGESTIONS = ["AAPL", "MSFT", "NVDA", "TSLA", "PETR4", "VALE3"];
 
 function AnalyzerPage() {
   const [threads, setThreads] = useState<Thread[]>([]);
-  const [coinId, setCoinId] = useState("bitcoin");
+  const [ticker, setTicker] = useState("AAPL");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<Result | null>(null);
   const analyze = useServerFn(analyzeToken);
@@ -32,9 +32,9 @@ function AnalyzerPage() {
   useEffect(() => setThreads(loadThreads()), []);
 
   async function handleAnalyze(id?: string) {
-    const target = (id ?? coinId).trim();
+    const target = (id ?? ticker).trim();
     if (!target) return;
-    setCoinId(target);
+    setTicker(target);
     setLoading(true);
     try {
       const r = await analyze({ data: { coinId: target } });
@@ -50,9 +50,9 @@ function AnalyzerPage() {
       <main className="flex-1 overflow-y-auto">
         <div className="mx-auto max-w-4xl px-6 pb-10 pt-16 md:pt-10">
           <div className="mb-6">
-            <h1 className="text-2xl font-semibold">Analisador de tokens</h1>
+            <h1 className="text-2xl font-semibold">Analisador de Ações</h1>
             <p className="mt-1 text-sm text-muted-foreground">
-              Consulta dados públicos do CoinGecko e gera uma análise didática. Conteúdo puramente educacional — sem recomendação de investimento.
+              Consulta dados de mercado e gera uma análise didática de ações. Conteúdo puramente educacional — sem recomendação de investimento.
             </p>
           </div>
 
@@ -68,9 +68,9 @@ function AnalyzerPage() {
             <div className="relative flex-1">
               <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <input
-                value={coinId}
-                onChange={(e) => setCoinId(e.target.value)}
-                placeholder="id do CoinGecko (ex.: bitcoin, ethereum, solana)"
+                value={ticker}
+                onChange={(e) => setTicker(e.target.value)}
+                placeholder="ticker da ação (ex.: AAPL, NVDA, PETR4, VALE3)"
                 className="w-full rounded-md border bg-background py-2 pl-9 pr-3 text-sm"
               />
             </div>
@@ -112,24 +112,24 @@ function TokenReport({ data }: { data: Extract<Result, { coin: NonNullable<Resul
         {coin.image && <img src={coin.image} alt="" width={32} height={32} className="h-8 w-8" />}
         <div>
           <div className="text-lg font-semibold">{coin.name} <span className="text-muted-foreground">({coin.symbol})</span></div>
-          <div className="text-xs text-muted-foreground">Rank #{coin.rank ?? "—"} · CoinGecko id: {coin.id}</div>
+          <div className="text-xs text-muted-foreground">Ticker: {coin.symbol ?? coin.id} · Moeda: {coin.currency}</div>
         </div>
       </div>
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <Metric label="Preço" value={fmt$(coin.price)} />
-        <Metric label="Market cap" value={fmtCompact(coin.marketCap)} />
-        <Metric label="Volume 24h" value={fmtCompact(coin.volume24h)} />
-        <Metric label="Supply" value={fmtCompact(coin.supply)} />
-        <Metric label="24h" value={`${coin.change24h?.toFixed(2)}%`} positive={coin.change24h >= 0} />
-        <Metric label="7d" value={`${coin.change7d?.toFixed(2)}%`} positive={coin.change7d >= 0} />
-        <Metric label="30d" value={`${coin.change30d?.toFixed(2)}%`} positive={coin.change30d >= 0} />
-        <Metric label="ATH" value={fmt$(coin.ath)} />
+        <Metric label="Preço" value={fmt$(coin.price, coin.currency)} />
+        <Metric label="Volume (dia)" value={fmtCompact(coin.volume24h)} />
+        <Metric label="Máx. 52 sem." value={fmt$(coin.high52, coin.currency)} />
+        <Metric label="Mín. 52 sem." value={fmt$(coin.low52, coin.currency)} />
+        <Metric label="Dia" value={`${coin.change24h?.toFixed(2)}%`} positive={coin.change24h >= 0} />
+        <Metric label="7 dias" value={`${coin.change7d?.toFixed(2)}%`} positive={coin.change7d >= 0} />
+        <Metric label="30 dias" value={`${coin.change30d?.toFixed(2)}%`} positive={coin.change30d >= 0} />
+        <Metric label="Cap. de mercado" value={fmtCompact(coin.marketCap)} />
       </div>
 
       {spark && (
         <div>
-          <div className="mb-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">Preço · últimos 7 dias</div>
+          <div className="mb-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">Preço · últimos 30 dias</div>
           <div className="rounded-lg border bg-muted/30 p-3">
             <svg viewBox={`0 0 ${spark.w} ${spark.h}`} className="h-40 w-full">
               <path d={spark.path} fill="none" stroke="currentColor" strokeWidth={1.5} className="text-foreground" />
@@ -157,12 +157,11 @@ function Metric({ label, value, positive }: { label: string; value: string; posi
   );
 }
 
-function fmt$(v: number) {
+function fmt$(v: number | null | undefined, currency = "USD") {
   if (v == null) return "—";
-  if (v >= 1) return `$${v.toLocaleString("en-US", { maximumFractionDigits: 2 })}`;
-  return `$${v.toLocaleString("en-US", { maximumFractionDigits: 8 })}`;
+  return v.toLocaleString(currency === "BRL" ? "pt-BR" : "en-US", { style: "currency", currency, maximumFractionDigits: 2 });
 }
-function fmtCompact(v: number) {
+function fmtCompact(v: number | null | undefined) {
   if (v == null) return "—";
   return v.toLocaleString("en-US", { notation: "compact", maximumFractionDigits: 2 });
 }

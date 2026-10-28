@@ -3,13 +3,13 @@ import { AppSidebar } from "@/components/app-sidebar";
 import { useEffect, useState } from "react";
 import { loadThreads, type Thread } from "@/lib/threads";
 import { AdSlot } from "@/components/ad-slot";
-import { BookOpen, Bot, LineChart, Coins, Sprout } from "lucide-react";
+import { BookOpen, Bot, LineChart, Landmark, Sprout } from "lucide-react";
 
 export const Route = createFileRoute("/launch")({
   head: () => ({
     meta: [
       { title: "Explorar — OctoCookie" },
-      { name: "description", content: "Explore trilhas educacionais de finanças, cripto e bots." },
+      { name: "description", content: "Explore trilhas educacionais de finanças, ações e bots." },
     ],
   }),
   component: Launch,
@@ -18,9 +18,9 @@ export const Route = createFileRoute("/launch")({
 const topics: { icon: typeof BookOpen; title: string; desc: string; to?: "/finance" | "/start" | "/octo-app" }[] = [
   { icon: BookOpen, title: "Educação financeira", desc: "Orçamento, juros compostos, gestão de risco e planejamento.", to: "/finance" },
   { icon: Sprout, title: "Empreendedorismo digital", desc: "Primeiros passos, modelos de negócio, validação de ideias e no-code.", to: "/start" },
-  { icon: Coins, title: "Fundamentos de cripto", desc: "Blockchain, tokens, wallets, DeFi — sem hype." },
-  { icon: LineChart, title: "Análise & indicadores", desc: "RSI, MACD, médias, Bollinger, backtest e leitura do card do Holograma." },
-  { icon: Bot, title: "Swap Trader & Holograma", desc: "Bot DEX, regra de tendência, stop móvel, carteira virtual e modos de operação.", to: "/octo-app" },
+  { icon: Landmark, title: "Fundamentos de ações", desc: "Bolsa, tickers, tipos de ordem, dividendos e análise — sem hype." },
+  { icon: LineChart, title: "Análise & indicadores", desc: "RSI, MACD, médias, Bollinger, backtest e leitura do Holograma." },
+  { icon: Bot, title: "Trader de Ações & Holograma", desc: "Bot de ações, regra de tendência, stop móvel, carteira virtual e modos de operação.", to: "/octo-app" },
 ];
 
 function Launch() {

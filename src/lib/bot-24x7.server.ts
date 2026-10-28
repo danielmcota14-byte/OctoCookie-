@@ -3,7 +3,7 @@
  * Singleton: inicia o loop na primeira importação no servidor.
  */
 
-const SYMBOL = process.env.BOT_SYMBOL || "ETHUSDT";
+const SYMBOL = process.env.BOT_SYMBOL || "AAPL";
 const TICK_MS = Number(process.env.BOT_TICK_MS || 10000);
 const START_BALANCE = Number(process.env.BOT_START_BALANCE || 1000);
 
@@ -270,7 +270,5 @@ export function botReset() {
   return getBotStatus();
 }
 
-// auto-start on module load (server only)
-if (typeof process !== "undefined" && process.versions?.node) {
-  ensureLoop();
-}
+// NÃO auto-start no import — evita crash no boot do SSR.
+// O loop só sobe em getBotStatus/botStart (rota /api/bot).

@@ -10,6 +10,15 @@ var NullProtoObj = /* @__PURE__ */ (() => {
 })();
 //#endregion
 //#region node_modules/h3/node_modules/srvx/dist/_chunks/_url.mjs
+function getNativeClass(key, current) {
+	let C = globalThis[key] || current;
+	let P = Object.getPrototypeOf(C);
+	while (typeof P === "function" && P.prototype) {
+		C = P;
+		P = Object.getPrototypeOf(C);
+	}
+	return globalThis[key] = C;
+}
 function lazyInherit(target, source, sourceKey) {
 	for (const key of [...Object.getOwnPropertyNames(source), ...Object.getOwnPropertySymbols(source)]) {
 		if (key === "constructor") continue;
@@ -189,19 +198,22 @@ var FastURL = /* @__PURE__ */ (() => {
 })();
 //#endregion
 //#region node_modules/h3/node_modules/srvx/dist/adapters/node.mjs
+var kNativeResponse = /* @__PURE__ */ Symbol.for("srvx.nativeResponse");
 var NodeResponse = /* @__PURE__ */ (() => {
-	const NativeResponse = globalThis.Response;
+	const NativeResponse = getNativeClass(kNativeResponse, globalThis.Response);
 	class NodeResponse {
 		#body;
 		#init;
 		#headers;
 		#response;
+		#contentLength;
 		constructor(body, init) {
 			this.#body = body;
 			this.#init = init;
 		}
 		static [Symbol.hasInstance](val) {
-			return val instanceof NativeResponse;
+			if (this === NodeResponse) return val instanceof NativeResponse;
+			return Object.prototype.isPrototypeOf.call(this.prototype, val);
 		}
 		static json(data, init) {
 			const body = JSON.stringify(data);
@@ -244,6 +256,9 @@ var NodeResponse = /* @__PURE__ */ (() => {
 				if (abort) stream.once("close", () => abort());
 				body = stream;
 			}
+			if (typeof body === "string") this.#contentLength = Buffer.byteLength(body);
+			else if (body instanceof ArrayBuffer || body instanceof Uint8Array || body instanceof DataView) this.#contentLength = body.byteLength;
+			else if (body instanceof Blob) this.#contentLength = body.size;
 			this.#response = new NativeResponse(body, this.#headers ? {
 				...this.#init,
 				headers: this.#headers
@@ -259,29 +274,29 @@ var NodeResponse = /* @__PURE__ */ (() => {
 			let body;
 			let contentType;
 			let contentLength;
-			if (this.#response) body = this.#response.body;
-			else if (this.#body != null) {
-				if (this.#body instanceof ReadableStream) body = this.#body;
-				else if (typeof this.#body === "string") {
-					body = this.#body;
-					contentType = "text/plain; charset=UTF-8";
-					contentLength = Buffer.byteLength(this.#body);
-				} else if (this.#body instanceof ArrayBuffer) {
-					body = Buffer.from(this.#body);
-					contentLength = this.#body.byteLength;
-				} else if (this.#body instanceof Uint8Array) {
-					body = this.#body;
-					contentLength = this.#body.byteLength;
-				} else if (this.#body instanceof DataView) {
-					body = Buffer.from(this.#body.buffer, this.#body.byteOffset, this.#body.byteLength);
-					contentLength = this.#body.byteLength;
-				} else if (this.#body instanceof Blob) {
-					body = this.#body.stream();
-					contentType = this.#body.type;
-					contentLength = this.#body.size;
-				} else if (typeof this.#body.pipe === "function") body = this.#body;
-				else body = this._response.body;
-			}
+			if (this.#response) {
+				body = this.#response.body;
+				if (!this.#response.bodyUsed) contentLength = this.#contentLength;
+			} else if (this.#body != null) if (this.#body instanceof ReadableStream) body = this.#body;
+			else if (typeof this.#body === "string") {
+				body = this.#body;
+				contentType = "text/plain; charset=UTF-8";
+				contentLength = Buffer.byteLength(this.#body);
+			} else if (this.#body instanceof ArrayBuffer) {
+				body = Buffer.from(this.#body);
+				contentLength = this.#body.byteLength;
+			} else if (this.#body instanceof Uint8Array) {
+				body = this.#body;
+				contentLength = this.#body.byteLength;
+			} else if (this.#body instanceof DataView) {
+				body = Buffer.from(this.#body.buffer, this.#body.byteOffset, this.#body.byteLength);
+				contentLength = this.#body.byteLength;
+			} else if (this.#body instanceof Blob) {
+				body = this.#body.stream();
+				contentType = this.#body.type;
+				contentLength = this.#body.size;
+			} else if (typeof this.#body.pipe === "function") body = this.#body;
+			else body = this._response.body;
 			const headers = [];
 			const initHeaders = this.#init?.headers;
 			const headerEntries = this.#response?.headers || this.#headers || (initHeaders ? Array.isArray(initHeaders) ? initHeaders : initHeaders?.entries ? initHeaders.entries() : Object.entries(initHeaders) : void 0);
@@ -299,6 +314,7 @@ var NodeResponse = /* @__PURE__ */ (() => {
 			this.#init = void 0;
 			this.#headers = void 0;
 			this.#response = void 0;
+			this.#contentLength = void 0;
 			this.#body = void 0;
 			return {
 				status,
@@ -542,7 +558,7 @@ function prepareResponse(val, event, config, nested) {
 		const errHeaders = event[kEventRes]?.[kEventResErrHeaders];
 		if (onError && !nested) return Promise.resolve().then(() => onError(error, event)).catch(toError).then((newVal) => prepareResponse(newVal ?? val, event, config, true));
 		event[kEventRes] = void 0;
-		return errorResponse(error, config.debug, errHeaders);
+		val = errorResponse(error, config.debug, errHeaders);
 	}
 	const preparedRes = event[kEventRes];
 	let preparedHeaders = preparedRes?.[kEventResHeaders];

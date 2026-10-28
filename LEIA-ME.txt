@@ -12,3 +12,7 @@
 2. Deploy do site.
 3. No card Bot 24/7: URL do serviço bot-server (ex. https://seu-bot.onrender.com), SEM /octo-app.
 
+
+
+Perfil financeiro: http://localhost:3000/finance (EduChat Finance) — NÃO foi removido.
+Trader direto: http://localhost:3000/octocookie-app/octocookie.html

@@ -2,7 +2,7 @@ import { o as __toESM } from "../_runtime.mjs";
 import { o as require_jsx_runtime, s as require_react } from "../_libs/@ai-sdk/react+[...].mjs";
 import { t as cva } from "../_libs/class-variance-authority+clsx.mjs";
 import { t as cn } from "./utils-C_uf36nf.mjs";
-import { r as Slot } from "../_libs/@radix-ui/react-collection+[...].mjs";
+import { n as Slot } from "../_libs/@radix-ui/react-label+[...].mjs";
 //#region node_modules/.nitro/vite/services/ssr/assets/input-B8wkzuVc.js
 var import_react = /* @__PURE__ */ __toESM(require_react());
 var import_jsx_runtime = require_jsx_runtime();

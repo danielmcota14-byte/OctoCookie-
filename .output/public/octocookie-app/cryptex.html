@@ -4,7 +4,7 @@
 <link rel="stylesheet" href="/octo.css"><link rel="stylesheet" href="/octo-legacy.css"><script src="/octo.js"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>OCTOCOOKIE</title>
+  <title>Cryptex — Ações Tokenizadas</title>
   <script src="https://cdn.jsdelivr.net/npm/ethers@6.9.1/dist/ethers.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -62,61 +62,98 @@
       arbitrum: { name: "Arbitrum", chainId: 42161, symbol: "ETH", rpc: "https://arb1.arbitrum.io/rpc", explorer: "https://arbiscan.io", color: "#28A0F0" },
     };
 
-    const TOKEN_CONTRACTS = {
-      ethereum: [
-        { symbol: 'USDT', address: '0xdAC17F958D2ee523a2206206994597C13D831ec7' },
-        { symbol: 'USDC', address: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48' },
-        { symbol: 'DAI', address: '0x6B175474E89094C44Da98b954EedeAC495271d0F' },
-        { symbol: 'WBTC', address: '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599' },
-        { symbol: 'BTC', address: '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599' },
-        { symbol: 'LINK', address: '0x514910771AF9Ca656af840dff83E8264EcF986CA' },
-        { symbol: 'UNI', address: '0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984' },
-        { symbol: 'ERA', address: '0xE2AD0BF751834f2fbdC62A41014f84d67cA1de2A' },
-        { symbol: 'SHIB', address: '0x95aD61b0a150d79219dCF64E1E6Cc01f0B64C4cE' },
-        { symbol: 'PEPE', address: '0x6982508145454Ce325dDbE47a25d4ec3d2311933' },
-        { symbol: 'MATIC', address: '0x7D1AfA7B718fb893dB30A3aBc0Cfc608AaCfeBB0' },
-        { symbol: 'ARB', address: '0xB50721BCf8d664c30412Cfbc6cf7a15145234ad1' },
-        { symbol: 'AAVE', address: '0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9' },
-        { symbol: 'BNB', address: '0xB8c77482e45F1F44dE1745F52C74426C631bDD52' },
-        { symbol: 'SOL', address: '0xD31a59c85aE9D8edEFeC411D448f90841571b89c' },
-        { symbol: 'DOGE', address: '0x4206931337dc273a630d328dA6441786BfaD668f' },
-        { symbol: 'AVAX', address: '0x85f138bfEE4ef8e540890CFb48F620571d67Eda3' }
-      ],
-      bsc: [
-        { symbol: 'USDT', address: '0x55d398326f99059fF775485246999027B3197955' },
-        { symbol: 'USDC', address: '0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d' },
-        { symbol: 'BUSD', address: '0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56' },
-        { symbol: 'CAKE', address: '0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82' },
-        { symbol: 'BTC', address: '0x7130d2A12B9BCbFAe4f2634d864A1Ee1Ce3Ead9c' },
-        { symbol: 'ETH', address: '0x2170Ed0880ac9A755fd29B2688956BD959F933F8' },
-        { symbol: 'DOGE', address: '0xbA2aE424d960c26247Dd6c32edC70B295c744C43' },
-        { symbol: 'ADA', address: '0x3EE2200Efb3400fAbB9AacF31297cBdD1d435D47' },
-        { symbol: 'XRP', address: '0x1D2F0da169ceB9fC7B3144628dB156f3F6c60dBE' },
-        { symbol: 'DOT', address: '0x7083609fCE4d1d8Dc0C979AAb8c869Ea2C873402' },
-        { symbol: 'LINK', address: '0xF8A0BF9cF54Bb92F17374d9e9A321E6a111a51bD' },
-        { symbol: 'SOL', address: '0x570A5D26f7765Ecb712C0924E4De545B89fD43dF' },
-        { symbol: 'ERA', address: '0x00312400303d02c323295f6E8b7309bc30FB6BcE' }
-      ],
-      polygon: [
-        { symbol: 'USDT', address: '0x3813e82e6f7098b9583FC0F33a962D02018B6803' },
-        { symbol: 'USDC', address: '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174' },
-        { symbol: 'DAI', address: '0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063' },
-        { symbol: 'BTC', address: '0x1BFD67037B42Cf73acF2047067bd4F2C47D9BfD6' },
-        { symbol: 'ETH', address: '0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619' },
-        { symbol: 'LINK', address: '0x53E0bca35eC356BD5ddDFebbD1Fc0fD03FaBad39' },
-        { symbol: 'AAVE', address: '0xD6DF932A45C0f255f85145f286eA0b292B21C90B' }
-      ],
-      arbitrum: [
-        { symbol: 'USDC', address: '0xaf88d065e77c8cC2239327C5EDb3A432268e5831' },
-        { symbol: 'USDT', address: '0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9' },
-        { symbol: 'ARB', address: '0x912CE59144191C1204E64559FE8253a0e49E6548' },
-        { symbol: 'BTC', address: '0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f' },
-        { symbol: 'LINK', address: '0xf97f4df75117a78c1A5a0DBb814Af92458539FB4' },
-        { symbol: 'UNI', address: '0xFa7F8980b0f1E64A2062791cc3b0871572f1F7f0' },
-        { symbol: 'ERA', address: '0x00312400303d02c323295f6E8b7309bc30FB6BcE' }
-      ]
+                // Catálogo completo via /octocookie-app/xstocks-tokens.json (API xStocks ~1474)
+    
+    const STOCK_MARKET = [
+      { symbol:'AAPL', name:'Apple', price:232.5, change:0.8 },
+      { symbol:'MSFT', name:'Microsoft', price:428.1, change:0.4 },
+      { symbol:'NVDA', name:'NVIDIA', price:141.2, change:1.2 },
+      { symbol:'TSLA', name:'Tesla', price:248.9, change:-0.6 },
+      { symbol:'AMZN', name:'Amazon', price:188.4, change:0.3 },
+      { symbol:'GOOGL', name:'Alphabet', price:171.3, change:0.5 },
+      { symbol:'META', name:'Meta', price:582.7, change:0.9 },
+      { symbol:'JPM', name:'JPMorgan', price:221.6, change:0.2 },
+      { symbol:'V', name:'Visa', price:312.8, change:0.1 },
+      { symbol:'SPY', name:'S&P 500 ETF', price:580.0, change:0.3 },
+    ];
+    async function renderMarketStocks() {
+      const el = document.getElementById('market-list') || document.querySelector('.market-list') || document.getElementById('token-list');
+      // tenta endpoints comuns da UI
+      const targets = [
+        document.getElementById('market-list'),
+        document.getElementById('markets-list'),
+        document.querySelector('[data-market-list]'),
+        document.querySelector('.coins-list'),
+      ].filter(Boolean);
+      const html = STOCK_MARKET.map(s => {
+        const pos = s.change >= 0;
+        return `<div class="market-row" style="display:flex;justify-content:space-between;padding:10px 12px;border-bottom:1px solid var(--border,#333)">
+          <div><strong>${s.symbol}</strong> <span style="opacity:.7">${s.name}</span></div>
+          <div style="text-align:right"><div>$${s.price.toFixed(2)}</div>
+          <div style="color:${pos?'#22c55e':'#ef4444'}">${pos?'+':''}${s.change.toFixed(2)}%</div></div>
+        </div>`;
+      }).join('');
+      targets.forEach(t => { t.innerHTML = html; });
+      // Se a home lista tokens do contrato, limita
+      const tokenList = document.getElementById('token-list') || document.getElementById('assets-list');
+      if (tokenList && tokenList.children && tokenList.children.length > 40) {
+        // já tratado em render de contratos
+      }
+    }
+    window.renderMarketStocks = renderMarketStocks;
 
-    };
+    let TOKEN_CONTRACTS = { ethereum: [], bsc: [], polygon: [], arbitrum: [] };
+    let SWAP_TOKENS = { ethereum: [], bsc: [], polygon: [], arbitrum: [] };
+
+    async function loadXStocksIntoCryptex() {
+      try {
+        const res = await fetch('/octocookie-app/xstocks-tokens.json', { cache: 'no-store' });
+        const data = await res.json();
+        const mapNet = (arr) => (arr || []).map(t => ({
+          symbol: t.s, address: t.a, name: t.n || t.s, decimals: t.d || 18, underlying: t.u || ''
+        }));
+        TOKEN_CONTRACTS = {
+          ethereum: mapNet(data.ethereum),
+          bsc: mapNet(data.bsc),
+          polygon: mapNet(data.polygon) || [{ symbol:'USDC', address:'0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174', name:'USD Coin', decimals:6 }],
+          arbitrum: mapNet(data.arbitrum)
+        };
+        SWAP_TOKENS = {
+          ethereum: TOKEN_CONTRACTS.ethereum.map(t => ({ symbol:t.symbol, address:t.address, decimals:t.decimals||18, name:t.name })),
+          bsc: TOKEN_CONTRACTS.bsc.map(t => ({ symbol:t.symbol, address:t.address, decimals:t.decimals||18, name:t.name })),
+          polygon: TOKEN_CONTRACTS.polygon.map(t => ({ symbol:t.symbol, address:t.address, decimals:t.decimals||6, name:t.name })),
+          arbitrum: TOKEN_CONTRACTS.arbitrum.map(t => ({ symbol:t.symbol, address:t.address, decimals:t.decimals||18, name:t.name }))
+        };
+        // Não renderiza os 1474 de uma vez — trava o DOM
+        window.MAX_DISPLAY_TOKENS = 40;
+        window.POPULAR_STOCKS = ['AAPLx','TSLAx','NVDAx','MSFTx','AMZNx','GOOGLx','METAx','SPYx','QQQx','USDC'];
+        if (window.populateSwapTokens) window.populateSwapTokens();
+        if (window.renderMarketStocks) window.renderMarketStocks();
+        // search box for cryptex swap tokens if present
+        const search = document.getElementById('cryptexAssetSearch');
+        if (search && !search._bound) {
+          search._bound = true;
+          search.addEventListener('input', () => filterCryptexTokenSelects(search.value));
+        }
+        console.log('[cryptex] xStocks catalog', TOKEN_CONTRACTS.ethereum.length);
+      } catch (e) {
+        console.error('loadXStocksIntoCryptex', e);
+      }
+    }
+
+    function filterCryptexTokenSelects(q) {
+      q = (q || '').toLowerCase();
+      document.querySelectorAll('select.token-select, select#swap-token-in, select#swap-token-out, select#tokenSelect').forEach(sel => {
+        Array.from(sel.options).forEach(opt => {
+          const hay = (opt.textContent || opt.value || '').toLowerCase();
+          opt.hidden = q && !hay.includes(q);
+        });
+      });
+    }
+
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', loadXStocksIntoCryptex);
+    else loadXStocksIntoCryptex();
+
 
 
     // ============================================================
@@ -364,12 +401,12 @@
     window.appSafeJson = safeJson;
 
     const FALLBACK_MARKET_COINS = [
-      { id: 'bitcoin', symbol: 'btc', name: 'Bitcoin', image: 'https://assets.coingecko.com/coins/images/1/large/bitcoin.png', current_price: 118000, price_change_percentage_24h: 1.82, market_cap_rank: 1, sparkline_in_7d: { price: [111000,112500,113200,112900,115400,116800,118000] } },
-      { id: 'ethereum', symbol: 'eth', name: 'Ethereum', image: 'https://assets.coingecko.com/coins/images/279/large/ethereum.png', current_price: 3650, price_change_percentage_24h: 2.34, market_cap_rank: 2, sparkline_in_7d: { price: [3350,3400,3510,3480,3560,3610,3650] } },
-      { id: 'tether', symbol: 'usdt', name: 'Tether', image: 'https://assets.coingecko.com/coins/images/325/large/Tether.png', current_price: 1, price_change_percentage_24h: 0.01, market_cap_rank: 3, sparkline_in_7d: { price: [1,1,0.999,1.001,1,1,1] } },
-      { id: 'binancecoin', symbol: 'bnb', name: 'BNB', image: 'https://assets.coingecko.com/coins/images/825/large/bnb-icon2_2x.png', current_price: 715, price_change_percentage_24h: 1.12, market_cap_rank: 4, sparkline_in_7d: { price: [690,695,701,698,706,711,715] } },
-      { id: 'solana', symbol: 'sol', name: 'Solana', image: 'https://assets.coingecko.com/coins/images/4128/large/solana.png', current_price: 182, price_change_percentage_24h: -0.68, market_cap_rank: 5, sparkline_in_7d: { price: [188,186,184,185,183,181,182] } },
-      { id: 'usd-coin', symbol: 'usdc', name: 'USDC', image: 'https://assets.coingecko.com/coins/images/6319/large/usdc.png', current_price: 1, price_change_percentage_24h: 0, market_cap_rank: 6, sparkline_in_7d: { price: [1,1,1,0.999,1.001,1,1] } },
+      { id: 'apple', symbol: 'aapl', name: 'Apple', image: '', current_price: 232.5, price_change_percentage_24h: 0.8, market_cap_rank: 1, sparkline_in_7d: { price: [230,231,232,231,233,232,232.5] } },
+      { id: 'microsoft', symbol: 'msft', name: 'Microsoft', image: 'https://assets.coingecko.com/coins/images/279/large/nvidia.png', current_price: 3650, price_change_percentage_24h: 2.34, market_cap_rank: 2, sparkline_in_7d: { price: [3350,3400,3510,3480,3560,3610,3650] } },
+      { id: 'ethereum', symbol: 'nvda', name: 'NVIDIA', image: 'https://assets.coingecko.com/coins/images/325/large/Tether.png', current_price: 1, price_change_percentage_24h: 0.01, market_cap_rank: 3, sparkline_in_7d: { price: [1,1,0.999,1.001,1,1,1] } },
+      { id: 'tesla', symbol: 'tsla', name: 'Tesla', image: 'https://assets.coingecko.com/coins/images/825/large/bnb-icon2_2x.png', current_price: 715, price_change_percentage_24h: 1.12, market_cap_rank: 4, sparkline_in_7d: { price: [690,695,701,698,706,711,715] } },
+      { id: 'amazon', symbol: 'amzn', name: 'Amazon', image: 'https://assets.coingecko.com/coins/images/4128/large/solana.png', current_price: 182, price_change_percentage_24h: -0.68, market_cap_rank: 5, sparkline_in_7d: { price: [188,186,184,185,183,181,182] } },
+      { id: 'alphabet', symbol: 'googl', name: 'Alphabet', image: 'https://assets.coingecko.com/coins/images/6319/large/usdc.png', current_price: 1, price_change_percentage_24h: 0, market_cap_rank: 6, sparkline_in_7d: { price: [1,1,1,0.999,1.001,1,1] } },
       { id: 'ripple', symbol: 'xrp', name: 'XRP', image: 'https://assets.coingecko.com/coins/images/44/large/xrp-symbol-white-128.png', current_price: 2.95, price_change_percentage_24h: 0.93, market_cap_rank: 7, sparkline_in_7d: { price: [2.82,2.86,2.91,2.88,2.92,2.94,2.95] } },
       { id: 'caldera', symbol: 'era', name: 'Caldera', image: 'https://assets.coingecko.com/coins/images/54674/large/era.jpg', current_price: 0.106, price_change_percentage_24h: 3.71, market_cap_rank: 240, sparkline_in_7d: { price: [0.095,0.098,0.101,0.099,0.103,0.105,0.106] } },
       { id: 'chainlink', symbol: 'link', name: 'Chainlink', image: 'https://assets.coingecko.com/coins/images/877/large/chainlink-new-logo.png', current_price: 18.5, price_change_percentage_24h: 1.48, market_cap_rank: 15, sparkline_in_7d: { price: [17.6,17.9,18.1,18.0,18.2,18.4,18.5] } },
@@ -406,9 +443,9 @@
 
     // Fallback hardcoded news, exibidas quando a API falha
     const FALLBACK_NEWS = [
-      { title: 'Bitcoin ultrapassa novos patamares em 2026', source: { title: 'Fallback' }, url: 'https://www.coingecko.com/en/coins/bitcoin', published_at: new Date().toISOString(), currencies: [{ code: 'BTC' }] },
-      { title: 'Ethereum consolida upgrade e reduz taxas', source: { title: 'Fallback' }, url: 'https://www.coingecko.com/en/coins/ethereum', published_at: new Date().toISOString(), currencies: [{ code: 'ETH' }] },
-      { title: 'Stablecoins ganham espaço no mercado global', source: { title: 'Fallback' }, url: 'https://www.coingecko.com/en/coins/tether', published_at: new Date().toISOString(), currencies: [{ code: 'USDT' }] },
+      { title: 'Ações de tecnologia lideram ganhos no mercado', source: { title: 'Mercado' }, url: '#', published_at: new Date().toISOString(), currencies: [{ code: 'AAPL' }] },
+      { title: 'NVIDIA e semicondutores impulsionam o setor', source: { title: 'Mercado' }, url: '#', published_at: new Date().toISOString(), currencies: [{ code: 'NVDA' }] },
+      { title: 'Tesla e setor automotivo em destaque', source: { title: 'Mercado' }, url: '#', published_at: new Date().toISOString(), currencies: [{ code: 'TSLA' }] },
     ];
 
     async function getCryptoNews() {
@@ -419,13 +456,13 @@
         if (!coins.length) return FALLBACK_NEWS;
         return coins.slice(0, 10).map(c => ({
           title: `${c.item.name} trending no mercado`,
-          source: { title: 'CoinGecko' },
+          source: { title: 'Mercado' },
           url: `https://www.coingecko.com/en/coins/${c.item.id}`,
           published_at: new Date().toISOString(),
           currencies: [{ code: c.item.symbol.toUpperCase() }]
         }));
       } catch (e) {
-        console.warn('CoinGecko trending falhou:', e.message);
+        console.warn('Trending de mercado falhou:', e.message);
         return FALLBACK_NEWS;
       }
     }
@@ -525,7 +562,11 @@
       await loadMarket();
       await loadNews();
       await loadGas();
-      if (window.populateSwapTokens) window.populateSwapTokens();
+      // Não renderiza os 1474 de uma vez — trava o DOM
+        window.MAX_DISPLAY_TOKENS = 40;
+        window.POPULAR_STOCKS = ['AAPLx','TSLAx','NVDAx','MSFTx','AMZNx','GOOGLx','METAx','SPYx','QQQx','USDC'];
+        if (window.populateSwapTokens) window.populateSwapTokens();
+        if (window.renderMarketStocks) window.renderMarketStocks();
       if (window.loadSocialFeed) await window.loadSocialFeed();
     }
 
@@ -539,7 +580,7 @@
       $('network-badge').style.background = net.color + '33';
       $('network-badge').style.color = net.color;
       try {
-        const coinId = currentNetwork === 'bsc' ? 'binancecoin' : currentNetwork === 'polygon' ? 'matic-network' : 'ethereum';
+        const coinId = currentNetwork === 'bsc' ? 'apple' : currentNetwork === 'polygon' ? 'matic-network' : 'ethereum';
         const res = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${coinId}&vs_currencies=usd&x_cg_demo_api_key=${COINGECKO_KEY}`);
         const data = await res.json();
         const price = data[coinId]?.usd || 0;
@@ -554,7 +595,10 @@
     async function loadTokenBalances() {
       const tokenList = $('token-balances');
       if (!tokenList) return;
-      const tokens = TOKEN_CONTRACTS[currentNetwork] || [];
+      const tokensAll = TOKEN_CONTRACTS[currentNetwork] || [];
+      const popular = window.POPULAR_STOCKS || ['AAPLx','TSLAx','NVDAx','MSFTx','AMZNx','USDC'];
+      let tokens = tokensAll.filter(t => popular.includes(t.symbol));
+      if (tokens.length < 5) tokens = tokensAll.slice(0, 40);
       if (!walletAddress || !tokens.length) {
         tokenList.innerHTML = '<p class="empty-msg">Sem tokens para esta rede</p>';
         return;
@@ -903,7 +947,11 @@
       }
       document.querySelectorAll('.net-option').forEach(n => n.classList.toggle('active', n.dataset.net === net));
       updateDashboard();
-      if (window.populateSwapTokens) window.populateSwapTokens();
+      // Não renderiza os 1474 de uma vez — trava o DOM
+        window.MAX_DISPLAY_TOKENS = 40;
+        window.POPULAR_STOCKS = ['AAPLx','TSLAx','NVDAx','MSFTx','AMZNx','GOOGLx','METAx','SPYx','QQQx','USDC'];
+        if (window.populateSwapTokens) window.populateSwapTokens();
+        if (window.renderMarketStocks) window.renderMarketStocks();
       showToast(`Rede: ${NETWORKS[net].name}`, "success");
     }
 
@@ -982,7 +1030,7 @@
     }
 
     async function connectWeb3() {
-      if (!window.ethereum) return showToast('Instale MetaMask ou outra carteira Web3', 'error');
+      if (!window.ethereum) return showToast('Instale MetaMask ou outra carteira Web3 (ações tokenizadas)', 'error');
       try {
         const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
         if (accounts.length) showToast(`Conectado: ${truncAddr(accounts[0])}`, 'success');
@@ -1044,7 +1092,11 @@
         if (settingsAddr) settingsAddr.textContent = walletAddress ? `${walletAddress.slice(0, 10)}...${walletAddress.slice(-6)}` : '—';
       }
       if (page === 'swap') {
+        // Não renderiza os 1474 de uma vez — trava o DOM
+        window.MAX_DISPLAY_TOKENS = 40;
+        window.POPULAR_STOCKS = ['AAPLx','TSLAx','NVDAx','MSFTx','AMZNx','GOOGLx','METAx','SPYx','QQQx','USDC'];
         if (window.populateSwapTokens) window.populateSwapTokens();
+        if (window.renderMarketStocks) window.renderMarketStocks();
         if (window.updateSwapNetworkBadge) window.updateSwapNetworkBadge();
       }
     }
@@ -1080,7 +1132,7 @@
     function shareAddress() {
       const addr = walletAddress || '';
       if (navigator.share) {
-        navigator.share({ title: 'Meu endereço cripto', text: addr });
+        navigator.share({ title: 'Meu endereço de carteira', text: addr });
       } else if (window.copyToClipboard) {
         window.copyToClipboard(addr);
       }
@@ -1372,11 +1424,11 @@
     }
 
     async function sharePost(postId, postText) {
-      const shareData = { title: 'Post CryptoWallet', text: postText, url: window.location.href };
+      const shareData = { title: 'Post Cryptex Ações', text: postText, url: window.location.href };
       if (navigator.share) {
         try { await navigator.share(shareData); } catch (e) { }
       } else {
-        copyToClipboard(`${postText} - Compartilhado via CryptoWallet`);
+        copyToClipboard(`${postText} - Compartilhado via Cryptex Ações`);
       }
     }
 
@@ -1539,44 +1591,10 @@
     window.exportSeed = exportSeed;
 
     // ============================================================
-    // INTERACTIVE DEX SWAP ENGINE (DEMO & REAL)
+    // INTERACTIVE STOCK SWAP ENGINE (DEMO & REAL)
     // ============================================================
-    const SWAP_TOKENS = {
-      ethereum: [
-        { symbol: 'ETH', address: '0x0000000000000000000000000000000000000000', decimals: 18, name: 'Ethereum' },
-        { symbol: 'BTC', address: '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599', decimals: 8, name: 'Wrapped Bitcoin' },
-        { symbol: 'USDT', address: '0xdAC17F958D2ee523a2206206994597C13D831ec7', decimals: 6, name: 'Tether USD' },
-        { symbol: 'USDC', address: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', decimals: 6, name: 'USD Coin' },
-        { symbol: 'DAI', address: '0x6B175474E89094C44Da98b954EedeAC495271d0F', decimals: 18, name: 'Dai Stablecoin' },
-        { symbol: 'LINK', address: '0x514910771AF9Ca656af840dff83E8264EcF986CA', decimals: 18, name: 'Chainlink' },
-        { symbol: 'UNI', address: '0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984', decimals: 18, name: 'Uniswap' },
-        { symbol: 'ERA', address: '0xE2AD0BF751834f2fbdC62A41014f84d67cA1de2A', decimals: 18, name: 'Caldera' }
-      ],
-      bsc: [
-        { symbol: 'BNB', address: '0x0000000000000000000000000000000000000000', decimals: 18, name: 'Binance Coin' },
-        { symbol: 'BTC', address: '0x7130d2A12B9BCbFAe4f2634d864A1Ee1Ce3Ead9c', decimals: 18, name: 'BTCB Token' },
-        { symbol: 'ETH', address: '0x2170Ed0880ac9A755fd29B2688956BD959F933F8', decimals: 18, name: 'Ethereum Token' },
-        { symbol: 'USDT', address: '0x55d398326f99059fF775485246999027B3197955', decimals: 18, name: 'Tether USD' },
-        { symbol: 'BUSD', address: '0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56', decimals: 18, name: 'Binance USD' },
-        { symbol: 'CAKE', address: '0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82', decimals: 18, name: 'PancakeSwap' },
-        { symbol: 'ERA', address: '0x00312400303d02c323295f6E8b7309bc30FB6BcE', decimals: 18, name: 'Caldera' }
-      ],
-      polygon: [
-        { symbol: 'MATIC', address: '0x0000000000000000000000000000000000000000', decimals: 18, name: 'Polygon MATIC' },
-        { symbol: 'BTC', address: '0x1BFD67037B42Cf73acF2047067bd4F2C47D9BfD6', decimals: 8, name: 'Wrapped Bitcoin' },
-        { symbol: 'ETH', address: '0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619', decimals: 18, name: 'Wrapped Ether' },
-        { symbol: 'USDT', address: '0xc2132D05D31c914a87C6611C10748AEb04B58e8F', decimals: 6, name: 'Tether USD' },
-        { symbol: 'USDC', address: '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174', decimals: 6, name: 'USD Coin' },
-        { symbol: 'LINK', address: '0x53E0bca35eC356BD5ddDFebbD1Fc0fD03FaBad39', decimals: 18, name: 'Chainlink' }
-      ],
-      arbitrum: [
-        { symbol: 'ETH', address: '0x0000000000000000000000000000000000000000', decimals: 18, name: 'Ethereum' },
-        { symbol: 'USDC', address: '0xaf88d065e77c8cC2239327C5EDb3A432268e5831', decimals: 6, name: 'USD Coin' },
-        { symbol: 'USDT', address: '0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9', decimals: 6, name: 'Tether USD' },
-        { symbol: 'ARB', address: '0x912CE59144191C1204E64559FE8253a0e49E6548', decimals: 18, name: 'Arbitrum' },
-        { symbol: 'ERA', address: '0x00312400303d02c323295f6E8b7309bc30FB6BcE', decimals: 18, name: 'Caldera' }
-      ]
-    };
+                /* SWAP_TOKENS loaded async from xstocks-tokens.json */
+
 
     let swapMode = 'demo';
 
@@ -1601,35 +1619,30 @@
     }
 
     function populateSwapTokens() {
-      const fromSelect = $('swap-from-token');
-      const toSelect = $('swap-to-token');
-      if (!fromSelect || !toSelect) return;
-
-      const prevFrom = fromSelect.value;
-      const prevTo = toSelect.value;
-
-      const tokens = SWAP_TOKENS[currentNetwork] || SWAP_TOKENS.ethereum;
-
-      const optionsHtml = tokens.map(t => `<option value="${t.symbol}">${t.symbol}</option>`).join('');
-      fromSelect.innerHTML = optionsHtml;
-      toSelect.innerHTML = optionsHtml;
-
-      if (tokens.length >= 2) {
-        fromSelect.selectedIndex = 0;
-        toSelect.selectedIndex = 1;
+      const max = window.MAX_DISPLAY_TOKENS || 40;
+      const popular = window.POPULAR_STOCKS || [];
+      const tokensAll = SWAP_TOKENS[currentNetwork] || SWAP_TOKENS.ethereum || [];
+      let tokens = tokensAll.filter(t => popular.includes(t.symbol));
+      if (tokens.length < 5) tokens = tokensAll.slice(0, max);
+      else tokens = tokens.slice(0, max);
+      // always include USDC
+      if (!tokens.find(t => t.symbol === 'USDC')) {
+        const u = tokensAll.find(t => t.symbol === 'USDC');
+        if (u) tokens.push(u);
       }
-
-      if (tokens.some(t => t.symbol === prevFrom)) fromSelect.value = prevFrom;
-      if (tokens.some(t => t.symbol === prevTo)) toSelect.value = prevTo;
-
-      const routeSpan = $('swap-route');
-      if (routeSpan) {
-        if (currentNetwork === 'bsc') routeSpan.textContent = 'PancakeSwap V2';
-        else if (currentNetwork === 'polygon') routeSpan.textContent = 'QuickSwap V2';
-        else routeSpan.textContent = 'Uniswap V2';
-      }
-
-      calculateSwapOutput();
+      document.querySelectorAll('select.token-select, select#swap-token-in, select#swap-token-out, select#tokenSelect').forEach(sel => {
+        if (!sel) return;
+        const prev = sel.value;
+        sel.innerHTML = '';
+        tokens.forEach(t => {
+          const o = document.createElement('option');
+          o.value = t.address || t.symbol;
+          o.textContent = t.symbol + (t.name && t.name !== t.symbol ? ' — ' + t.name : '');
+          o.dataset.symbol = t.symbol;
+          sel.appendChild(o);
+        });
+        if (prev) sel.value = prev;
+      });
     }
 
     function getTokenPriceInUSD(symbol) {
@@ -1764,7 +1777,7 @@
         fromAmountInput.value = '';
         toAmountInput.value = '';
       } else {
-        // SWAP REAL (WEB3 via Router Contracts)
+        // SWAP REAL (Web3 / ações tokenizadas)
         if (!wallet && !encryptedWallet) {
           return showToast('Esta carteira está em modo Somente Leitura. Importe sua seed phrase nas Configurações para transacionar.', 'error');
         }
@@ -1851,7 +1864,7 @@
 
             const allowance = await tokenContract.allowance(walletAddress, routerAddress);
             if (allowance < amountInParsed) {
-              showToast('Aprovando gasto do token...', 'info');
+              showToast('Aprovando gasto do ativo...', 'info');
               const approveTx = await tokenContract.approve(routerAddress, ethers.MaxUint256);
               await approveTx.wait();
               showToast('Gasto aprovado!', 'success');
@@ -1992,7 +2005,7 @@
       return null;
     }
 
-    // Abre a aba Swap com o token de destino pré-selecionado.
+    // Abre a aba Swap com o ação de destino pré-selecionado.
     // Se o token não estiver em SWAP_TOKENS da rede atual, adiciona dinamicamente
     // usando window._tokenMap (populado por loadMarket / dexSearch).
     async function openSwapWithToken(symbol) {
@@ -2009,7 +2022,7 @@
         try { resolved = await resolveTokenForSwap(sym); } catch (e) { console.warn('resolveTokenForSwap erro:', e); }
 
         if (!resolved) {
-          return showToast(`${sym} não encontrado em DEXs suportadas. Tente buscar manualmente na aba DEX.`, 'warn');
+          return showToast(`${sym} não encontrado no mercado suportado. Tente buscar manualmente na aba Mercado.`, 'warn');
         }
 
         if (resolved.network !== currentNetwork) {
@@ -2028,7 +2041,11 @@
           tokens.push(target);
         }
 
+        // Não renderiza os 1474 de uma vez — trava o DOM
+        window.MAX_DISPLAY_TOKENS = 40;
+        window.POPULAR_STOCKS = ['AAPLx','TSLAx','NVDAx','MSFTx','AMZNx','GOOGLx','METAx','SPYx','QQQx','USDC'];
         if (window.populateSwapTokens) window.populateSwapTokens();
+        if (window.renderMarketStocks) window.renderMarketStocks();
 
         const net = NETWORKS[currentNetwork];
         const fromSel = document.getElementById('swap-from-token');
@@ -2049,7 +2066,7 @@
         }
         if (window.calculateSwapOutput) window.calculateSwapOutput();
         if (typeof updateSwapNetworkBadge === 'function') updateSwapNetworkBadge();
-        showToast(`${sym} pronto para swap na rede ${NETWORKS[currentNetwork]?.name || currentNetwork}`, 'success');
+        showToast(`${sym} pronto para troca na rede ${NETWORKS[currentNetwork]?.name || currentNetwork}`, 'success');
       } catch (err) {
         console.error('openSwapWithToken erro:', err);
         showToast(`Erro ao preparar swap: ${err.message || err}`, 'error');
@@ -2140,7 +2157,7 @@
 
   
 
-<script>window.__OCTO_BRAND__ = "Cryptex";</script>
+<script>window.__OCTO_BRAND__ = "Cryptex Ações";</script>
 
 <script id="octo-rebrand">
 (function(){
@@ -2712,7 +2729,7 @@ body{padding:24px 16px;}
   .app-shell{border-radius:0;border-left:none;border-right:none;height:100vh;min-height:100vh;}
   .auth-box,.seed-box,.import-box{margin:16px;border-radius:var(--radius);}
 }
-</style><script>document.addEventListener("DOMContentLoaded",function(){document.title="Cryptex";});</script></head>
+</style><script>document.addEventListener("DOMContentLoaded",function(){document.title="Cryptex — Ações";});</script></head>
 
 <body>
 
@@ -3098,7 +3115,7 @@ body{padding:24px 16px;}
             </div>
             <div class="octo-ad-slot" data-slot="1"></div>
 <div class="tab-row">
-              <button class="tab-btn active" onclick="switchTab(this,'send-crypto')">Cripto</button>
+              <button class="tab-btn active" onclick="switchTab(this,'send-crypto')">Ações</button>
               <button class="tab-btn" onclick="switchTab(this,'send-pix')">PIX</button>
             </div>
             <div class="tab-content active" id="send-crypto">
@@ -3143,7 +3160,7 @@ body{padding:24px 16px;}
             <div class="tab-content" id="send-pix">
               <div class="send-box">
                 <p>
-                  Venda sua cripto e receba em reais via <strong>PIX</strong>, direto na sua conta — processado pelo MoonPay.
+                  Venda suas ações tokenizadas e receba em reais via <strong>PIX</strong>, direto na sua conta — processado pelo MoonPay.
                   Você vai passar pela verificação de identidade (KYC) deles na próxima tela; isso é exigência do MoonPay, não nossa.
                 </p>
                 <div class="field-group">
@@ -3170,13 +3187,13 @@ body{padding:24px 16px;}
             </div>
             <div class="octo-ad-slot" data-slot="1"></div>
 <div class="tab-row">
-              <button class="tab-btn active" onclick="switchTab(this,'receive-crypto')">Cripto</button>
+              <button class="tab-btn active" onclick="switchTab(this,'receive-crypto')">Ações</button>
               <button class="tab-btn" onclick="switchTab(this,'receive-moonpay')">Comprar</button>
               <button class="tab-btn" onclick="switchTab(this,'receive-pix')">PIX Demo</button>
             </div>
             <div class="tab-content active" id="receive-crypto">
               <div class="receive-box">
-                <p>Envie criptos para o endereço abaixo. Use apenas a rede selecionada.</p>
+                <p>Envie ativos/ações tokenizadas para o endereço abaixo. Use apenas a rede selecionada.</p>
                 <div class="qr-box" id="qr-box"><span>Gerando QR...</span></div>
                 <div class="receive-addr" id="receive-addr-display">—</div>
                 <button class="btn-primary" onclick="copyReceiveAddress()">COPIAR ENDEREÇO</button>
@@ -3230,7 +3247,7 @@ body{padding:24px 16px;}
           <div class="inner-page" id="inner-swap">
             <div class="page-back-row">
               <button onclick="switchInnerPage('wallet')">←</button>
-              <h2 class="page-inner-header">Swap (DEX)</h2>
+              <h2 class="page-inner-header">Troca (Ações)</h2><input id="cryptexAssetSearch" type="search" placeholder="Pesquisar entre ~1474 ativos..." style="width:100%;max-width:360px;margin:8px 0;padding:8px;border-radius:8px;border:1px solid var(--border);background:var(--surface);color:inherit" /><h2 style="display:none"></h2>
               <span id="swap-network-badge">—</span>
             </div>
             <div class="octo-ad-slot" data-slot="1"></div>
@@ -3257,7 +3274,7 @@ body{padding:24px 16px;}
                 </div>
               </div>
               <div class="swap-detail-card">
-                <div><span>Rota</span><span id="swap-route">Uniswap V2</span></div>
+                <div><span>Rota</span><span id="swap-route">Mercado de Ações</span></div>
                 <div><span>Câmbio</span><span id="swap-rate">—</span></div>
                 <div>
                   <span>Slippage</span>
@@ -3303,7 +3320,7 @@ body{padding:24px 16px;}
 <div class="tab-row">
               <button class="tab-btn active" onclick="switchTab(this,'market-top')">Top Coins</button>
               <button class="tab-btn" onclick="switchTab(this,'market-trending');loadTrending()">Trending</button>
-              <button class="tab-btn" onclick="switchTab(this,'market-dex')">DEX</button>
+              <button class="tab-btn" onclick="switchTab(this,'market-dex')">Mercado</button>
             </div>
 
             <!-- TOP COINS TAB -->
@@ -3311,15 +3328,15 @@ body{padding:24px 16px;}
               <!-- Category filter -->
               <div class="cat-filter">
                 <button class="cat-btn active" onclick="setCatFilter(this,'all')">Todos</button>
-                <button class="cat-btn" onclick="setCatFilter(this,'defi')">DeFi</button>
-                <button class="cat-btn" onclick="setCatFilter(this,'layer1')">Layer 1</button>
+                <button class="cat-btn" onclick="setCatFilter(this,'tech')">Tech</button>
+                <button class="cat-btn" onclick="setCatFilter(this,'finance')">Finance</button>
                 <button class="cat-btn" onclick="setCatFilter(this,'stablecoin')">Stables</button>
-                <button class="cat-btn" onclick="setCatFilter(this,'nft')">NFT</button>
+                <button class="cat-btn" onclick="setCatFilter(this,'growth')">Growth</button>
               </div>
               <div class="search-bar-wrap">
                 <div class="search-bar">
                   <span class="search-icon"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" width="15" height="15"><circle cx="8.5" cy="8.5" r="5.5"/><line x1="13" y1="13" x2="18" y2="18"/></svg></span>
-                  <input type="text" placeholder="Buscar moeda..." id="market-search" oninput="filterMarket(this.value)">
+                  <input type="text" placeholder="Buscar ação..." id="market-search" oninput="filterMarket(this.value)">
                 </div>
               </div>
               <div class="market-list" id="market-list">
@@ -3330,7 +3347,7 @@ body{padding:24px 16px;}
             <!-- TRENDING TAB -->
             <div class="tab-content" id="market-trending">
               <div>
-                <p>Moedas em alta no CoinGecko agora</p>
+                <p>Ações em destaque agora</p>
                 <div id="trending-list"><p class="loading-msg">Carregando trending...</p></div>
               </div>
             </div>
@@ -3437,7 +3454,7 @@ body{padding:24px 16px;}
                     <span class="settings-item-icon"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" width="18" height="18"><circle cx="10" cy="7" r="4"/><path d="M4 17c0-3.3 2.7-6 6-6s6 2.7 6 6"/></svg></span>
                     <div>
                       <div class="settings-item-text">OCTOCOOKIE v3.0</div>
-                      <div class="settings-item-sub">Crypto Wallet & Social</div>
+                      <div class="settings-item-sub">Carteira de Ações & Social</div>
                     </div>
                   </div>
                 </div>
@@ -3564,78 +3581,41 @@ body{padding:24px 16px;}
   }
 
   // ========== TRENDING ==========
+  
   async function loadTrending() {
     const el = document.getElementById('trending-list');
     if (!el) return;
-    el.innerHTML = '<p class="loading-msg">Carregando...</p>';
-    try {
-      const fetcher = window.appFetchWithTimeout || fetch;
-      const parser = window.appSafeJson || ((r) => r.json());
-      const res = await fetcher('https://api.coingecko.com/api/v3/search/trending', {}, 10000);
-      const data = await parser(res);
-      let coins = data?.coins || [];
-      if (!coins.length) {
-        coins = (window.FALLBACK_MARKET_COINS || []).slice(0, 8).map((coin, index) => ({
-          item: {
-            id: coin.id,
-            symbol: coin.symbol,
-            name: coin.name,
-            thumb: coin.image,
-            score: index,
-          }
-        }));
-      }
-      el.innerHTML = coins.slice(0,10).map((c,i) => {
-        const item = c.item;
-        const sym = (item.symbol || '').toUpperCase().replace(/'/g, "");
-        return `<div class="market-item">
-          <div class="market-left">
-            <span class="coin-rank">#${i+1}</span>
-            <img src="${item.thumb}" alt="${item.symbol}" class="coin-img" onerror="this.style.display='none'">
-            <div>
-              <span class="coin-name">${item.name}</span>
-              <span class="coin-sym">${sym}</span>
-            </div>
+    const stocks = (typeof STOCK_MARKET !== 'undefined' && STOCK_MARKET.length) ? STOCK_MARKET : [
+      { symbol:'AAPL', name:'Apple', price:232.5, change:1.1 },
+      { symbol:'NVDA', name:'NVIDIA', price:141.2, change:2.3 },
+      { symbol:'TSLA', name:'Tesla', price:248.9, change:-0.8 },
+      { symbol:'MSFT', name:'Microsoft', price:428.1, change:0.5 },
+      { symbol:'AMZN', name:'Amazon', price:188.4, change:0.4 },
+      { symbol:'META', name:'Meta', price:582.7, change:0.9 },
+      { symbol:'GOOGL', name:'Alphabet', price:171.3, change:0.6 },
+      { symbol:'JPM', name:'JPMorgan', price:221.6, change:0.2 },
+    ];
+    el.innerHTML = stocks.map((s, i) => {
+      const pos = (s.change || 0) >= 0;
+      return `<div class="market-item">
+        <div class="market-left">
+          <span class="coin-rank">#${i+1}</span>
+          <div>
+            <span class="coin-name">${s.name}</span>
+            <span class="coin-sym">${s.symbol}</span>
           </div>
-          <div class="market-right">
-            <span class="coin-price">Score: ${item.score+1}</span>
-            <a href="https://www.coingecko.com/en/coins/${item.id}" target="_blank" rel="noopener">Ver ›</a>
-          </div>
-          <div class="market-demo-actions">
-            <button class="btn-swap-real" onclick="event.stopPropagation();openSwapWithToken('${sym}')">SWAP REAL</button>
-            <button class="btn-buy-real" onclick="event.stopPropagation();openMoonPayForToken('${sym}')">COMPRAR REAL</button>
-            <button class="btn-buy-real btn-metamask-buy" onclick="event.stopPropagation();openMetaMaskBuy()">🦊 METAMASK</button>
-          </div>
-        </div>`;
-      }).join('');
-      // dispara trading tab preencher também
-      if (window.renderTradingList) window.renderTradingList();
-    } catch(e) {
-      const fallbackCoins = (window.FALLBACK_MARKET_COINS || []).slice(0, 8);
-      el.innerHTML = fallbackCoins.length ? fallbackCoins.map((coin, i) => {
-        const sym = (coin.symbol || '').toUpperCase().replace(/'/g, "");
-        return `<div class="market-item">
-          <div class="market-left">
-            <span class="coin-rank">#${i+1}</span>
-            <img src="${coin.image}" alt="${coin.symbol}" class="coin-img" onerror="this.style.display='none'">
-            <div>
-              <span class="coin-name">${coin.name}</span>
-              <span class="coin-sym">${sym}</span>
-            </div>
-          </div>
-          <div class="market-right">
-            <span class="coin-price">$${coin.current_price?.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 6 })}</span>
-            <span class="coin-change ${(coin.price_change_percentage_24h || 0) >= 0 ? 'pos' : 'neg'}">${(coin.price_change_percentage_24h || 0) >= 0 ? '+' : ''}${(coin.price_change_percentage_24h || 0).toFixed(2)}%</span>
-          </div>
-          <div class="market-demo-actions">
-            <button class="btn-swap-real" onclick="event.stopPropagation();openSwapWithToken('${sym}')">SWAP REAL</button>
-            <button class="btn-buy-real" onclick="event.stopPropagation();openMoonPayForToken('${sym}')">COMPRAR REAL</button>
-            <button class="btn-buy-real btn-metamask-buy" onclick="event.stopPropagation();openMetaMaskBuy()">🦊 METAMASK</button>
-          </div>
-        </div>`;
-      }).join('') : '<p class="empty-msg">Trending temporariamente indisponível.</p>';
-    }
+        </div>
+        <div class="market-right">
+          <span class="coin-price">$${(s.price||0).toFixed(2)}</span>
+          <span class="coin-change ${pos?'pos':'neg'}">${pos?'+':''}${(s.change||0).toFixed(2)}%</span>
+        </div>
+        <div class="market-demo-actions">
+          <button class="btn-swap-real" onclick="event.stopPropagation();openSwapWithToken('${s.symbol}x')">SWAP</button>
+        </div>
+      </div>`;
+    }).join('');
   }
+
 
   // ========== CATEGORY FILTER ==========
   window._currentCat = 'all';

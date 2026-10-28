@@ -343,7 +343,7 @@ export async function listComments(postId: string): Promise<Comment[]> {
 }
 
 // ─── Comunidades padrão (cobrem todos os assuntos do site) ──
-export const COMMUNITY_GROUPS = ["Início", "Pesquisa", "Ferramentas", "Aprender", "Cripto"] as const;
+export const COMMUNITY_GROUPS = ["Início", "Pesquisa", "Ferramentas", "Aprender", "Ações"] as const;
 
 export const DEFAULT_COMMUNITIES: Omit<Community, "memberCount" | "createdAt" | "createdBy">[] = [
   // Início
@@ -352,7 +352,7 @@ export const DEFAULT_COMMUNITIES: Omit<Community, "memberCount" | "createdAt" | 
     name: "OctoCookie",
     group: "Início",
     description: "Comunidade oficial do OctoCookie. Anúncios, feedback e compartilhamento de dados do app.",
-    topics: ["octocookie", "app", "web3"],
+    topics: ["octocookie", "app", "acoes"],
     rules: ["Seja respeitoso", "Sem spam", "Compartilhe dados do app com o botão Share"],
   },
   {
@@ -375,10 +375,10 @@ export const DEFAULT_COMMUNITIES: Omit<Community, "memberCount" | "createdAt" | 
   // Ferramentas
   {
     id: "carteira",
-    name: "Carteira (Cryptex)",
+    name: "Carteira de Ações",
     group: "Ferramentas",
-    description: "Carteira Cryptex: portfólios, MetaMask, rebalanceamento, taxas e uso no dia a dia.",
-    topics: ["cryptex", "carteira", "metamask", "portfolio"],
+    description: "Carteira de ações: portfólios, rebalanceamento, custos e uso no dia a dia.",
+    topics: ["carteira", "portfolio", "rebalanceamento"],
   },
   {
     id: "bot-trading",
@@ -420,57 +420,57 @@ export const DEFAULT_COMMUNITIES: Omit<Community, "memberCount" | "createdAt" | 
     id: "iniciantes",
     name: "Primeiros Passos",
     group: "Aprender",
-    description: "Para quem está começando em cripto e investimentos: perguntas simples são bem-vindas.",
+    description: "Para quem está começando em ações e investimentos: perguntas simples são bem-vindas.",
     topics: ["start", "iniciante", "básico"],
   },
-  // Cripto
+  // Ações
   {
-    id: "bitcoin",
-    name: "Bitcoin",
-    group: "Cripto",
-    description: "Tudo sobre Bitcoin, BTC, Lightning e o padrão ouro digital.",
-    topics: ["btc", "bitcoin", "macro"],
+    id: "tech-stocks",
+    name: "Tech (AAPL, MSFT, NVDA)",
+    group: "Ações",
+    description: "Ações de tecnologia: Apple, Microsoft, NVIDIA, Meta, Google e o setor de IA.",
+    topics: ["aapl", "msft", "nvda", "tech"],
   },
   {
-    id: "ethereum",
-    name: "Ethereum",
-    group: "Cripto",
-    description: "ETH, L2s, smart contracts, DeFi e NFTs no ecossistema Ethereum.",
-    topics: ["eth", "defi", "l2"],
+    id: "growth",
+    name: "Growth (TSLA, AMZN)",
+    group: "Ações",
+    description: "Empresas de crescimento: Tesla, Amazon e narrativas de longo prazo.",
+    topics: ["tsla", "amzn", "growth"],
   },
   {
-    id: "defi",
-    name: "DeFi",
-    group: "Cripto",
-    description: "Finanças descentralizadas: yield, lending, DEXs, airdrops e estratégias.",
-    topics: ["defi", "yield", "dex"],
+    id: "value",
+    name: "Value & Dividendos",
+    group: "Ações",
+    description: "Ações de valor, dividendos, blue chips e investimentos de longo prazo.",
+    topics: ["value", "dividendos", "blue-chips"],
   },
   {
-    id: "solana",
-    name: "Solana",
-    group: "Cripto",
-    description: "Solana, memecoins, velocidade e o ecossistema SOL.",
-    topics: ["sol", "memecoins"],
+    id: "etfs",
+    name: "ETFs e Índices",
+    group: "Ações",
+    description: "ETFs, S&P 500, Nasdaq e diversificação via fundos de índice.",
+    topics: ["etf", "sp500", "nasdaq"],
   },
   {
-    id: "web3",
-    name: "Web3",
-    group: "Cripto",
-    description: "Discussões gerais sobre Web3, wallets, identidade e o futuro da internet.",
-    topics: ["web3", "wallets", "identity"],
+    id: "analise-acoes",
+    name: "Análise de Ações",
+    group: "Ações",
+    description: "Fundamentalista, técnica e discussões de valuation (não é conselho financeiro).",
+    topics: ["análise", "valuation", "ta"],
   },
   {
-    id: "trading",
-    name: "Trading",
-    group: "Cripto",
-    description: "Análises técnicas, setup, risco e discussões de mercado (não é conselho financeiro).",
-    topics: ["trading", "ta", "mercado"],
+    id: "trading-acoes",
+    name: "Trading de Ações",
+    group: "Ações",
+    description: "Setups, risco, paper trading e discussões de mercado acionário.",
+    topics: ["trading", "risco", "mercado"],
   },
   {
-    id: "news",
-    name: "Crypto News",
-    group: "Cripto",
-    description: "Notícias, regulamentação e acontecimentos do mundo cripto.",
-    topics: ["news", "regulação"],
+    id: "news-acoes",
+    name: "News do Mercado",
+    group: "Ações",
+    description: "Notícias, balanços, Fed, inflação e acontecimentos do mercado acionário.",
+    topics: ["news", "fed", "balanço"],
   },
 ];

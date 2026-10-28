@@ -14,17 +14,31 @@ import { useAuth } from "@/lib/auth-context";
 import { Button } from "@/components/ui/button";
 import { CreatePostForm } from "@/components/social/create-post-form";
 import { Users, Flame, Clock, Trophy, Plus } from "lucide-react";
-import { CryptoTicker } from "@/components/crypto-ticker";
+import { StockTicker } from "@/components/stock-ticker";
 import { AdSlot } from "@/components/ad-slot";
+
+
+const CRYPTO_COMMUNITY_BLOCK = new Set([
+  "bitcoin","ethereum","defi","solana","web3","crypto","nft","bnb","doge","xrp","btc","eth","layer1","altcoin"
+]);
+function isStockCommunity(c: { id?: string; group?: string; name?: string }) {
+  const id = (c.id || "").toLowerCase();
+  const group = (c.group || "").toLowerCase();
+  const name = (c.name || "").toLowerCase();
+  if (group === "cripto" || group === "crypto") return false;
+  if (CRYPTO_COMMUNITY_BLOCK.has(id)) return false;
+  if (["bitcoin","ethereum","solana","defi","web3","nft"].some((k) => name.includes(k))) return false;
+  return true;
+}
 
 export const Route = createFileRoute("/community/")({
   head: () => ({
     meta: [
-      { title: "OctoCommunity — Rede Social Web3" },
+      { title: "OctoCommunity — Rede Social de Ações" },
       {
         name: "description",
         content:
-          "Rede social estilo Reddit focada em Web3 e criptomoedas. Compartilhe dados do OctoCookie, discuta BTC, ETH, DeFi e mais.",
+          "Rede social estilo Reddit focada em ações e mercado financeiro. Compartilhe dados do OctoCookie, discuta AAPL, MSFT, NVDA e mais.",
       },
     ],
   }),
@@ -42,7 +56,7 @@ function CommunityHome() {
   const [targetCommunity, setTargetCommunity] = useState<string>("octocookie");
 
   // Comunidades padrão sempre visíveis (mesmo sem Firestore populado / sem login)
-  const fallbackCommunities: Community[] = DEFAULT_COMMUNITIES.map((c) => ({
+  const fallbackCommunities: Community[] = DEFAULT_COMMUNITIES.filter(isStockCommunity).map((c) => ({
     ...c,
     memberCount: 0,
     createdAt: 0,
@@ -51,7 +65,7 @@ function CommunityHome() {
   const shownCommunities: Community[] = (() => {
     const map = new Map<string, Community>();
     fallbackCommunities.forEach((c) => map.set(c.id, c));
-    communities.forEach((c) => {
+    communities.filter(isStockCommunity).forEach((c) => {
       const def = DEFAULT_COMMUNITIES.find((d) => d.id === c.id);
       map.set(c.id, { ...c, group: c.group ?? def?.group });
     });
@@ -81,7 +95,7 @@ function CommunityHome() {
         } catch (e) {
           console.error("listCommunities", e);
         }
-        setCommunities(list);
+        setCommunities(((list) as Community[]).filter(isStockCommunity));
         try {
           const { posts: p } = await listPosts({ sort, max: 30 });
           setPosts(p);
@@ -125,7 +139,7 @@ function CommunityHome() {
         </div>
       </header>
 
-      <CryptoTicker />
+      <StockTicker />
 
       <div className="mx-auto flex w-full max-w-6xl flex-1 gap-6 px-4 py-4">
         <main className="min-w-0 flex-1 space-y-3">
@@ -229,7 +243,7 @@ function CommunityHome() {
             <h3 className="mb-2 flex items-center gap-1.5 text-sm font-semibold">
               <Users className="h-4 w-4" /> Comunidades
             </h3>
-            {[...COMMUNITY_GROUPS, "Outras"].map((g) => {
+            {[...COMMUNITY_GROUPS, "Outras"].filter((g) => !/^cripto|crypto$/i.test(g)).map((g) => {
               const items = shownCommunities.filter(
                 (c) => ((COMMUNITY_GROUPS as readonly string[]).includes(c.group ?? "") ? c.group : "Outras") === g,
               );
@@ -260,8 +274,7 @@ function CommunityHome() {
           <div className="rounded-lg border bg-card p-3 text-xs text-muted-foreground">
             <p className="font-medium text-foreground">Sobre o OctoCommunity</p>
             <p className="mt-1">
-              Rede social estilo Reddit focada em Web3. Discuta a pesquisa Holograma, a carteira, os bots,
-              o CookieScript, educação financeira e cripto. Compartilhe dados do app nos posts.
+              Rede social estilo Reddit focada em ações. Discuta a pesquisa Holograma, a carteira, os bots, o CookieScript, educação financeira e mercado acionário. Compartilhe dados do app nos posts.
             </p>
           </div>
         </aside>

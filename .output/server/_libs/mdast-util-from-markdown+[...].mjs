@@ -3414,9 +3414,7 @@ function factoryLabel(effects, ok, nok, type, markerType, stringType) {
 	* @type {State}
 	*/
 	function atBreak(code) {
-		if (size > 999 || code === null || code === 91 || code === 93 && !seen || 
-		/* c8 ignore next 3 */
-		code === 94 && !size && "_hiddenFootnoteSupport" in self.parser.constructs) return nok(code);
+		if (size > 999 || code === null || code === 91 || code === 93 && !seen || code === 94 && !size && "_hiddenFootnoteSupport" in self.parser.constructs) return nok(code);
 		if (code === 93) {
 			effects.exit(stringType);
 			effects.enter(markerType);
@@ -7801,10 +7799,8 @@ function compiler(options) {
 		let index = -1;
 		while (++index < events.length) {
 			prepared.push(events[index]);
-			if (events[index][1].type === "listOrdered" || events[index][1].type === "listUnordered") {
-				if (events[index][0] === "enter") listStack.push(prepared.length - 1);
-				else prepareList(prepared, listStack.pop());
-			}
+			if (events[index][1].type === "listOrdered" || events[index][1].type === "listUnordered") if (events[index][0] === "enter") listStack.push(prepared.length - 1);
+			else prepareList(prepared, listStack.pop());
 		}
 		events = prepared;
 		index = -1;
@@ -8038,10 +8034,8 @@ function compiler(options) {
 			start: token.start,
 			end: token.end
 		}) + "): it’s not open");
-		if (open[0].type !== token.type) {
-			if (onExitError) onExitError.call(this, token, open[0]);
-			else (open[1] || defaultOnError).call(this, token, open[0]);
-		}
+		if (open[0].type !== token.type) if (onExitError) onExitError.call(this, token, open[0]);
+		else (open[1] || defaultOnError).call(this, token, open[0]);
 		node.position.end = point(token.end);
 	}
 	/**

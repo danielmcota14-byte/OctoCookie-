@@ -40,7 +40,7 @@ type SimResult = Awaited<ReturnType<typeof runSimulation>>;
 function SimulatorPage() {
   const [threads, setThreads] = useState<Thread[]>([]);
   const [code, setCode] = useState(DEFAULT_CODE);
-  const [symbol, setSymbol] = useState("BTC/USDT");
+  const [symbol, setSymbol] = useState("AAPL");
   const [timeframe, setTimeframe] = useState("1h");
   const [bars, setBars] = useState(200);
   const [running, setRunning] = useState(false);
