@@ -9,91 +9,31 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as StartRouteImport } from './routes/start'
-import { Route as SimulatorRouteImport } from './routes/simulator'
-import { Route as SettingsRouteImport } from './routes/settings'
-import { Route as PesquisaRouteImport } from './routes/pesquisa'
-import { Route as OctoAppRouteImport } from './routes/octo-app'
-import { Route as LaunchRouteImport } from './routes/launch'
-import { Route as IdeRouteImport } from './routes/ide'
-import { Route as FinanceRouteImport } from './routes/finance'
-import { Route as CookiescriptRouteImport } from './routes/cookiescript'
-import { Route as CarteiraRouteImport } from './routes/carteira'
-import { Route as Bot24x7RouteImport } from './routes/bot-24x7'
-import { Route as AnalyzerRouteImport } from './routes/analyzer'
-import { Route as AdmRouteImport } from './routes/adm'
-import { Route as ThreadIdRouteImport } from './routes/$threadId'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as CommunityIndexRouteImport } from './routes/community/index'
-import { Route as PostPostIdRouteImport } from './routes/post/$postId'
-import { Route as CommunityCommunityIdRouteImport } from './routes/community/$communityId'
-import { Route as ApiEduChatRouteImport } from './routes/api/edu-chat'
-import { Route as ApiChatRouteImport } from './routes/api/chat'
+import { Route as ThreadIdRouteImport } from './routes/$threadId'
+import { Route as AdmRouteImport } from './routes/adm'
+import { Route as AnalyzerRouteImport } from './routes/analyzer'
+import { Route as Bot24x7RouteImport } from './routes/bot-24x7'
+import { Route as CarteiraRouteImport } from './routes/carteira'
+import { Route as CookiescriptRouteImport } from './routes/cookiescript'
+import { Route as FinanceRouteImport } from './routes/finance'
+import { Route as IdeRouteImport } from './routes/ide'
+import { Route as LaunchRouteImport } from './routes/launch'
+import { Route as OctoAppRouteImport } from './routes/octo-app'
+import { Route as PesquisaRouteImport } from './routes/pesquisa'
+import { Route as SettingsRouteImport } from './routes/settings'
+import { Route as SimulatorRouteImport } from './routes/simulator'
+import { Route as StartRouteImport } from './routes/start'
 import { Route as ApiBotRouteImport } from './routes/api/bot'
+import { Route as ApiChatRouteImport } from './routes/api/chat'
+import { Route as ApiEduChatRouteImport } from './routes/api/edu-chat'
+import { Route as CommunityIndexRouteImport } from './routes/community/index'
+import { Route as CommunityCommunityIdRouteImport } from './routes/community/$communityId'
+import { Route as PostPostIdRouteImport } from './routes/post/$postId'
 
-const StartRoute = StartRouteImport.update({
-  id: '/start',
-  path: '/start',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SimulatorRoute = SimulatorRouteImport.update({
-  id: '/simulator',
-  path: '/simulator',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SettingsRoute = SettingsRouteImport.update({
-  id: '/settings',
-  path: '/settings',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PesquisaRoute = PesquisaRouteImport.update({
-  id: '/pesquisa',
-  path: '/pesquisa',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const OctoAppRoute = OctoAppRouteImport.update({
-  id: '/octo-app',
-  path: '/octo-app',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LaunchRoute = LaunchRouteImport.update({
-  id: '/launch',
-  path: '/launch',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const IdeRoute = IdeRouteImport.update({
-  id: '/ide',
-  path: '/ide',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const FinanceRoute = FinanceRouteImport.update({
-  id: '/finance',
-  path: '/finance',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CookiescriptRoute = CookiescriptRouteImport.update({
-  id: '/cookiescript',
-  path: '/cookiescript',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CarteiraRoute = CarteiraRouteImport.update({
-  id: '/carteira',
-  path: '/carteira',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const Bot24x7Route = Bot24x7RouteImport.update({
-  id: '/bot-24x7',
-  path: '/bot-24x7',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AnalyzerRoute = AnalyzerRouteImport.update({
-  id: '/analyzer',
-  path: '/analyzer',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdmRoute = AdmRouteImport.update({
-  id: '/adm',
-  path: '/adm',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ThreadIdRoute = ThreadIdRouteImport.update({
@@ -101,29 +41,74 @@ const ThreadIdRoute = ThreadIdRouteImport.update({
   path: '/$threadId',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const AdmRoute = AdmRouteImport.update({
+  id: '/adm',
+  path: '/adm',
   getParentRoute: () => rootRouteImport,
 } as any)
-const CommunityIndexRoute = CommunityIndexRouteImport.update({
-  id: '/community/',
-  path: '/community/',
+const AnalyzerRoute = AnalyzerRouteImport.update({
+  id: '/analyzer',
+  path: '/analyzer',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PostPostIdRoute = PostPostIdRouteImport.update({
-  id: '/post/$postId',
-  path: '/post/$postId',
+const Bot24x7Route = Bot24x7RouteImport.update({
+  id: '/bot-24x7',
+  path: '/bot-24x7',
   getParentRoute: () => rootRouteImport,
 } as any)
-const CommunityCommunityIdRoute = CommunityCommunityIdRouteImport.update({
-  id: '/community/$communityId',
-  path: '/community/$communityId',
+const CarteiraRoute = CarteiraRouteImport.update({
+  id: '/carteira',
+  path: '/carteira',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiEduChatRoute = ApiEduChatRouteImport.update({
-  id: '/api/edu-chat',
-  path: '/api/edu-chat',
+const CookiescriptRoute = CookiescriptRouteImport.update({
+  id: '/cookiescript',
+  path: '/cookiescript',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FinanceRoute = FinanceRouteImport.update({
+  id: '/finance',
+  path: '/finance',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const IdeRoute = IdeRouteImport.update({
+  id: '/ide',
+  path: '/ide',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LaunchRoute = LaunchRouteImport.update({
+  id: '/launch',
+  path: '/launch',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OctoAppRoute = OctoAppRouteImport.update({
+  id: '/octo-app',
+  path: '/octo-app',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PesquisaRoute = PesquisaRouteImport.update({
+  id: '/pesquisa',
+  path: '/pesquisa',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SettingsRoute = SettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SimulatorRoute = SimulatorRouteImport.update({
+  id: '/simulator',
+  path: '/simulator',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StartRoute = StartRouteImport.update({
+  id: '/start',
+  path: '/start',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiBotRoute = ApiBotRouteImport.update({
+  id: '/api/bot',
+  path: '/api/bot',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiChatRoute = ApiChatRouteImport.update({
@@ -131,9 +116,24 @@ const ApiChatRoute = ApiChatRouteImport.update({
   path: '/api/chat',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiBotRoute = ApiBotRouteImport.update({
-  id: '/api/bot',
-  path: '/api/bot',
+const ApiEduChatRoute = ApiEduChatRouteImport.update({
+  id: '/api/edu-chat',
+  path: '/api/edu-chat',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CommunityIndexRoute = CommunityIndexRouteImport.update({
+  id: '/community/',
+  path: '/community/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CommunityCommunityIdRoute = CommunityCommunityIdRouteImport.update({
+  id: '/community/$communityId',
+  path: '/community/$communityId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PostPostIdRoute = PostPostIdRouteImport.update({
+  id: '/post/$postId',
+  path: '/post/$postId',
   getParentRoute: () => rootRouteImport,
 } as any)
 
@@ -305,95 +305,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/start': {
-      id: '/start'
-      path: '/start'
-      fullPath: '/start'
-      preLoaderRoute: typeof StartRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/simulator': {
-      id: '/simulator'
-      path: '/simulator'
-      fullPath: '/simulator'
-      preLoaderRoute: typeof SimulatorRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/settings': {
-      id: '/settings'
-      path: '/settings'
-      fullPath: '/settings'
-      preLoaderRoute: typeof SettingsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/pesquisa': {
-      id: '/pesquisa'
-      path: '/pesquisa'
-      fullPath: '/pesquisa'
-      preLoaderRoute: typeof PesquisaRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/octo-app': {
-      id: '/octo-app'
-      path: '/octo-app'
-      fullPath: '/octo-app'
-      preLoaderRoute: typeof OctoAppRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/launch': {
-      id: '/launch'
-      path: '/launch'
-      fullPath: '/launch'
-      preLoaderRoute: typeof LaunchRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/ide': {
-      id: '/ide'
-      path: '/ide'
-      fullPath: '/ide'
-      preLoaderRoute: typeof IdeRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/finance': {
-      id: '/finance'
-      path: '/finance'
-      fullPath: '/finance'
-      preLoaderRoute: typeof FinanceRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/cookiescript': {
-      id: '/cookiescript'
-      path: '/cookiescript'
-      fullPath: '/cookiescript'
-      preLoaderRoute: typeof CookiescriptRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/carteira': {
-      id: '/carteira'
-      path: '/carteira'
-      fullPath: '/carteira'
-      preLoaderRoute: typeof CarteiraRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/bot-24x7': {
-      id: '/bot-24x7'
-      path: '/bot-24x7'
-      fullPath: '/bot-24x7'
-      preLoaderRoute: typeof Bot24x7RouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/analyzer': {
-      id: '/analyzer'
-      path: '/analyzer'
-      fullPath: '/analyzer'
-      preLoaderRoute: typeof AnalyzerRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/adm': {
-      id: '/adm'
-      path: '/adm'
-      fullPath: '/adm'
-      preLoaderRoute: typeof AdmRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/$threadId': {
@@ -403,39 +319,102 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ThreadIdRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/adm': {
+      id: '/adm'
+      path: '/adm'
+      fullPath: '/adm'
+      preLoaderRoute: typeof AdmRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/community/': {
-      id: '/community/'
-      path: '/community'
-      fullPath: '/community/'
-      preLoaderRoute: typeof CommunityIndexRouteImport
+    '/analyzer': {
+      id: '/analyzer'
+      path: '/analyzer'
+      fullPath: '/analyzer'
+      preLoaderRoute: typeof AnalyzerRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/post/$postId': {
-      id: '/post/$postId'
-      path: '/post/$postId'
-      fullPath: '/post/$postId'
-      preLoaderRoute: typeof PostPostIdRouteImport
+    '/bot-24x7': {
+      id: '/bot-24x7'
+      path: '/bot-24x7'
+      fullPath: '/bot-24x7'
+      preLoaderRoute: typeof Bot24x7RouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/community/$communityId': {
-      id: '/community/$communityId'
-      path: '/community/$communityId'
-      fullPath: '/community/$communityId'
-      preLoaderRoute: typeof CommunityCommunityIdRouteImport
+    '/carteira': {
+      id: '/carteira'
+      path: '/carteira'
+      fullPath: '/carteira'
+      preLoaderRoute: typeof CarteiraRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/edu-chat': {
-      id: '/api/edu-chat'
-      path: '/api/edu-chat'
-      fullPath: '/api/edu-chat'
-      preLoaderRoute: typeof ApiEduChatRouteImport
+    '/cookiescript': {
+      id: '/cookiescript'
+      path: '/cookiescript'
+      fullPath: '/cookiescript'
+      preLoaderRoute: typeof CookiescriptRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/finance': {
+      id: '/finance'
+      path: '/finance'
+      fullPath: '/finance'
+      preLoaderRoute: typeof FinanceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ide': {
+      id: '/ide'
+      path: '/ide'
+      fullPath: '/ide'
+      preLoaderRoute: typeof IdeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/launch': {
+      id: '/launch'
+      path: '/launch'
+      fullPath: '/launch'
+      preLoaderRoute: typeof LaunchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/octo-app': {
+      id: '/octo-app'
+      path: '/octo-app'
+      fullPath: '/octo-app'
+      preLoaderRoute: typeof OctoAppRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pesquisa': {
+      id: '/pesquisa'
+      path: '/pesquisa'
+      fullPath: '/pesquisa'
+      preLoaderRoute: typeof PesquisaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/simulator': {
+      id: '/simulator'
+      path: '/simulator'
+      fullPath: '/simulator'
+      preLoaderRoute: typeof SimulatorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/start': {
+      id: '/start'
+      path: '/start'
+      fullPath: '/start'
+      preLoaderRoute: typeof StartRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/bot': {
+      id: '/api/bot'
+      path: '/api/bot'
+      fullPath: '/api/bot'
+      preLoaderRoute: typeof ApiBotRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/chat': {
@@ -445,11 +424,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiChatRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/bot': {
-      id: '/api/bot'
-      path: '/api/bot'
-      fullPath: '/api/bot'
-      preLoaderRoute: typeof ApiBotRouteImport
+    '/api/edu-chat': {
+      id: '/api/edu-chat'
+      path: '/api/edu-chat'
+      fullPath: '/api/edu-chat'
+      preLoaderRoute: typeof ApiEduChatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/community/': {
+      id: '/community/'
+      path: '/community'
+      fullPath: '/community/'
+      preLoaderRoute: typeof CommunityIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/community/$communityId': {
+      id: '/community/$communityId'
+      path: '/community/$communityId'
+      fullPath: '/community/$communityId'
+      preLoaderRoute: typeof CommunityCommunityIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/post/$postId': {
+      id: '/post/$postId'
+      path: '/post/$postId'
+      fullPath: '/post/$postId'
+      preLoaderRoute: typeof PostPostIdRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
