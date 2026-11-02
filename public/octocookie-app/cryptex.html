@@ -64,18 +64,79 @@
 
                 // Catálogo completo via /octocookie-app/xstocks-tokens.json (API xStocks ~1474)
     
+    // Preços e variações vêm 100% on-chain (Infura -> Uniswap V3 Quoter). Nada fixo aqui.
     const STOCK_MARKET = [
-      { symbol:'AAPL', name:'Apple', price:232.5, change:0.8 },
-      { symbol:'MSFT', name:'Microsoft', price:428.1, change:0.4 },
-      { symbol:'NVDA', name:'NVIDIA', price:141.2, change:1.2 },
-      { symbol:'TSLA', name:'Tesla', price:248.9, change:-0.6 },
-      { symbol:'AMZN', name:'Amazon', price:188.4, change:0.3 },
-      { symbol:'GOOGL', name:'Alphabet', price:171.3, change:0.5 },
-      { symbol:'META', name:'Meta', price:582.7, change:0.9 },
-      { symbol:'JPM', name:'JPMorgan', price:221.6, change:0.2 },
-      { symbol:'V', name:'Visa', price:312.8, change:0.1 },
-      { symbol:'SPY', name:'S&P 500 ETF', price:580.0, change:0.3 },
+      { symbol:'AAPL',  x:'AAPLx',  name:'Apple',        price:null, change:null },
+      { symbol:'MSFT',  x:'MSFTx',  name:'Microsoft',    price:null, change:null },
+      { symbol:'NVDA',  x:'NVDAx',  name:'NVIDIA',       price:null, change:null },
+      { symbol:'TSLA',  x:'TSLAx',  name:'Tesla',        price:null, change:null },
+      { symbol:'AMZN',  x:'AMZNx',  name:'Amazon',       price:null, change:null },
+      { symbol:'GOOGL', x:'GOOGLx', name:'Alphabet',     price:null, change:null },
+      { symbol:'META',  x:'METAx',  name:'Meta',         price:null, change:null },
+      { symbol:'JPM',   x:'JPMx',   name:'JPMorgan',     price:null, change:null },
+      { symbol:'V',     x:'Vx',     name:'Visa',         price:null, change:null },
+      { symbol:'SPY',   x:'SPYx',   name:'S&P 500 ETF',  price:null, change:null },
     ];
+    window.STOCK_MARKET = STOCK_MARKET;
+
+    const LIVE_USDC = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48';
+    const LIVE_QUOTER = '0x61fFE014bA17989E743c5F6cB21bF9697530B21e'; // Uniswap V3 QuoterV2 (Ethereum)
+    const LIVE_QUOTER_ABI = ['function quoteExactInputSingle((address tokenIn,address tokenOut,uint256 amountIn,uint24 fee,uint160 sqrtPriceLimitX96)) returns (uint256 amountOut,uint160 sqrtPriceX96After,uint32 initializedTicksCrossed,uint256 gasEstimate)'];
+    const LIVE_BLOCKS_24H = 7200; // ~12s por bloco
+    const liveFeeCache = {};
+    let liveBusy = false;
+
+    async function liveQuote(quoter, addr, fee, blockTag) {
+      const r = await quoter.quoteExactInputSingle.staticCall(
+        { tokenIn: addr, tokenOut: LIVE_USDC, amountIn: ethers.parseUnits('1', 18), fee, sqrtPriceLimitX96: 0 },
+        { blockTag }
+      );
+      const v = parseFloat(ethers.formatUnits(r[0] ?? r.amountOut, 6));
+      return v > 0 ? v : null;
+    }
+
+    async function refreshLiveStocks() {
+      if (liveBusy) return; liveBusy = true;
+      try {
+        if (!window.ethers) return;
+        if (!window.__xstocksEth) {
+          const res = await fetch('/octocookie-app/xstocks-tokens.json', { cache: 'no-store' });
+          const j = await res.json();
+          window.__xstocksEth = {};
+          (j.ethereum || []).forEach(t => { window.__xstocksEth[t.s] = t.a; });
+        }
+        const provider = new ethers.JsonRpcProvider(NETWORKS.ethereum.rpc);
+        const quoter = new ethers.Contract(LIVE_QUOTER, LIVE_QUOTER_ABI, provider);
+        const latest = await provider.getBlockNumber();
+        const past = latest - LIVE_BLOCKS_24H;
+        await Promise.all(STOCK_MARKET.map(async (st) => {
+          const addr = window.__xstocksEth[st.x];
+          if (!addr) { st.price = null; st.change = null; return; }
+          let price = null, fee = liveFeeCache[st.x];
+          const fees = fee ? [fee] : [3000, 500, 10000, 100];
+          for (const f of fees) {
+            try { price = await liveQuote(quoter, addr, f, latest); if (price) { fee = liveFeeCache[st.x] = f; break; } } catch (_) {}
+          }
+          st.price = price;
+          st.change = null;
+          if (price && fee) {
+            try {
+              const old = await liveQuote(quoter, addr, fee, past);
+              if (old) st.change = (price / old - 1) * 100;
+            } catch (_) { /* nó sem histórico: mostra sem variação */ }
+          }
+        }));
+        window.liveStocksUpdatedAt = Date.now();
+        if (window.renderMarketStocks) window.renderMarketStocks();
+        if (window.loadTrending && document.getElementById('trending-list')) window.loadTrending();
+      } catch (e) {
+        console.warn('Preços on-chain falharam:', e.message);
+      } finally { liveBusy = false; }
+    }
+    window.refreshLiveStocks = refreshLiveStocks;
+    setTimeout(refreshLiveStocks, 500);
+    setInterval(refreshLiveStocks, 60000);
+
     async function renderMarketStocks() {
       const el = document.getElementById('market-list') || document.querySelector('.market-list') || document.getElementById('token-list');
       // tenta endpoints comuns da UI
@@ -86,11 +147,12 @@
         document.querySelector('.coins-list'),
       ].filter(Boolean);
       const html = STOCK_MARKET.map(s => {
-        const pos = s.change >= 0;
+        const hasP = typeof s.price === 'number', hasC = typeof s.change === 'number';
+        const pos = hasC && s.change >= 0;
         return `<div class="market-row" style="display:flex;justify-content:space-between;padding:10px 12px;border-bottom:1px solid var(--border,#333)">
           <div><strong>${s.symbol}</strong> <span style="opacity:.7">${s.name}</span></div>
-          <div style="text-align:right"><div>$${s.price.toFixed(2)}</div>
-          <div style="color:${pos?'#22c55e':'#ef4444'}">${pos?'+':''}${s.change.toFixed(2)}%</div></div>
+          <div style="text-align:right"><div>${hasP ? '$' + s.price.toFixed(2) : '—'}</div>
+          <div style="color:${hasC ? (pos?'#22c55e':'#ef4444') : 'inherit'};opacity:${hasC?1:.6}">${hasC ? (pos?'+':'') + s.change.toFixed(2) + '%' : (hasP ? 'sem var. 24h' : 'carregando on-chain…')}</div></div>
         </div>`;
       }).join('');
       targets.forEach(t => { t.innerHTML = html; });
@@ -401,12 +463,6 @@
     window.appSafeJson = safeJson;
 
     const FALLBACK_MARKET_COINS = [
-      { id: 'apple', symbol: 'aapl', name: 'Apple', image: '', current_price: 232.5, price_change_percentage_24h: 0.8, market_cap_rank: 1, sparkline_in_7d: { price: [230,231,232,231,233,232,232.5] } },
-      { id: 'microsoft', symbol: 'msft', name: 'Microsoft', image: 'https://assets.coingecko.com/coins/images/279/large/nvidia.png', current_price: 3650, price_change_percentage_24h: 2.34, market_cap_rank: 2, sparkline_in_7d: { price: [3350,3400,3510,3480,3560,3610,3650] } },
-      { id: 'ethereum', symbol: 'nvda', name: 'NVIDIA', image: 'https://assets.coingecko.com/coins/images/325/large/Tether.png', current_price: 1, price_change_percentage_24h: 0.01, market_cap_rank: 3, sparkline_in_7d: { price: [1,1,0.999,1.001,1,1,1] } },
-      { id: 'tesla', symbol: 'tsla', name: 'Tesla', image: 'https://assets.coingecko.com/coins/images/825/large/bnb-icon2_2x.png', current_price: 715, price_change_percentage_24h: 1.12, market_cap_rank: 4, sparkline_in_7d: { price: [690,695,701,698,706,711,715] } },
-      { id: 'amazon', symbol: 'amzn', name: 'Amazon', image: 'https://assets.coingecko.com/coins/images/4128/large/solana.png', current_price: 182, price_change_percentage_24h: -0.68, market_cap_rank: 5, sparkline_in_7d: { price: [188,186,184,185,183,181,182] } },
-      { id: 'alphabet', symbol: 'googl', name: 'Alphabet', image: 'https://assets.coingecko.com/coins/images/6319/large/usdc.png', current_price: 1, price_change_percentage_24h: 0, market_cap_rank: 6, sparkline_in_7d: { price: [1,1,1,0.999,1.001,1,1] } },
       { id: 'ripple', symbol: 'xrp', name: 'XRP', image: 'https://assets.coingecko.com/coins/images/44/large/xrp-symbol-white-128.png', current_price: 2.95, price_change_percentage_24h: 0.93, market_cap_rank: 7, sparkline_in_7d: { price: [2.82,2.86,2.91,2.88,2.92,2.94,2.95] } },
       { id: 'caldera', symbol: 'era', name: 'Caldera', image: 'https://assets.coingecko.com/coins/images/54674/large/era.jpg', current_price: 0.106, price_change_percentage_24h: 3.71, market_cap_rank: 240, sparkline_in_7d: { price: [0.095,0.098,0.101,0.099,0.103,0.105,0.106] } },
       { id: 'chainlink', symbol: 'link', name: 'Chainlink', image: 'https://assets.coingecko.com/coins/images/877/large/chainlink-new-logo.png', current_price: 18.5, price_change_percentage_24h: 1.48, market_cap_rank: 15, sparkline_in_7d: { price: [17.6,17.9,18.1,18.0,18.2,18.4,18.5] } },
@@ -531,11 +587,9 @@
           // Restaura carteira encriptada estritamente do IndexedDB local do usuário
           await restoreWallet().catch(() => { });
           await initApp();
-          await loadDemoPortfolio();
-          requestNotificationPermission();
           // use global loader to ensure inline handlers and UI bindings match
           try { window.loadSocialFeed && window.loadSocialFeed(); } catch (e) { console.warn('loadSocialFeed failed', e); }
-          setInterval(() => { getGasPrice(); checkPriceAlerts(); }, 30000);
+          setInterval(() => { getGasPrice(); }, 30000);
         } catch (e) {
           console.error('Erro ao carregar dados do usuário:', e);
           showToast('Erro ao carregar dados — verifique sua conexão', 'error');
@@ -679,8 +733,6 @@
         <span class="coin-change ${change >= 0 ? 'pos' : 'neg'}">${change >= 0 ? '+' : ''}${change.toFixed(2)}%</span>
       </div>
       <div class="market-demo-actions">
-        <button class="btn-demo-buy" onclick="buyDemoAsset('${symbolUpper}', ${c.current_price})">Comprar Demo</button>
-        <button class="btn-demo-sell" onclick="sellDemoAsset('${symbolUpper}', ${c.current_price})">Vender Demo</button>
         <button class="btn-swap-real" onclick="openSwapWithToken('${symbolUpper}')">SWAP REAL</button>
         <button class="btn-buy-real" onclick="openMoonPayForToken('${symbolUpper}')">COMPRAR REAL</button>
         <button class="btn-buy-real btn-metamask-buy" onclick="openMetaMaskBuy()">🦊 METAMASK</button>
@@ -986,7 +1038,6 @@
         </div>
         <div class="dex-chain">${p.chainId} · <a href="${p.url}" target="_blank" rel="noopener">Ver no DEX </a></div>
         <div class="dex-actions">
-          <button class="dex-buy" onclick="buyDemoAsset('${symbol}', ${price})">Comprar Demo</button>
           <button class="btn-swap-real" onclick="openSwapWithToken('${symbol}')">SWAP REAL</button>
           <button class="btn-buy-real" onclick="openMoonPayForToken('${symbol}')">COMPRAR REAL</button>
           <button class="btn-buy-real btn-metamask-buy" onclick="openMetaMaskBuy()">🦊 METAMASK</button>
@@ -1160,8 +1211,6 @@
     window.loadMarket = loadMarket;
     window.loadNews = loadNews;
     window.loadGas = loadGas;
-    window.buyDemoAsset = buyDemoAsset;
-    window.sellDemoAsset = sellDemoAsset;
     window.connectWeb3 = connectWeb3;
     window.switchInnerPage = switchInnerPage;
     window.initApp = initApp;
@@ -1172,115 +1221,18 @@
     window.shareAddress = shareAddress;
     window.openCoinDetail = openCoinDetail;
     window.sharePost = sharePost;
-    window.loadDemoPortfolio = loadDemoPortfolio;
 
     document.addEventListener('DOMContentLoaded', () => {
       document.querySelectorAll('.app-name').forEach(el => el.textContent = APP_NAME);
       document.querySelectorAll('.app-logo-text').forEach(el => el.textContent = APP_NAME.charAt(0).toUpperCase());
       document.title = APP_NAME;
     });
-    // ========== PORTFÓLIO DE INVESTIMENTOS (DEMO) ==========
-    let demoPortfolio = {
-      balance: 10000, // saldo demo em USD
-      investments: [] // { symbol, amount, buyPrice }
-    };
 
-    async function loadDemoPortfolio() {
-      const uid = currentUser?.uid || auth?.currentUser?.uid;
-      if (!uid) return;
-      const snap = await get(ref(db, `users/${uid}/demoPortfolio`));
-      if (snap.exists()) {
-        demoPortfolio = snap.val();
-      }
-      renderPortfolioChart();
-      renderPortfolioList();
-    }
 
-    async function saveDemoPortfolio() {
-      const user = getAppUser();
-      if (!user) return;
-      await set(ref(db, `users/${user.uid}/demoPortfolio`), demoPortfolio);
-    }
 
-    function renderPortfolioChart() {
-      const ctx = document.getElementById('portfolio-chart')?.getContext('2d');
-      if (!ctx) return;
-      const totalValue = demoPortfolio.balance + demoPortfolio.investments.reduce((sum, inv) => {
-        const coin = portfolioData.find(c => c.symbol.toUpperCase() === inv.symbol);
-        const price = coin?.current_price || 0;
-        return sum + inv.amount * price;
-      }, 0);
-      const investedValue = demoPortfolio.investments.reduce((sum, inv) => sum + inv.amount * inv.buyPrice, 0);
-      if (window.portfolioChart) window.portfolioChart.destroy();
-      window.portfolioChart = new Chart(ctx, {
-        type: 'doughnut',
-        data: {
-          labels: ['Saldo Disponível', 'Valor Investido', 'Lucro'],
-          datasets: [{
-            data: [demoPortfolio.balance, investedValue, Math.max(0, totalValue - investedValue - demoPortfolio.balance)],
-            backgroundColor: ['#00e676', '#40c4ff', '#ffd740']
-          }]
-        }
-      });
-      document.getElementById('portfolio-total') && (document.getElementById('portfolio-total').textContent = `$${totalValue.toFixed(2)}`);
-    }
 
-    function buyDemoAsset(symbol, price) {
-      const amount = parseFloat(prompt(`Quantos ${symbol} quer comprar?`, "1"));
-      if (isNaN(amount) || amount <= 0) return;
-      const cost = amount * price;
-      if (cost > demoPortfolio.balance) return showToast("Saldo insuficiente na conta demo!", "error");
-      demoPortfolio.balance -= cost;
-      const existing = demoPortfolio.investments.find(i => i.symbol === symbol);
-      if (existing) {
-        const totalAmount = existing.amount + amount;
-        const totalCost = existing.amount * existing.buyPrice + cost;
-        existing.buyPrice = totalCost / totalAmount;
-        existing.amount = totalAmount;
-      } else {
-        demoPortfolio.investments.push({ symbol, amount, buyPrice: price });
-      }
-      saveDemoPortfolio();
-      renderPortfolioChart();
-      renderPortfolioList();
-      showToast(`Comprou ${amount} ${symbol} por $${cost.toFixed(2)}`, "success");
-    }
 
-    function sellDemoAsset(symbol, price) {
-      const inv = demoPortfolio.investments.find(i => i.symbol === symbol);
-      if (!inv) return showToast("Você não possui este ativo", "error");
-      const amount = parseFloat(prompt(`Quantos ${symbol} quer vender? (máx ${inv.amount})`, inv.amount));
-      if (isNaN(amount) || amount <= 0 || amount > inv.amount) return;
-      const revenue = amount * price;
-      demoPortfolio.balance += revenue;
-      inv.amount -= amount;
-      if (inv.amount < 0.0001) demoPortfolio.investments = demoPortfolio.investments.filter(i => i.symbol !== symbol);
-      saveDemoPortfolio();
-      renderPortfolioChart();
-      renderPortfolioList();
-      showToast(`Vendeu ${amount} ${symbol} por $${revenue.toFixed(2)}`, "success");
-    }
 
-    function renderPortfolioList() {
-      const container = document.getElementById('portfolio-investments');
-      if (!container) return;
-      if (demoPortfolio.investments.length === 0) {
-        container.innerHTML = '<p class="empty-msg">Nenhum investimento. Compre ativos no Mercado!</p>';
-        return;
-      }
-      container.innerHTML = demoPortfolio.investments.map(inv => {
-        const coin = portfolioData.find(c => c.symbol.toUpperCase() === inv.symbol);
-        const currentPrice = coin?.current_price || 0;
-        const currentValue = inv.amount * currentPrice;
-        const profitLoss = currentValue - (inv.amount * inv.buyPrice);
-        return `<div class="portfolio-item">
-      <div><strong>${inv.symbol}</strong> ${inv.amount.toFixed(6)} unid.</div>
-      <div>Preço médio: $${inv.buyPrice.toFixed(2)}</div>
-      <div class="${profitLoss >= 0 ? 'pos' : 'neg'}">${profitLoss >= 0 ? '▲' : '▼'} $${Math.abs(profitLoss).toFixed(2)}</div>
-      <button class="btn-small" onclick="sellDemoAsset('${inv.symbol}', ${currentPrice})">Vender</button>
-    </div>`;
-      }).join('');
-    }
 
     // ========== NOTIFICAÇÕES FUNCIONAIS ==========
     function requestNotificationPermission() {
@@ -1292,27 +1244,7 @@
       }
     }
 
-    function checkPriceAlerts() {
-      if (!notificationPermission) return;
-      const alerts = JSON.parse(localStorage.getItem('priceAlerts') || '[]');
-      for (const alert of alerts) {
-        const coin = portfolioData.find(c => c.symbol === alert.symbol);
-        if (coin && coin.current_price >= alert.target && !alert.triggered) {
-          new Notification(` Alerta de Preço`, {
-            body: `${alert.symbol.toUpperCase()} atingiu $${coin.current_price}!`
-          });
-          alert.triggered = true;
-          localStorage.setItem('priceAlerts', JSON.stringify(alerts));
-        }
-      }
-    }
 
-    function setPriceAlert(symbol, targetPrice) {
-      const alerts = JSON.parse(localStorage.getItem('priceAlerts') || '[]');
-      alerts.push({ symbol, target: targetPrice, triggered: false });
-      localStorage.setItem('priceAlerts', JSON.stringify(alerts));
-      showToast(`Alerta configurado: ${symbol} em $${targetPrice}`, "success");
-    }
 
     function toggleNotifications() {
       if (notificationPermission) {
@@ -1745,37 +1677,7 @@
       if (fromSymbol === toSymbol) return showToast('Selecione tokens diferentes para o swap', 'error');
 
       if (swapMode === 'demo') {
-        const fromPrice = getTokenPriceInUSD(fromSymbol);
-        const toPrice = getTokenPriceInUSD(toSymbol);
-        const totalCostUsd = amount * fromPrice;
-
-        // Checa saldo demo
-        if (fromSymbol === 'USDT' || fromSymbol === 'USDC' || fromSymbol === 'BUSD' || fromSymbol === 'DAI') {
-          if (amount > demoPortfolio.balance) return showToast('Saldo demo em USD insuficiente!', 'error');
-          demoPortfolio.balance -= amount;
-          addDemoAsset(toSymbol, toAmount, toPrice);
-        } else {
-          const existing = demoPortfolio.investments.find(i => i.symbol === fromSymbol);
-          if (!existing || existing.amount < amount) return showToast(`Você não possui saldo demo suficiente de ${fromSymbol}!`, 'error');
-
-          existing.amount -= amount;
-          if (existing.amount < 0.0001) {
-            demoPortfolio.investments = demoPortfolio.investments.filter(i => i.symbol !== fromSymbol);
-          }
-
-          if (toSymbol === 'USDT' || toSymbol === 'USDC' || toSymbol === 'BUSD' || toSymbol === 'DAI') {
-            demoPortfolio.balance += toAmount;
-          } else {
-            addDemoAsset(toSymbol, toAmount, toPrice);
-          }
-        }
-
-        await saveDemoPortfolio();
-        renderPortfolioChart();
-        renderPortfolioList();
-        showToast(`Swap Demo concluído: ${amount} ${fromSymbol} -> ${toAmount.toFixed(4)} ${toSymbol}`, 'success');
-        fromAmountInput.value = '';
-        toAmountInput.value = '';
+        return showToast('O modo demo foi removido. Use o swap real.', 'error');
       } else {
         // SWAP REAL (Web3 / ações tokenizadas)
         if (!wallet && !encryptedWallet) {
@@ -1901,17 +1803,6 @@
       }
     }
 
-    function addDemoAsset(symbol, amount, price) {
-      const existing = demoPortfolio.investments.find(i => i.symbol === symbol);
-      if (existing) {
-        const totalAmount = existing.amount + amount;
-        const totalCost = (existing.amount * existing.buyPrice) + (amount * price);
-        existing.buyPrice = totalCost / totalAmount;
-        existing.amount = totalAmount;
-      } else {
-        demoPortfolio.investments.push({ symbol, amount, buyPrice: price });
-      }
-    }
 
     // Expor funções globais do Swap
     window.setSwapMode = setSwapMode;
@@ -2125,7 +2016,6 @@
             <span class="coin-change ${change >= 0 ? 'pos' : 'neg'}">${change >= 0 ? '+' : ''}${change.toFixed(2)}%</span>
           </div>
           <div class="market-demo-actions">
-            <button class="btn-demo-buy" onclick="buyDemoAsset('${symbolUpper}', ${c.current_price})">Comprar Demo</button>
             <button class="btn-swap-real" onclick="openSwapWithToken('${symbolUpper}')">SWAP REAL</button>
             <button class="btn-buy-real" onclick="openMoonPayForToken('${symbolUpper}')">COMPRAR REAL</button>
             <button class="btn-buy-real btn-metamask-buy" onclick="openMetaMaskBuy()">🦊 METAMASK</button>
@@ -2147,8 +2037,6 @@
     // Substitua a criação do market-item para incluir:
     /*
       <div class="market-actions-demo">
-        <button class="btn-demo-buy" onclick="buyDemoAsset('${c.symbol.toUpperCase()}', ${c.current_price})">Comprar Demo</button>
-        <button class="btn-demo-sell" onclick="sellDemoAsset('${c.symbol.toUpperCase()}', ${c.current_price})">Vender Demo</button>
       </div>
     */
     // E no CSS adicione:
@@ -2490,18 +2378,7 @@ body{padding:24px 16px;}
 .empty-msg,.loading-msg{text-align:center;color:var(--fg-subtle);font-size:12px;padding:24px 0;}
 
 /* Alert widget */
-.alert-widget{background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px;}
-.alert-widget p{font-size:11px;color:var(--fg-subtle);margin:8px 0 0;}
-.alert-row{display:flex;gap:6px;}
-.alert-row .field-input{flex:1;}
 
-/* Portfolio */
-.portfolio-card{
-  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
-  padding:16px;display:flex;flex-direction:column;align-items:center;gap:6px;
-}
-#portfolio-total{font-size:20px;font-weight:700;color:var(--fg);}
-.portfolio-item{display:flex;align-items:center;justify-content:space-between;width:100%;padding:8px 0;border-top:1px solid var(--border);font-size:12px;}
 
 /* Tabs */
 .tab-row{display:flex;gap:6px;background:var(--surface-2);border-radius:999px;padding:3px;margin-bottom:16px;}
@@ -3065,32 +2942,7 @@ body{padding:24px 16px;}
               <p class="empty-msg">Nenhuma transação</p>
             </div>
 
-            <!-- Price Alert -->
             <div class="octo-ad-slot" data-slot="2"></div>
-<div class="section-header">
-              <span class="section-title">ALERTA DE PREÇO</span>
-            </div>
-            <div class="alert-widget">
-              <div class="alert-row">
-                <select class="field-input" id="alert-symbol">
-                  <option>BTC</option><option>ETH</option><option>BNB</option><option>SOL</option><option>MATIC</option>
-                </select>
-                <input class="field-input" id="alert-price" type="number" placeholder="Alvo $">
-                <button class="btn-demo-buy" onclick="window.setPriceAlert($('alert-symbol').value.toLowerCase(), parseFloat($('alert-price').value)); $('alert-price').value=''">+ Alerta</button>
-              </div>
-              <p>Notificação quando o preço atingir o alvo</p>
-            </div>
-
-            <!-- Portfolio Demo -->
-            <div class="section-header">
-              <span class="section-title">MEU PORTFÓLIO DEMO</span>
-              <span class="section-action" onclick="loadDemoPortfolio()">Atualizar</span>
-            </div>
-            <div class="portfolio-card">
-              <canvas id="portfolio-chart" width="200" height="200"></canvas>
-              <div id="portfolio-total">$0.00</div>
-              <div id="portfolio-investments"></div>
-            </div>
           </div>
 <menu style="position: fixed; bottom: 16px; left: 16px; right: 16px; width: calc(100% - 32px); background-color: #ffffff; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); z-index: 999; margin: 0; padding: 0;">
   <!-- Bottom Nav -->
@@ -3519,7 +3371,6 @@ body{padding:24px 16px;}
       <div class="detail-desc" id="detail-desc"></div>
       <div class="detail-actions">
         <button class="btn-ghost" onclick="$('coin-detail-modal').style.display='none'">Fechar</button>
-        <button class="btn-primary" id="detail-buy-btn">Comprar Demo</button>
       </div>
     </div>
   </div>
@@ -3585,18 +3436,18 @@ body{padding:24px 16px;}
   async function loadTrending() {
     const el = document.getElementById('trending-list');
     if (!el) return;
-    const stocks = (typeof STOCK_MARKET !== 'undefined' && STOCK_MARKET.length) ? STOCK_MARKET : [
-      { symbol:'AAPL', name:'Apple', price:232.5, change:1.1 },
-      { symbol:'NVDA', name:'NVIDIA', price:141.2, change:2.3 },
-      { symbol:'TSLA', name:'Tesla', price:248.9, change:-0.8 },
-      { symbol:'MSFT', name:'Microsoft', price:428.1, change:0.5 },
-      { symbol:'AMZN', name:'Amazon', price:188.4, change:0.4 },
-      { symbol:'META', name:'Meta', price:582.7, change:0.9 },
-      { symbol:'GOOGL', name:'Alphabet', price:171.3, change:0.6 },
-      { symbol:'JPM', name:'JPMorgan', price:221.6, change:0.2 },
-    ];
+    const all = window.STOCK_MARKET || [];
+    if (!all.some(x => typeof x.price === 'number')) {
+      el.innerHTML = '<p class="loading-msg">Buscando preços on-chain (Infura)...</p>';
+      if (window.refreshLiveStocks) window.refreshLiveStocks();
+      return;
+    }
+    // ranking pela variação real de 24h (sem variação vai pro fim)
+    const stocks = all.filter(x => typeof x.price === 'number')
+      .sort((a, b) => (typeof b.change === 'number' ? b.change : -Infinity) - (typeof a.change === 'number' ? a.change : -Infinity));
     el.innerHTML = stocks.map((s, i) => {
-      const pos = (s.change || 0) >= 0;
+      const hasC = typeof s.change === 'number';
+      const pos = hasC && s.change >= 0;
       return `<div class="market-item">
         <div class="market-left">
           <span class="coin-rank">#${i+1}</span>
@@ -3606,8 +3457,8 @@ body{padding:24px 16px;}
           </div>
         </div>
         <div class="market-right">
-          <span class="coin-price">$${(s.price||0).toFixed(2)}</span>
-          <span class="coin-change ${pos?'pos':'neg'}">${pos?'+':''}${(s.change||0).toFixed(2)}%</span>
+          <span class="coin-price">$${s.price.toFixed(2)}</span>
+          <span class="coin-change ${hasC ? (pos?'pos':'neg') : ''}">${hasC ? (pos?'+':'') + s.change.toFixed(2) + '%' : '—'}</span>
         </div>
         <div class="market-demo-actions">
           <button class="btn-swap-real" onclick="event.stopPropagation();openSwapWithToken('${s.symbol}x')">SWAP</button>
@@ -3615,6 +3466,7 @@ body{padding:24px 16px;}
       </div>`;
     }).join('');
   }
+  window.loadTrending = loadTrending;
 
 
   // ========== CATEGORY FILTER ==========
@@ -3696,13 +3548,6 @@ body{padding:24px 16px;}
         if (supplyEl && supply) supplyEl.textContent = (supply/1e6).toFixed(2) + 'M';
         if (athEl && ath) athEl.textContent = '$' + ath.toLocaleString('en-US',{maximumFractionDigits:2});
         // Set buy button
-        const buyBtn = document.getElementById('detail-buy-btn');
-        if (buyBtn) {
-          buyBtn.onclick = function() {
-            document.getElementById('coin-detail-modal').style.display = 'none';
-            window.buyDemoAsset && window.buyDemoAsset(symbol.toUpperCase(), price);
-          };
-        }
       }).catch(()=>{});
   };
 

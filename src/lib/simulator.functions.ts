@@ -57,7 +57,7 @@ export const runSimulation = createServerFn({ method: "POST" })
     const candles = synth(data.bars, seed);
     const closes = candles.map((c) => c.c.toFixed(2)).join(",");
 
-    const prompt = `Você é um simulador educacional de estratégias de trading. Analise o CÓDIGO abaixo (pode ser Python, JavaScript, pseudocódigo ou CookieScript) e simule seus sinais sobre a série de preços fornecida.
+    const prompt = `Você é um simulador educacional de estratégias de trading. Analise o CÓDIGO abaixo (pode ser Python, JavaScript ou pseudocódigo) e simule seus sinais sobre a série de preços fornecida.
 
 MERCADO: ${data.symbol} timeframe ${data.timeframe}, ${data.bars} candles.
 CLOSES (índice 0..${data.bars - 1}): ${closes}

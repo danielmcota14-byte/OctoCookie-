@@ -6,7 +6,6 @@ import {
   Settings as SettingsIcon,
   Trash2,
   TerminalSquare,
-  Code2,
   LineChart,
   LayoutDashboard,
   Wallet,
@@ -17,7 +16,6 @@ import {
   PiggyBank,
   Sprout,
   Compass,
-  Cookie,
   Sun,
   Moon,
   BookOpenText,
@@ -42,10 +40,6 @@ const NAV_GROUPS: { title: string; items: NavItem[] }[] = [
     { to: "/bot-24x7", label: "Bot 24/7", icon: Server },
     { to: "/analyzer", label: "Analisador", icon: LineChart },
     { to: "/simulator", label: "Simulador", icon: TerminalSquare },
-  ] },
-  { title: "Programar", items: [
-    { to: "/cookiescript", label: "CookieScript", icon: Cookie },
-    { to: "/ide", label: "IDE simulada", icon: Code2 },
   ] },
   { title: "Aprender", items: [
     { to: "/finance", label: "Finance", icon: PiggyBank },

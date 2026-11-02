@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // Sobe o sistema OctoCookie inteiro com UM comando:  node iniciar.mjs   (ou: npm run tudo)
-//   site (porta 3000) + CookieScript (porta 8080)  [+ bot 24/7 (porta 3001) com --bot]
+//   site (porta 3000)  [+ bot 24/7 (porta 3001) com --bot]
 import { spawn, spawnSync } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
 import { randomBytes } from "node:crypto";
@@ -10,7 +10,7 @@ import { fileURLToPath } from "node:url";
 const raiz = dirname(fileURLToPath(import.meta.url));
 const win = process.platform === "win32";
 const comBot = process.argv.includes("--bot");
-const P = { site: 3000, cookie: 8080, bot: 3001 };
+const P = { site: 3000, bot: 3001 };
 
 // .env simples (não sobrescreve variáveis já definidas no terminal)
 const env = { ...process.env };
@@ -26,13 +26,6 @@ if (!env.GROQ_API_KEYS && !env.GROQ_API_KEY)
 
 const rodar = (cmd, args, opts = {}) => spawnSync(cmd, args, { stdio: "inherit", shell: win, ...opts });
 
-function achaPython() {
-  for (const c of win ? ["py", "python"] : ["python3", "python"]) {
-    const r = spawnSync(c, ["--version"], { shell: win });
-    if (r.status === 0) return c === "py" ? ["py", ["-3"]] : [c, []];
-  }
-  return null;
-}
 
 // 1) dependências do site
 if (!existsSync(join(raiz, "node_modules"))) {
@@ -50,18 +43,7 @@ function iniciar(nome, cmd, args, opts) {
   filhos.push(p);
 }
 
-// 2) CookieScript (Python)
-const py = achaPython();
-if (py) {
-  iniciar("cookiescript", py[0], [...py[1], "cookie_ide_app.py"], {
-    cwd: join(raiz, "cookiescript"),
-    env: { ...env, PORT: String(P.cookie), DISABLE_LOCAL_AI: env.DISABLE_LOCAL_AI ?? "true", PYTHONUNBUFFERED: "1" },
-  });
-} else {
-  console.log("⚠️  Python não encontrado: CookieScript não vai subir (instale em python.org).");
-}
-
-// 3) Bot 24/7 (opcional)
+// 2) Bot 24/7 (opcional)
 let botUrl = "";
 if (comBot) {
   const dir = join(raiz, "bot-server");
@@ -76,14 +58,14 @@ if (comBot) {
   console.log(`🤖 Bot 24/7 local — OWNER_TOKEN desta sessão: ${token}`);
 }
 
-// 4) Site
+// 3) Site
 iniciar("site", "npx", ["vite", "dev", "--port", String(P.site), "--host", "localhost"], {
   cwd: raiz,
-  env: { ...env, VITE_COOKIESCRIPT_URL: `http://localhost:${P.cookie}`, ...(botUrl ? { VITE_BOT_24X7_URL: botUrl } : {}) },
+  env: { ...env, ...(botUrl ? { VITE_BOT_24X7_URL: botUrl } : {}) },
 });
 
 setTimeout(() => {
-  console.log(`\n✅ Tudo no ar:\n   Site          http://localhost:${P.site}\n   Universo      http://localhost:${P.site}/universo.html\n   CookieScript  http://localhost:${P.site}/cookiescript\n${comBot ? `   Bot 24/7      ${botUrl}\n` : ""}   (Ctrl+C para parar tudo)\n`);
+  console.log(`\n✅ Tudo no ar:\n   Site          http://localhost:${P.site}\n   Universo      http://localhost:${P.site}/universo.html\n${comBot ? `   Bot 24/7      ${botUrl}\n` : ""}   (Ctrl+C para parar tudo)\n`);
 }, 6000);
 
 let saindo = false;

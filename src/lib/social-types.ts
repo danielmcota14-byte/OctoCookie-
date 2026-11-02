@@ -43,7 +43,7 @@ export type Post = {
   imageUrl?: string;
   /** Dados compartilhados do app (portfolio, análise, etc.) */
   appData?: {
-    source: "cryptex" | "analyzer" | "simulator" | "ide" | "bot" | "cookiescript" | "holograma" | "finance" | "start" | "other";
+    source: "cryptex" | "analyzer" | "simulator" | "bot" | "holograma" | "finance" | "start" | "other";
     label: string;
     payload: Record<string, unknown>;
   };

@@ -4,9 +4,8 @@
  *
  *   site (TanStack)  ->  /
  *   bot 24/7         ->  /bot/...
- *   CookieScript     ->  /cookiescript-app/...
  *
- * Só UMA porta é pública (process.env.PORT, que o Render define). Os três programas
+ * Só UMA porta é pública (process.env.PORT, que o Render define). Os dois programas
  * rodam em portas internas e este proxy leve distribui. Se um deles cair, é reiniciado.
  */
 import http from "node:http";
@@ -30,7 +29,7 @@ process.on("uncaughtException", (err) => {
 process.on("unhandledRejection", (err) => console.error("[proxy] rejection", err));
 
 const PUBLIC_PORT = Number(process.env.PORT) || 3000;
-const PORTS = { site: 3100, bot: 3101, cookiescript: 3102 };
+const PORTS = { site: 3100, bot: 3101 };
 const isWin = process.platform === "win32";
 const log = (...a) => console.log("[octo]", ...a);
 const sh = (cmd, args, opts = {}) =>
@@ -39,7 +38,6 @@ const sh = (cmd, args, opts = {}) =>
 // ---------- preparo (só roda se faltar; no Docker já vem pronto) ----------
 const BUILD_ENV = {
   ...process.env,
-  VITE_COOKIESCRIPT_URL: process.env.VITE_COOKIESCRIPT_URL || "https://cookiescript-jgvh.onrender.com",
   VITE_BOT_24X7_URL: process.env.VITE_BOT_24X7_URL || "/bot",
 };
 // Guarda: o package.json da raiz TEM que ser o do site (com script "build"). Já vimos o do bot-server colado aqui por engano.
@@ -72,14 +70,6 @@ if (!fs.existsSync(path.join(ROOT, "bot-server/node_modules"))) {
   if (sh("npm", ["install", "--omit=dev", "--no-audit", "--no-fund"], { cwd: path.join(ROOT, "bot-server") }).status !== 0) process.exit(1);
 }
 
-function findPython() {
-  for (const bin of ["python3", "python", "py"]) {
-    const r = spawnSync(bin, ["--version"], { shell: isWin });
-    if (r.status === 0) return bin;
-  }
-  return null;
-}
-
 // OWNER_TOKEN: se não vier do ambiente, usa o mesmo token que o site já tem em bot-config.js
 function ownerToken() {
   if (process.env.OWNER_TOKEN) return process.env.OWNER_TOKEN;
@@ -108,20 +98,12 @@ const services = [
     cwd: path.join(ROOT, "bot-server"),
     env: { PORT: PORTS.bot, DATA_DIR: dataDir, OWNER_TOKEN: ownerToken() },
   },
-  {
-    name: "cookiescript",
-    cmd: findPython(),
-    args: ["cookie_ide_app.py"],
-    cwd: path.join(ROOT, "cookiescript"),
-    env: { PORT: PORTS.cookiescript, DISABLE_LOCAL_AI: process.env.DISABLE_LOCAL_AI || "true", PYTHONUNBUFFERED: "1" },
-  },
 ];
 
 let stopping = false;
 const children = new Map();
 
 function launch(svc) {
-  if (!svc.cmd) { log(`${svc.name}: Python não encontrado — serviço não iniciado (instale Python 3).`); return; }
   const child = spawn(svc.cmd, svc.args, {
     cwd: svc.cwd,
     env: { ...process.env, ...svc.env },
@@ -273,12 +255,10 @@ function alive(port) {
 const server = http.createServer(async (req, res) => {
   const url = req.url || "/";
   if (url === "/healthz") {
-    const stt = { site: await alive(PORTS.site), bot: await alive(PORTS.bot), cookiescript: await alive(PORTS.cookiescript) };
+    const stt = { site: await alive(PORTS.site), bot: await alive(PORTS.bot) };
     res.writeHead(stt.site ? 200 : 503, { "content-type": "application/json" });
     return res.end(JSON.stringify(stt));
   }
-  if (url === "/cookiescript-app") { res.writeHead(301, { Location: "/cookiescript-app/" }); return res.end(); }
-  if (under(url, "/cookiescript-app")) return forward(req, res, PORTS.cookiescript, "/cookiescript-app");
   if (under(url, "/bot")) return forward(req, res, PORTS.bot, "/bot");
 
   const pathOnly = url.split("?")[0];
@@ -393,7 +373,7 @@ server.on("upgrade", (req, socket, head) => {
   socket.on("close", () => { try { t.destroy(); } catch (_) {} });
 });
 
-server.listen(PUBLIC_PORT, "0.0.0.0", () => log(`pronto em http://localhost:${PUBLIC_PORT}  (site /, bot /bot, CookieScript /cookiescript-app/)`));
+server.listen(PUBLIC_PORT, "0.0.0.0", () => log(`pronto em http://localhost:${PUBLIC_PORT}  (site /, bot /bot)`));
 
 function shutdown() {
   if (stopping) return;

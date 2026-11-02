@@ -281,21 +281,15 @@ a { color:var(--o-cyan); }
           <label>Rede</label>
           <select id="networkSelect" onchange="changeNetwork()">
             <option value="ethereum">Ações Tokenizadas (rede principal)</option>
-            <option value="bsc">BNB Chain (Mercado de Ações)</option>
-            <option value="polygon">Polygon (Mercado de Ações)</option>
-            <option value="arbitrum">Arbitrum (Ações Tokenizadas)</option>
           </select>
           <label>Par de Ações</label>
           <div id="pairSearchWrap" style="display:flex;flex-direction:column;gap:6px;min-width:220px;max-width:360px">
-            <input id="assetSearch" type="search" placeholder="Pesquisar ativo (ex: AAPL, Tesla, NVDA)..." autocomplete="off"
-              style="width:100%;padding:8px 10px;border-radius:8px;border:1px solid var(--border,#333);background:var(--surface,#111);color:inherit" />
             <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
               <select id="tradePairSelect" onchange="changePair()" style="width:100%;padding:8px;border-radius:8px;border:1px solid var(--border,#333);background:var(--surface,#111);color:inherit">
                 <option value="AAPL_USDC">Carregando catálogo xStocks…</option>
               </select>
               <span style="font-size:12px;opacity:.85">Quote: <strong>USDC</strong></span>
             </div>
-            <div id="assetCountLabel" style="font-size:11px;opacity:.7">—</div>
           </div>
         </div>
       </div>
@@ -606,10 +600,10 @@ const STABLES = {
 };
 
 function netKey() {
-  const n = (typeof CONFIG !== 'undefined' && CONFIG.network) || 'ethereum';
-  if (n === 'binance' || n === 'bsc') return 'bsc';
-  return n;
+  return 'ethereum'; // única rede suportada
 }
+
+const ALLOWED_ASSETS = ['AAPLx','TSLAx','NVDAx','MSFTx','AMZNx']; // apenas estes 5
 
 function buildTokenPairs(filterText) {
   TOKEN_PAIRS = {};
@@ -621,7 +615,7 @@ function buildTokenPairs(filterText) {
   const q = (filterText || '').trim().toLowerCase();
   let count = 0;
   for (const t of list) {
-    if (t.s === 'USDC' || t.s === 'USDT') continue;
+    if (!ALLOWED_ASSETS.includes(t.s)) continue;
     if (q) {
       const hay = (t.s + ' ' + (t.n || '') + ' ' + (t.u || '')).toLowerCase();
       if (!hay.includes(q)) continue;
@@ -657,17 +651,7 @@ function repopulatePairSelect(filterText) {
     if (ia >= 0 || ib >= 0) return (ia < 0 ? 999 : ia) - (ib < 0 ? 999 : ib);
     return a.localeCompare(b);
   });
-  // Sem filtro: só mostra os principais (evita trava). Com busca: até 80 resultados.
-  const q = (filterText || '').trim();
-  if (!q) {
-    keys = keys.filter(k => prefer.some(p => k.startsWith(p + '_')) || prefer.includes(k.split('_')[0]));
-    if (keys.length < 9) {
-      // inclui mais alguns alfabéticos se preferidos faltarem
-      keys = Object.keys(TOKEN_PAIRS).sort().slice(0, 30);
-    }
-  } else {
-    keys = keys.slice(0, 80);
-  }
+  keys = ALLOWED_ASSETS.map(x => x + '_' + QUOTE_STABLE).filter(k => TOKEN_PAIRS[k]);
   for (const k of keys) {
     const p = TOKEN_PAIRS[k];
     if (!p) continue;
@@ -680,13 +664,6 @@ function repopulatePairSelect(filterText) {
   else if (TOKEN_PAIRS['AAPLx_USDC']) sel.value = 'AAPLx_USDC';
   else if (keys.length) sel.value = keys[0];
   if (typeof CONFIG !== 'undefined') CONFIG.pair = sel.value;
-  const lbl = document.getElementById('assetCountLabel');
-  if (lbl) {
-    const total = XSTOCKS_CATALOG ? ((XSTOCKS_CATALOG[netKey()] || []).length) : n;
-    lbl.textContent = q
-      ? (keys.length + ' resultados · digite para filtrar · quote USDC')
-      : ('Principais ativos · pesquise para ver os ' + total + ' · quote USDC');
-  }
 }
 
 function changeQuoteStable() { /* apenas USDC */ }
@@ -697,16 +674,7 @@ async function loadXStocksCatalog() {
     if (!res.ok) throw new Error('HTTP ' + res.status);
     XSTOCKS_CATALOG = await res.json();
     repopulatePairSelect('');
-    const search = document.getElementById('assetSearch');
-    if (search && !search._bound) {
-      search._bound = true;
-      let timer;
-      search.addEventListener('input', () => {
-        clearTimeout(timer);
-        timer = setTimeout(() => repopulatePairSelect(search.value), 120);
-      });
-    }
-    if (typeof addLog === 'function') addLog(`Catálogo xStocks: ${Object.keys(TOKEN_PAIRS).length}+ pares carregados`, 'success');
+    if (typeof addLog === 'function') addLog(`Catálogo xStocks: ${Object.keys(TOKEN_PAIRS).length} ativos carregados`, 'success');
   } catch (e) {
     console.error('loadXStocksCatalog', e);
     // fallback mínimo
@@ -960,7 +928,7 @@ async function handleAccountsChanged(accounts) {
 }
 
 async function changeNetwork() {
-  CONFIG.network = document.getElementById('networkSelect').value;
+  CONFIG.network = 'ethereum'; // única rede suportada
   if(state.wallet) {
     // Reconecta pedindo à extensão para trocar de rede — mantém o mesmo padrão não-custodial.
     await connectWallet();
@@ -999,8 +967,7 @@ function logPairGuard(direction) {
 function changePair() {
   // rebuild if catalog ready and pair missing
   if (XSTOCKS_CATALOG && !TOKEN_PAIRS[document.getElementById('tradePairSelect')?.value]) {
-    const q = document.getElementById('assetSearch');
-    repopulatePairSelect(q ? q.value : '');
+    repopulatePairSelect('');
   }
 
   CONFIG.pair = document.getElementById('tradePairSelect').value;

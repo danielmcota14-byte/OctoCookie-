@@ -401,13 +401,6 @@ export const DEFAULT_COMMUNITIES: Omit<Community, "memberCount" | "createdAt" | 
     description: "Simulações de trading sem risco real: cenários, candles sintéticos e testes de estratégia.",
     topics: ["simulador", "paper", "cenários"],
   },
-  {
-    id: "cookiescript",
-    name: "CookieScript e IDE",
-    group: "Ferramentas",
-    description: "A linguagem CookieScript, a IDE simulada, exemplos de código, wiki e dúvidas de programação.",
-    topics: ["cookiescript", "ide", "código", "linguagem"],
-  },
   // Aprender
   {
     id: "educacao-financeira",

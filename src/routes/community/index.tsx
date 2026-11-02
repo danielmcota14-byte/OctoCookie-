@@ -274,7 +274,7 @@ function CommunityHome() {
           <div className="rounded-lg border bg-card p-3 text-xs text-muted-foreground">
             <p className="font-medium text-foreground">Sobre o OctoCommunity</p>
             <p className="mt-1">
-              Rede social estilo Reddit focada em ações. Discuta a pesquisa Holograma, a carteira, os bots, o CookieScript, educação financeira e mercado acionário. Compartilhe dados do app nos posts.
+              Rede social estilo Reddit focada em ações. Discuta a pesquisa Holograma, a carteira, os bots, educação financeira e mercado acionário. Compartilhe dados do app nos posts.
             </p>
           </div>
         </aside>

@@ -71,7 +71,7 @@ function SimulatorPage() {
           <div className="mb-6">
             <h1 className="text-2xl font-semibold">Simulador de bot de trading</h1>
             <p className="mt-1 text-sm text-muted-foreground">
-              Cole seu código de estratégia (JS, Python, pseudocódigo ou CookieScript). Rodamos em dados sintéticos e devolvemos métricas e feedback educacional. Nenhuma ordem real é enviada.
+              Cole seu código de estratégia (JS, Python ou pseudocódigo). Rodamos em dados sintéticos e devolvemos métricas e feedback educacional. Nenhuma ordem real é enviada.
             </p>
           </div>
 

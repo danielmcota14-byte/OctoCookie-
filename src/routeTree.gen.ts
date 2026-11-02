@@ -15,9 +15,7 @@ import { Route as AdmRouteImport } from './routes/adm'
 import { Route as AnalyzerRouteImport } from './routes/analyzer'
 import { Route as Bot24x7RouteImport } from './routes/bot-24x7'
 import { Route as CarteiraRouteImport } from './routes/carteira'
-import { Route as CookiescriptRouteImport } from './routes/cookiescript'
 import { Route as FinanceRouteImport } from './routes/finance'
-import { Route as IdeRouteImport } from './routes/ide'
 import { Route as LaunchRouteImport } from './routes/launch'
 import { Route as OctoAppRouteImport } from './routes/octo-app'
 import { Route as PesquisaRouteImport } from './routes/pesquisa'
@@ -61,19 +59,9 @@ const CarteiraRoute = CarteiraRouteImport.update({
   path: '/carteira',
   getParentRoute: () => rootRouteImport,
 } as any)
-const CookiescriptRoute = CookiescriptRouteImport.update({
-  id: '/cookiescript',
-  path: '/cookiescript',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const FinanceRoute = FinanceRouteImport.update({
   id: '/finance',
   path: '/finance',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const IdeRoute = IdeRouteImport.update({
-  id: '/ide',
-  path: '/ide',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LaunchRoute = LaunchRouteImport.update({
@@ -144,9 +132,7 @@ export interface FileRoutesByFullPath {
   '/analyzer': typeof AnalyzerRoute
   '/bot-24x7': typeof Bot24x7Route
   '/carteira': typeof CarteiraRoute
-  '/cookiescript': typeof CookiescriptRoute
   '/finance': typeof FinanceRoute
-  '/ide': typeof IdeRoute
   '/launch': typeof LaunchRoute
   '/octo-app': typeof OctoAppRoute
   '/pesquisa': typeof PesquisaRoute
@@ -167,9 +153,7 @@ export interface FileRoutesByTo {
   '/analyzer': typeof AnalyzerRoute
   '/bot-24x7': typeof Bot24x7Route
   '/carteira': typeof CarteiraRoute
-  '/cookiescript': typeof CookiescriptRoute
   '/finance': typeof FinanceRoute
-  '/ide': typeof IdeRoute
   '/launch': typeof LaunchRoute
   '/octo-app': typeof OctoAppRoute
   '/pesquisa': typeof PesquisaRoute
@@ -191,9 +175,7 @@ export interface FileRoutesById {
   '/analyzer': typeof AnalyzerRoute
   '/bot-24x7': typeof Bot24x7Route
   '/carteira': typeof CarteiraRoute
-  '/cookiescript': typeof CookiescriptRoute
   '/finance': typeof FinanceRoute
-  '/ide': typeof IdeRoute
   '/launch': typeof LaunchRoute
   '/octo-app': typeof OctoAppRoute
   '/pesquisa': typeof PesquisaRoute
@@ -216,9 +198,7 @@ export interface FileRouteTypes {
     | '/analyzer'
     | '/bot-24x7'
     | '/carteira'
-    | '/cookiescript'
     | '/finance'
-    | '/ide'
     | '/launch'
     | '/octo-app'
     | '/pesquisa'
@@ -239,9 +219,7 @@ export interface FileRouteTypes {
     | '/analyzer'
     | '/bot-24x7'
     | '/carteira'
-    | '/cookiescript'
     | '/finance'
-    | '/ide'
     | '/launch'
     | '/octo-app'
     | '/pesquisa'
@@ -262,9 +240,7 @@ export interface FileRouteTypes {
     | '/analyzer'
     | '/bot-24x7'
     | '/carteira'
-    | '/cookiescript'
     | '/finance'
-    | '/ide'
     | '/launch'
     | '/octo-app'
     | '/pesquisa'
@@ -286,9 +262,7 @@ export interface RootRouteChildren {
   AnalyzerRoute: typeof AnalyzerRoute
   Bot24x7Route: typeof Bot24x7Route
   CarteiraRoute: typeof CarteiraRoute
-  CookiescriptRoute: typeof CookiescriptRoute
   FinanceRoute: typeof FinanceRoute
-  IdeRoute: typeof IdeRoute
   LaunchRoute: typeof LaunchRoute
   OctoAppRoute: typeof OctoAppRoute
   PesquisaRoute: typeof PesquisaRoute
@@ -347,25 +321,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CarteiraRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/cookiescript': {
-      id: '/cookiescript'
-      path: '/cookiescript'
-      fullPath: '/cookiescript'
-      preLoaderRoute: typeof CookiescriptRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/finance': {
       id: '/finance'
       path: '/finance'
       fullPath: '/finance'
       preLoaderRoute: typeof FinanceRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/ide': {
-      id: '/ide'
-      path: '/ide'
-      fullPath: '/ide'
-      preLoaderRoute: typeof IdeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/launch': {
@@ -462,9 +422,7 @@ const rootRouteChildren: RootRouteChildren = {
   AnalyzerRoute: AnalyzerRoute,
   Bot24x7Route: Bot24x7Route,
   CarteiraRoute: CarteiraRoute,
-  CookiescriptRoute: CookiescriptRoute,
   FinanceRoute: FinanceRoute,
-  IdeRoute: IdeRoute,
   LaunchRoute: LaunchRoute,
   OctoAppRoute: OctoAppRoute,
   PesquisaRoute: PesquisaRoute,
