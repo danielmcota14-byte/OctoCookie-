@@ -1,47 +1,43 @@
-/* ============================================================
-   OCTO — identidade única do OctoCookie  ·  "tinta + selo holográfico"
-   Escuro = "fundo do mar"  ·  Claro = "maré"
-   Todas as páginas (entrada, pesquisa, bot, carteira, analisador,
-   adm, CookieScript) leem os tokens daqui.
-   ============================================================ */
-@font-face{font-family:"Bricolage Grotesque";src:url(/fonts/bricolage.woff2) format("woff2");font-weight:200 800;font-display:swap}
-@font-face{font-family:"Source Serif 4";src:url(/fonts/source-serif.woff2) format("woff2");font-weight:200 900;font-style:normal;font-display:swap}
-@font-face{font-family:"Source Serif 4";src:url(/fonts/source-serif-italic.woff2) format("woff2");font-weight:200 900;font-style:italic;font-display:swap}
-@font-face{font-family:"JetBrains Mono";src:url(/fonts/jetbrains.woff2) format("woff2");font-weight:100 800;font-display:swap}
-
+/* OCTO · sistema visual único Robin Hood
+   Claro = sálvia · Escuro = musgo noturno. Todas as páginas leem os tokens daqui.
+   O tema é aplicado por /octo.js em <html data-theme>. */
 :root{
-  --octo-sans:"Bricolage Grotesque",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
-  --octo-serif:"Source Serif 4",Georgia,"Times New Roman",serif;
-  --octo-mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
-
-  /* maré (claro) */
-  --o-bg:#f4f1ea; --o-bg2:#ece8dd; --o-surface:#fffdf8; --o-surface2:#f7f3ea;
-  --o-ink:#1b2230; --o-mut:#5b6577; --o-faint:#8b93a3;
-  --o-line:#d9d3c4; --o-line2:#c4bca8;
-  --o-cyan:#0e7490; --o-cyan-soft:rgba(14,116,144,.10);
-  --o-gold:#b8860b; --o-gold-soft:rgba(184,134,11,.12);
-  --o-ok:#157f3b; --o-bad:#b42318; --o-warn:#a15c07; --o-info:#1d4ed8;
-  --o-on-accent:#ffffff; --o-overlay:rgba(27,34,48,.045); --o-overlay2:rgba(27,34,48,.08); --o-overlay3:rgba(27,34,48,.13);
-  --o-shadow:0 18px 40px -24px rgba(27,34,48,.35);
-  --o-radius:14px;
-  color-scheme:light;
-}
+  --octo-sans:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --octo-serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+  --octo-mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --rh-bg:#eef2ec;--rh-surface:#f9fbf7;--rh-surface-2:#e3eae2;--rh-surface-3:#d7e1d6;--rh-ink:#16281f;--rh-ink-2:#2a3d33;--rh-muted:#3f5348;--rh-faint:#566b5e;
+--rh-line:#cbd6cb;--rh-line-2:#a9bcae;--rh-brand:#2d6a4f;--rh-brand-soft:rgba(45,106,79,.13);--rh-accent:#9a5206;--rh-on-accent:#ffffff;--rh-accent-soft:#f3e2c4;
+--rh-solid:#16281f;--rh-ok:#1f7a4d;--rh-warn:#8a5a00;--rh-err:#b42318;--rh-info:#1d5fa8;--rh-overlay:rgba(22,40,31,.5);--rh-shadow:0 10px 30px -18px rgba(22,40,31,.45);--rh-r:10px;--rh-r-lg:14px;--rh-tap:44px;--rh-ease:cubic-bezier(.2,.8,.2,1);
+--rh-serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;--rh-sans:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;--rh-mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --o-bg:var(--rh-bg);--o-bg2:var(--rh-surface-2);--o-surface:var(--rh-surface);--o-surface2:#f1f5ef;
+  --o-ink:var(--rh-ink);--o-mut:var(--rh-muted);--o-faint:var(--rh-faint);
+  --o-line:var(--rh-line);--o-line2:var(--rh-line-2);
+  --o-cyan:var(--rh-brand);--o-cyan-soft:var(--rh-brand-soft);
+  --o-gold:var(--rh-accent);--o-gold-soft:rgba(154,82,6,.13);
+  --o-ok:var(--rh-ok);--o-bad:var(--rh-err);--o-warn:var(--rh-warn);--o-info:var(--rh-info);
+  --o-on-accent:var(--rh-on-accent);--o-overlay:rgba(22,40,31,.05);--o-overlay2:rgba(22,40,31,.09);--o-overlay3:rgba(22,40,31,.14);
+  --o-shadow:var(--rh-shadow);--o-radius:14px;
+  color-scheme:light}
 :root[data-theme="dark"]{
-  /* fundo do mar (escuro) */
-  --o-bg:#07111f; --o-bg2:#0a1626; --o-surface:#0d1b2e; --o-surface2:#122339;
-  --o-ink:#e6ebf3; --o-mut:#93a0b5; --o-faint:#66748b;
-  --o-line:#1d3249; --o-line2:#2a4463;
-  --o-cyan:#38bdf8; --o-cyan-soft:rgba(56,189,248,.12);
-  --o-gold:#e0b24a; --o-gold-soft:rgba(224,178,74,.14);
-  --o-ok:#4ade80; --o-bad:#f87171; --o-warn:#fbbf24; --o-info:#60a5fa;
-  --o-on-accent:#06121f; --o-overlay:rgba(255,255,255,.04); --o-overlay2:rgba(255,255,255,.08); --o-overlay3:rgba(255,255,255,.13);
-  --o-shadow:0 18px 40px -24px rgba(0,0,0,.7);
-  color-scheme:dark;
-}
+  --rh-bg:#0e1a15;--rh-surface:#15251e;--rh-surface-2:#1c3027;--rh-surface-3:#24392f;--rh-ink:#e9f1ea;--rh-ink-2:#d4e2d7;--rh-muted:#a9bbb0;--rh-faint:#8aa095;
+--rh-line:#2b4036;--rh-line-2:#3d5a4b;--rh-brand:#6fcf9f;--rh-brand-soft:rgba(111,207,159,.15);--rh-accent:#f0b24a;--rh-on-accent:#1b2f26;--rh-accent-soft:#3a2c14;
+--rh-solid:#24392f;--rh-ok:#4ade80;--rh-warn:#fbbf24;--rh-err:#f87171;--rh-info:#7cb6f0;--rh-overlay:rgba(0,0,0,.6);--rh-shadow:0 14px 34px -18px rgba(0,0,0,.8);
+  --o-surface2:#1a2d24;--o-gold-soft:rgba(240,178,74,.15);
+  --o-overlay:rgba(255,255,255,.04);--o-overlay2:rgba(255,255,255,.08);--o-overlay3:rgba(255,255,255,.13);
+  color-scheme:dark}
+@media(prefers-color-scheme:dark){:root:not([data-theme]){
+  --rh-bg:#0e1a15;--rh-surface:#15251e;--rh-surface-2:#1c3027;--rh-surface-3:#24392f;--rh-ink:#e9f1ea;--rh-ink-2:#d4e2d7;--rh-muted:#a9bbb0;--rh-faint:#8aa095;
+--rh-line:#2b4036;--rh-line-2:#3d5a4b;--rh-brand:#6fcf9f;--rh-brand-soft:rgba(111,207,159,.15);--rh-accent:#f0b24a;--rh-on-accent:#1b2f26;--rh-accent-soft:#3a2c14;
+--rh-solid:#24392f;--rh-ok:#4ade80;--rh-warn:#fbbf24;--rh-err:#f87171;--rh-info:#7cb6f0;--rh-overlay:rgba(0,0,0,.6);--rh-shadow:0 14px 34px -18px rgba(0,0,0,.8);
+  --o-surface2:#1a2d24;--o-gold-soft:rgba(240,178,74,.15);
+  --o-overlay:rgba(255,255,255,.04);--o-overlay2:rgba(255,255,255,.08);--o-overlay3:rgba(255,255,255,.13);color-scheme:dark}}
 
-/* selo holográfico — o único ornamento da marca */
-.o-holo{
-  background:conic-gradient(from var(--holo-a,200deg) at var(--holo-x,50%) var(--holo-y,50%),
-    #38bdf8,#a78bfa,#f0abfc,#e0b24a,#4ade80,#38bdf8);
-}
+/* selo: o anel do arqueiro (centro âmbar, aro verde) */
+.o-holo{background:conic-gradient(from var(--holo-a,200deg) at var(--holo-x,50%) var(--holo-y,50%),var(--rh-brand),var(--rh-accent),var(--rh-brand))}
 .o-grad-text{background:linear-gradient(100deg,var(--o-cyan),var(--o-gold));-webkit-background-clip:text;background-clip:text;color:transparent}
+
+/* base compartilhada */
+:focus-visible{outline:3px solid var(--rh-accent);outline-offset:2px}
+::selection{background:var(--rh-brand-soft)}
+@media(pointer:coarse){button,.btn,[role=button]{min-height:44px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}

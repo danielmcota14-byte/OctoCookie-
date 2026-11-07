@@ -39,73 +39,73 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
-  --font-sans: "Bricolage Grotesque", system-ui, -apple-system, sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 }
 
+/* Robin Hood · sistema visual único (mesmos valores de public/octo.css) */
 :root {
-  /* maré (claro) — mesmos valores de public/octo.css */
-  --radius: 0.75rem;
-  --background: #f4f1ea;
-  --foreground: #1b2230;
-  --card: #fffdf8;
-  --card-foreground: #1b2230;
-  --popover: #fffdf8;
-  --popover-foreground: #1b2230;
-  --primary: #1b2230;
-  --primary-foreground: #f4f1ea;
-  --secondary: #ece8dd;
-  --secondary-foreground: #1b2230;
-  --muted: #ece8dd;
-  --muted-foreground: #5b6577;
-  --accent: #e6e1d3;
-  --accent-foreground: #1b2230;
+  --radius: 0.625rem;
+  --background: #eef2ec;
+  --foreground: #16281f;
+  --card: #f9fbf7;
+  --card-foreground: #16281f;
+  --popover: #f9fbf7;
+  --popover-foreground: #16281f;
+  --primary: #9a5206;
+  --primary-foreground: #ffffff;
+  --secondary: #e3eae2;
+  --secondary-foreground: #16281f;
+  --muted: #e3eae2;
+  --muted-foreground: #3f5348;
+  --accent: #d7e1d6;
+  --accent-foreground: #16281f;
   --destructive: #b42318;
   --destructive-foreground: #ffffff;
-  --border: #d9d3c4;
-  --input: #d9d3c4;
-  --ring: #0e7490;
-  --sidebar: #ece8dd;
-  --sidebar-foreground: #1b2230;
-  --sidebar-primary: #0e7490;
+  --border: #cbd6cb;
+  --input: #a9bcae;
+  --ring: #2d6a4f;
+  --sidebar: #e3eae2;
+  --sidebar-foreground: #16281f;
+  --sidebar-primary: #2d6a4f;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #e1dccd;
-  --sidebar-accent-foreground: #1b2230;
-  --sidebar-border: #d9d3c4;
-  --sidebar-ring: #0e7490;
-  --link: #0e7490;
+  --sidebar-accent: #d7e1d6;
+  --sidebar-accent-foreground: #16281f;
+  --sidebar-border: #cbd6cb;
+  --sidebar-ring: #2d6a4f;
+  --link: #2d6a4f;
 }
 
 .dark {
-  /* fundo do mar (escuro) */
-  --background: #07111f;
-  --foreground: #e6ebf3;
-  --card: #0d1b2e;
-  --card-foreground: #e6ebf3;
-  --popover: #0d1b2e;
-  --popover-foreground: #e6ebf3;
-  --primary: #e6ebf3;
-  --primary-foreground: #07111f;
-  --secondary: #122339;
-  --secondary-foreground: #e6ebf3;
-  --muted: #122339;
-  --muted-foreground: #93a0b5;
-  --accent: #17304b;
-  --accent-foreground: #e6ebf3;
+  --background: #0e1a15;
+  --foreground: #e9f1ea;
+  --card: #15251e;
+  --card-foreground: #e9f1ea;
+  --popover: #15251e;
+  --popover-foreground: #e9f1ea;
+  --primary: #f0b24a;
+  --primary-foreground: #1b2f26;
+  --secondary: #1c3027;
+  --secondary-foreground: #e9f1ea;
+  --muted: #1c3027;
+  --muted-foreground: #a9bbb0;
+  --accent: #24392f;
+  --accent-foreground: #e9f1ea;
   --destructive: #f87171;
-  --destructive-foreground: #07111f;
-  --border: #1d3249;
-  --input: #1d3249;
-  --ring: #38bdf8;
-  --sidebar: #0a1626;
-  --sidebar-foreground: #e6ebf3;
-  --sidebar-primary: #38bdf8;
-  --sidebar-primary-foreground: #06121f;
-  --sidebar-accent: #122339;
-  --sidebar-accent-foreground: #e6ebf3;
-  --sidebar-border: #1d3249;
-  --sidebar-ring: #38bdf8;
-  --link: #38bdf8;
+  --destructive-foreground: #0e1a15;
+  --border: #2b4036;
+  --input: #3d5a4b;
+  --ring: #6fcf9f;
+  --sidebar: #15251e;
+  --sidebar-foreground: #e9f1ea;
+  --sidebar-primary: #6fcf9f;
+  --sidebar-primary-foreground: #1b2f26;
+  --sidebar-accent: #24392f;
+  --sidebar-accent-foreground: #e9f1ea;
+  --sidebar-border: #2b4036;
+  --sidebar-ring: #6fcf9f;
+  --link: #6fcf9f;
 }
 
 @layer base {
@@ -120,5 +120,18 @@
     color: var(--color-foreground);
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3 {
+    font-family: var(--font-serif);
+  }
+  :focus-visible {
+    outline: 3px solid var(--primary);
+    outline-offset: 2px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
   }
 }

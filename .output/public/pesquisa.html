@@ -5,74 +5,17 @@
 <meta name="description" content="OctoCookie: um laboratório financeiro digital para testar, automatizar e validar estratégias. Proposta, metodologia de testes, evolução do projeto e o Holograma Quântico AAPL/USDC e validação de estratégias em ações.">
 <link rel="stylesheet" href="/octo.css"><script src="/octo.js"></script>
 <style>
-:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--hero1:#07111f;--hero2:#0b2a3f}
-html{scroll-behavior:smooth;scroll-padding-top:calc(64px + env(safe-area-inset-top,0px))}
-*{box-sizing:border-box}
-body{margin:0;background:var(--o-bg);color:var(--o-ink);font-family:var(--octo-serif);font-size:17px;line-height:1.5}
-#bar{position:fixed;left:0;top:0;height:3px;width:0;background:linear-gradient(90deg,var(--o-cyan),var(--o-gold));z-index:50}
-
-nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:40;background:color-mix(in srgb,var(--o-bg) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--o-line);font:600 13px var(--octo-sans)}
-nav div{max-width:1100px;margin:auto;padding:14px 20px;display:flex;gap:20px;overflow-x:auto;white-space:nowrap}
-nav a{color:var(--o-mut);text-decoration:none;padding-bottom:2px;border-bottom:2px solid transparent}
-nav a:hover{color:var(--o-cyan)}
-nav a.on{color:var(--o-ink);border-bottom-color:var(--o-gold)}
-nav a:focus-visible{outline:2px solid var(--o-cyan);outline-offset:3px;border-radius:3px}
-
-/* Folha de rosto do artigo (NBR 6022): título, subtítulo, autor, data */
-.hero{background:radial-gradient(1200px 500px at 80% -10%,#155e7555,transparent),linear-gradient(160deg,var(--hero1),var(--hero2));color:#eaf2fb;padding:72px 20px 80px;position:relative;overflow:hidden;text-align:center}
-.hero:before{content:"";position:absolute;inset:0;background-image:linear-gradient(#ffffff0d 1px,transparent 1px),linear-gradient(90deg,#ffffff0d 1px,transparent 1px);background-size:44px 44px;mask-image:radial-gradient(circle at 50% 30%,#000,transparent 70%);-webkit-mask-image:radial-gradient(circle at 50% 30%,#000,transparent 70%)}
-.wrap{max-width:860px;margin:auto;position:relative}
-h1{font:400 clamp(24px,3.6vw,38px)/1.2 var(--octo-sans);margin:0 0 28px;letter-spacing:-.01em;text-wrap:balance}
-h1 strong{font-weight:800}
-.autor{font:600 17px var(--octo-sans);margin:0}
-.data{font:400 15px var(--octo-sans);color:#9fd8f2;margin:6px 0 0}
-
-main{max-width:800px;margin:-32px auto 48px;background:var(--o-surface);border:1px solid var(--o-line);border-radius:var(--o-radius);padding:clamp(24px,5vw,64px);position:relative;box-shadow:var(--o-shadow)}
-
-/* Títulos: numeração progressiva (NBR 6024). Primária: maiúsculas e negrito. Secundária: negrito. Terciária: negrito e itálico. */
-h2{font:700 1.05rem/1.4 var(--octo-sans);text-transform:uppercase;margin:2.6rem 0 1.2rem;text-wrap:balance}
-h2.sn{text-align:center}
-main>section:first-child>h2{margin-top:0}
-.hero p{text-align:center;text-indent:0}
-h3{font:700 1.02rem/1.4 var(--octo-sans);margin:1.9rem 0 .9rem}
-h4{font:700 italic .98rem/1.4 var(--octo-sans);margin:1.5rem 0 .7rem}
-h2 span,h3 span,h4 span{margin-right:.6em}
-
-/* Texto: justificado, entrelinhas 1,5, recuo de parágrafo de 1,25 cm */
-p{margin:0;text-align:justify;text-indent:1.25cm;hyphens:auto}
-p.ni{text-indent:0}
-b,strong{font-weight:650}
-
-/* Resumo e abstract: parágrafo único, espaçamento simples, sem recuo */
-.res p{text-indent:0;line-height:1.35;font-size:.95rem}
-.res .pc{margin-top:.8rem}
-
-/* Alíneas (NBR 6024): a), b), c)... */
-ol.al{list-style:none;counter-reset:al;margin:.5rem 0 .5rem;padding-left:2.5cm}
-ol.al li{counter-increment:al;margin:0;text-align:justify;position:relative}
-ol.al li::before{content:counter(al,lower-alpha) ") ";position:absolute;left:-1.2rem}
-
-/* Tabelas (norma de apresentação tabular do IBGE): título acima, sem traços verticais, fonte abaixo */
-.tw{overflow-x:auto;margin:1.4rem 0 0}
-table{border-collapse:collapse;width:100%;min-width:540px;font:400 .88rem/1.35 var(--octo-sans)}
-caption{caption-side:top;text-align:left;font:600 .88rem/1.35 var(--octo-sans);padding-bottom:.6rem}
-th,td{padding:.5rem .7rem;text-align:left}
-thead tr{border-top:2px solid var(--o-ink);border-bottom:1px solid var(--o-ink)}
-tbody tr:last-child{border-bottom:2px solid var(--o-ink)}
-td{font-variant-numeric:tabular-nums}
-td:first-child{white-space:nowrap}
-.fonte{font:400 .82rem/1.4 var(--octo-sans);margin:.5rem 0 1.4rem;text-indent:0;text-align:left}
-
-/* Referências (NBR 6023): alinhadas à esquerda, espaçamento simples, linha em branco entre elas */
-.ref{list-style:none;margin:0;padding:0}
-.ref li{margin:0 0 1rem;line-height:1.35;text-align:left;font-size:.95rem;overflow-wrap:anywhere}
-.ref a{color:inherit}
-
-footer{text-align:center;font:400 13px var(--octo-sans);color:var(--o-mut);padding:0 20px 44px;max-width:720px;margin:auto}
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--hero1:#0e1a15;--hero2:#1c3027}html{scroll-behavior:smooth;scroll-padding-top:calc(64px + env(safe-area-inset-top,0px))}*{box-sizing:border-box}body{margin:0;background:var(--o-bg);color:var(--o-ink);font-family:var(--octo-serif);font-size:17px;line-height:1.5}#bar{position:fixed;left:0;top:0;height:3px;width:0;background:var(--o-cyan);z-index:50}nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:40;background:color-mix(in srgb,var(--o-bg) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--o-line);font:600 13px var(--octo-sans)}nav div{max-width:1100px;margin:auto;padding:14px 20px;display:flex;gap:20px;overflow-x:auto;white-space:nowrap}nav a{color:var(--o-mut);text-decoration:none;padding-bottom:2px;border-bottom:2px solid transparent}nav a:hover{color:var(--o-cyan)}nav a.on{color:var(--o-ink);border-bottom-color:var(--o-gold)}nav a:focus-visible{outline:2px solid var(--o-cyan);outline-offset:3px;border-radius:var(--rh-r)}.hero{background:var(--rh-brand-soft),linear-gradient(160deg,var(--hero1),var(--hero2));color:#e6eee8;padding:72px 20px 80px;position:relative;overflow:hidden;text-align:center}.hero:before{content:"";position:absolute;inset:0;background-image:linear-gradient(#ffffff0d 1px,transparent 1px),linear-gradient(90deg,#ffffff0d 1px,transparent 1px);background-size:44px 44px;mask-image:radial-gradient(circle at 50% 30%,#000,transparent 70%);-webkit-mask-image:radial-gradient(circle at 50% 30%,#000,transparent 70%)}.wrap{max-width:860px;margin:auto;position:relative}h1{font:400 clamp(24px,3.6vw,38px)/1.2 var(--octo-sans);margin:0 0 28px;letter-spacing:-.01em;text-wrap:balance}h1 strong{font-weight:800}.autor{font:600 17px var(--octo-sans);margin:0}.data{font:400 15px var(--octo-sans);color:#9fe0bd;margin:6px 0 0}main{max-width:800px;margin:-32px auto 48px;background:var(--o-surface);border:1px solid var(--o-line);border-radius:var(--o-radius);padding:clamp(24px,5vw,64px);position:relative;box-shadow:var(--o-shadow)}h2{font:700 1.05rem/1.4 var(--octo-sans);text-transform:uppercase;margin:2.6rem 0 1.2rem;text-wrap:balance}h2.sn{text-align:center}main>section:first-child>h2{margin-top:0}.hero p{text-align:center;text-indent:0}h3{font:700 1.02rem/1.4 var(--octo-sans);margin:1.9rem 0 .9rem}h4{font:700 italic .98rem/1.4 var(--octo-sans);margin:1.5rem 0 .7rem}h2 span,h3 span,h4 span{margin-right:.6em}p{margin:0;text-align:justify;text-indent:1.25cm;hyphens:auto}p.ni{text-indent:0}b,strong{font-weight:650}.res p{text-indent:0;line-height:1.35;font-size:.95rem}.res .pc{margin-top:.8rem}ol.al{list-style:none;counter-reset:al;margin:.5rem 0 .5rem;padding-left:2.5cm}ol.al li{counter-increment:al;margin:0;text-align:justify;position:relative}ol.al li::before{content:counter(al,lower-alpha) ";position:absolute;left:-1.2rem}.tw{overflow-x:auto;margin:1.4rem 0 0}table{border-collapse:collapse;width:100%;min-width:540px;font:400 .88rem/1.35 var(--octo-sans)}caption{caption-side:top;text-align:left;font:600 .88rem/1.35 var(--octo-sans);padding-bottom:.6rem}th,td{padding:.5rem .7rem;text-align:left}thead tr{border-top:2px solid var(--o-ink);border-bottom:1px solid var(--o-ink)}tbody tr:last-child{border-bottom:2px solid var(--o-ink)}td{font-variant-numeric:tabular-nums}td:first-child{white-space:nowrap}.fonte{font:400 .82rem/1.4 var(--octo-sans);margin:.5rem 0 1.4rem;text-indent:0;text-align:left}.ref{list-style:none;margin:0;padding:0}.ref li{margin:0 0 1rem;line-height:1.35;text-align:left;font-size:.95rem;overflow-wrap:anywhere}.ref a{color:inherit}footer{text-align:center;font:400 13px var(--octo-sans);color:var(--o-mut);padding:0 20px 44px;max-width:720px;margin:auto}
 @media(max-width:600px){body{font-size:16px}.hero{padding:52px 18px 60px}p{text-indent:1cm}ol.al{padding-left:1.8cm}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
 @page{size:A4;margin:3cm 2cm 2cm 3cm}
-@media print{#bar,nav,footer,.octo-ad-slot{display:none}body{background:#fff;color:#000;font-size:12pt}.hero{background:none;color:#000;padding:0 0 1.2cm}.hero:before{display:none}.data{color:#000}main{box-shadow:none;border:0;margin:0;padding:0;background:none;max-width:none}h2{break-after:avoid}table{min-width:0}}
+@media print{#bar,nav,footer,.octo-ad-slot{display:none}body{background:var(--rh-surface);color:var(--rh-ink);font-size:12pt}.hero{background:none;color:var(--rh-ink);padding:0 0 1.2cm}.hero:before{display:none}.data{color:var(--rh-ink)}main{box-shadow:none;border:0;margin:0;padding:0;background:none;max-width:none}h2{break-after:avoid}table{min-width:0}}
+
+/* ---- pele Robin Hood ---- */
+:focus-visible{outline:3px solid var(--rh-accent);outline-offset:2px}
+@media(pointer:coarse){button,.btn,[role=button]{min-height:44px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
+
 </style></head>
 <body><div id="bar"></div>
 <nav aria-label="Seções da pesquisa"><div><a href="#resumo">Resumo</a><a href="#introducao">Introdução</a><a href="#metodologia">Metodologia</a><a href="#desenvolvimento">Desenvolvimento</a><a href="#holograma">Holograma</a><a href="#conclusao">Conclusão</a><a href="#referencias">Referências</a></div></nav>

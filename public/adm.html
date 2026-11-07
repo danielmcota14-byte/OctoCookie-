@@ -8,54 +8,14 @@
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://apis.google.com; style-src 'unsafe-inline'; connect-src https: http://localhost:* http://127.0.0.1:*; frame-src https://*.firebaseapp.com https://accounts.google.com https://apis.google.com; img-src data: https:; base-uri 'none'; form-action 'none'">
 <title>OctoCookie · Adm</title>
 <style>
-:root{--bg:#0a0e17;--bg2:#0f1523;--card:#131b2c;--card2:#182237;--fg:#e9eefb;--mut:#8fa0bd;--line:#23304a;--acc:#38bdf8;--acc2:#818cf8;--ok:#34d399;--bad:#f87171;--warn:#fbbf24;--r:14px}
-@media(prefers-color-scheme:light){:root{--bg:#f3f5fa;--bg2:#e9edf6;--card:#fff;--card2:#f6f8fc;--fg:#101828;--mut:#5b6b86;--line:#dde3ef;--acc:#0284c7;--acc2:#4f46e5;--ok:#059669;--bad:#dc2626;--warn:#b45309}}
-*{box-sizing:border-box}html,body{margin:0}
-body{background:radial-gradient(1200px 500px at 80% -10%,color-mix(in srgb,var(--acc2) 18%,transparent),transparent),var(--bg);color:var(--fg);font:14px/1.5 Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;min-height:100vh}
-.hide{display:none!important}
-button,input,select{font:inherit;color:inherit}
-input,select{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg2);outline:none}
-input:focus,select:focus{border-color:var(--acc)}
-label{display:block;font-size:12px;color:var(--mut);margin:12px 0 5px}
-button{padding:10px 16px;border-radius:10px;border:1px solid var(--line);background:var(--card2);cursor:pointer;transition:.15s}
-button:hover:not(:disabled){border-color:var(--acc)}button:disabled{opacity:.5;cursor:default}
-button.p{background:linear-gradient(135deg,var(--acc),var(--acc2));border:0;color:#fff;font-weight:600}
-.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12px;word-break:break-all}
-.ok{color:var(--ok)}.bad{color:var(--bad)}.warn{color:var(--warn)}.mut{color:var(--mut)}
-.msg{min-height:20px;font-size:13px;margin-top:12px;white-space:pre-line}
+:root{--bg:var(--rh-solid);--bg2:var(--rh-solid);--card:var(--rh-solid);--card2:var(--rh-solid);--fg:#ffffff;--mut:var(--rh-faint);--line:var(--rh-line-2);--acc:var(--rh-brand);--acc2:var(--rh-accent);--ok:var(--rh-ok);--bad:var(--rh-err);--warn:var(--rh-warn);--r:14px}
+@media(prefers-color-scheme:light){:root{--bg:var(--rh-bg);--bg2:var(--rh-surface-3);--card:var(--rh-surface);--card2:var(--rh-surface);--fg:var(--rh-ink);--mut:var(--rh-muted);--line:var(--rh-line-2);--acc:var(--rh-brand);--acc2:var(--rh-accent);--ok:var(--rh-ok);--bad:var(--rh-err);--warn:var(--rh-warn)}}*{box-sizing:border-box}html,body{margin:0}body{background:radial-gradient;color:var(--fg);font:14px/1.5 Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;min-height:100vh}.hide{display:none !important}button,input,select{font:inherit;color:inherit}input,select{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:var(--rh-r-lg);background:var(--bg2);outline:none}input:focus,select:focus{border-color:var(--acc)}label{display:block;font-size:12px;color:var(--mut);margin:12px 0 5px}button{padding:10px 16px;border-radius:var(--rh-r-lg);border:1px solid var(--line);background:var(--card2);cursor:pointer;transition:.15s}button:hover:not(:disabled){border-color:var(--acc)}button:disabled{opacity:.5;cursor:default}button.p{background:var(--acc);border:0;color:#ffffff;font-weight:600}.mono{font-family:var(--rh-mono);font-size:12px;word-break:break-all}.ok{color:var(--ok)}.bad{color:var(--bad)}.warn{color:var(--warn)}.mut{color:var(--mut)}.msg{min-height:20px;font-size:13px;margin-top:12px;white-space:pre-line}#login,#denied,#boot{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}.box{width:100%;max-width:400px;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:28px;box-shadow:var(--rh-shadow)}.logo{width:48px;height:48px;border-radius:var(--rh-r-lg);background:var(--acc);display:grid;place-items:center;font-size:24px;margin-bottom:14px}.box h1{font-size:20px;margin:0 0 4px}.box p{margin:0 0 6px;color:var(--mut);font-size:13px}.sep{display:flex;align-items:center;gap:10px;color:var(--mut);font-size:12px;margin:14px 0}.sep:before,.sep:after{content:"";flex:1;height:1px;background:var(--line)}.row{display:flex;gap:10px;flex-wrap:wrap}.row>*{flex:1 1 150px}.full{width:100%}header{position:sticky;top:0;z-index:5;backdrop-filter:blur(10px);background:color-mix(in srgb,var(--bg) 82%,transparent);border-bottom:1px solid var(--line)}.bar{max-width:1040px;margin:0 auto;padding:12px 18px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}.brand{display:flex;align-items:center;gap:10px;font-weight:700}.brand .logo{width:34px;height:34px;font-size:18px;margin:0;border-radius:var(--rh-r-lg)}.pill{font-size:11px;padding:3px 10px;border-radius:99px;border:1px solid var(--line);color:var(--mut)}.spacer{flex:1}.user{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--mut)}.user button{padding:6px 12px;font-size:12px}nav{max-width:1040px;margin:0 auto;padding:0 18px 12px;display:flex;gap:6px;overflow-x:auto}nav button{background:transparent;border:1px solid transparent;color:var(--mut);border-radius:99px;padding:7px 14px;white-space:nowrap}nav button.on{background:var(--card);border-color:var(--line);color:var(--fg)}main{max-width:1040px;margin:0 auto;padding:18px;display:grid;gap:16px}.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:20px}.card h2{font-size:15px;margin:0 0 4px}.sub{color:var(--mut);font-size:12.5px;margin:0 0 14px}.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}.kpi{background:var(--card2);border:1px solid var(--line);border-radius:var(--rh-r-lg);padding:14px 16px}.kpi small{color:var(--mut);display:block;font-size:12px}.kpi b{display:block;font-size:22px;margin:2px 0;letter-spacing:-.3px}.kpi span{font-size:12px;color:var(--mut)}.spark{display:flex;align-items:flex-end;gap:4px;height:80px;margin-top:6px}.spark i{flex:1;background:var(--acc);border-radius:var(--rh-r) var(--rh-r) 0 0;min-height:2px;opacity:.9}.scroll{overflow-x:auto}table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:9px 10px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}th{color:var(--mut);font-weight:500;font-size:12px}th:first-child,td:first-child{text-align:left}tfoot td{font-weight:700;border-bottom:0}details{margin-top:12px}summary{cursor:pointer;color:var(--mut);font-size:12px}pre{overflow:auto;max-height:220px;font-size:11px;background:var(--bg2);padding:10px;border-radius:var(--rh-r)}ol{margin:6px 0 0;padding-left:18px;color:var(--mut);font-size:13px}ol li{margin:4px 0}code{background:var(--bg2);padding:1px 6px;border-radius:var(--rh-r);font-size:12px}
 
-/* login */
-#login,#denied,#boot{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
-.box{width:100%;max-width:400px;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:28px;box-shadow:0 20px 60px rgba(0,0,0,.35)}
-.logo{width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,var(--acc),var(--acc2));display:grid;place-items:center;font-size:24px;margin-bottom:14px}
-.box h1{font-size:20px;margin:0 0 4px}.box p{margin:0 0 6px;color:var(--mut);font-size:13px}
-.sep{display:flex;align-items:center;gap:10px;color:var(--mut);font-size:12px;margin:14px 0}.sep:before,.sep:after{content:"";flex:1;height:1px;background:var(--line)}
-.row{display:flex;gap:10px;flex-wrap:wrap}.row>*{flex:1 1 150px}
-.full{width:100%}
+/* ---- pele Robin Hood ---- */
+:focus-visible{outline:3px solid var(--rh-accent);outline-offset:2px}
+@media(pointer:coarse){button,.btn,[role=button]{min-height:44px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
 
-/* app */
-header{position:sticky;top:0;z-index:5;backdrop-filter:blur(10px);background:color-mix(in srgb,var(--bg) 82%,transparent);border-bottom:1px solid var(--line)}
-.bar{max-width:1040px;margin:0 auto;padding:12px 18px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
-.brand{display:flex;align-items:center;gap:10px;font-weight:700}.brand .logo{width:34px;height:34px;font-size:18px;margin:0;border-radius:10px}
-.pill{font-size:11px;padding:3px 10px;border-radius:99px;border:1px solid var(--line);color:var(--mut)}
-.spacer{flex:1}
-.user{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--mut)}.user button{padding:6px 12px;font-size:12px}
-nav{max-width:1040px;margin:0 auto;padding:0 18px 12px;display:flex;gap:6px;overflow-x:auto}
-nav button{background:transparent;border:1px solid transparent;color:var(--mut);border-radius:99px;padding:7px 14px;white-space:nowrap}
-nav button.on{background:var(--card);border-color:var(--line);color:var(--fg)}
-main{max-width:1040px;margin:0 auto;padding:18px;display:grid;gap:16px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:20px}
-.card h2{font-size:15px;margin:0 0 4px}.sub{color:var(--mut);font-size:12.5px;margin:0 0 14px}
-.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
-.kpi{background:var(--card2);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
-.kpi small{color:var(--mut);display:block;font-size:12px}.kpi b{display:block;font-size:22px;margin:2px 0;letter-spacing:-.3px}.kpi span{font-size:12px;color:var(--mut)}
-.spark{display:flex;align-items:flex-end;gap:4px;height:80px;margin-top:6px}
-.spark i{flex:1;background:linear-gradient(180deg,var(--acc),var(--acc2));border-radius:4px 4px 0 0;min-height:2px;opacity:.9}
-.scroll{overflow-x:auto}
-table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:9px 10px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
-th{color:var(--mut);font-weight:500;font-size:12px}th:first-child,td:first-child{text-align:left}tfoot td{font-weight:700;border-bottom:0}
-details{margin-top:12px}summary{cursor:pointer;color:var(--mut);font-size:12px}pre{overflow:auto;max-height:220px;font-size:11px;background:var(--bg2);padding:10px;border-radius:8px}
-ol{margin:6px 0 0;padding-left:18px;color:var(--mut);font-size:13px}ol li{margin:4px 0}code{background:var(--bg2);padding:1px 6px;border-radius:6px;font-size:12px}
 </style>
 </head>
 <body>

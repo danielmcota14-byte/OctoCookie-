@@ -5,24 +5,13 @@
 <meta name="description" content="OctoCookie: um site para aprender e testar investimentos em ações sem arriscar dinheiro. Em testes, o trader superou o comprar e esperar.">
 <link rel="stylesheet" href="/octo.css"><script src="/octo.js"></script>
 <style>
-:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--hero1:#07111f;--hero2:#0b2a3f}
-*{box-sizing:border-box}
-html{scroll-behavior:smooth}
-body{margin:0;background:var(--o-bg);color:var(--o-ink);font-family:var(--octo-serif);font-size:17px;line-height:1.55}
-.hero{background:radial-gradient(1200px 500px at 80% -10%,#155e7555,transparent),linear-gradient(160deg,var(--hero1),var(--hero2));color:#eaf2fb;padding:64px 20px 80px;text-align:center}
-.wrap{max-width:860px;margin:auto}
-h1{font:800 clamp(22px,3.4vw,36px)/1.2 var(--octo-sans);margin:0 0 22px;letter-spacing:-.01em;text-wrap:balance}
-.autor{font:600 17px var(--octo-sans);margin:0}
-.data{font:400 15px var(--octo-sans);color:#9fd8f2;margin:6px 0 0}
-main{max-width:800px;margin:-32px auto 48px;background:var(--o-surface);border:1px solid var(--o-line);border-radius:var(--o-radius);padding:clamp(24px,5vw,56px);box-shadow:var(--o-shadow)}
-section{margin:0 0 2.2rem}
-section:last-of-type{margin-bottom:0}
-h2{font:700 1.05rem/1.4 var(--octo-sans);text-transform:uppercase;margin:0 0 .8rem;letter-spacing:.02em}
-h2 span{color:var(--o-cyan);margin-right:.6em}
-.l{display:block;margin:0 0 .35rem}
-.refs .l{font:400 .9rem/1.45 var(--octo-sans);color:var(--o-mut)}
-.aviso{font:400 .85rem/1.4 var(--octo-sans);color:var(--o-mut);text-align:center;margin:1.8rem 0 0;padding-top:1.2rem;border-top:1px solid var(--o-line)}
-b{font-weight:650}
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--hero1:#0e1a15;--hero2:#1c3027}*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--o-bg);color:var(--o-ink);font-family:var(--octo-serif);font-size:17px;line-height:1.55}.hero{background:var(--rh-brand-soft),linear-gradient(160deg,var(--hero1),var(--hero2));color:#e6eee8;padding:64px 20px 80px;text-align:center}.wrap{max-width:860px;margin:auto}h1{font:800 clamp(22px,3.4vw,36px)/1.2 var(--octo-sans);margin:0 0 22px;letter-spacing:-.01em;text-wrap:balance}.autor{font:600 17px var(--octo-sans);margin:0}.data{font:400 15px var(--octo-sans);color:#9fe0bd;margin:6px 0 0}main{max-width:800px;margin:-32px auto 48px;background:var(--o-surface);border:1px solid var(--o-line);border-radius:var(--o-radius);padding:clamp(24px,5vw,56px);box-shadow:var(--o-shadow)}section{margin:0 0 2.2rem}section:last-of-type{margin-bottom:0}h2{font:700 1.05rem/1.4 var(--octo-sans);text-transform:uppercase;margin:0 0 .8rem;letter-spacing:.02em}h2 span{color:var(--o-cyan);margin-right:.6em}.l{display:block;margin:0 0 .35rem}.refs .l{font:400 .9rem/1.45 var(--octo-sans);color:var(--o-mut)}.aviso{font:400 .85rem/1.4 var(--octo-sans);color:var(--o-mut);text-align:center;margin:1.8rem 0 0;padding-top:1.2rem;border-top:1px solid var(--o-line)}b{font-weight:650}
+
+/* ---- pele Robin Hood ---- */
+:focus-visible{outline:3px solid var(--rh-accent);outline-offset:2px}
+@media(pointer:coarse){button,.btn,[role=button]{min-height:44px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
+
 </style></head>
 <body>
 <header class="hero"><div class="wrap">

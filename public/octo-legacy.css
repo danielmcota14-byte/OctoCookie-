@@ -16,7 +16,7 @@ html[data-octo="analisador"]{
   --border:var(--o-line);--border2:var(--o-line2);
   --text:var(--o-ink);--text2:var(--o-mut);--text3:var(--o-faint);
   --green:var(--o-ok);--red:var(--o-bad);--yellow:var(--o-warn);--blue:var(--o-info);
-  --purple:#8b5cf6;--orange:#d97706;
+  --purple:var(--o-info);--orange:var(--o-warn);
   --mono:var(--octo-mono);--head:var(--octo-sans);
 }
 /* Carteira (cryptex.html) e app de carteira (index.html) */
@@ -24,7 +24,7 @@ html[data-octo="carteira"]{
   --bg:var(--o-bg);--surface:var(--o-surface);--surface-2:var(--o-surface2);--sidebar:var(--o-bg2);
   --border:var(--o-line);--border-strong:var(--o-line2);
   --fg:var(--o-ink);--fg-muted:var(--o-mut);--fg-subtle:var(--o-faint);
-  --accent:var(--o-ink);--accent-fg:var(--o-bg);--link:var(--o-cyan);
+  --accent:var(--o-gold);--accent-fg:var(--o-on-accent);--link:var(--o-cyan);
   --success:var(--o-ok);--danger:var(--o-bad);--warning:var(--o-warn);
   --shadow-sm:none;--shadow:var(--o-shadow);
   --font:var(--octo-sans);
